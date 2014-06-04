@@ -56,7 +56,7 @@ public:
     //! @param saveGraph bool : to generate DOT representation of dependency graph
     //! @param stream std::ostream& : stream to print errors and warnings
     KIF(const std::string& output_filename, bool saveGraph = false, std::ostream& stream = std::cout)
-        : output_filename(output_filename), driver(stream, output_filename, graph_filename, saveGraph) { }
+        : output_filename(output_filename), driver(stream, this->output_filename, this->graph_filename, saveGraph) { }
 
     //! Add given file as input
     //!

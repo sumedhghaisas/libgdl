@@ -99,6 +99,7 @@ namespace gdlparser {
 %type   <TokenValue>  Num_var
 %type   <TokenValue>  CTerm
 %type   <TokenValue>  CTerms
+%type   <TokenValue>  Literal
 
 %%
 
@@ -311,26 +312,37 @@ Head        : Obracket role Term Cbracket   {
                             else if(res == 2) driver.Warn(@1, msg);
                         }
 
-ORelation   : Obracket does CTerm CTerm Cbracket    {
-                                                        $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
-                                                        $$.Command() = $2.Value();
-                                                        $$.Type() = TokenValue::Relation;
-                                                        $$.AddArgument($3);
-                                                        $$.AddArguments($4.Arguments());
-                                                    }
-            | Obracket ttrue CTerm Cbracket {
-                                                $$ = $1 + " " + $2 + " " + $3 + " " + $4;
-                                                $$.Command() = $2.Value();
-                                                $$.Type() = TokenValue::Relation;
-                                                $$.AddArgument($3);
-                                            }
-            | Obracket nnot ORelation Cbracket  {
+ORelation   : Literal   { $$ = $1; }
+            | Obracket nnot Literal Cbracket    {
                                                     $$ = $1 + " " + $2 + " " + $3 + " " + $4;
                                                     $$.PerformNot();
                                                     $$.Command() = $2.Value();
                                                     $$.Type() = TokenValue::Relation;
                                                     $$.AddArgument($3);
                                                 }
+ORelations  : ORelation ORelations  {
+                                        $$ = $$ + $1;
+                                        if($2 != "") $$ = $$ + " " + $2;
+                                        $$.Command() = "Multiple relations";
+                                        $$.AddArgument($1);
+                                        $$.AddArguments($2.Arguments());
+                                    }
+            | %empty    { }
+
+
+Literal     : Obracket does CTerm CTerm Cbracket    {
+                                                        $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
+                                                        $$.Command() = $2.Value();
+                                                        $$.Type() = TokenValue::Relation;
+                                                        $$.AddArgument($3);
+                                                        $$.AddArguments($4.Arguments());
+                                                    }
+            | Obracket ttrue CTerm Cbracket         {
+                                                        $$ = $1 + " " + $2 + " " + $3 + " " + $4;
+                                                        $$.Command() = $2.Value();
+                                                        $$.Type() = TokenValue::Relation;
+                                                        $$.AddArgument($3);
+                                                    }
             | Obracket oor ORelation ORelations Cbracket    {
                                                                 $$ = $1 + " " + $2 + " " + $3 + " " + $4.Value() + " " + $5;
                                                                 $$.OrRestrict($4);
@@ -390,19 +402,19 @@ ORelation   : Obracket does CTerm CTerm Cbracket    {
                             $$ = $$ + $1;
                             $$.Command() = $1.Value();
                         }
-            | Obracket Id_num CTerm CTerms Cbracket   {
-                                                        $$ = $1 + " " + $2 + " " + $3;
-                                                        if($4 != "") $$ = $$ + " " + $4;
-                                                        $$ = $$ + " " + $5;
-                                                        $$.Command() = $2.Value();
-                                                        $$.Type() = TokenValue::Relation;
-                                                        $$.AddArgument($3);
-                                                        $$.AddArguments($4.Arguments());
-                                                        std::string msg;
-                                                        int res = driver.CheckEntry($2, true, $4.Count() + 1, @2, msg);
-                                                        if(res == 1) error(@2, msg);
-                                                        else if(res == 2) driver.Warn(@2, msg);
-                                                    }
+            | Obracket Id_num CTerm CTerms Cbracket     {
+                                                            $$ = $1 + " " + $2 + " " + $3;
+                                                            if($4 != "") $$ = $$ + " " + $4;
+                                                            $$ = $$ + " " + $5;
+                                                            $$.Command() = $2.Value();
+                                                            $$.Type() = TokenValue::Relation;
+                                                            $$.AddArgument($3);
+                                                            $$.AddArguments($4.Arguments());
+                                                            std::string msg;
+                                                            int res = driver.CheckEntry($2, true, $4.Count() + 1, @2, msg);
+                                                            if(res == 1) error(@2, msg);
+                                                            else if(res == 2) driver.Warn(@2, msg);
+                                                        }
             | Id_num    {
                             $$ = $$ + $1;
                             $$.Command() = $1.Value();
@@ -413,14 +425,6 @@ ORelation   : Obracket does CTerm CTerm Cbracket    {
                             else if(res == 2) driver.Warn(@1, msg);
                         }
 
-ORelations  : ORelation ORelations  {
-                                        $$ = $$ + $1;
-                                        if($2 != "") $$ = $$ + " " + $2;
-                                        $$.Command() = "Multiple relations";
-                                        $$.AddArgument($1);
-                                        $$.AddArguments($2.Arguments());
-                                    }
-            | %empty    { }
 
 Term        : Obracket Id_num Term Terms Cbracket   {
                                                         $$ = $1 + " " + $2 + " " + $3;

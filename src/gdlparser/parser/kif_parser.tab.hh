@@ -257,6 +257,7 @@ namespace gdlparser { namespace parser { namespace yy {
       // Head
       // ORelation
       // ORelations
+      // Literal
       // Term
       // Terms
       // CTerm
@@ -679,8 +680,8 @@ namespace gdlparser { namespace parser { namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 194,           //< Last index in yytable_.
-      yynnts_ = 16,  //< Number of nonterminal symbols.
+      yylast_ = 209,           //< Last index in yytable_.
+      yynnts_ = 17,  //< Number of nonterminal symbols.
       yyempty_ = -2,
       yyfinal_ = 19, //< Termination state number.
       yyterror_ = 1,
@@ -794,11 +795,12 @@ namespace gdlparser { namespace parser { namespace yy {
       case 30: // Head
       case 31: // ORelation
       case 32: // ORelations
-      case 33: // Term
-      case 34: // Terms
-      case 35: // CTerm
-      case 36: // CTerms
-      case 37: // Num_var
+      case 33: // Literal
+      case 34: // Term
+      case 35: // Terms
+      case 36: // CTerm
+      case 37: // CTerms
+      case 38: // Num_var
         value.copy< TokenValue > (other.value);
         break;
 
@@ -848,11 +850,12 @@ namespace gdlparser { namespace parser { namespace yy {
       case 30: // Head
       case 31: // ORelation
       case 32: // ORelations
-      case 33: // Term
-      case 34: // Terms
-      case 35: // CTerm
-      case 36: // CTerms
-      case 37: // Num_var
+      case 33: // Literal
+      case 34: // Term
+      case 35: // Terms
+      case 36: // CTerm
+      case 37: // CTerms
+      case 38: // Num_var
         value.copy< TokenValue > (v);
         break;
 
@@ -923,11 +926,12 @@ namespace gdlparser { namespace parser { namespace yy {
       case 30: // Head
       case 31: // ORelation
       case 32: // ORelations
-      case 33: // Term
-      case 34: // Terms
-      case 35: // CTerm
-      case 36: // CTerms
-      case 37: // Num_var
+      case 33: // Literal
+      case 34: // Term
+      case 35: // Terms
+      case 36: // CTerm
+      case 37: // CTerms
+      case 38: // Num_var
         value.template destroy< TokenValue > ();
         break;
 
@@ -974,11 +978,12 @@ namespace gdlparser { namespace parser { namespace yy {
       case 30: // Head
       case 31: // ORelation
       case 32: // ORelations
-      case 33: // Term
-      case 34: // Terms
-      case 35: // CTerm
-      case 36: // CTerms
-      case 37: // Num_var
+      case 33: // Literal
+      case 34: // Term
+      case 35: // Terms
+      case 36: // CTerm
+      case 37: // CTerms
+      case 38: // Num_var
         value.move< TokenValue > (s.value);
         break;
 
@@ -1180,7 +1185,7 @@ namespace gdlparser { namespace parser { namespace yy {
 
 #line 12 "kif_parser.yy" // lalr1.cc:371
 } } } // gdlparser::parser::yy
-#line 1184 "kif_parser.tab.hh" // lalr1.cc:371
+#line 1189 "kif_parser.tab.hh" // lalr1.cc:371
 
 
 
