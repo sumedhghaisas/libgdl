@@ -1,0 +1,2 @@
+(<= (test ?x) (not (test2 ?x)) (test3 ?x) )
+(<= (test2 ?x) (test ?x) )
