@@ -219,16 +219,28 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
 
     const std::set<std::string>& head_vars = tok.HeadVars();
     const std::set<std::string>& bounded_vars = tok.BoundedVars();
+    const std::set<std::string>& unbounded_vars = tok.UnboundedVars();
 
     std::set<std::string> diff;
     diff = setop::setDifference(head_vars, bounded_vars);
 
-    // check if each variable appearing in head appers in bounded variables of body
+    // check if each variable appearing in head appears in bounded variables of body
     if(diff.size() != 0)
     {
         for(std::set<std::string>::const_iterator it = diff.begin();it != diff.end();it++)
         {
-            parser->error(loc, "Variable " + *it + " appearing in head must appear in body.");
+            parser->error(loc, "Unsafe Rule: " + c.text + " :Variable " + *it + " appearing in head must appear in a positive relation in the rule's body.");
+        }
+    }
+
+    diff = setop::setDifference(unbounded_vars, bounded_vars);
+
+    // check if each variable appearing in negation or distinct appears in positive body
+    if(diff.size() != 0)
+    {
+        for(std::set<std::string>::const_iterator it = diff.begin();it != diff.end();it++)
+        {
+            parser->error(loc, "Unsafe Rule: " + c.text + " :Variable " + *it + " must appear in a positive relation in the rule's body.");
         }
     }
 

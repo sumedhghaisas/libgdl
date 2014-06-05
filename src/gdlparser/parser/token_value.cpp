@@ -48,8 +48,6 @@ void TokenValue::OrRestrict(const TokenValue& tok)
 
         std::set<std::string> temp = setop::setIntersection(bounded_vars, b);
 
-        unbounded_vars = setop::setUnion(unbounded_vars, setop::setDifference(bounded_vars, temp));
-        unbounded_vars = setop::setUnion(unbounded_vars, setop::setDifference(b, temp));
         unbounded_vars = setop::setUnion(unbounded_vars, u);
 
         bounded_vars = temp;

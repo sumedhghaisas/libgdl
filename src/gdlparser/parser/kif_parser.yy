@@ -385,12 +385,6 @@ Literal     : Obracket does CTerm CTerm Cbracket    {
                                                         $$.AddArgument($3);
                                                         $$.AddArguments($4.Arguments());
                                                     }
-            | Obracket next CTerm Cbracket  {
-                                                $$ = $1 + " " + $2 + " " + $3 + " " + $4;
-                                                $$.Command() = $2.Value();
-                                                $$.Type() = TokenValue::Relation;
-                                                $$.AddArgument($3);
-                                            }
             | Obracket goal CTerm Num_var Cbracket  {
                                                         $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
                                                         $$.Command() = $2.Value();
