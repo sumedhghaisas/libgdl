@@ -54,15 +54,21 @@ public:
     //!
     //! @param output_filename const std::string& : filename for generating output
     //! @param saveGraph bool : to generate DOT representation of dependency graph
+    //! @param isWarn bool : enable or disable warnings
     //! @param stream std::ostream& : stream to print errors and warnings
-    KIF(const std::string& output_filename, bool saveGraph = false, std::ostream& stream = std::cout)
-        : output_filename(output_filename), driver(stream, this->output_filename, this->graph_filename, saveGraph) { }
+    KIF(const std::string& output_filename, bool saveGraph = false, bool isWarn = true,
+        std::ostream& stream = std::cerr)
+        : output_filename(output_filename),
+        driver(stream, this->output_filename, this->graph_filename, saveGraph, isWarn)
+        { }
 
     //! Add given file as input
     //!
     //! @param filename const std::string& : filename of the file to be added
     //!
     void AddFile(const std::string& filename) { driver.AddFile(filename); }
+    void AddFile(const std::vector<std::string>& files)
+            { for(size_t i = 0;i < files.size();i++) AddFile(files[i]); }
 
     //! Parse the inputs
     //!

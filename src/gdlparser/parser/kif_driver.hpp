@@ -68,7 +68,8 @@ public:
     KIFDriver(std::ostream& stream,
             const std::string& output_filename,
             const std::string& graph_filename,
-            bool toGraph = false);
+            bool toGraph = false,
+            bool isWarn = true);
 
     //! destructor, deletes parser and scanner
     virtual ~KIFDriver();
@@ -86,7 +87,7 @@ private:
     friend KIFScanner;
 
     //! construct a fact from given token
-    void AddFact(const TokenValue& fact);
+    void AddFact(const TokenValue& fact, const location_type& loc);
 
     //! construct a rule from given token and location for verbore warnings and errors
     void AddClause(const TokenValue& clause, const location_type& loc);
@@ -109,6 +110,13 @@ private:
 
     //! check for cycles with negative edge
     void CheckCycles();
+
+    //! checks whether init, base, input is dependent on true, does as its invalid
+    //! checks whether legal is dependent on does as its invalid
+    void CheckRecursiveDependencies();
+
+    //! checks if source node is dependent on destination node
+    bool CheckDependency(const Node* source, const Node* destination);
 
     //! recursive function in Tarjan's algorithm
     void StrongConnect(Node* v, std::stack<Node*>& nstack, std::set<Node*>& nset, std::vector<std::set<Node*> >& scc);
@@ -140,8 +148,12 @@ private:
     //! is graph to be stored as DOT file
     bool toGraph;
 
+    //! enable/disable warnings
+    bool isWarn;
+
     //! stores if any error has occured in parsing
     mutable bool anyError;
+
 };
 
 } // namespace parser

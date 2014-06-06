@@ -25,6 +25,7 @@ endif(DEBUG)
 
 find_package(Boost
     COMPONENTS
+      program_options
       unit_test_framework
     REQUIRED
 )

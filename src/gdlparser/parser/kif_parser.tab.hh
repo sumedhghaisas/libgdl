@@ -538,7 +538,7 @@ namespace gdlparser { namespace parser { namespace yy {
     /// \param yyvalue   the value to check
     static bool yy_table_value_is_error_ (int yyvalue);
 
-    static const signed char yypact_ninf_;
+    static const short int yypact_ninf_;
     static const signed char yytable_ninf_;
 
     /// Convert a scanner token number \a t to a symbol number.
@@ -555,7 +555,7 @@ namespace gdlparser { namespace parser { namespace yy {
   static const unsigned char yydefact_[];
 
   // YYPGOTO[NTERM-NUM].
-  static const signed char yypgoto_[];
+  static const short int yypgoto_[];
 
   // YYDEFGOTO[NTERM-NUM].
   static const short int yydefgoto_[];
@@ -680,7 +680,7 @@ namespace gdlparser { namespace parser { namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 209,           //< Last index in yytable_.
+      yylast_ = 205,           //< Last index in yytable_.
       yynnts_ = 17,  //< Number of nonterminal symbols.
       yyempty_ = -2,
       yyfinal_ = 19, //< Termination state number.
