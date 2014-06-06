@@ -11,6 +11,7 @@
 #include <boost/program_options.hpp>
 
 using namespace std;
+using namespace boost::program_options;
 using namespace gdlparser;
 
 /**
@@ -22,49 +23,92 @@ using namespace gdlparser;
  * @endcommand
  *
  * Parameters :
- * -g   	: To generate DOT representation of dependency graph
- * -woff	: will disable all the warnings
- * -help    : Get Help.
+ * -g   	    : To generate DOT representation of dependency graph
+ * -w off	    : will disable all the warnings (by default warnings are enabled)
+ * -h[--help]   : Prints help.
  *
  */
 int main(int argc, char* argv[])
 {
     // Declare the supported options.
-    po::options_description desc("Allowed options");
+    options_description desc("Allowed options");
     desc.add_options()
-    ("help", "Help Message") //TODO
-    ("-g", po::value<std::string>(), "output graph filename")
-    ("-woff", po::value<std::string>(), "output graph filename")
+    ("help,h", "Description")
+    ("graph-filename,g", value<std::string>()->default_value(""), "graph output filename")
+    ("enable-warnings,w", value<std::string>()->default_value("ON"), "enable/disable warnings")
+    ("output-file", value<std::string>(), "Output filename")
+    ("source-files,c", value<std::vector<std::string> >()->multitoken(), "source files");
     ;
 
+    positional_options_description p;
+    p.add("output-file", -1);
 
-    if(argc < 3 || std::string(argv[1]) == "-g" || std::string(argv[2]) == "-g")
+    variables_map vm;
+    store(command_line_parser(argc, argv).
+          options(desc).positional(p).run(), vm);
+    notify(vm);
+
+    // source files
+    std::vector<std::string> files;
+    // output filename
+    std::string output_filename = "";
+    // graph output filename
+    std::string graph_filename = "";
+    // to generate graph
+    bool toGraph = false;
+    // to generate warnings
+    bool warn = true;
+
+    if (vm.count("help"))
     {
-        std::cerr << "USAGE : kif OUTPUT_FILENAME LIST_OF_SOURCE_FILES " << std::endl;
+        std::string des = "USAGE : kif OUTPUT_FILENAME LIST_OF_SOURCE_FILES";
+        des = des +
+                "\nSample usage" +
+                "\nkif test.kif -c 3puzzle.kif arithmatic.kif ...(more files if required) -g test.dot" +
+                "\nOptional Parameters :" +
+                "\n-g           : To generate DOT representation of dependency graph" +
+                "\n-w off       : will disable all the warnings (by default warnings are enabled" +
+                "\n-h[--help]   : Prints help.";
+
+        std::cerr << des << std::endl;
+        return 0;
+    }
+
+    if(vm.count("output-file")) output_filename = vm["output-file"].as<std::string>();
+    else
+    {
+        std::cerr << "ERROR: Output file has to be mentioned." << std::endl;
+        std::cerr << "USAGE : kif OUTPUT_FILE -c SOURCE_FILES" << std::endl;
         return 1;
     }
 
-    std::vector<std::string> files;
-    std::string output_filename = "";
-    std::string graph_filename = "";
-    bool toGraph = false;
-
-    output_filename = std::string(argv[1]);
-    for(int i = 2; i < argc; i++)
+    if(vm.count("source-files"))
     {
-        std::string temp(argv[i]);
-        if(temp != "-g") files.push_back(std::string(argv[i]));
-        else
-        {
-            toGraph = true;
-            if(i + 1 != argc) graph_filename = std::string(argv[i+1]);
-            break;
-        }
+        files = vm["source-files"].as<std::vector<std::string> >();
+    }
+    else
+    {
+        std::cerr << "ERROR: at least one source file has to be mentioned." << std::endl;
+        std::cerr << "USAGE : kif OUTPUT_FILE -c SOURCE_FILES" << std::endl;
+        return 1;
     }
 
-    KIF kif(output_filename, toGraph, std::cerr);
-    for(size_t i = 0; i < files.size(); i++) kif.AddFile(files[i]);
-    kif.Parse();
-    return 0;
+    if (vm.count("graph-filename"))
+    {
+        toGraph = true;
+        graph_filename = vm["graph-filename"].as<std::string>();
+    }
+    if(vm.count("enable-warnings"))
+    {
+        std::string temp = vm["enable-warnings"].as<std::string>();
+        if(temp == "OFF" || temp == "off" || temp == "Off") warn = true;
+    }
+
+    KIF kif(output_filename, toGraph, warn, std::cerr);
+    kif.AddFile(files);
+    kif.GraphFilename() = graph_filename;
+    if(kif.Parse()) return 0;
+    else return 1;
 }
+
 

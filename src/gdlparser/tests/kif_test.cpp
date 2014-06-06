@@ -8,6 +8,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "old_boost_test_definitions.hpp"
+#include "gdlparser_test.hpp"
 
 BOOST_AUTO_TEST_SUITE(KIFTest);
 
@@ -19,32 +20,25 @@ using namespace gdlparser;
  */
 BOOST_AUTO_TEST_CASE(NormalTest)
 {
-	KIF kif("");
+    MARK_START;
+    OPEN_LOG;
+	KIF kif("", false, false, TEST_LOG);
 	kif.AddFile("data/8puzzle.kif");
-	bool result = kif.Parse();
-	if(!result) BOOST_FAIL("Parse on '8puzzle.kif' failed...");
-}
-
-/** 
- * Check head variable bound.
- */
-BOOST_AUTO_TEST_CASE(HeadBoundTest)
-{
-	KIF kif("");
-	kif.AddFile("data/headbound.kif");
-	bool result = kif.Parse();
-	if(result) BOOST_FAIL("Head variable bound test failed...");
+	if(!kif.Parse()) MARK_FAIL;
+	MARK_END;
 }
 
 /**
- * Check unstratified recursion is detected.
+ * Check multiple arity error.
  */
-BOOST_AUTO_TEST_CASE(UnstratTest)
+BOOST_AUTO_TEST_CASE(MultipleArityErrorTest)
 {
-	KIF kif("");
-	kif.AddFile("data/unstratrec.kif");
-	bool result = kif.Parse();
-	if(result) BOOST_FAIL("Unstratified recursion detection test failed...");
+    MARK_START;
+    OPEN_LOG;
+	KIF kif("", false, false, TEST_LOG);
+	kif.AddFile("data/mularity.kif");
+	if(kif.Parse()) MARK_FAIL;
+	MARK_END;
 }
 
 BOOST_AUTO_TEST_SUITE_END();

@@ -341,8 +341,10 @@ void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
 
     if(f.name == "terminal") Warn(loc, "'terminal' is defined as a fact.");
     else if(f.name == "goal" && f.args[1].val != "100")
-            Warn(loc, "Goal relation is defined with goal value not equal to 100. Unsupported by the winnable criterion of GDL.");
-
+    {
+        std::cout << f.args[1].val << std::endl;
+        Warn(loc, "Goal relation is defined with goal value not equal to 100. Unsupported by the winnable criterion of GDL.");
+    }
     facts.push_back(f);
 }
 

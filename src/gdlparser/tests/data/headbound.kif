@@ -1,7 +1,0 @@
-(role robot)
-(legal robot x)
-(goal robot 100)
-(<= terminal (test2 ?x))
-(<= (test ?x) (test2 ?y) )
-(<= (test ?x) (not (test2 ?x)) )
-(<= (test ?x) (or (test2 ?y) (test2 ?x)) )

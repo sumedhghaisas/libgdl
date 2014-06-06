@@ -1,0 +1,4 @@
+(role robot)
+terminal
+(goal robot 100)
+

@@ -2,6 +2,9 @@
 add_executable(gdlparser_test
   gdlparser_test.cpp
   kif_test.cpp
+  defined_rel_test.cpp
+  rule_safety_test.cpp
+  stratified_test.cpp
 )
 # Link dependencies of test executable.
 target_link_libraries(gdlparser_test
