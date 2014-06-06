@@ -12,6 +12,8 @@
    inside bin
 4) to install run command "make install"
 
+* Run command 'make test' for for testing
+
 ================================================================================
 
 *** Dependencies
