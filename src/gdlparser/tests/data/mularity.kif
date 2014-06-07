@@ -1,0 +1,6 @@
+(role robot)
+(legal robot x)
+(goal robot 100)
+terminal
+(<= (test ?x) (test2 ?x))
+(<= (test ?x ?y) (test2 ?x) (test3 ?y))

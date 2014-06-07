@@ -1,0 +1,5 @@
+(role robot)
+(legal robot x)
+(goal robot 100)
+terminal
+(<= (init ?x) (true ?x) (does robot ?x))
