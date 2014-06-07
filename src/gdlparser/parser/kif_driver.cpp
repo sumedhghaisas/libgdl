@@ -22,10 +22,10 @@ using namespace gdlparser::parser;
 using namespace gdlparser::util;
 
 KIFDriver::KIFDriver(std::ostream& stream, const std::string& output_filename,
-                    const std::string& graph_filename, bool toGraph, bool isWarn)
-                    : stream(&stream), graph_filename(graph_filename),
-                    output_filename(output_filename), toGraph(toGraph),
-                    isWarn(isWarn)
+                     const std::string& graph_filename, bool toGraph, bool isWarn)
+    : stream(&stream), graph_filename(graph_filename),
+      output_filename(output_filename), toGraph(toGraph),
+      isWarn(isWarn)
 {
     scanner = new KIFScanner(*this);
     parser = NULL;
@@ -94,7 +94,7 @@ bool KIFDriver::Parse()
     c_rels.push_back("terminal");
     c_rels.push_back("goal");
     c_rels.push_back("legal");
-    for(size_t i = 0;i < c_rels.size();i++)
+    for(size_t i = 0; i < c_rels.size(); i++)
     {
         std::map<std::string, Symbol>::const_iterator it = symbol_table.find(c_rels[i]);
         if(it == symbol_table.end() || (it->second).isDefined == false)
@@ -109,7 +109,7 @@ bool KIFDriver::Parse()
     CheckRecursiveDependencies();
 
     // show undefiend symbol warnings
-    for(std::map<std::string, Symbol>::iterator it = symbol_table.begin();it != symbol_table.end();it++)
+    for(std::map<std::string, Symbol>::iterator it = symbol_table.begin(); it != symbol_table.end(); it++)
     {
         if((it->second).isDefined == false) Warn((it->second).first_occurrence, "Undefined symbol " + (it->second).name);
     }
@@ -131,8 +131,8 @@ bool KIFDriver::Parse()
         return false;
     }
 
-    for(int i = facts.size() - 1;i >= 0;i--) out << facts[i] << std::endl;
-    for(int i = clauses.size() - 1;i >= 0;i--) out << clauses[i] << std::endl;
+    for(int i = facts.size() - 1; i >= 0; i--) out << facts[i] << std::endl;
+    for(int i = clauses.size() - 1; i >= 0; i--) out << clauses[i] << std::endl;
 
     out.close();
     return true;
@@ -247,7 +247,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     // check if each variable appearing in head appears in bounded variables of body
     if(diff.size() != 0)
     {
-        for(std::set<std::string>::const_iterator it = diff.begin();it != diff.end();it++)
+        for(std::set<std::string>::const_iterator it = diff.begin(); it != diff.end(); it++)
         {
             parser->error(loc, "Unsafe Rule: " + c.text + " :Variable " + *it + " appearing in head must appear in a positive relation in the rule's body.");
         }
@@ -258,7 +258,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     // check if each variable appearing in negation or distinct appears in positive body
     if(diff.size() != 0)
     {
-        for(std::set<std::string>::const_iterator it = diff.begin();it != diff.end();it++)
+        for(std::set<std::string>::const_iterator it = diff.begin(); it != diff.end(); it++)
         {
             parser->error(loc, "Unsafe Rule: " + c.text + " :Variable " + *it + " must appear in a positive relation in the rule's body.");
         }
@@ -275,7 +275,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     else head = it->second;
 
     // add dependency to head of the clause against all arguments
-    for(size_t i = 1;i < args.size();i++) AddDependency(head, args[i], loc, false);
+    for(size_t i = 1; i < args.size(); i++) AddDependency(head, args[i], loc, false);
 }
 
 void KIFDriver::AddDependency(Node* head, const TokenValue& tok, const location_type& loc,
@@ -296,7 +296,7 @@ void KIFDriver::AddDependency(Node* head, const TokenValue& tok, const location_
     else if(command  == "or")
     {
         const std::vector<TokenValue>&  args = tok.Arguments();
-        for(size_t i = 0;i < args.size();i++) AddDependency(head, args[i],loc, isNot);
+        for(size_t i = 0; i < args.size(); i++) AddDependency(head, args[i],loc, isNot);
         return;
     }
 
@@ -311,7 +311,7 @@ void KIFDriver::AddDependency(Node* head, const TokenValue& tok, const location_
     else rel = it->second;
 
     bool isFound = false;
-    for(size_t i = 0;i < (rel->out).size();i++)
+    for(size_t i = 0; i < (rel->out).size(); i++)
     {
         if(head == (rel->out)[i])
         {
@@ -337,7 +337,7 @@ void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
 
     const std::vector<TokenValue>& args = tok.Arguments();
 
-    for(size_t i = 0;i < args.size();i++) f.AddArgument(args[i]);
+    for(size_t i = 0; i < args.size(); i++) f.AddArgument(args[i]);
 
     if(f.name == "terminal") Warn(loc, "'terminal' is defined as a fact.");
     else if(f.name == "goal" && f.args[1].val != "100")
@@ -361,7 +361,7 @@ void KIFDriver::CheckCycles()
     // current(unique) id to be given as index to every node
     current_id = 0;
     // run until all nodes in the graph are visited
-    for(std::map<std::string, Node*>::iterator it = dgraph.begin();it != dgraph.end();it++)
+    for(std::map<std::string, Node*>::iterator it = dgraph.begin(); it != dgraph.end(); it++)
     {
         Node* v = it->second;
         // get strongly connected component of each unvisited Node
@@ -371,16 +371,16 @@ void KIFDriver::CheckCycles()
     //! check if there is any edge between nodes of same SCC marked negative
     //! if yes then it can be proved easily using SCC properties that a cycle
     //! exists with negative edge in it. Hence unstratified recursion.
-    for(size_t i = 0;i < scc.size();i++)
+    for(size_t i = 0; i < scc.size(); i++)
     {
         const std::set<Node*>& sc = scc[i];
 
-        for(std::set<Node*>::const_iterator it = sc.begin();it != sc.end();it++)
+        for(std::set<Node*>::const_iterator it = sc.begin(); it != sc.end(); it++)
         {
             const std::vector<Node*>& out = (*it)->out;
             const std::vector<bool>& isNot = (*it)->isNot;
             const std::vector<location_type>& locs = (*it)->out_loc;
-            for(size_t i = 0;i < out.size();i++)
+            for(size_t i = 0; i < out.size(); i++)
             {
                 if(isNot[i] && sc.find(out[i]) != sc.end()) parser->error(locs[i], "Unstratified Recursion : Check relation " + (*it)->name);
             }
@@ -401,7 +401,7 @@ void KIFDriver::StrongConnect(Node* v, std::stack<Node*>& nstack, std::set<Node*
 
     std::vector<Node*>& out = v->out;
 
-    for(size_t i = 0;i < out.size();i++)
+    for(size_t i = 0; i < out.size(); i++)
     {
         if(out[i]->index == -1)
         {
@@ -440,17 +440,17 @@ void KIFDriver::ToGraph(const std::string& filename)
 
     graph << "digraph dependency_graph {" << std::endl;
 
-    for(std::map<std::string, Node*>::const_iterator it = dgraph.begin();it != dgraph.end();it++)
+    for(std::map<std::string, Node*>::const_iterator it = dgraph.begin(); it != dgraph.end(); it++)
     {
         graph << it->first << " [label = \"" << it->first << "\"];" << std::endl;
     }
 
-    for(std::map<std::string, Node*>::const_iterator it = dgraph.begin();it != dgraph.end();it++)
+    for(std::map<std::string, Node*>::const_iterator it = dgraph.begin(); it != dgraph.end(); it++)
     {
         const std::vector<Node*> out = (it->second)->out;
         const std::vector<bool> isNot = (it->second)->isNot;
 
-        for(size_t i = 0;i < out.size();i++)
+        for(size_t i = 0; i < out.size(); i++)
         {
             if(isNot[i] == true) graph << it->first << " -> " << out[i]->name << " [color = red];" << std::endl;
             else graph << it->first << " -> " << out[i]->name << ";" << std::endl;
@@ -469,68 +469,62 @@ void KIFDriver::CheckRecursiveDependencies()
     const Node* does = NULL;
     const Node* ttrue = NULL;
 
+    const Node* base = NULL;
+    const Node* init = NULL;
+    const Node* input = NULL;
+    const Node* legal = NULL;
+
+    if((it = dgraph.find("base")) != dgraph.end()) base = it->second;
+    if((it = dgraph.find("init")) != dgraph.end()) init = it->second;
+    if((it = dgraph.find("input")) != dgraph.end()) input = it->second;
+    if((it = dgraph.find("legal")) != dgraph.end()) legal = it->second;
+
     if((it = dgraph.find("does")) != dgraph.end())
     {
         does = it->second;
-        if((it = dgraph.find("true")) != dgraph.end()) ttrue = it->second;
+
+        // perform DFS from does to detect legal, init, input, base
+        // node stack (used for DFS)
+        std::stack<const Node*> st;
+
+        st.push(does);
+        while(!st.empty())
+        {
+            const Node* temp = st.top();
+            st.pop();
+
+            // if destination is found return true
+            if(temp == base) Error("Invalid dependency. Relation 'base' is dependent on relation 'does'.");
+            else if(temp == init) Error("Invalid dependency. Relation 'init' is dependent on relation 'does'.");
+            else if(temp == legal) Error("Invalid dependency. Relation 'legal' is dependent on relation 'does'.");
+            else if(temp == input) Error("Invalid dependency. Relation 'input' is dependent on relation 'does'.");
+
+            // push all the children in the stack
+            for(size_t i = 0; i < (temp->out).size(); i++) st.push((temp->out)[i]);
+        }
     }
-    else if(dgraph.find("true") != dgraph.end()) ttrue = it->second;
-    // return if true and does relations are not defined
-    else return;
 
-
-    // check that base relation is not dependent on either true or does
-    if((it = dgraph.find("base")) != dgraph.end())
+    if((it = dgraph.find("true")) != dgraph.end())
     {
-        if(does != NULL && CheckDependency((it->second), does))
-            Error("Relation 'base' cannot be dependent on relation 'does'.");
-        if(ttrue != NULL && CheckDependency((it->second), ttrue))
-            Error("Relation 'base' cannot be dependent on relation 'true'.");
+        ttrue = it->second;
+
+        // perform DFS from does to detect legal, init, input, base
+        // node stack (used for DFS)
+        std::stack<const Node*> st;
+
+        st.push(ttrue);
+        while(!st.empty())
+        {
+            const Node* temp = st.top();
+            st.pop();
+
+            // if destination is found return true
+            if(temp == base) Error("Invalid dependency. Relation 'base' is dependent on relation 'true'.");
+            else if(temp == init) Error("Invalid dependency. Relation 'init' is dependent on relation 'true'.");
+            else if(temp == input) Error("Invalid dependency. Relation 'input' is dependent on relation 'true'.");
+
+            // push all the children in the stack
+            for(size_t i = 0; i < (temp->out).size(); i++) st.push((temp->out)[i]);
+        }
     }
-
-    // check that init relation is not dependent on either true or does
-    if((it = dgraph.find("int")) != dgraph.end())
-    {
-        if(does != NULL && CheckDependency((it->second), does))
-            Error("Relation 'int' cannot be dependent on relation 'does'.");
-        if(ttrue != NULL && CheckDependency(it->second, ttrue))
-            Error("Relation 'init' cannot be dependent on relation 'true'.");
-    }
-
-    // check that input relation is not dependent on either true or does
-    if((it = dgraph.find("input")) != dgraph.end())
-    {
-        if(does != NULL && CheckDependency(it->second, does))
-            Error("Relation 'input' cannot be dependent on relation 'does'.");
-        if(ttrue != NULL && CheckDependency(it->second, ttrue))
-            Error("Relation 'input' cannot be dependent on relation 'true'.");
-    }
-
-    // check that legal relation is not dependent on does
-    if((it = dgraph.find("legal")) != dgraph.end())
-    {
-        if(does != NULL && CheckDependency(it->second, does))
-            Error("Relation 'legal' cannot be dependent on relation 'does'.");
-    }
-}
-
-bool KIFDriver::CheckDependency(const Node* source, const Node* destination)
-{
-    // node stack (used for DFS)
-    std::stack<const Node*> st;
-
-    st.push(source);
-    while(!st.empty())
-    {
-        const Node* temp = st.top();
-        st.pop();
-
-        // if destination is found return true
-        if(temp == destination) return true;
-
-        // push all the children in the stack
-        for(size_t i = 0;i < (temp->out).size();i++) st.push((temp->out)[i]);
-    }
-    // return false if destination is not found
-    return false;
 }

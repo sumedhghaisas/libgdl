@@ -115,9 +115,6 @@ private:
     //! checks whether legal is dependent on does as its invalid
     void CheckRecursiveDependencies();
 
-    //! checks if source node is dependent on destination node
-    bool CheckDependency(const Node* source, const Node* destination);
-
     //! recursive function in Tarjan's algorithm
     void StrongConnect(Node* v, std::stack<Node*>& nstack, std::set<Node*>& nset, std::vector<std::set<Node*> >& scc);
 

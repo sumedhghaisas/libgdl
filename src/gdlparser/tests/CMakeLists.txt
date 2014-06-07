@@ -5,6 +5,7 @@ add_executable(gdlparser_test
   defined_rel_test.cpp
   rule_safety_test.cpp
   stratified_test.cpp
+  recursive_depen_test.cpp
 )
 # Link dependencies of test executable.
 target_link_libraries(gdlparser_test
