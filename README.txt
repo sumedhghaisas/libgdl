@@ -12,7 +12,7 @@
    inside bin
 4) to install run command "make install"
 
-* Run command 'make test' for for testing
+* Run command 'make test' for testing
 
 ================================================================================
 
@@ -20,7 +20,7 @@
 
 GDLParser has the following dependencies:
 
-  Boost (program_options, math_c99, unit_test_framework, random)
+  Boost (program_options, unit_test_framework)
   CMake         >= 2.8.5
   BISON		>= 3.0.0	(OPTIONAL)
 
@@ -33,12 +33,15 @@ After installing GDLParser. Run command
 kif OUTPUT_FILENAME SOURCE_FILE_LIST
 
 For example,
-kif test.kif 3puzzle.kif arithmatic.kif
+kif test.kif -c 3puzzle.kif arithmatic.kif
 
 Parameters :
--g	: To save dependency graph generated in DOT representation
+-g FILENAME	: To save dependency graph generated in DOT representation
+-w off  	: To disable warnings
 
 For example,
-kif test.kif 3puzzle.kif arithmatic.kif -g test.dot
+kif test.kif -c 3puzzle.kif arithmatic.kif -g test.dot
+
+** NOTE: GraphViz library can be used to visualized the DOT representation.
 
 ================================================================================
