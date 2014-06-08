@@ -2,6 +2,14 @@
 
            GDLParser: Game Description Language(GDL) parser
 
+*** Introduction
+
+Game Description Language(GDL) is designed as a part of General Game Playing 
+Poject. GDL describes the state of a game as a series of facts, and the game 
+mechanics as logical rules. 
+GDL Language specifications -
+http://logic.stanford.edu/classes/cs227/2013/readings/gdl_spec.pdf
+
 ================================================================================
 
 *** HOW TO INSTALL
