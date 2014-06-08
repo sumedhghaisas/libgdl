@@ -82,6 +82,7 @@ public:
 
     //! stores the dependency graph to a file in DOT format
     void ToGraph(const std::string& filename);
+
 private:
     friend yy::KIFParser;
     friend KIFScanner;
@@ -106,10 +107,15 @@ private:
     void Error(const std::string& msg) const;
 
     //! marks dependency of head to given token
-    void AddDependency(Node* head, const TokenValue& tok, const location_type& loc, bool isNot);
+    void AddDependency(Node* head, const Argument& arg, size_t c_index, const location_type& loc, bool isNot);
 
-    //! check for cycles with negative edge
+    //! check for stratified negation and stratified recursion
     void CheckCycles();
+
+    //! check if the given clause satisfies Definition 15 mentioned in GDL specifications
+    //! with respect to given argument
+    void CheckDef15(size_t c_index, const Argument& arg, const std::set<Node*>& scc,
+                    const location_type& loc);
 
     //! checks whether init, base, input is dependent on true, does as its invalid
     //! checks whether legal is dependent on does as its invalid

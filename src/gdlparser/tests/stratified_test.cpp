@@ -18,12 +18,25 @@ using namespace gdlparser;
 /**
  * Check stratified negation.
  */
-BOOST_AUTO_TEST_CASE(StratifiedNotTest)
+BOOST_AUTO_TEST_CASE(StratifiedNegationTest)
 {
     MARK_START;
     OPEN_LOG;
 	KIF kif("", false, false, TEST_LOG);
 	kif.AddFile("data/notunstrat.kif");
+	if(kif.Parse()) MARK_FAIL;
+	MARK_END;
+}
+
+/**
+ * Check for stratified recursion. (Refer to definition 15 in GDL specifications.)
+ */
+BOOST_AUTO_TEST_CASE(StratifiedRecursionTest)
+{
+    MARK_START;
+    OPEN_LOG;
+	KIF kif("", false, false, TEST_LOG);
+	kif.AddFile("data/recurseunstrat.kif");
 	if(kif.Parse()) MARK_FAIL;
 	MARK_END;
 }

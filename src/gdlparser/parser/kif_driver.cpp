@@ -275,13 +275,13 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     else head = it->second;
 
     // add dependency to head of the clause against all arguments
-    for(size_t i = 1; i < args.size(); i++) AddDependency(head, args[i], loc, false);
+    for(size_t i = 1; i < args.size(); i++) AddDependency(head, args[i], clauses.size() - 1, loc, false);
 }
 
-void KIFDriver::AddDependency(Node* head, const TokenValue& tok, const location_type& loc,
-                              bool isNot)
+void KIFDriver::AddDependency(Node* head, const Argument& arg, size_t c_index,
+                              const location_type& loc, bool isNot)
 {
-    const std::string& command = tok.Command();
+    const std::string& command = arg.val;
 
     // ignore arguments(relations) 'distinct'
     if(command == "distinct") return;
@@ -289,14 +289,14 @@ void KIFDriver::AddDependency(Node* head, const TokenValue& tok, const location_
     // if not incountered add negative dependency to it lone argument
     if(command == "not")
     {
-        AddDependency(head, tok.Arguments()[0], loc, !isNot);
+        AddDependency(head, arg.args[0], c_index, loc, !isNot);
         return;
     }
     // if 'or' encountered add dependency recursively to its arguments
     else if(command  == "or")
     {
-        const std::vector<TokenValue>&  args = tok.Arguments();
-        for(size_t i = 0; i < args.size(); i++) AddDependency(head, args[i],loc, isNot);
+        const std::vector<Argument>& args = arg.args;
+        for(size_t i = 0; i < args.size(); i++) AddDependency(head, args[i], c_index, loc, isNot);
         return;
     }
 
@@ -310,25 +310,16 @@ void KIFDriver::AddDependency(Node* head, const TokenValue& tok, const location_
     }
     else rel = it->second;
 
-    bool isFound = false;
-    for(size_t i = 0; i < (rel->out).size(); i++)
-    {
-        if(head == (rel->out)[i])
-        {
-            isFound = true;
-            if((rel->isNot)[i] == false && isNot == true)
-            {
-                (rel->isNot)[i] = true;
-                (rel->out_loc)[i] = loc;
-            }
-        }
-    }
-    if(!isFound)
-    {
-        (rel->out).push_back(head);
-        (rel->out_loc).push_back(loc);
-        (rel->isNot).push_back(isNot);
-    }
+    // add head to its out edges
+    (rel->out).push_back(head);
+    // add location at which this dependency is found
+    (rel->out_loc).push_back(loc);
+    // add if its a negative edge
+    (rel->isNot).push_back(isNot);
+    // add the unique clause number to identify the clause
+    (rel->c_index).push_back(c_index);
+    // add the argument causing this dependency
+    (rel->arg).push_back(arg);
 }
 
 void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
@@ -370,7 +361,7 @@ void KIFDriver::CheckCycles()
 
     //! check if there is any edge between nodes of same SCC marked negative
     //! if yes then it can be proved easily using SCC properties that a cycle
-    //! exists with negative edge in it. Hence unstratified recursion.
+    //! exists with negative edge in it. Hence unstratified negation.
     for(size_t i = 0; i < scc.size(); i++)
     {
         const std::set<Node*>& sc = scc[i];
@@ -380,12 +371,97 @@ void KIFDriver::CheckCycles()
             const std::vector<Node*>& out = (*it)->out;
             const std::vector<bool>& isNot = (*it)->isNot;
             const std::vector<location_type>& locs = (*it)->out_loc;
+
             for(size_t i = 0; i < out.size(); i++)
             {
-                if(isNot[i] && sc.find(out[i]) != sc.end()) parser->error(locs[i], "Unstratified Recursion : Check relation " + (*it)->name);
+                if(isNot[i] && sc.find(out[i]) != sc.end()) parser->error(locs[i], "Unstratified Negation : Check relation " + (*it)->name);
             }
         }
     }
+
+    //! check that clause for any edge between nodes of same SCC
+    //! definition 15(GDL_spec) is satisfied, else unstratified recursion
+    for(size_t i = 0; i < scc.size(); i++)
+    {
+        const std::set<Node*>& sc = scc[i];
+
+        for(std::set<Node*>::const_iterator it = sc.begin(); it != sc.end(); it++)
+        {
+            const std::vector<Node*>& out = (*it)->out;
+            const std::vector<bool>& isNot = (*it)->isNot;
+            const std::vector<size_t>& c_index = (*it)->c_index;
+            const std::vector<location_type>& locs = (*it)->out_loc;
+            const std::vector<Argument>& arg = (*it)->arg;
+
+            // for every out edge
+            for(size_t i = 0; i < out.size(); i++)
+            {
+                // find non negative edges as negative edges are already considered for unstratified negation
+                // also check if the other node is also in same scc
+                // if it is then check if the clause corresponding to this edge satisfies Definition 15(GDL_spec)
+                if(!isNot[i] && sc.find(out[i]) != sc.end()) CheckDef15(c_index[i], arg[i], sc, locs[i]);
+            }
+        }
+    }
+}
+
+void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<Node*>& scc,
+                           const location_type& loc)
+{
+    const Clause& c = clauses[c_index];
+
+    const std::vector<Argument>& premisses = c.premisses;
+
+    // find the index of the given argument in the clause
+    size_t arg_index = 0;
+    for(size_t i = 0;i < premisses.size();i++)
+        if(premisses[i] == arg)
+        {
+            arg_index = i;
+            break;
+        }
+
+    // check for each argument in given argument
+    bool isValid = true;
+    size_t invalid_index = 0;
+    for(size_t i = 0;i < arg.args.size();i++)
+    {
+        // check if the argument is ground
+        if(arg.args[i].IsGround()) continue;
+        // check if this argument is also argument to head
+        if(c.head.HasAsArgument(arg.args[i])) continue;
+
+        bool isFound = false;
+
+        for(size_t j = 0;j < premisses.size();j++)
+        {
+            // avoid checking in itself
+            if(j == arg_index) continue;
+
+            // if another premiss has same same argument and is not in the same SCC
+            if(premisses[j].HasAsArgument(arg.args[i]) && scc.find(dgraph[premisses[j].val]) == scc.end())
+            {
+                isFound = true;
+                break;
+            }
+        }
+
+        if(!isFound)
+        {
+            isValid = false;
+            invalid_index = i;
+            break;
+        }
+    }
+
+    if(!isValid)
+    {
+        std::stringstream stream;
+        stream << arg.args[invalid_index];
+        Error(loc, "Unstratified Recursion: Relation involved in the cycle is " + arg.val +
+                       ". Restriction violated for term " + stream.str());
+    }
+
 }
 
 void KIFDriver::StrongConnect(Node* v, std::stack<Node*>& nstack, std::set<Node*>& nset,
