@@ -928,7 +928,7 @@ namespace gdlparser { namespace parser { namespace yy {
                                                     yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
                                                     yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                     yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
-                                                    yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
+                                                    yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     std::string msg;
                                                     int res = driver.AddEntry(yystack_[3].value.as< TokenValue > (), true, yylhs.value.as< TokenValue > ().Count(), yystack_[3].location, msg);
                                                     if(res == 1) error(yystack_[3].location, msg);
@@ -959,7 +959,7 @@ namespace gdlparser { namespace parser { namespace yy {
                                                     yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
                                                     yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                     yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
-                                                    yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
+                                                    yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     std::string msg;
                                                     int res = driver.AddEntry(yystack_[3].value.as< TokenValue > (), true, yylhs.value.as< TokenValue > ().Count(), yystack_[3].location, msg);
                                                     if(res == 1) error(yystack_[3].location, msg);
@@ -990,7 +990,7 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
-                                                        yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
+                                                        yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                         std::string msg;
                                                         int res = driver.AddEntry(yystack_[3].value.as< TokenValue > (), true, yylhs.value.as< TokenValue > ().Count(), yystack_[3].location, msg);
                                                         if(res == 1) error(yystack_[3].location, msg);
@@ -1087,7 +1087,7 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
-                                                        yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
+                                                        yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     }
 #line 1093 "kif_parser.tab.cc" // lalr1.cc:846
     break;
@@ -1124,7 +1124,7 @@ namespace gdlparser { namespace parser { namespace yy {
                                                             yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
                                                             yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                             yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
-                                                            yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
+                                                            yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                         }
 #line 1130 "kif_parser.tab.cc" // lalr1.cc:846
     break;
@@ -1158,7 +1158,7 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
-                                                        yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
+                                                        yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     }
 #line 1164 "kif_parser.tab.cc" // lalr1.cc:846
     break;
@@ -1170,7 +1170,7 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
-                                                        yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
+                                                        yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     }
 #line 1176 "kif_parser.tab.cc" // lalr1.cc:846
     break;
@@ -1182,7 +1182,7 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
-                                                        yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
+                                                        yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     }
 #line 1188 "kif_parser.tab.cc" // lalr1.cc:846
     break;
