@@ -48,13 +48,24 @@ foreach(incl_file ${INCLUDE_FILES})
            ${CMAKE_BINARY_DIR}/include/gdlparser/${incl_file})
 endforeach()
 
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# the RPATH to be used when installing, but only if it's not a system directory
+LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+IF("${isSystemDir}" STREQUAL "-1")
+   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+ENDIF("${isSystemDir}" STREQUAL "-1")
+
 # At install time, we simply install that directory of header files we
 # collected to include/.
 install(DIRECTORY ${CMAKE_BINARY_DIR}/include/gdlparser DESTINATION include)
 
 # Set generated executables to be installed.  Unfortunately they must manually
 # be entered...
+# Set generated executables to be installed.  Unfortunately they must manually
+# be entered...
 install(TARGETS gdlparser
+  RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
 

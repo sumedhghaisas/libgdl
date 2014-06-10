@@ -35,6 +35,8 @@ link_directories(${Boost_LIBRARY_DIRS})
 
 # add lib directory for 
 link_directories(${PROJECT_BINARY_DIR}/lib)
+link_directories(${PROJECT_BINARY_DIR}/lib)
+
 
 # For Boost testing framework (will have no effect on non-testing executables).
 # This specifies to Boost that we are dynamically linking to the Boost test
@@ -45,6 +47,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/)
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Recurse into the rest of the project.
 add_subdirectory(src/gdlparser)
