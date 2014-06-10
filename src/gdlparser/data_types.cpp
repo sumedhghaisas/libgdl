@@ -78,6 +78,17 @@ bool Argument::IsGround() const
     return true;
 }
 
+bool Argument::IsEqualTo(const Argument& arg) const
+{
+    if(val != arg.val) return false;
+    if(args.size() != arg.args.size()) return false;
+
+    for(size_t i = 0;i < args.size();i++)
+        if(args[i] != arg.args[i]) return false;
+
+    return true;
+}
+
 Clause::Clause(const TokenValue& tok)
 {
     text = tok.Value();

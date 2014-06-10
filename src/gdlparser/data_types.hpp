@@ -34,15 +34,23 @@ struct Argument
     //! constucts argument from given token
     Argument(const TokenValue& tok);
 
-    // comparison operator
-    // checks value and arguments(recursively check)
-    // for 'or' if given argument matches any argument to 'or' true is returned
+    //! comparison operator
+    //! checks value and arguments(recursively check)
+    //! for 'or' if given argument matches any argument to 'or' true is returned
     bool operator==(const Argument& arg) const;
     bool operator!=(const Argument& arg) const { return !(*this == arg); }
 
+    //! return true if given argument is there in arguments
     bool HasAsArgument(const Argument& arg) const;
 
+    //! returns if current argument is ground
     bool IsGround() const;
+
+    //! returns if current argument is a variable
+    bool IsVariable() const { if(t == Var) return true; else return false; }
+
+    //! equivalent to comparison operator but 'or' conditions is removed in this
+    bool IsEqualTo(const Argument& arg) const;
 
     //! adds argument to this command
     void AddArgument(const TokenValue& tok);
@@ -53,6 +61,9 @@ struct Argument
     std::string val;
     //! vector of arguments
     std::vector<Argument> args;
+
+    //! used by GDLReasoner
+    Argument* sub;
 };
 
 /**
