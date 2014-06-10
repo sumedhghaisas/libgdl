@@ -22,6 +22,9 @@
 
 namespace gdlparser
 {
+//! forward declaration of class KIF
+class KIF;
+
 namespace parser
 {
 /**
@@ -68,8 +71,7 @@ class KIFDriver
 public:
     //! constructs KIFDriver object
     KIFDriver(std::ostream& stream,
-            const std::string& output_filename,
-            const std::string& graph_filename,
+            KIF& kif,
             bool toGraph = false,
             bool isWarn = true);
 
@@ -136,19 +138,11 @@ private:
     //! dependency graph
     std::map<std::string, Node*> dgraph;
 
-    //! all the facts and clauses
-    std::vector<Fact> facts;
-    std::vector<Clause> clauses;
-
     //! keep track of used ids
     size_t current_id;
 
     //! pointer to logging stream
     mutable std::ostream* stream;
-
-    //! output and graph filenames
-    const std::string& graph_filename;
-    const std::string& output_filename;
 
     //! is graph to be stored as DOT file
     bool toGraph;
@@ -158,6 +152,9 @@ private:
 
     //! stores if any error has occured in parsing
     mutable bool anyError;
+
+    //! reference to the calling object
+    KIF& kif;
 
 };
 

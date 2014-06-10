@@ -8,7 +8,8 @@
 #include <fstream>
 #include <cassert>
 
-#include "kif_driver.hpp"
+#include <gdlparser/kif.hpp>
+#include <gdlparser/parser/kif_driver.hpp>
 #include <gdlparser/util/setop.hpp>
 
 #include <fstream>
@@ -18,14 +19,15 @@
 #define BASH_YELLOW "\033[0;33m"
 #define BASH_CLEAR "\033[0m"
 
+using namespace gdlparser;
 using namespace gdlparser::parser;
 using namespace gdlparser::util;
 
-KIFDriver::KIFDriver(std::ostream& stream, const std::string& output_filename,
-                     const std::string& graph_filename, bool toGraph, bool isWarn)
-    : stream(&stream), graph_filename(graph_filename),
-      output_filename(output_filename), toGraph(toGraph),
-      isWarn(isWarn)
+KIFDriver::KIFDriver(std::ostream& stream, KIF& kif, bool toGraph, bool isWarn)
+    : stream(&stream),
+    toGraph(toGraph),
+    isWarn(isWarn),
+    kif(kif)
 {
     scanner = new KIFScanner(*this);
     parser = NULL;
@@ -81,11 +83,11 @@ bool KIFDriver::Parse()
     // save the constucted dependency graph to DOT file
     if(toGraph)
     {
-        if(graph_filename == "")
+        if(kif.GraphFilename() == "")
         {
-            ToGraph(output_filename + ".dot");
+            ToGraph(kif.OutputFilename() + ".dot");
         }
-        else ToGraph(graph_filename);
+        else ToGraph(kif.GraphFilename());
     }
 
     //! check if role, terminal, goal and legal relations are defined
@@ -121,18 +123,15 @@ bool KIFDriver::Parse()
     }
 
     // if output filename is blank no output is generated
-    if(output_filename == "") return true;
+    if(kif.OutputFilename() == "") return true;
 
     // store all the facts and clauses in given output file
-    std::ofstream out(output_filename.c_str());
+    std::ofstream out(kif.OutputFilename().c_str());
     if(!out.is_open())
     {
-        Error("Unable to open file " + output_filename);
+        Error("Unable to open file " + kif.OutputFilename());
         return false;
     }
-
-    for(int i = facts.size() - 1; i >= 0; i--) out << facts[i] << std::endl;
-    for(int i = clauses.size() - 1; i >= 0; i--) out << clauses[i] << std::endl;
 
     out.close();
     return true;
@@ -232,7 +231,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
 {
     // construct a clause from given token and add to vector of clauses
     Clause c(tok);
-    clauses.push_back(c);
+    kif.AddClause(c);
 
     const std::vector<TokenValue>& args = tok.Arguments();
     const std::string& hcommand = args[0].Command();
@@ -275,7 +274,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     else head = it->second;
 
     // add dependency to head of the clause against all arguments
-    for(size_t i = 1; i < args.size(); i++) AddDependency(head, args[i], clauses.size() - 1, loc, false);
+    for(size_t i = 1; i < args.size(); i++) AddDependency(head, args[i], kif.Clauses().size() - 1, loc, false);
 }
 
 void KIFDriver::AddDependency(Node* head, const Argument& arg, size_t c_index,
@@ -324,19 +323,18 @@ void KIFDriver::AddDependency(Node* head, const Argument& arg, size_t c_index,
 
 void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
 {
-    Fact f(tok.Command(), tok.Value());
+    Fact f(tok);
+    kif.AddFact(f);
 
     const std::vector<TokenValue>& args = tok.Arguments();
 
     for(size_t i = 0; i < args.size(); i++) f.AddArgument(args[i]);
 
-    if(f.name == "terminal") Warn(loc, "'terminal' is defined as a fact.");
-    else if(f.name == "goal" && f.args[1].val != "100")
+    if(f.Command() == "terminal") Warn(loc, "'terminal' is defined as a fact.");
+    else if(f.Command() == "goal" && f.Arguments()[1].val != "100")
     {
-        std::cout << f.args[1].val << std::endl;
         Warn(loc, "Goal relation is defined with goal value not equal to 100. Unsupported by the winnable criterion of GDL.");
     }
-    facts.push_back(f);
 }
 
 void KIFDriver::CheckCycles()
@@ -408,7 +406,7 @@ void KIFDriver::CheckCycles()
 void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<Node*>& scc,
                            const location_type& loc)
 {
-    const Clause& c = clauses[c_index];
+    const Clause& c = kif.Clauses()[c_index];
 
     const std::vector<Argument>& premisses = c.premisses;
 

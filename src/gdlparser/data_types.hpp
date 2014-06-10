@@ -68,22 +68,24 @@ struct Fact
     Fact() {}
 
     //! constructs a fact with given command name and text
-    Fact(const std::string& name, const std::string& text)
-            : name(name), text(text) {}
+    Fact(const TokenValue& tok)
+            : text(tok.Value()), arg(tok) {}
 
     //! Adds argument to this fact
-    void AddArgument(const TokenValue& tok);
+    void AddArgument(const TokenValue& tok) { arg.AddArgument(tok); }
+
+    const std::string& Command() const { return arg.val; }
+
+    const std::vector<Argument>& Arguments() const { return arg.args; }
 
     //! comparison operators
     bool operator==(const Fact& fact) const;
     bool operator!=(const Fact& fact) const { return !(*this == fact); }
 
-    //! name of the fact (or command)
-    std::string  name;
     //! the original text of the fact
     std::string  text;
-    //! stores arguments
-    std::vector<Argument> args;
+    //! fact as argument
+    Argument arg;
 };
 
 /**

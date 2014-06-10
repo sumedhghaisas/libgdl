@@ -58,8 +58,8 @@ public:
     //! @param stream std::ostream& : stream to print errors and warnings
     KIF(const std::string& output_filename, bool saveGraph = false, bool isWarn = true,
         std::ostream& stream = std::cerr)
-        : output_filename(output_filename),
-        driver(stream, this->output_filename, this->graph_filename, saveGraph, isWarn)
+        : output_filename(output_filename), facts(), clauses(),
+        driver(stream, *this, saveGraph, isWarn)
         { }
 
     //! Add given file as input
@@ -84,17 +84,33 @@ public:
     const std::string& GraphFilename() const { return graph_filename; }
     std::string& GraphFilename() { return graph_filename; }
 
+    //! get facts
+    std::vector<Fact> Facts() { return facts; }
+    //! get clauses
+    std::vector<Clause> Clauses() { return clauses; }
+
 private:
+    //! make KIFDriver class friend
+    friend KIFDriver;
+
+    //! add fact and clause to this kif -- used by KIFDriver
+    void AddFact(const Fact& f) { facts.push_back(f); }
+    void AddClause(const Clause& c) { clauses.push_back(c); }
+
+
     //! filename of output file
     std::string output_filename;
     //! filename of graph output
     std::string graph_filename;
 
+    //! All the facts
+    std::vector<Fact> facts;
+
+    //! All the clauses
+    std::vector<Clause> clauses;
+
     //! driver to drive parsing
     KIFDriver driver;
-
-    //! All the facts
-
 };
 
 } //namespace gdlparser

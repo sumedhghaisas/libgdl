@@ -78,11 +78,6 @@ bool Argument::IsGround() const
     return true;
 }
 
-void Fact::AddArgument(const TokenValue& tok)
-{
-    args.push_back(Argument(tok));
-}
-
 Clause::Clause(const TokenValue& tok)
 {
     text = tok.Value();
