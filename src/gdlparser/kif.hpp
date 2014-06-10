@@ -92,6 +92,9 @@ private:
 
     //! driver to drive parsing
     KIFDriver driver;
+
+    //! All the facts
+
 };
 
 } //namespace gdlparser

@@ -16,7 +16,9 @@
 #include "kif_scanner.hpp"
 #include "kif_parser.tab.hh"
 #include "token_value.hpp"
-#include "token_types.hpp"
+#include "node.hpp"
+
+#include <gdlparser/data_types.hpp>
 
 namespace gdlparser
 {

@@ -10,8 +10,6 @@ set(SOURCES
   location.hh
   position.hh
   stack.hh
-  token_types.cpp
-  token_types.hpp
   token_value.cpp
   token_value.hpp
 )

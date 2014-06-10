@@ -1,5 +1,5 @@
 /**
- * @file token_types.hpp
+ * @file data_types.hpp
  * @author Sumedh Ghaisas
  *
  * Declaration of data types used by driver.
@@ -11,15 +11,12 @@
 #include <iostream>
 #include <string>
 
-#include "token_value.hpp"
+#include <gdlparser/parser/token_value.hpp>
 
-#include "kif_parser.tab.hh"
+#include <gdlparser/parser/kif_parser.tab.hh>
 
 namespace gdlparser
 {
-namespace parser
-{
-
 /**
  * Represents argument of fact or clause.
  * Can be relation, function or variable depending on type.
@@ -56,41 +53,6 @@ struct Argument
     std::string val;
     //! vector of arguments
     std::vector<Argument> args;
-};
-
-/**
- * Represents dependency graph node.
- * Graph is stored as adjecency list. Each Node stores out degree.
- * Edge also carries extra information like edge type, location and index
- * of the rule where this dependency is observed.
- * Carries extra variables for Targan's algorithm for obtaining
- * strongly connected components.
- *
- * @see KIFDriver
- */
-struct Node
-{
-    typedef yy::KIFParser::location_type location_type;
-
-    Node(const std::string& name) : name(name), index(-1), low_link(-1) {}
-
-    //! represents command name of this node
-    std::string name;
-    //! out edges from this node
-    std::vector<Node*> out;
-    //! clause number associated out edge
-    std::vector<size_t> c_index;
-    //! argument
-    std::vector<Argument> arg;
-    //! location of the rule associated with every out edge
-    std::vector<location_type> out_loc;
-    //! edge type associated with every out edge
-    //! If true then its a negative dependency
-    std::vector<bool> isNot;
-
-    //! extra variables for Tarjan's algorithm
-    int index;
-    int low_link;
 };
 
 /**
@@ -148,13 +110,12 @@ struct Clause
     std::vector<Argument> premisses;
 };
 
-}; // namespace parser
 }; // namespace gdlparser
 
 /// operator<< for above defined types
-std::ostream& operator<< (std::ostream& o, const gdlparser::parser::Argument& arg);
-std::ostream& operator<< (std::ostream& o, const gdlparser::parser::Argument::Type& t);
-std::ostream& operator<< (std::ostream& o, const gdlparser::parser::Fact& fact);
-std::ostream& operator<< (std::ostream& o, const gdlparser::parser::Clause& clause);
+std::ostream& operator<< (std::ostream& o, const gdlparser::Argument& arg);
+std::ostream& operator<< (std::ostream& o, const gdlparser::Argument::Type& t);
+std::ostream& operator<< (std::ostream& o, const gdlparser::Fact& fact);
+std::ostream& operator<< (std::ostream& o, const gdlparser::Clause& clause);
 
 #endif

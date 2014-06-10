@@ -1,12 +1,12 @@
 /**
- * @file token_types.cpp
+ * @file data_types.cpp
  * @author Sumedh Ghaisas
  *
  * Implementation of data types used by driver.
  */
-#include "token_types.hpp"
+#include "data_types.hpp"
 
-using namespace gdlparser::parser;
+using namespace gdlparser;
 
 Argument::Argument(const TokenValue& tok)
 {
