@@ -5,6 +5,15 @@ set(GDLPARSER_SRCS ${GDLPARSER_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/kif.hpp")
 set(GDLPARSER_SRCS ${GDLPARSER_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/data_types.hpp")
 set(GDLPARSER_SRCS ${GDLPARSER_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/data_types.cpp")
 
+add_executable(kif
+  kif_main.cpp
+)
+target_link_libraries(kif
+  gdlparser
+  boost_program_options
+)
+install(TARGETS kif RUNTIME DESTINATION bin)
+
 ## Recurse into both core/ and methods/.
 set(DIRS
   parser
@@ -19,6 +28,10 @@ endforeach()
 # GDLPARSER_SRCS is set in the subdirectories.
 add_library(gdlparser SHARED ${GDLPARSER_SRCS})
 
+target_link_libraries(gdlparser
+  ${Boost_LIBRARIES}
+)
+
 set_target_properties(gdlparser
   PROPERTIES
   VERSION 1.0
@@ -31,7 +44,8 @@ target_link_libraries(gdlparser rt)
 # Collect all header files in the library.
 file(GLOB_RECURSE INCLUDE_H_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h)
 file(GLOB_RECURSE INCLUDE_HPP_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.hpp)
-set(INCLUDE_FILES ${INCLUDE_H_FILES} ${INCLUDE_HPP_FILES})
+file(GLOB_RECURSE INCLUDE_HH_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.hh)
+set(INCLUDE_FILES ${INCLUDE_H_FILES} ${INCLUDE_HPP_FILES} ${INCLUDE_HH_FILES})
 
 # Move all of these header files to <builddir>/include/gdlparser/ after the library
 # is built.  First we have to create that directory though.
@@ -47,14 +61,6 @@ foreach(incl_file ${INCLUDE_FILES})
       copy ${CMAKE_CURRENT_SOURCE_DIR}/${incl_file}
            ${CMAKE_BINARY_DIR}/include/gdlparser/${incl_file})
 endforeach()
-
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-# the RPATH to be used when installing, but only if it's not a system directory
-LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-IF("${isSystemDir}" STREQUAL "-1")
-   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-ENDIF("${isSystemDir}" STREQUAL "-1")
 
 # At install time, we simply install that directory of header files we
 # collected to include/.
@@ -75,12 +81,3 @@ add_custom_target(test
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ # This is where test files are put.
   COMMENT "Running gdlparser test"
   DEPENDS gdlparser_test)
-
-add_executable(kif
-  kif_main.cpp
-)
-target_link_libraries(kif
-  gdlparser
-  boost_program_options
-)
-install(TARGETS kif RUNTIME DESTINATION bin)

@@ -85,9 +85,11 @@ public:
     std::string& GraphFilename() { return graph_filename; }
 
     //! get facts
-    std::vector<Fact> Facts() { return facts; }
+    std::vector<Fact>& Facts() { return facts; }
+    const std::vector<Fact>& Facts() const { return facts; }
     //! get clauses
-    std::vector<Clause> Clauses() { return clauses; }
+    std::vector<Clause>& Clauses() { return clauses; }
+    const std::vector<Clause> Clauses() const { return clauses; }
 
 private:
     //! make KIFDriver class friend

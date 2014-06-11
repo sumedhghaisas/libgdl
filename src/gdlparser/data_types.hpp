@@ -63,7 +63,7 @@ struct Argument
     std::vector<Argument> args;
 
     //! used by GDLReasoner
-    Argument* sub;
+    mutable const Argument* sub;
 };
 
 /**
