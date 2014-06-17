@@ -230,7 +230,7 @@ int KIFDriver::CheckEntry(const TokenValue& tok, bool isRelation, char arity,
 void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
 {
     // construct a clause from given token and add to vector of clauses
-    Clause c(tok);
+    Clause c(tok, kif.clauses.size());
     kif.AddClause(c);
 
     const std::vector<TokenValue>& args = tok.Arguments();
@@ -288,14 +288,14 @@ void KIFDriver::AddDependency(Node* head, const Argument& arg, size_t c_index,
     // if not incountered add negative dependency to it lone argument
     if(command == "not")
     {
-        AddDependency(head, arg.args[0], c_index, loc, !isNot);
+        AddDependency(head, *(arg.args[0]), c_index, loc, !isNot);
         return;
     }
     // if 'or' encountered add dependency recursively to its arguments
     else if(command  == "or")
     {
-        const std::vector<Argument>& args = arg.args;
-        for(size_t i = 0; i < args.size(); i++) AddDependency(head, args[i], c_index, loc, isNot);
+        const std::vector<Argument*>& args = arg.args;
+        for(size_t i = 0; i < args.size(); i++) AddDependency(head, *(args[i]), c_index, loc, isNot);
         return;
     }
 
@@ -331,7 +331,7 @@ void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
     for(size_t i = 0; i < args.size(); i++) f.AddArgument(args[i]);
 
     if(f.Command() == "terminal") Warn(loc, "'terminal' is defined as a fact.");
-    else if(f.Command() == "goal" && f.Arguments()[1].val != "100")
+    else if(f.Command() == "goal" && f.Arguments()[1]->val != "100")
     {
         Warn(loc, "Goal relation is defined with goal value not equal to 100. Unsupported by the winnable criterion of GDL.");
     }
@@ -408,12 +408,12 @@ void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<N
 {
     const Clause& c = kif.Clauses()[c_index];
 
-    const std::vector<Argument>& premisses = c.premisses;
+    const std::vector<Argument*>& premisses = c.premisses;
 
     // find the index of the given argument in the clause
     size_t arg_index = 0;
     for(size_t i = 0;i < premisses.size();i++)
-        if(premisses[i] == arg)
+        if(*(premisses[i]) == arg)
         {
             arg_index = i;
             break;
@@ -425,9 +425,9 @@ void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<N
     for(size_t i = 0;i < arg.args.size();i++)
     {
         // check if the argument is ground
-        if(arg.args[i].IsGround()) continue;
+        if(arg.args[i]->IsGround()) continue;
         // check if this argument is also argument to head
-        if(c.head.HasAsArgument(arg.args[i])) continue;
+        if(c.head->HasAsArgument(*(arg.args[i]))) continue;
 
         bool isFound = false;
 
@@ -437,7 +437,7 @@ void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<N
             if(j == arg_index) continue;
 
             // if another premiss has same same argument and is not in the same SCC
-            if(premisses[j].HasAsArgument(arg.args[i]) && scc.find(dgraph[premisses[j].val]) == scc.end())
+            if(premisses[j]->HasAsArgument(*(arg.args[i])) && scc.find(dgraph[premisses[j]->val]) == scc.end())
             {
                 isFound = true;
                 break;

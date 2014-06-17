@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <map>
 
 #include <gdlparser/parser/token_value.hpp>
 
@@ -60,7 +61,7 @@ struct Argument
     //! command value
     std::string val;
     //! vector of arguments
-    std::vector<Argument> args;
+    std::vector<Argument*> args;
 
     //! used by GDLReasoner
     mutable const Argument* sub;
@@ -87,7 +88,7 @@ struct Fact
 
     const std::string& Command() const { return arg.val; }
 
-    const std::vector<Argument>& Arguments() const { return arg.args; }
+    const std::vector<Argument*>& Arguments() const { return arg.args; }
 
     //! comparison operators
     bool operator==(const Fact& fact) const;
@@ -108,19 +109,19 @@ struct Fact
  */
 struct Clause
 {
-    Clause() {}
-    Clause(const TokenValue& tok);
+    Clause(const TokenValue& tok, const size_t id);
 
-    //! add body to this premiss
-    void AddPremiss(const TokenValue& tok);
+    Argument* ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map);
 
     //! text representation
     std::string text;
 
     //! Head of the clause
-    Argument head;
+    Argument* head;
     //! body
-    std::vector<Argument> premisses;
+    std::vector<Argument*> premisses;
+    //! to assign unique id
+    size_t id;
 };
 
 }; // namespace gdlparser

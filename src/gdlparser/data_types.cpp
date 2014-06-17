@@ -6,6 +6,8 @@
  */
 #include "data_types.hpp"
 
+#include <stack>
+
 using namespace gdlparser;
 
 Argument::Argument(const TokenValue& tok)
@@ -28,7 +30,7 @@ bool Argument::operator==(const Argument& arg) const
     if(val == "or")
     {
         for(size_t i = 0;i < args.size();i++)
-            if(args[i] == arg) return true;
+            if(*(args[i]) == arg) return true;
         return false;
     }
 
@@ -43,7 +45,7 @@ bool Argument::operator==(const Argument& arg) const
 
 void Argument::AddArgument(const TokenValue& tok)
 {
-    args.push_back(Argument(tok));
+    args.push_back(new Argument(tok));
 }
 
 bool Argument::HasAsArgument(const Argument& arg) const
@@ -53,7 +55,7 @@ bool Argument::HasAsArgument(const Argument& arg) const
     {
         bool has = true;
         for(size_t i = 0;i < args.size();i++)
-            if(!args[i].HasAsArgument(arg))
+            if(!args[i]->HasAsArgument(arg))
             {
                 has = false;
                 break;
@@ -63,18 +65,25 @@ bool Argument::HasAsArgument(const Argument& arg) const
     }
 
     for(size_t i = 0;i < args.size();i++)
-        if(args[i] == arg) return true;
+        if(*(args[i]) == arg) return true;
 
     return false;
 }
 
 bool Argument::IsGround() const
 {
-    if(args.size() == 0) return (val[0] == '?') ? false : true;
+    std::stack<const Argument*> S;
+    S.push(this);
 
-    for(size_t i = 0;i < args.size();i++)
-        if(!args[i].IsGround()) return false;
+    while(!S.empty())
+    {
+        const Argument* temp = S.top();
+        S.pop();
 
+        if(temp->IsVariable()) return false;
+        else for(size_t i = 0;i < temp->args.size();i++)
+            S.push(temp->args[i]);
+    }
     return true;
 }
 
@@ -89,20 +98,44 @@ bool Argument::IsEqualTo(const Argument& arg) const
     return true;
 }
 
-Clause::Clause(const TokenValue& tok)
+Clause::Clause(const TokenValue& tok, const size_t id) : id(id)
 {
     text = tok.Value();
 
     const std::vector<TokenValue>& args = tok.Arguments();
 
-    head = Argument(args[0]);
+    std::map<std::string, Argument*> v_map;
 
-    for(size_t i = 1;i < args.size();i++) AddPremiss(args[i]);
+    head = ConstructArgument(args[0], v_map);
+
+    for(size_t i = 1;i < args.size();i++) premisses.push_back(ConstructArgument(args[i], v_map));
 }
 
-void Clause::AddPremiss(const TokenValue& tok)
+Argument* Clause::ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map)
 {
-    premisses.push_back(Argument(tok));
+    std::map<std::string, Argument*>::iterator it;
+    if(tok.Type() == TokenValue::Var && (it = v_map.find(tok.Command())) != v_map.end())
+        return it->second;
+    else if(tok.Type() == TokenValue::Var)
+    {
+        Argument *out = new Argument(tok);
+        v_map[tok.Command()] = out;
+        return out;
+    }
+
+    Argument *out = new Argument();
+
+    if(tok.Type() == TokenValue::Relation) out->t = Argument::Relation;
+    else if(tok.Type() == TokenValue::Function) out->t = Argument::Function;
+    else out->t = Argument::Var;
+
+    out->val = tok.Command();
+
+    const std::vector<TokenValue>& args = tok.Arguments();
+
+    for(size_t i = 0;i < args.size();i++) out->args.push_back(ConstructArgument(args[i], v_map));
+
+    return out;
 }
 
 std::ostream& operator<<(std::ostream& o, const Argument::Type& t)
@@ -122,7 +155,7 @@ std::ostream& operator<<(std::ostream& o,const Argument& arg)
     }
     else o << "( " + arg.val;
 
-    for(size_t i = 0;i < arg.args.size();i++) o << " " << arg.args[i];
+    for(size_t i = 0;i < arg.args.size();i++) o << " " << *(arg.args[i]);
     o << " " << ")";
     return o;
 }
