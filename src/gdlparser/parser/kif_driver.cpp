@@ -23,10 +23,8 @@ using namespace gdlparser;
 using namespace gdlparser::parser;
 using namespace gdlparser::util;
 
-KIFDriver::KIFDriver(std::ostream& stream, KIF& kif, bool toGraph, bool isWarn)
-    : stream(&stream),
-    toGraph(toGraph),
-    isWarn(isWarn),
+KIFDriver::KIFDriver(KIF& kif)
+    : dgraph(kif.dgraph),
     kif(kif)
 {
     scanner = new KIFScanner(*this);
@@ -47,24 +45,24 @@ KIFDriver::~KIFDriver()
 
 void KIFDriver::Error(const location_type& loc, const std::string& msg) const
 {
-    *stream << BASH_RED "[ERROR] " BASH_CLEAR << loc << ": " << msg << std::endl;
+    *kif.stream << BASH_RED "[ERROR] " BASH_CLEAR << loc << ": " << msg << std::endl;
     anyError = true;
 }
 
 void KIFDriver::Warn(const location_type& loc, const std::string& msg) const
 {
-    if(isWarn) *stream << BASH_YELLOW "[WARN] " BASH_CLEAR << loc << ": " << msg << std::endl;
+    if(kif.isWarn) *kif.stream << BASH_YELLOW "[WARN] " BASH_CLEAR << loc << ": " << msg << std::endl;
 }
 
 void KIFDriver::Error(const std::string& msg) const
 {
-    *stream << BASH_RED "[ERROR] " BASH_CLEAR << msg << std::endl;
+    *kif.stream << BASH_RED "[ERROR] " BASH_CLEAR << msg << std::endl;
     anyError = true;
 }
 
 void KIFDriver::Warn(const std::string& msg) const
 {
-    if(isWarn) *stream << BASH_YELLOW "[WARN] " BASH_CLEAR << msg << std::endl;
+    if(kif.isWarn) *kif.stream << BASH_YELLOW "[WARN] " BASH_CLEAR << msg << std::endl;
 }
 
 bool KIFDriver::Parse()
@@ -78,16 +76,6 @@ bool KIFDriver::Parse()
         // if failed
         Error("Parse Failed!");
         return false;
-    }
-
-    // save the constucted dependency graph to DOT file
-    if(toGraph)
-    {
-        if(kif.GraphFilename() == "")
-        {
-            ToGraph(kif.OutputFilename() + ".dot");
-        }
-        else ToGraph(kif.GraphFilename());
     }
 
     //! check if role, terminal, goal and legal relations are defined
@@ -122,18 +110,6 @@ bool KIFDriver::Parse()
         return false;
     }
 
-    // if output filename is blank no output is generated
-    if(kif.OutputFilename() == "") return true;
-
-    // store all the facts and clauses in given output file
-    std::ofstream out(kif.OutputFilename().c_str());
-    if(!out.is_open())
-    {
-        Error("Unable to open file " + kif.OutputFilename());
-        return false;
-    }
-
-    out.close();
     return true;
 }
 
@@ -264,11 +240,11 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     }
 
     // modify dependency graph
-    std::map<std::string, Node*>::iterator it = dgraph.find(hcommand);
-    Node* head;
+    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(hcommand);
+    DGraphNode* head;
     if(it == dgraph.end())
     {
-        head = new Node(hcommand);
+        head = new DGraphNode(hcommand);
         dgraph[hcommand] = head;
     }
     else head = it->second;
@@ -277,7 +253,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     for(size_t i = 1; i < args.size(); i++) AddDependency(head, args[i], kif.Clauses().size() - 1, loc, false);
 }
 
-void KIFDriver::AddDependency(Node* head, const Argument& arg, size_t c_index,
+void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_index,
                               const location_type& loc, bool isNot)
 {
     const std::string& command = arg.val;
@@ -300,11 +276,11 @@ void KIFDriver::AddDependency(Node* head, const Argument& arg, size_t c_index,
     }
 
     // else drectly add dependency to command of the argument
-    std::map<std::string, Node*>::iterator it = dgraph.find(command);
-    Node* rel;
+    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(command);
+    DGraphNode* rel;
     if(it == dgraph.end())
     {
-        rel = new Node(command);
+        rel = new DGraphNode(command);
         dgraph[command] = rel;
     }
     else rel = it->second;
@@ -340,33 +316,33 @@ void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
 void KIFDriver::CheckCycles()
 {
     // stores set of strongly connected components
-    std::vector<std::set<Node*> > scc;
-    // stack of processed nodes
-    std::stack<Node*> nstack;
-    // set of processed nodes(for faster lookup)
-    std::set<Node*> nset;
+    std::vector<std::set<DGraphNode*> > scc;
+    // stack of processed DGraphNodes
+    std::stack<DGraphNode*> nstack;
+    // set of processed DGraphNodes(for faster lookup)
+    std::set<DGraphNode*> nset;
 
     //! Tarjan's strongly connected component algorithm
-    // current(unique) id to be given as index to every node
+    // current(unique) id to be given as index to every DGraphNode
     current_id = 0;
-    // run until all nodes in the graph are visited
-    for(std::map<std::string, Node*>::iterator it = dgraph.begin(); it != dgraph.end(); it++)
+    // run until all DGraphNodes in the graph are visited
+    for(std::map<std::string, DGraphNode*>::iterator it = dgraph.begin(); it != dgraph.end(); it++)
     {
-        Node* v = it->second;
-        // get strongly connected component of each unvisited Node
+        DGraphNode* v = it->second;
+        // get strongly connected component of each unvisited DGraphNode
         if(v->index == -1) StrongConnect(v, nstack, nset, scc);
     }
 
-    //! check if there is any edge between nodes of same SCC marked negative
+    //! check if there is any edge between DGraphNodes of same SCC marked negative
     //! if yes then it can be proved easily using SCC properties that a cycle
     //! exists with negative edge in it. Hence unstratified negation.
     for(size_t i = 0; i < scc.size(); i++)
     {
-        const std::set<Node*>& sc = scc[i];
+        const std::set<DGraphNode*>& sc = scc[i];
 
-        for(std::set<Node*>::const_iterator it = sc.begin(); it != sc.end(); it++)
+        for(std::set<DGraphNode*>::const_iterator it = sc.begin(); it != sc.end(); it++)
         {
-            const std::vector<Node*>& out = (*it)->out;
+            const std::vector<DGraphNode*>& out = (*it)->out;
             const std::vector<bool>& isNot = (*it)->isNot;
             const std::vector<location_type>& locs = (*it)->out_loc;
 
@@ -377,15 +353,15 @@ void KIFDriver::CheckCycles()
         }
     }
 
-    //! check that clause for any edge between nodes of same SCC
+    //! check that clause for any edge between DGraphNodes of same SCC
     //! definition 15(GDL_spec) is satisfied, else unstratified recursion
     for(size_t i = 0; i < scc.size(); i++)
     {
-        const std::set<Node*>& sc = scc[i];
+        const std::set<DGraphNode*>& sc = scc[i];
 
-        for(std::set<Node*>::const_iterator it = sc.begin(); it != sc.end(); it++)
+        for(std::set<DGraphNode*>::const_iterator it = sc.begin(); it != sc.end(); it++)
         {
-            const std::vector<Node*>& out = (*it)->out;
+            const std::vector<DGraphNode*>& out = (*it)->out;
             const std::vector<bool>& isNot = (*it)->isNot;
             const std::vector<size_t>& c_index = (*it)->c_index;
             const std::vector<location_type>& locs = (*it)->out_loc;
@@ -395,7 +371,7 @@ void KIFDriver::CheckCycles()
             for(size_t i = 0; i < out.size(); i++)
             {
                 // find non negative edges as negative edges are already considered for unstratified negation
-                // also check if the other node is also in same scc
+                // also check if the other DGraphNode is also in same scc
                 // if it is then check if the clause corresponding to this edge satisfies Definition 15(GDL_spec)
                 if(!isNot[i] && sc.find(out[i]) != sc.end()) CheckDef15(c_index[i], arg[i], sc, locs[i]);
             }
@@ -403,7 +379,7 @@ void KIFDriver::CheckCycles()
     }
 }
 
-void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<Node*>& scc,
+void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<DGraphNode*>& scc,
                            const location_type& loc)
 {
     const Clause& c = kif.Clauses()[c_index];
@@ -462,8 +438,8 @@ void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<N
 
 }
 
-void KIFDriver::StrongConnect(Node* v, std::stack<Node*>& nstack, std::set<Node*>& nset,
-                              std::vector<std::set<Node*> >& scc)
+void KIFDriver::StrongConnect(DGraphNode* v, std::stack<DGraphNode*>& nstack, std::set<DGraphNode*>& nset,
+                              std::vector<std::set<DGraphNode*> >& scc)
 {
     //! Tarjan's Strongly Connected Component Algorithm
 
@@ -473,7 +449,7 @@ void KIFDriver::StrongConnect(Node* v, std::stack<Node*>& nstack, std::set<Node*
     nstack.push(v);
     nset.insert(v);
 
-    std::vector<Node*>& out = v->out;
+    std::vector<DGraphNode*>& out = v->out;
 
     for(size_t i = 0; i < out.size(); i++)
     {
@@ -490,8 +466,8 @@ void KIFDriver::StrongConnect(Node* v, std::stack<Node*>& nstack, std::set<Node*
 
     if(v->index == v->low_link)
     {
-        std::set<Node*> nscc;
-        Node* temp = NULL;
+        std::set<DGraphNode*> nscc;
+        DGraphNode* temp = NULL;
         while(temp != v)
         {
             temp = nstack.top();
@@ -503,50 +479,17 @@ void KIFDriver::StrongConnect(Node* v, std::stack<Node*>& nstack, std::set<Node*
     }
 }
 
-void KIFDriver::ToGraph(const std::string& filename)
-{
-    std::ofstream graph(filename.c_str());
-    if(!graph.is_open())
-    {
-        Error("Unable to open file" + filename + "for saving graph");
-        return;
-    }
-
-    graph << "digraph dependency_graph {" << std::endl;
-
-    for(std::map<std::string, Node*>::const_iterator it = dgraph.begin(); it != dgraph.end(); it++)
-    {
-        graph << it->first << " [label = \"" << it->first << "\"];" << std::endl;
-    }
-
-    for(std::map<std::string, Node*>::const_iterator it = dgraph.begin(); it != dgraph.end(); it++)
-    {
-        const std::vector<Node*> out = (it->second)->out;
-        const std::vector<bool> isNot = (it->second)->isNot;
-
-        for(size_t i = 0; i < out.size(); i++)
-        {
-            if(isNot[i] == true) graph << it->first << " -> " << out[i]->name << " [color = red];" << std::endl;
-            else graph << it->first << " -> " << out[i]->name << ";" << std::endl;
-        }
-    }
-
-    graph << "}";
-
-    graph.close();
-}
-
 void KIFDriver::CheckRecursiveDependencies()
 {
-    std::map<std::string, Node*>::const_iterator it = dgraph.find("does");
+    std::map<std::string, DGraphNode*>::const_iterator it = dgraph.find("does");
 
-    const Node* does = NULL;
-    const Node* ttrue = NULL;
+    const DGraphNode* does = NULL;
+    const DGraphNode* ttrue = NULL;
 
-    const Node* base = NULL;
-    const Node* init = NULL;
-    const Node* input = NULL;
-    const Node* legal = NULL;
+    const DGraphNode* base = NULL;
+    const DGraphNode* init = NULL;
+    const DGraphNode* input = NULL;
+    const DGraphNode* legal = NULL;
 
     if((it = dgraph.find("base")) != dgraph.end()) base = it->second;
     if((it = dgraph.find("init")) != dgraph.end()) init = it->second;
@@ -558,13 +501,13 @@ void KIFDriver::CheckRecursiveDependencies()
         does = it->second;
 
         // perform DFS from does to detect legal, init, input, base
-        // node stack (used for DFS)
-        std::stack<const Node*> st;
+        // DGraphNode stack (used for DFS)
+        std::stack<const DGraphNode*> st;
 
         st.push(does);
         while(!st.empty())
         {
-            const Node* temp = st.top();
+            const DGraphNode* temp = st.top();
             st.pop();
 
             // if destination is found return true
@@ -583,13 +526,13 @@ void KIFDriver::CheckRecursiveDependencies()
         ttrue = it->second;
 
         // perform DFS from does to detect legal, init, input, base
-        // node stack (used for DFS)
-        std::stack<const Node*> st;
+        // DGraphNode stack (used for DFS)
+        std::stack<const DGraphNode*> st;
 
         st.push(ttrue);
         while(!st.empty())
         {
-            const Node* temp = st.top();
+            const DGraphNode* temp = st.top();
             st.pop();
 
             // if destination is found return true

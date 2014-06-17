@@ -2,6 +2,7 @@ include_directories(..) # <gdlparser/[whatever]>
 
 # Add kif.hpp and data_types to list of sources.
 set(GDLPARSER_SRCS ${GDLPARSER_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/kif.hpp")
+set(GDLPARSER_SRCS ${GDLPARSER_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/kif.cpp")
 set(GDLPARSER_SRCS ${GDLPARSER_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/data_types.hpp")
 set(GDLPARSER_SRCS ${GDLPARSER_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/data_types.cpp")
 

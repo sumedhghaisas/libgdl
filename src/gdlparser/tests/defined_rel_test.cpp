@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(RoleUndefinedTest)
 {
     MARK_START;
     OPEN_LOG;
-	KIF kif("", false, false, TEST_LOG);
+	KIF kif(false, TEST_LOG);
     kif.AddFile("data/ndef_role.kif");
     if(kif.Parse()) MARK_FAIL;
     MARK_END;
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(LegalUndefinedTest)
 {
     MARK_START;
     OPEN_LOG;
-	KIF kif("", false, false, TEST_LOG);
+	KIF kif(false, TEST_LOG);
     kif.AddFile("data/ndef_legal.kif");
     if(kif.Parse()) MARK_FAIL;
     MARK_END;
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(TerminalUndefinedTest)
 {
     MARK_START;
     OPEN_LOG;
-	KIF kif("", false, false, TEST_LOG);
+	KIF kif(false, TEST_LOG);
     kif.AddFile("data/ndef_terminal.kif");
     if(kif.Parse()) MARK_FAIL;
     MARK_END;
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(GoalUndefinedTest)
 {
     MARK_START;
     OPEN_LOG;
-	KIF kif("", false, false, TEST_LOG);
+	KIF kif(false, TEST_LOG);
     kif.AddFile("data/ndef_goal.kif");
     if(kif.Parse()) MARK_FAIL;
     MARK_END;

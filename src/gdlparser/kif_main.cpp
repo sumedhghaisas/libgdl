@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     options_description desc("Allowed options");
     desc.add_options()
     ("help,h", "Description")
-    ("graph-filename,g", value<std::string>()->default_value(""), "graph output filename")
+    ("graph-filename,g", value<std::string>(), "graph output filename")
     ("enable-warnings,w", value<std::string>()->default_value("ON"), "enable/disable warnings")
     ("output-file", value<std::string>(), "Output filename")
     ("source-files,c", value<std::vector<std::string> >()->multitoken(), "source files");
@@ -98,17 +98,20 @@ int main(int argc, char* argv[])
         toGraph = true;
         graph_filename = vm["graph-filename"].as<std::string>();
     }
+
     if(vm.count("enable-warnings"))
     {
         std::string temp = vm["enable-warnings"].as<std::string>();
-        if(temp == "OFF" || temp == "off" || temp == "Off") warn = true;
+        if(temp == "OFF" || temp == "off" || temp == "Off") warn = false;
     }
 
-    KIF kif(output_filename, toGraph, warn, std::cerr);
+    KIF kif(warn, std::cerr);
     kif.AddFile(files);
-    kif.GraphFilename() = graph_filename;
-    if(kif.Parse()) return 0;
-    else return 1;
+    if(!kif.Parse()) return 1;
+    kif.PrintToFile(output_filename);
+    if(toGraph)
+        kif.PrintDependencyGraph(graph_filename);
+    return 0;
 }
 
 

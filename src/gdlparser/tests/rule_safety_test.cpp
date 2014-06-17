@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(HeadSafetyTest)
 {
     MARK_START;
     OPEN_LOG;
-	KIF kif("", false, false, TEST_LOG);
+	KIF kif(false, TEST_LOG);
 	kif.AddFile("data/headsafe.kif");
 	if(kif.Parse()) MARK_FAIL;
 	MARK_END;
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(NotSafetyTest)
 {
     MARK_START;
     OPEN_LOG;
-	KIF kif("", false, false, TEST_LOG);
+	KIF kif(false, TEST_LOG);
 	kif.AddFile("data/notsafe.kif");
 	if(kif.Parse()) MARK_FAIL;
 	MARK_END;
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(OrBoundTest)
 {
     MARK_START;
     OPEN_LOG;
-	KIF kif("", false, false, TEST_LOG);
+	KIF kif(false, TEST_LOG);
 	kif.AddFile("data/orsafe.kif");
 	if(kif.Parse()) MARK_FAIL;
 	MARK_END;

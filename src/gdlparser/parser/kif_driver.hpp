@@ -16,7 +16,6 @@
 #include "kif_scanner.hpp"
 #include "kif_parser.tab.hh"
 #include "token_value.hpp"
-#include "node.hpp"
 
 #include <gdlparser/data_types.hpp>
 
@@ -70,10 +69,7 @@ class KIFDriver
 
 public:
     //! constructs KIFDriver object
-    KIFDriver(std::ostream& stream,
-            KIF& kif,
-            bool toGraph = false,
-            bool isWarn = true);
+    KIFDriver(KIF &kif);
 
     //! destructor, deletes parser and scanner
     virtual ~KIFDriver();
@@ -83,9 +79,6 @@ public:
 
     //! Add file to parse
     void AddFile(const std::string& filename) { scanner->AddFile(filename); }
-
-    //! stores the dependency graph to a file in DOT format
-    void ToGraph(const std::string& filename);
 
 private:
     friend yy::KIFParser;
@@ -111,14 +104,14 @@ private:
     void Error(const std::string& msg) const;
 
     //! marks dependency of head to given token
-    void AddDependency(Node* head, const Argument& arg, size_t c_index, const location_type& loc, bool isNot);
+    void AddDependency(DGraphNode* head, const Argument& arg, size_t c_index, const location_type& loc, bool isNot);
 
     //! check for stratified negation and stratified recursion
     void CheckCycles();
 
     //! check if the given clause satisfies Definition 15 mentioned in GDL specifications
     //! with respect to given argument
-    void CheckDef15(size_t c_index, const Argument& arg, const std::set<Node*>& scc,
+    void CheckDef15(size_t c_index, const Argument& arg, const std::set<DGraphNode*>& scc,
                     const location_type& loc);
 
     //! checks whether init, base, input is dependent on true, does as its invalid
@@ -126,7 +119,7 @@ private:
     void CheckRecursiveDependencies();
 
     //! recursive function in Tarjan's algorithm
-    void StrongConnect(Node* v, std::stack<Node*>& nstack, std::set<Node*>& nset, std::vector<std::set<Node*> >& scc);
+    void StrongConnect(DGraphNode* v, std::stack<DGraphNode*>& nstack, std::set<DGraphNode*>& nset, std::vector<std::set<DGraphNode*> >& scc);
 
     //! pointer to parser and scanner
     gdlparser::parser::yy::KIFParser *parser;
@@ -136,19 +129,10 @@ private:
     std::map<std::string, Symbol> symbol_table;
 
     //! dependency graph
-    std::map<std::string, Node*> dgraph;
+    std::map<std::string, DGraphNode*>& dgraph;
 
     //! keep track of used ids
     size_t current_id;
-
-    //! pointer to logging stream
-    mutable std::ostream* stream;
-
-    //! is graph to be stored as DOT file
-    bool toGraph;
-
-    //! enable/disable warnings
-    bool isWarn;
 
     //! stores if any error has occured in parsing
     mutable bool anyError;

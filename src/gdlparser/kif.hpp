@@ -20,29 +20,25 @@ namespace gdlparser
  *
  * example program demonstrates the usgae of KIF class
  * @code
- * KIF kif("test.kif");
+ * KIF kif;
  * kif.AddFile("arithmatic.kif");
  * kif.AddFile("8puzzle.kif");
  * kif.Parse();
  * @endcode
  *
- * This code will generate output file named 'test.kif' containing compiled facts
- * and clauses. By default all the errors and warning will be displayed on std::cout.
- * This can be changed by passing a different stream as the third parameter to KIF
- * constructor. KIF can also save the dependency graph created in DOT format.
+ * To save the generated output in kif file
  *
  * @code
- * KIF kif("test.kif", true, stream);
+ * KIF kif;
  * kif.AddFile("3puzzle.kif");
- * kif.GraphFilename() = "dgraph.dot";
  * kif.Parse();
+ * kif.PrintToFile("test.kif");
+ * kif.PrintDependencyGraph("test.dot");
  * @endcode
  *
- * This will generate a file 'dgraph.dot' along 'test.kif' containing DOT representation
+ * This will generate a file 'test.dot' along 'test.kif' containing DOT representation
  * of dependency graph. This DOT file can be visualized with graph visualization libraries
  * like GraphViz.
- *
- * @note if output_filename is left blank no output will be generated.
  */
 class KIF
 {
@@ -52,15 +48,10 @@ class KIF
 public:
     //! Constructor
     //!
-    //! @param output_filename const std::string& : filename for generating output
-    //! @param saveGraph bool : to generate DOT representation of dependency graph
     //! @param isWarn bool : enable or disable warnings
     //! @param stream std::ostream& : stream to print errors and warnings
-    KIF(const std::string& output_filename, bool saveGraph = false, bool isWarn = true,
-        std::ostream& stream = std::cerr)
-        : output_filename(output_filename), facts(), clauses(),
-        driver(stream, *this, saveGraph, isWarn)
-        { }
+    KIF(bool isWarn = true, std::ostream& stream = std::cout)
+            : stream(&stream), isWarn(isWarn), driver(*this) {}
 
     //! Add given file as input
     //!
@@ -76,13 +67,21 @@ public:
     //!
     bool Parse() { return driver.Parse(); }
 
-    //! getter setter for output filename
-    const std::string& OutputFilename() const { return output_filename; }
-    std::string& OutputFilename() { return output_filename; }
+    //! Print the parsed knowledge to file
+    //!
+    //! @param filename const std::string& : output filename
+    //! @return bool : success or failure
+    //!
+    bool PrintToFile(const std::string& filename) const;
 
-    //! getter setter for graph output filename
-    const std::string& GraphFilename() const { return graph_filename; }
-    std::string& GraphFilename() { return graph_filename; }
+
+    //! Print dependency graph generated to file(DOT format).
+    //!
+    //! \param filename const std::string& : output filename
+    //! \return bool : success or failure
+    //!
+    //!
+    bool PrintDependencyGraph(const std::string& filename) const;
 
     //! get facts
     std::vector<Fact>& Facts() { return facts; }
@@ -99,17 +98,20 @@ private:
     void AddFact(const Fact& f) { facts.push_back(f); }
     void AddClause(const Clause& c) { clauses.push_back(c); }
 
+    //! pointer to logging stream
+    mutable std::ostream* stream;
 
-    //! filename of output file
-    std::string output_filename;
-    //! filename of graph output
-    std::string graph_filename;
+    //! enable/disable warnings
+    bool isWarn;
 
     //! All the facts
     std::vector<Fact> facts;
 
     //! All the clauses
     std::vector<Clause> clauses;
+
+    //! dependency graph
+    std::map<std::string, DGraphNode*> dgraph;
 
     //! driver to drive parsing
     KIFDriver driver;
