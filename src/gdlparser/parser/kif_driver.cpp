@@ -211,6 +211,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
 
     const std::vector<TokenValue>& args = tok.Arguments();
     const std::string& hcommand = args[0].Command();
+    const size_t h_arity = args[0].Count();
 
     const std::set<std::string>& head_vars = tok.HeadVars();
     const std::set<std::string>& bounded_vars = tok.BoundedVars();
@@ -244,7 +245,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     DGraphNode* head;
     if(it == dgraph.end())
     {
-        head = new DGraphNode(hcommand);
+        head = new DGraphNode(hcommand, h_arity);
         dgraph[hcommand] = head;
     }
     else head = it->second;
@@ -257,6 +258,7 @@ void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_in
                               const location_type& loc, bool isNot)
 {
     const std::string& command = arg.val;
+    const size_t arity = arg.args.size();
 
     // ignore arguments(relations) 'distinct'
     if(command == "distinct") return;
@@ -280,7 +282,7 @@ void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_in
     DGraphNode* rel;
     if(it == dgraph.end())
     {
-        rel = new DGraphNode(command);
+        rel = new DGraphNode(command, arity);
         dgraph[command] = rel;
     }
     else rel = it->second;
@@ -295,12 +297,24 @@ void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_in
     (rel->c_index).push_back(c_index);
     // add the argument causing this dependency
     (rel->arg).push_back(arg);
+
+    // add in edge in head
+    (head->in).push_back(rel);
 }
 
 void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
 {
     Fact f(tok);
     kif.AddFact(f);
+
+    std::string command = f.arg.val;
+    size_t arity = f.arg.args.size();
+    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(command);
+    if(it == dgraph.end())
+    {
+        DGraphNode* rel = new DGraphNode(command, arity);
+        dgraph[command] = rel;
+    }
 
     const std::vector<TokenValue>& args = tok.Arguments();
 

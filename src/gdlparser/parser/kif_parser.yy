@@ -350,6 +350,7 @@ Head        : Obracket role Term Cbracket   {
             | terminal  {
                             $$ = $$ + $1;
                             $$.Command() = $1.Value();
+			    $$.Type() = TokenValue::Relation;
                             std::string msg;
                             int res = driver.AddEntry($1, true, 0, @1, msg);
                             if(res == 1) error(@1, msg);

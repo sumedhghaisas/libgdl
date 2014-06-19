@@ -1,7 +1,6 @@
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into GDLParser.
 set(SOURCES
-  setop.cpp
   setop.hpp
 )
 

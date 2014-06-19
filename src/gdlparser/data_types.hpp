@@ -34,6 +34,8 @@ struct Argument
     Argument() {}
     //! constucts argument from given token
     Argument(const TokenValue& tok);
+    //! copy constructor
+    Argument(const Argument& arg);
 
     //! comparison operator
     //! checks value and arguments(recursively check)
@@ -62,6 +64,9 @@ struct Argument
     std::string val;
     //! vector of arguments
     std::vector<Argument*> args;
+
+    //! used by copy constructor
+    static Argument* ConstructArgument(const Argument& arg, std::map<std::string, Argument*>& v_map);
 
     //! used by GDLReasoner
     mutable const Argument* sub;
@@ -109,9 +114,13 @@ struct Fact
  */
 struct Clause
 {
+    Clause() {}
     Clause(const TokenValue& tok, const size_t id);
+    Clause(const Clause& c);
 
     Argument* ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map);
+
+    bool IsGround();
 
     //! text representation
     std::string text;
@@ -138,15 +147,20 @@ struct DGraphNode
 {
     typedef parser::yy::KIFParser::location_type location_type;
 
-    DGraphNode(const std::string& name) : name(name), index(-1), low_link(-1) {}
+    DGraphNode(const std::string& name, size_t arity)
+        : name(name), arity(arity), index(-1), low_link(-1) {}
 
     //! represents command name of this node
     std::string name;
+    //! arity
+    size_t arity;
     //! out edges from this node
     std::vector<DGraphNode*> out;
+    //! in edges
+    std::vector<DGraphNode*> in;
     //! clause number associated out edge
     std::vector<size_t> c_index;
-    //! argument
+    //! argument of out edge
     std::vector<Argument> arg;
     //! location of the rule associated with every out edge
     std::vector<location_type> out_loc;
@@ -159,7 +173,7 @@ struct DGraphNode
     int low_link;
 };
 
-}; // namespace gdlparser
+} // namespace gdlparser
 
 /// operator<< for above defined types
 std::ostream& operator<< (std::ostream& o, const gdlparser::Argument& arg);

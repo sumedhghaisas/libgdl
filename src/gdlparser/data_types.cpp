@@ -24,6 +24,47 @@ Argument::Argument(const TokenValue& tok)
     for(size_t i = 0;i < args.size();i++) AddArgument(args[i]);
 }
 
+Argument::Argument(const Argument& arg)
+{
+    if(arg.IsVariable())
+    {
+        t = arg.t;
+        val = arg.val;
+        return;
+    }
+
+    std::map<std::string, Argument*> v_map;
+
+    t = arg.t;
+    val = arg.val;
+
+    for(size_t i = 0;i < arg.args.size();i++)
+        args.push_back(ConstructArgument(*arg.args[i], v_map));
+}
+
+Argument* Argument::ConstructArgument(const Argument& arg, std::map<std::string, Argument*>& v_map)
+{
+    std::map<std::string, Argument*>::iterator it;
+    if(arg.IsVariable() && (it = v_map.find(arg.val)) != v_map.end())
+        return it->second;
+    else if(arg.IsVariable())
+    {
+        Argument* out = new Argument();
+        out->t = Argument::Var;
+        out->val = arg.val;
+        v_map[out->val] = out;
+        return out;
+    }
+
+    Argument* out = new Argument();
+    out->t = arg.t;
+    out->val = arg.val;
+
+    for(size_t i = 0;i < arg.args.size();i++)
+        out->args.push_back(ConstructArgument(*arg.args[i], v_map));
+    return out;
+}
+
 bool Argument::operator==(const Argument& arg) const
 {
     // for 'or', if arg matches any argument return true
@@ -111,6 +152,26 @@ Clause::Clause(const TokenValue& tok, const size_t id) : id(id)
     for(size_t i = 1;i < args.size();i++) premisses.push_back(ConstructArgument(args[i], v_map));
 }
 
+Clause::Clause(const Clause& c)
+{
+    std::map<std::string, Argument*> v_map;
+
+    head = Argument::ConstructArgument(*c.head, v_map);
+
+    for(size_t i = 0;i < c.premisses.size();i++)
+        premisses.push_back(Argument::ConstructArgument(*c.premisses[i], v_map));
+}
+
+bool Clause::IsGround()
+{
+    if(!(head->IsGround())) return false;
+
+    for(size_t i = 0;i < premisses.size();i++)
+        if(!(premisses[i]->IsGround())) return false;
+
+    return true;
+}
+
 Argument* Clause::ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map)
 {
     std::map<std::string, Argument*>::iterator it;
@@ -168,6 +229,10 @@ std::ostream& operator<<(std::ostream& o, const Fact& f)
 
 std::ostream& operator<<(std::ostream& o, const Clause& clause)
 {
-    o << clause.text;
+    o << "(<= ";
+    o << *clause.head << " ";
+    for(size_t i = 0;i < clause.premisses.size();i++)
+        o << *clause.premisses[i] << " ";
+    o << ")";
     return o;
 }

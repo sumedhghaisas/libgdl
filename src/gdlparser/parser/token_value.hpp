@@ -95,7 +95,7 @@ public:
     bool operator!=(const std::string& str) { return !(val == str); }
 
     //! returns argument count for this token
-    int Count() { return arguments.size(); }
+    int Count() const { return arguments.size(); }
 
     //! returns vector of arguments
     const std::vector<TokenValue>& Arguments() const { return arguments; }
