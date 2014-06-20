@@ -178,6 +178,7 @@ Fact        : Obracket role Id_num Cbracket         {
                                                         else if(res == 2) driver.Warn(@2, msg);
                                                     }
             | Obracket goal Ground_term num Cbracket    {
+                                                            $4.Type() = TokenValue::Function;
                                                             $4.Command() = $4.Value();
                                                             $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
                                                             $$.Type() = TokenValue::Relation;
@@ -256,10 +257,12 @@ Ground_terms : Ground_term Ground_terms {
 
 Id_num      : id    {
                         $$ = $$ + $1;
+                        $$.Type() = TokenValue::Function;
                         $$.Command() = $1.Value();
                     }
             | num   {
                         $$ = $$ + $1;
+                        $$.Type() = TokenValue::Function;
                         $$.Command() = $1.Value();
                     }
 

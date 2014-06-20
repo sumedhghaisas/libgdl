@@ -53,6 +53,8 @@ public:
     KIF(bool isWarn = true, std::ostream& stream = std::cout)
             : stream(&stream), isWarn(isWarn), driver(*this) {}
 
+    ~KIF();
+
     //! Add given file as input
     //!
     //! @param filename const std::string& : filename of the file to be added

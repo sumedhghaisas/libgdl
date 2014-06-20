@@ -209,9 +209,9 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     Clause c(tok, kif.clauses.size());
     kif.AddClause(c);
 
-    const std::vector<TokenValue>& args = tok.Arguments();
-    const std::string& hcommand = args[0].Command();
-    const size_t h_arity = args[0].Count();
+    const std::vector<Argument*>& args = c.premisses;
+    const std::string& hcommand = c.head->val;
+    const size_t h_arity = c.head->args.size();
 
     const std::set<std::string>& head_vars = tok.HeadVars();
     const std::set<std::string>& bounded_vars = tok.BoundedVars();
@@ -251,7 +251,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     else head = it->second;
 
     // add dependency to head of the clause against all arguments
-    for(size_t i = 1; i < args.size(); i++) AddDependency(head, args[i], kif.Clauses().size() - 1, loc, false);
+    for(size_t i = 0; i < args.size(); i++) AddDependency(head, *args[i], kif.Clauses().size() - 1, loc, false);
 }
 
 void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_index,
@@ -315,10 +315,6 @@ void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
         DGraphNode* rel = new DGraphNode(command, arity);
         dgraph[command] = rel;
     }
-
-    const std::vector<TokenValue>& args = tok.Arguments();
-
-    for(size_t i = 0; i < args.size(); i++) f.AddArgument(args[i]);
 
     if(f.Command() == "terminal") Warn(loc, "'terminal' is defined as a fact.");
     else if(f.Command() == "goal" && f.Arguments()[1]->val != "100")
@@ -403,7 +399,7 @@ void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<D
     // find the index of the given argument in the clause
     size_t arg_index = 0;
     for(size_t i = 0;i < premisses.size();i++)
-        if(*(premisses[i]) == arg)
+        if(premisses[i]->OrEquate(arg))
         {
             arg_index = i;
             break;
@@ -445,9 +441,9 @@ void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<D
     if(!isValid)
     {
         std::stringstream stream;
-        stream << arg.args[invalid_index];
+        stream << *arg.args[invalid_index];
         Error(loc, "Unstratified Recursion: Relation involved in the cycle is " + arg.val +
-                       ". Restriction violated for term " + stream.str());
+                       ". Restriction violated for variable " + stream.str());
     }
 
 }
@@ -517,8 +513,11 @@ void KIFDriver::CheckRecursiveDependencies()
         // perform DFS from does to detect legal, init, input, base
         // DGraphNode stack (used for DFS)
         std::stack<const DGraphNode*> st;
+        std::set<const DGraphNode*> n_set;
 
         st.push(does);
+        n_set.insert(does);
+
         while(!st.empty())
         {
             const DGraphNode* temp = st.top();
@@ -531,7 +530,14 @@ void KIFDriver::CheckRecursiveDependencies()
             else if(temp == input) Error("Invalid dependency. Relation 'input' is dependent on relation 'does'.");
 
             // push all the children in the stack
-            for(size_t i = 0; i < (temp->out).size(); i++) st.push((temp->out)[i]);
+            for(size_t i = 0; i < (temp->out).size(); i++)
+            {
+                if(n_set.find((temp->out)[i]) == n_set.end())
+                {
+                    st.push((temp->out)[i]);
+                    n_set.insert((temp->out)[i]);
+                }
+            }
         }
     }
 
@@ -542,8 +548,11 @@ void KIFDriver::CheckRecursiveDependencies()
         // perform DFS from does to detect legal, init, input, base
         // DGraphNode stack (used for DFS)
         std::stack<const DGraphNode*> st;
+        std::set<const DGraphNode*> n_set;
 
         st.push(ttrue);
+        n_set.insert(ttrue);
+
         while(!st.empty())
         {
             const DGraphNode* temp = st.top();
@@ -555,7 +564,14 @@ void KIFDriver::CheckRecursiveDependencies()
             else if(temp == input) Error("Invalid dependency. Relation 'input' is dependent on relation 'true'.");
 
             // push all the children in the stack
-            for(size_t i = 0; i < (temp->out).size(); i++) st.push((temp->out)[i]);
+            for(size_t i = 0; i < (temp->out).size(); i++)
+            {
+                if(n_set.find((temp->out)[i]) == n_set.end())
+                {
+                    st.push((temp->out)[i]);
+                    n_set.insert((temp->out)[i]);
+                }
+            }
         }
     }
 }

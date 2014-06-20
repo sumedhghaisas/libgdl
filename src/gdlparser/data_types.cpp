@@ -17,10 +17,13 @@ Argument::Argument(const TokenValue& tok)
     else if(tok.Type() == TokenValue::Function) t = Function;
     else t = Var;
 
+    // assign argument command
     val = tok.Command();
 
+    // get arguments from the token
     const std::vector<TokenValue>& args = tok.Arguments();
 
+    // add them as arguments
     for(size_t i = 0;i < args.size();i++) AddArgument(args[i]);
 }
 
@@ -33,13 +36,47 @@ Argument::Argument(const Argument& arg)
         return;
     }
 
+    // map to hold variable name versus assigned location mapping
+    // this is important as all the occurrences of a variable in a clause
+    // are assigned same object
     std::map<std::string, Argument*> v_map;
 
     t = arg.t;
     val = arg.val;
 
+    // call recursively on arguments
     for(size_t i = 0;i < arg.args.size();i++)
         args.push_back(ConstructArgument(*arg.args[i], v_map));
+}
+
+Argument::~Argument()
+{
+    std::set<Argument*> v_set;
+    // destroy arguments and clear arguments vector before deleting the object
+    Destroy(v_set);
+}
+
+void Argument::Destroy(std::set<Argument*>& v_set)
+{
+    // if variable add it to deleted variable set
+    if(t == Argument::Var && v_set.find(this) == v_set.end())
+    {
+        v_set.insert(this);
+        return;
+    }
+    else if(t != Argument::Var)
+    {
+        for(size_t i = 0;i < args.size();i++)
+        {
+            // only delete argument which have not been deleted yet
+            if(v_set.find(args[i]) == v_set.end())
+            {
+                args[i]->Destroy(v_set);
+                delete args[i];
+            }
+        }
+        args.clear();
+    }
 }
 
 Argument* Argument::ConstructArgument(const Argument& arg, std::map<std::string, Argument*>& v_map)
@@ -65,16 +102,35 @@ Argument* Argument::ConstructArgument(const Argument& arg, std::map<std::string,
     return out;
 }
 
-bool Argument::operator==(const Argument& arg) const
+Argument* Argument::ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map)
 {
-    // for 'or', if arg matches any argument return true
-    if(val == "or")
+    std::map<std::string, Argument*>::iterator it;
+    if(tok.Type() == TokenValue::Var && (it = v_map.find(tok.Command())) != v_map.end())
+        return it->second;
+    else if(tok.Type() == TokenValue::Var)
     {
-        for(size_t i = 0;i < args.size();i++)
-            if(*(args[i]) == arg) return true;
-        return false;
+        Argument *out = new Argument(tok);
+        v_map[tok.Command()] = out;
+        return out;
     }
 
+    Argument *out = new Argument();
+
+    if(tok.Type() == TokenValue::Relation) out->t = Argument::Relation;
+    else if(tok.Type() == TokenValue::Function) out->t = Argument::Function;
+    else out->t = Argument::Var;
+
+    out->val = tok.Command();
+
+    const std::vector<TokenValue>& args = tok.Arguments();
+
+    for(size_t i = 0;i < args.size();i++) out->args.push_back(ConstructArgument(args[i], v_map));
+
+    return out;
+}
+
+bool Argument::operator==(const Argument& arg) const
+{
     if(val != arg.val) return false;
     if(args.size() != arg.args.size()) return false;
 
@@ -84,9 +140,23 @@ bool Argument::operator==(const Argument& arg) const
     return true;
 }
 
-void Argument::AddArgument(const TokenValue& tok)
+bool Argument::OrEquate(const Argument& arg)
 {
-    args.push_back(new Argument(tok));
+    // for 'or', if arg matches any argument return true
+    if(val == "or")
+    {
+        for(size_t i = 0;i < args.size();i++)
+            if(args[i]->OrEquate(arg)) return true;
+        return false;
+    }
+
+    if(val != arg.val) return false;
+    if(args.size() != arg.args.size()) return false;
+
+    for(size_t i = 0;i < args.size();i++)
+        if(!args[i]->OrEquate(*arg.args[i])) return false;
+
+    return true;
 }
 
 bool Argument::HasAsArgument(const Argument& arg) const
@@ -147,9 +217,9 @@ Clause::Clause(const TokenValue& tok, const size_t id) : id(id)
 
     std::map<std::string, Argument*> v_map;
 
-    head = ConstructArgument(args[0], v_map);
+    head = Argument::ConstructArgument(args[0], v_map);
 
-    for(size_t i = 1;i < args.size();i++) premisses.push_back(ConstructArgument(args[i], v_map));
+    for(size_t i = 1;i < args.size();i++) premisses.push_back(Argument::ConstructArgument(args[i], v_map));
 }
 
 Clause::Clause(const Clause& c)
@@ -162,6 +232,25 @@ Clause::Clause(const Clause& c)
         premisses.push_back(Argument::ConstructArgument(*c.premisses[i], v_map));
 }
 
+Clause::~Clause()
+{
+    // to hold the set of variables already deleted
+    std::set<Argument*> v_set;
+
+    // delete head if it is not NULL
+    if(head != NULL)
+    {
+        head->Destroy(v_set);
+        delete head;
+    }
+
+    for(size_t i = 0;i < premisses.size();i++)
+    {
+        premisses[i]->Destroy(v_set);
+        delete premisses[i];
+    }
+}
+
 bool Clause::IsGround()
 {
     if(!(head->IsGround())) return false;
@@ -170,33 +259,6 @@ bool Clause::IsGround()
         if(!(premisses[i]->IsGround())) return false;
 
     return true;
-}
-
-Argument* Clause::ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map)
-{
-    std::map<std::string, Argument*>::iterator it;
-    if(tok.Type() == TokenValue::Var && (it = v_map.find(tok.Command())) != v_map.end())
-        return it->second;
-    else if(tok.Type() == TokenValue::Var)
-    {
-        Argument *out = new Argument(tok);
-        v_map[tok.Command()] = out;
-        return out;
-    }
-
-    Argument *out = new Argument();
-
-    if(tok.Type() == TokenValue::Relation) out->t = Argument::Relation;
-    else if(tok.Type() == TokenValue::Function) out->t = Argument::Function;
-    else out->t = Argument::Var;
-
-    out->val = tok.Command();
-
-    const std::vector<TokenValue>& args = tok.Arguments();
-
-    for(size_t i = 0;i < args.size();i++) out->args.push_back(ConstructArgument(args[i], v_map));
-
-    return out;
 }
 
 std::ostream& operator<<(std::ostream& o, const Argument::Type& t)

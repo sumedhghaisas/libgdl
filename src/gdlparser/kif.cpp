@@ -1,3 +1,9 @@
+/**
+ * @file kif.cpp
+ * @author Sumedh Ghaisas
+ *
+ * Implementation of KIF class.
+ */
 #include "kif.hpp"
 
 // Color code escape sequences
@@ -6,6 +12,12 @@
 #define BASH_CLEAR "\033[0m"
 
 using namespace gdlparser;
+
+KIF::~KIF()
+{
+    for(std::map<std::string, DGraphNode*>::iterator it = dgraph.begin();it != dgraph.end();it++)
+        delete it->second;
+}
 
 bool KIF::PrintDependencyGraph(const std::string& filename) const
 {

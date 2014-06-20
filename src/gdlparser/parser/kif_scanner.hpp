@@ -45,6 +45,8 @@ public:
     KIFScanner(const KIFDriver& driver)
         : driver(driver), stream(NULL), file_index(0) { state = NoState; lineNo = 0; charNo = 0; isError = false; }
 
+    ~KIFScanner() { delete stream; }
+
     //! Add file to be scanned
     void AddFile(const std::string& filename) { files.push_back(filename); }
 

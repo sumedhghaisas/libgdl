@@ -36,12 +36,23 @@ struct Argument
     Argument(const TokenValue& tok);
     //! copy constructor
     Argument(const Argument& arg);
+    //! Destructor
+    ~Argument();
+
+    //! Destroys arguments to this argument before deletion
+    //! called by destructor
+    //! v_set is the set of variables already deleted
+    //! updates it accordingly
+    void Destroy(std::set<Argument*>& v_set);
 
     //! comparison operator
-    //! checks value and arguments(recursively check)
-    //! for 'or' if given argument matches any argument to 'or' true is returned
     bool operator==(const Argument& arg) const;
     bool operator!=(const Argument& arg) const { return !(*this == arg); }
+
+    //! special comparison operator
+    //! checks value and arguments(recursively check)
+    //! for 'or' if given argument matches any argument to 'or' true is returned
+    bool OrEquate(const Argument& arg);
 
     //! return true if given argument is there in arguments
     bool HasAsArgument(const Argument& arg) const;
@@ -56,7 +67,7 @@ struct Argument
     bool IsEqualTo(const Argument& arg) const;
 
     //! adds argument to this command
-    void AddArgument(const TokenValue& tok);
+    void AddArgument(const TokenValue& tok) { args.push_back(new Argument(tok)); }
 
     //! type of this argument
     Type t;
@@ -65,8 +76,9 @@ struct Argument
     //! vector of arguments
     std::vector<Argument*> args;
 
-    //! used by copy constructor
+    //! used by copy constructors
     static Argument* ConstructArgument(const Argument& arg, std::map<std::string, Argument*>& v_map);
+    static Argument* ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map);
 
     //! used by GDLReasoner
     mutable const Argument* sub;
@@ -114,11 +126,14 @@ struct Fact
  */
 struct Clause
 {
-    Clause() {}
+    //! empty constructor
+    Clause() : head(NULL) {}
+    //! constructs clause from scanner token
     Clause(const TokenValue& tok, const size_t id);
+    //! copy constructor
     Clause(const Clause& c);
-
-    Argument* ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map);
+    //! destructor
+    ~Clause();
 
     bool IsGround();
 
@@ -147,6 +162,7 @@ struct DGraphNode
 {
     typedef parser::yy::KIFParser::location_type location_type;
 
+    //! constructor
     DGraphNode(const std::string& name, size_t arity)
         : name(name), arity(arity), index(-1), low_link(-1) {}
 

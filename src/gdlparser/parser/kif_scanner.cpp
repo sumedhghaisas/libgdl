@@ -14,7 +14,7 @@ using namespace gdlparser::parser;
 KIFParser::symbol_type KIFScanner::yylex()
 {
     // if error has occured return END
-    if(isError) return KIFParser::make_END(*(new location_type()));
+    if(isError) return KIFParser::make_END(location_type());
 
     // if stream is NULL choose the first file to scan
     if(stream == NULL)
@@ -23,7 +23,7 @@ KIFParser::symbol_type KIFScanner::yylex()
         if(files.size() == 0)
         {
             driver.Warn("No file provided...");
-            return KIFParser::make_END(*(new location_type()));
+            return KIFParser::make_END(location_type());
         }
         // choose file file to scan
         else
@@ -34,7 +34,7 @@ KIFParser::symbol_type KIFScanner::yylex()
             {
                 driver.Error("Could not open file " + files[file_index]);
                 isError = true;
-                return KIFParser::make_END(*(new location_type()));
+                return KIFParser::make_END(location_type());
             }
         }
         // increment file index
@@ -45,7 +45,7 @@ KIFParser::symbol_type KIFScanner::yylex()
     std::string currentTokenValue = "";
 
     // location of the current token
-    location_type* location = NULL;
+    location_type location;
 
     // if we already have next token to return
     if(state != HaveNextToken)
@@ -101,7 +101,7 @@ KIFParser::symbol_type KIFScanner::yylex()
                 // return corresponding token
                 else if((c == '(' || c == ')') && state == NoState)
                 {
-                    location = new location_type(&files[file_index - 1], lineNo, charNo);
+                    location = location_type(&files[file_index - 1], lineNo + 1, charNo);
                     currentTokenValue += c;
                     break;
                 }
@@ -117,14 +117,14 @@ KIFParser::symbol_type KIFScanner::yylex()
                 // if '<' mark it as a starting of clause command
                 else if(c == '<' && state == NoState)
                 {
-                    location = new location_type(&files[file_index - 1], lineNo, charNo);
+                    location = location_type(&files[file_index - 1], lineNo + 1, charNo);
                     state = InClauseCommand;
                     currentTokenValue += c;
                 }
                 // for everything else append the character to current token value
                 else
                 {
-                    if(state == NoState) location = new location_type(&files[file_index - 1], lineNo, charNo);
+                    if(state == NoState) location = location_type(&files[file_index - 1], lineNo + 1, charNo);
                     state = InToken;
                     currentTokenValue += c;
                 }
@@ -133,8 +133,8 @@ KIFParser::symbol_type KIFScanner::yylex()
             // initialize stream to next file
             else
             {
-                location = new location_type(&files[file_index - 1], lineNo, charNo);
-                location_type& loc = *location;
+                location = location_type(&files[file_index - 1], lineNo + 1, charNo);
+                location_type& loc = location;
 
                 // if previous token is yet to be returned
                 if(state == InToken)
@@ -152,13 +152,14 @@ KIFParser::symbol_type KIFScanner::yylex()
                 else
                 {
                     // initialize stream to next file
-                    stream = new std::ifstream(files[file_index].c_str());
+                    stream->close();
+                    stream->open(files[file_index].c_str());
                     if(!stream->is_open())
                     {
                         // invalid file
                         driver.Error("Could not open file " + files[file_index]);
                         isError = true;
-                        return KIFParser::make_END(*(new location_type()));
+                        return KIFParser::make_END(location_type());
                     }
                     file_index++;
                 }
@@ -168,14 +169,14 @@ KIFParser::symbol_type KIFScanner::yylex()
     // if we already have a token to return
     else
     {
-        location = new location_type(&files[file_index - 1], lineNo, charNo);
+        location = location_type(&files[file_index - 1], lineNo + 1, charNo);
         currentTokenValue = nextTokenValue;
         nextTokenValue = "";
         state = NoState;
     }
 
     // location of the current token
-    location_type& loc = *location;
+    location_type& loc = location;
 
     // return appropriate type of token depending on token value
     if(currentTokenValue == "role") return KIFParser::make_role(currentTokenValue, loc);
