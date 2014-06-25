@@ -27,6 +27,8 @@ namespace gdlparser
  */
 struct Argument
 {
+    typedef std::vector<std::string> StringVec;
+
     //! enum type
     enum Type { Relation, Function, Var };
 
@@ -36,6 +38,7 @@ struct Argument
     Argument(const TokenValue& tok);
     //! copy constructor
     Argument(const Argument& arg);
+    Argument(const std::string& str);
     //! Destructor
     ~Argument();
 
@@ -79,6 +82,9 @@ struct Argument
     //! used by copy constructors
     static Argument* ConstructArgument(const Argument& arg, std::map<std::string, Argument*>& v_map);
     static Argument* ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map);
+    static Argument* ConstructArgument(const std::string& str, std::map<std::string, Argument*>& v_map);
+
+    static bool SeparateCommand (const std::string & input, std::string & cmd, std::vector <std::string> & args);
 
     //! used by GDLReasoner
     mutable const Argument* sub;
@@ -99,6 +105,10 @@ struct Fact
     //! constructs a fact with given command name and text
     Fact(const TokenValue& tok)
             : text(tok.Value()), arg(tok) {}
+
+    //! construct a fact fro argument
+    //! does not check if argument has variables or not
+    Fact(const Argument& arg) : arg(arg) {}
 
     //! Adds argument to this fact
     void AddArgument(const TokenValue& tok) { arg.AddArgument(tok); }

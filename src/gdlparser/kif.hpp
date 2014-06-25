@@ -92,7 +92,7 @@ public:
     std::vector<Clause>& Clauses() { return clauses; }
     const std::vector<Clause> Clauses() const { return clauses; }
 
-    const std::map<std::string, DGraphNode*>& DependencyGraph() { return dgraph; }
+    const std::map<std::string, DGraphNode*>& DependencyGraph() const { return dgraph; }
 
 private:
     //! make KIFDriver class friend

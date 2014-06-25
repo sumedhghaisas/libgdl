@@ -7,6 +7,7 @@
 #include "data_types.hpp"
 
 #include <stack>
+#include <sstream>
 
 using namespace gdlparser;
 
@@ -47,6 +48,90 @@ Argument::Argument(const Argument& arg)
     // call recursively on arguments
     for(size_t i = 0;i < arg.args.size();i++)
         args.push_back(ConstructArgument(*arg.args[i], v_map));
+}
+
+Argument::Argument(const std::string& str)
+{
+    std::map<std::string, Argument*> v_map;
+
+    if(str[0] != '(')
+    {
+        if(str[0] == '?') t = Argument::Var;
+        else t = Argument::Function;
+        val = str;
+        return;
+    }
+
+    std::string cmd;
+    StringVec args;
+    if(!SeparateCommand(str, cmd, args))
+    {
+        std::cerr << "Unable to construct argument from " << str << std::endl;
+        return;
+    }
+
+    val = cmd;
+    t = Argument::Function;
+
+    for(size_t i = 0;i < args.size();i++)
+    {
+        this->args.push_back(ConstructArgument(args[i], v_map));
+    }
+}
+
+bool Argument::SeparateCommand (const std::string & input, std::string & cmd, std::vector <std::string> & args)
+{
+
+    if (input.size() < 3 || input[0] != '(' || input[input.length()-1] != ')')
+    {
+        std::cerr << "Input " << input << " is not surrounded by braces or not big enough" << std::endl;
+        return false;
+    }
+    const std::string withoutBraces = input.substr (1, input.length() - 2);
+    size_t sep = withoutBraces.find(' ');
+    if (sep == withoutBraces.npos)
+    {
+        // no arguments in string
+        cmd = withoutBraces;
+        return true;
+    }
+    cmd = withoutBraces.substr (0, sep);
+
+    sep++;
+    int depth = 0;
+    // parsing parameters
+    std::ostringstream* o = new std::ostringstream();
+    while (sep < withoutBraces.length())
+    {
+        char c = withoutBraces[sep];
+        if (c == '(')
+        {
+            depth++;
+            *o << c;
+        }
+        else if (c == ')')
+        {
+            depth--;
+            *o << c;
+        }
+        else if ((c == ' ') && (depth == 0))
+        {
+            args.push_back (o->str());
+            delete o;
+            o = new std::ostringstream();
+        }
+        else *o << c;
+        sep++;
+    }
+    if (depth != 0)
+    {
+        std::cerr << "Braces count mismatch in " << withoutBraces << std::endl;
+        delete o;
+        return false;
+    }
+    if (o->str() != "") args.push_back (o->str());
+    delete o;
+    return true;
 }
 
 Argument::~Argument()
@@ -126,6 +211,40 @@ Argument* Argument::ConstructArgument(const TokenValue& tok, std::map<std::strin
 
     for(size_t i = 0;i < args.size();i++) out->args.push_back(ConstructArgument(args[i], v_map));
 
+    return out;
+}
+
+Argument* Argument::ConstructArgument(const std::string& str, std::map<std::string, Argument*>& v_map)
+{
+    if(str[0] != '(')
+    {
+        std::map<std::string, Argument*>::iterator it;
+        if(str[0] == '?' && (it = v_map.find(str)) != v_map.end()) return it->second;
+        else
+        {
+            Argument* out = new Argument(str);
+            if(str[0] == '?') v_map[str] = out;
+            return out;
+        }
+    }
+
+    Argument* out = new Argument();
+
+    std::string cmd;
+    StringVec args;
+    if(!SeparateCommand(str, cmd, args))
+    {
+        std::cerr << "Unable to construct argument from " << str << std::endl;
+        return NULL;
+    }
+
+    out->val = cmd;
+    out->t = Argument::Function;
+
+    for(size_t i = 0;i < args.size();i++)
+    {
+        out->args.push_back(ConstructArgument(args[i], v_map));
+    }
     return out;
 }
 
@@ -226,6 +345,8 @@ Clause::Clause(const Clause& c)
 {
     std::map<std::string, Argument*> v_map;
 
+    id = c.id;
+
     head = Argument::ConstructArgument(*c.head, v_map);
 
     for(size_t i = 0;i < c.premisses.size();i++)
@@ -285,7 +406,7 @@ std::ostream& operator<<(std::ostream& o,const Argument& arg)
 
 std::ostream& operator<<(std::ostream& o, const Fact& f)
 {
-    o << f.text;
+    o << f.arg;
     return o;
 }
 
