@@ -1,20 +1,10 @@
-## Recurse into both core/ and methods/.
-set(DIRS
-  parser
-  util
-)
-
-foreach(dir ${DIRS})
-    add_subdirectory(${dir})
-endforeach()
-
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
-  kif.hpp
-  kif.cpp
-  data_types.hpp
-  data_types.cpp
+  answer_types.cpp
+  answer_types.hpp
+  unify.cpp
+  unify.hpp
 )
 
 # add directory name to sources
@@ -25,16 +15,3 @@ endforeach()
 # Append sources (with directory name) to list of all libgdl sources (used at
 # the parent scope).
 set(GDL_SRCS ${GDL_SRCS} ${DIR_SRCS} PARENT_SCOPE)
-
-add_executable(kif
-  kif_main.cpp
-)
-
-target_link_libraries(kif
-  gdl
-  boost_program_options
-)
-
-set_target_properties(kif PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-install(TARGETS kif RUNTIME DESTINATION bin)
