@@ -33,14 +33,18 @@ struct Argument
     enum Type { Relation, Function, Var };
 
     //! empty constructor
-    Argument() {}
+    Argument() : t(Relation) {}
     //! constucts argument from given token
     Argument(const TokenValue& tok);
     //! copy constructor
     Argument(const Argument& arg);
+    //! construct argument from string
     Argument(const std::string& str);
     //! Destructor
     ~Argument();
+
+    //! copy-assignment operator
+    Argument& operator=(const Argument& arg);
 
     //! Destroys arguments to this argument before deletion
     //! called by destructor
@@ -105,10 +109,13 @@ struct Fact
     //! constructs a fact with given command name and text
     Fact(const TokenValue& tok)
             : text(tok.Value()), arg(tok) {}
-
     //! construct a fact fro argument
     //! does not check if argument has variables or not
     Fact(const Argument& arg) : arg(arg) {}
+    //! copy constructor
+    Fact(const Fact& f) : arg(f.arg) {}
+    //! construct fact from string
+    Fact(const std::string& str);
 
     //! Adds argument to this fact
     void AddArgument(const TokenValue& tok) { arg.AddArgument(tok); }
@@ -140,10 +147,15 @@ struct Clause
     Clause() : head(NULL) {}
     //! constructs clause from scanner token
     Clause(const TokenValue& tok, const size_t id);
+    //! construct clause from string
+    Clause(const std::string& str);
     //! copy constructor
     Clause(const Clause& c);
     //! destructor
     ~Clause();
+
+    //! copy-assignment operator
+    Clause& operator=(const Clause& c);
 
     bool IsGround();
 

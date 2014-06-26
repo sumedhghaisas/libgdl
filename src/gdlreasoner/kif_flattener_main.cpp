@@ -1,29 +1,30 @@
 /**
- * @file kif_main.cpp
+ * @file kif_flattener_main.cpp
  * @author Sumedh Ghaisas
  *
- * main file for kif.
+ * main file for KIF flattener.
  */
 #include <iostream>
 #include <fstream>
 
 #include <gdlparser/kif.hpp>
+#include <gdlreasoner/kif_flattener.hpp>
 #include <boost/program_options.hpp>
 
 using namespace std;
 using namespace boost::program_options;
 using namespace gdlparser;
+using namespace gdlreasoner;
 
 /**
- * USAGE : kif OUTPUT_FILENAME -c LIST_OF_SOURCE_FILES
+ * USAGE : flatten OUTPUT_FILENAME -c LIST_OF_SOURCE_FILES
  *
  * Sample usage
  * @command
- * kif test.kif -c 3puzzle.kif arithmatic.kif ...(more files if required) -g test.dot
+ * flatten test.kif -c 3puzzle.kif arithmatic.kif ...(more files if required)
  * @endcommand
  *
  * Parameters :
- * -g   	    : To generate DOT representation of dependency graph
  * -w off	    : will disable all the warnings (by default warnings are enabled)
  * -h[--help]   : Prints help.
  */
@@ -33,7 +34,6 @@ int main(int argc, char* argv[])
     options_description desc("Allowed options");
     desc.add_options()
     ("help,h", "Description")
-    ("graph-filename,g", value<std::string>(), "graph output filename")
     ("enable-warnings,w", value<std::string>()->default_value("ON"), "enable/disable warnings")
     ("output-file", value<std::string>(), "Output filename")
     ("source-files,c", value<std::vector<std::string> >()->multitoken(), "source files");
@@ -52,20 +52,17 @@ int main(int argc, char* argv[])
     // output filename
     std::string output_filename = "";
     // graph output filename
-    std::string graph_filename = "";
-    // to generate graph
-    bool toGraph = false;
+
     // to generate warnings
     bool warn = true;
 
     if (vm.count("help"))
     {
-        std::string des = "USAGE : kif OUTPUT_FILENAME -c LIST_OF_SOURCE_FILES";
+        std::string des = "USAGE : flatten OUTPUT_FILENAME -c LIST_OF_SOURCE_FILES";
         des = des +
                 "\nSample usage" +
-                "\nkif test.kif -c 3puzzle.kif arithmatic.kif ...(more files if required) -g test.dot" +
+                "\nflatten test.kif -c 3puzzle.kif arithmatic.kif ...(more files if required)" +
                 "\nOptional Parameters :" +
-                "\n-g           : To generate DOT representation of dependency graph" +
                 "\n-w off       : will disable all the warnings (by default warnings are enabled" +
                 "\n-h[--help]   : Prints help.";
 
@@ -77,7 +74,7 @@ int main(int argc, char* argv[])
     else
     {
         std::cerr << "ERROR: Output file has to be mentioned." << std::endl;
-        std::cerr << "USAGE : kif OUTPUT_FILE -c SOURCE_FILES" << std::endl;
+        std::cerr << "USAGE : flatten OUTPUT_FILE -c SOURCE_FILES" << std::endl;
         return 1;
     }
 
@@ -88,14 +85,8 @@ int main(int argc, char* argv[])
     else
     {
         std::cerr << "ERROR: at least one source file has to be mentioned." << std::endl;
-        std::cerr << "USAGE : kif OUTPUT_FILE -c SOURCE_FILES" << std::endl;
+        std::cerr << "USAGE : flatten OUTPUT_FILE -c SOURCE_FILES" << std::endl;
         return 1;
-    }
-
-    if (vm.count("graph-filename"))
-    {
-        toGraph = true;
-        graph_filename = vm["graph-filename"].as<std::string>();
     }
 
     if(vm.count("enable-warnings"))
@@ -107,10 +98,8 @@ int main(int argc, char* argv[])
     KIF kif(warn, std::cerr);
     kif.AddFile(files);
     if(!kif.Parse()) return 1;
-    kif.PrintToFile(output_filename);
-    if(toGraph)
-        kif.PrintDependencyGraph(graph_filename);
-    return 0;
+
+    KIFFlattener kf;
+    kf.Flatten(kif);
+    kf.PrintToFile(output_filename);
 }
-
-

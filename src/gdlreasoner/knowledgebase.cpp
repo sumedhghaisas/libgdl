@@ -34,15 +34,35 @@ KnowledgeBase::KnowledgeBase(const gdlparser::KIF& kif) : c_id(0)
     }
 }
 
-std::list<Argument*> KnowledgeBase::Ask(const Argument& arg) const
+std::list<Argument*> KnowledgeBase::Ask(const Argument& arg, bool checkForDoubles) const
 {
     std::list<Argument*> out;
 
     // get answer
     Answer *ans = GetAnswer(arg, Unify::VariableSet(), std::set<size_t>());
     // get all the valid substitution and add them to list
-    while(ans->next())
-        out.push_back(Unify::GetSubstitutedArgument(&arg));
+
+    if(!checkForDoubles)
+    {
+        while(ans->next())
+            out.push_back(Unify::GetSubstitutedArgument(&arg));
+    }
+    else
+    {
+        std::set<std::string> str_ans;
+        while(ans->next())
+        {
+            Argument* ans = Unify::GetSubstitutedArgument(&arg);
+            std::stringstream stream;
+            stream << *ans;
+            if(str_ans.find(stream.str()) == str_ans.end())
+            {
+                out.push_back(ans);
+                str_ans.insert(stream.str());
+            }
+            else delete ans;
+        }
+    }
     // delete answer
     delete ans;
 
@@ -54,7 +74,9 @@ bool KnowledgeBase::IsSatisfiable(const Argument& arg) const
     // get answer
     Answer *ans = GetAnswer(arg, Unify::VariableSet(), std::set<size_t>());
     // return if any valid substitution exists
-    return ans->next();
+    bool res = ans->next();
+    delete ans;
+    return res;
 }
 
 size_t KnowledgeBase::Tell(const Clause& c)
@@ -77,8 +99,31 @@ size_t KnowledgeBase::Tell(const Fact& f)
     stream << f.arg.args.size();
     std::string command = f.arg.val + "/" + stream.str();
     m_facts[command].push_back(f);
+
     // return the index of this fact in the FactVec
     return m_facts[command].size() - 1;
+}
+
+size_t KnowledgeBase::Tell(const std::string& str)
+{
+    if(str[0] != '(') return Tell(Fact(str));
+
+    std::string cmd;
+    std::vector<std::string> args;
+    if(!Argument::SeparateCommand(str, cmd, args))
+    {
+        std::cerr << "Unable to construct argument from " << str << std::endl;
+        return 0;
+    }
+
+    if(cmd == "<=" && args.size() < 2)
+    {
+        std::cerr << "Unable to construct argument from " << str << std::endl;
+        return 0;
+    }
+    else if(cmd != "<=") return Tell(Fact(str));
+
+    return Tell(Clause(str));
 }
 
 bool KnowledgeBase::Erase(const Clause& c, size_t index)

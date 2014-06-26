@@ -1,11 +1,8 @@
 # GDLParser test executable.
 add_executable(libgdl_test
-  gdlparser_test.cpp
-  kif_test.cpp
-  defined_rel_test.cpp
-  rule_safety_test.cpp
-  stratified_test.cpp
-  recursive_depen_test.cpp
+  libgdl_test.cpp
+  primary_parser_tests.cpp
+  primary_reasoner_tests.cpp
 )
 # Link dependencies of test executable.
 target_link_libraries(libgdl_test

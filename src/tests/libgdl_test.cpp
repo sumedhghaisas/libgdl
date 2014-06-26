@@ -1,11 +1,10 @@
 /**
- * @file gdlparser_test.cpp
+ * @file libgdl_test.cpp
  *
  * Defining the tests for GDLParser.
  */
 
-
-#define BOOST_TEST_MODULE GDLParserTest
+#define BOOST_TEST_MODULE libGDLTest
 
 #include <boost/version.hpp>
 

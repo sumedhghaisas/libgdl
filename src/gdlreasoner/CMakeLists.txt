@@ -24,3 +24,16 @@ endforeach()
 # Append sources (with directory name) to list of all libgdl sources (used at
 # the parent scope).
 set(GDL_SRCS ${GDL_SRCS} ${DIR_SRCS} PARENT_SCOPE)
+
+add_executable(flatten
+  kif_flattener_main.cpp
+)
+
+target_link_libraries(flatten
+  gdl
+  boost_program_options
+)
+
+set_target_properties(flatten PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+install(TARGETS flatten RUNTIME DESTINATION bin)

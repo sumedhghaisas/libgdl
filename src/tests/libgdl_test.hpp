@@ -1,5 +1,10 @@
-#ifndef _GDLPARSER_TESTS_GDLPARSER_TEST_HPP_INCLUDED
-#define _GDLPARSER_TESTS_GDLPARSER_TEST_HPP_INCLUDED
+/**
+ * @file libgdl_test.hpp
+ *
+ * Declaring the tests for GDLParser.
+ */
+#ifndef _LIBGDL_TESTS_LIBGDL_TEST_HPP_INCLUDED
+#define _LIBGDL_TESTS_LIBGDL_TEST_HPP_INCLUDED
 
 #include <fstream>
 

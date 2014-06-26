@@ -48,8 +48,9 @@ public:
 
     //! Asks knowledge base given question
     //! returns list of answers
-    std::list<Argument*> Ask(const Argument& question) const;
+    std::list<Argument*> Ask(const Argument& question, bool checkForDoubles = true) const;
 
+    //! get the answer to the question than substitutions
     Answer* GetAnswer(const Argument& question, const VariableSet& v_set, const std::set<size_t>& visited) const;
 
     //! returns if the question is satisfiable
@@ -64,6 +65,8 @@ public:
     //! returns index of this fact in the list
     //! this added fact can be delete by passing this index along with the clause
     size_t Tell(const Fact& f);
+
+    size_t Tell(const std::string& str);
 
     //! erase given knowledge from knowledge base
     //! index represents the index of the clause in appropriate ClauseVec

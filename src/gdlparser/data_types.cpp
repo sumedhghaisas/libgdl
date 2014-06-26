@@ -259,6 +259,30 @@ bool Argument::operator==(const Argument& arg) const
     return true;
 }
 
+Argument& Argument::operator=(const Argument& arg)
+{
+    if(arg.IsVariable())
+    {
+        t = arg.t;
+        val = arg.val;
+        return *this;
+    }
+
+    // map to hold variable name versus assigned location mapping
+    // this is important as all the occurrences of a variable in a clause
+    // are assigned same object
+    std::map<std::string, Argument*> v_map;
+
+    t = arg.t;
+    val = arg.val;
+
+    // call recursively on arguments
+    for(size_t i = 0;i < arg.args.size();i++)
+        args.push_back(ConstructArgument(*arg.args[i], v_map));
+
+    return *this;
+}
+
 bool Argument::OrEquate(const Argument& arg)
 {
     // for 'or', if arg matches any argument return true
@@ -328,6 +352,17 @@ bool Argument::IsEqualTo(const Argument& arg) const
     return true;
 }
 
+Fact::Fact(const std::string& str)
+{
+    if(str.find("?") != std::string::npos)
+    {
+        std::cerr << "Unable to construct argument from " << str << std::endl;
+        return;
+    }
+
+    arg = Argument(str);
+}
+
 Clause::Clause(const TokenValue& tok, const size_t id) : id(id)
 {
     text = tok.Value();
@@ -341,6 +376,24 @@ Clause::Clause(const TokenValue& tok, const size_t id) : id(id)
     for(size_t i = 1;i < args.size();i++) premisses.push_back(Argument::ConstructArgument(args[i], v_map));
 }
 
+Clause::Clause(const std::string& str)
+{
+    std::map<std::string, Argument*> v_map;
+
+    std::string cmd;
+    std::vector<std::string> args;
+    if(!Argument::SeparateCommand(str, cmd, args) || cmd != "<=" || args.size() < 2)
+    {
+        std::cerr << "Unable to construct clause from " << str << std::endl;
+        return;
+    }
+
+    head = Argument::ConstructArgument(args[0], v_map);
+
+    for(size_t i = 1;i < args.size();i++)
+        premisses.push_back(Argument::ConstructArgument(args[i], v_map));
+}
+
 Clause::Clause(const Clause& c)
 {
     std::map<std::string, Argument*> v_map;
@@ -351,6 +404,22 @@ Clause::Clause(const Clause& c)
 
     for(size_t i = 0;i < c.premisses.size();i++)
         premisses.push_back(Argument::ConstructArgument(*c.premisses[i], v_map));
+}
+
+Clause& Clause::operator=(const Clause& c)
+{
+    premisses.clear();
+
+    std::map<std::string, Argument*> v_map;
+
+    id = c.id;
+
+    head = Argument::ConstructArgument(*c.head, v_map);
+
+    for(size_t i = 0;i < c.premisses.size();i++)
+        premisses.push_back(Argument::ConstructArgument(*c.premisses[i], v_map));
+
+    return *this;
 }
 
 Clause::~Clause()
