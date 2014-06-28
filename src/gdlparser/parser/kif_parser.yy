@@ -55,7 +55,7 @@ namespace gdlparser {
 
 // use yylex function in scanner class instead of predefiend yylex
 #undef yylex
-#define yylex scanner.yylex
+#define yylex scanner.lex
 
 }
 
@@ -81,6 +81,7 @@ namespace gdlparser {
 %token  <TokenValue>  oor       "or"
 %token  <TokenValue>  distinct  "distinct"
 %token  <TokenValue>  clause_command    "clause command"
+%token  <TokenValue>  hash_line      "line mark"
 
 /* Nonterminals */
 

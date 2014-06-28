@@ -74,7 +74,11 @@ KIFParser::symbol_type KIFScanner::yylex()
                 // if we are in comment ignore the input
                 else if(state == InComment || state == InCommentFromToken) continue;
                 // if ';' change state to comment
-                else if(c == ';' && state == InToken) state = InCommentFromToken;
+                else if(c == ';' && state == InToken)
+                {
+                    state = InComment;
+                    break;
+                }
                 else if(c == ';') state = InComment;
                 // ignore extra spaces, next lines and tabs outside token
                 else if((c == '\t' || c == '\n' || c == ' ') && state == NoState) continue;

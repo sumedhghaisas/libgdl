@@ -12,6 +12,7 @@
 #include <vector>
 
 #include <gdlparser/parser/kif_driver.hpp>
+#include <gdlparser/parser/kif_parser.tab.hh>
 
 namespace gdlparser
 {
@@ -44,14 +45,21 @@ class KIF
 {
     //! Some useful typedefs
     typedef parser::KIFDriver KIFDriver;
+    typedef parser::yy::KIFParser::location_type location_type;
 
 public:
     //! Constructor
     //!
     //! @param isWarn bool : enable or disable warnings
     //! @param stream std::ostream& : stream to print errors and warnings
-    KIF(bool isWarn = true, std::ostream& stream = std::cout)
-            : stream(&stream), isWarn(isWarn), driver(*this) {}
+    KIF(bool isWarn = true,
+        bool isDebuggingSymbols = true,
+        char o_level = 0,
+        std::ostream& stream = std::cout)
+        : stream(&stream), isWarn(isWarn),
+        isDebuggingSymbols(isDebuggingSymbols),
+        o_level(0),
+        driver(*this) {}
 
     ~KIF();
 
@@ -59,15 +67,23 @@ public:
     //!
     //! @param filename const std::string& : filename of the file to be added
     //!
-    void AddFile(const std::string& filename) { driver.AddFile(filename); }
+    void AddFile(const std::string& filename)
+    {
+        driver.AddFile(filename);
+    }
     void AddFile(const std::vector<std::string>& files)
-            { for(size_t i = 0;i < files.size();i++) AddFile(files[i]); }
+    {
+        for(size_t i = 0; i < files.size(); i++) AddFile(files[i]);
+    }
 
     //! Parse the inputs
     //!
     //! @return bool : success or failure
     //!
-    bool Parse() { return driver.Parse(); }
+    bool Parse()
+    {
+        return driver.Parse();
+    }
 
     //! Print the parsed knowledge to file
     //!
@@ -86,21 +102,44 @@ public:
     bool PrintDependencyGraph(const std::string& filename) const;
 
     //! get facts
-    std::vector<Fact>& Facts() { return facts; }
-    const std::vector<Fact>& Facts() const { return facts; }
+    std::vector<Fact>& Facts()
+    {
+        return facts;
+    }
+    const std::vector<Fact>& Facts() const
+    {
+        return facts;
+    }
     //! get clauses
-    std::vector<Clause>& Clauses() { return clauses; }
-    const std::vector<Clause> Clauses() const { return clauses; }
+    std::vector<Clause>& Clauses()
+    {
+        return clauses;
+    }
+    const std::vector<Clause> Clauses() const
+    {
+        return clauses;
+    }
 
-    const std::map<std::string, DGraphNode*>& DependencyGraph() const { return dgraph; }
+    const std::map<std::string, DGraphNode*>& DependencyGraph() const
+    {
+        return dgraph;
+    }
 
 private:
     //! make KIFDriver class friend
     friend KIFDriver;
 
     //! add fact and clause to this kif -- used by KIFDriver
-    void AddFact(const Fact& f) { facts.push_back(f); }
-    void AddClause(const Clause& c) { clauses.push_back(c); }
+    void AddFact(const Fact& f, const location_type& loc)
+    {
+        facts.push_back(f);
+        if(isDebuggingSymbols) ds_facts.push_back(loc);
+    }
+    void AddClause(const Clause& c, const location_type& loc)
+    {
+        clauses.push_back(c);
+        if(isDebuggingSymbols) ds_clauses.push_back(loc);
+    }
 
     //! pointer to logging stream
     mutable std::ostream* stream;
@@ -108,11 +147,19 @@ private:
     //! enable/disable warnings
     bool isWarn;
 
+    const bool isDebuggingSymbols;
+
+    const char o_level;
+
     //! All the facts
     std::vector<Fact> facts;
 
+    std::vector<location_type> ds_facts;
+
     //! All the clauses
     std::vector<Clause> clauses;
+
+    std::vector<location_type> ds_clauses;
 
     //! dependency graph
     std::map<std::string, DGraphNode*> dgraph;

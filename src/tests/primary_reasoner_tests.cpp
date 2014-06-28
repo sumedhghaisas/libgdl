@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(NormalReasonerTest)
 {
     MARK_START;
     OPEN_LOG;
-	KIF kif(false, TEST_LOG);
+	KIF kif(false, false, 0, TEST_LOG);
 	kif.AddFile("data/parser_tests/8puzzle.kif");
 	kif.Parse();
 

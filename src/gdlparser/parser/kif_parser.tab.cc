@@ -61,7 +61,7 @@
 
 // use yylex function in scanner class instead of predefiend yylex
 #undef yylex
-#define yylex scanner.yylex
+#define yylex scanner.lex
 
 
 #line 68 "kif_parser.tab.cc" // lalr1.cc:407
@@ -272,22 +272,23 @@ namespace gdlparser { namespace parser { namespace yy {
       case 19: // "or"
       case 20: // "distinct"
       case 21: // "clause command"
-      case 23: // Start
-      case 24: // S
-      case 25: // Fact
-      case 26: // Ground_term
-      case 27: // Ground_terms
-      case 28: // Id_num
-      case 29: // Clause
-      case 30: // Head
-      case 31: // ORelation
-      case 32: // ORelations
-      case 33: // Literal
-      case 34: // Term
-      case 35: // Terms
-      case 36: // CTerm
-      case 37: // CTerms
-      case 38: // Num_var
+      case 22: // "line mark"
+      case 24: // Start
+      case 25: // S
+      case 26: // Fact
+      case 27: // Ground_term
+      case 28: // Ground_terms
+      case 29: // Id_num
+      case 30: // Clause
+      case 31: // Head
+      case 32: // ORelation
+      case 33: // ORelations
+      case 34: // Literal
+      case 35: // Term
+      case 36: // Terms
+      case 37: // CTerm
+      case 38: // CTerms
+      case 39: // Num_var
         value.move< TokenValue > (that.value);
         break;
 
@@ -325,22 +326,23 @@ namespace gdlparser { namespace parser { namespace yy {
       case 19: // "or"
       case 20: // "distinct"
       case 21: // "clause command"
-      case 23: // Start
-      case 24: // S
-      case 25: // Fact
-      case 26: // Ground_term
-      case 27: // Ground_terms
-      case 28: // Id_num
-      case 29: // Clause
-      case 30: // Head
-      case 31: // ORelation
-      case 32: // ORelations
-      case 33: // Literal
-      case 34: // Term
-      case 35: // Terms
-      case 36: // CTerm
-      case 37: // CTerms
-      case 38: // Num_var
+      case 22: // "line mark"
+      case 24: // Start
+      case 25: // S
+      case 26: // Fact
+      case 27: // Ground_term
+      case 28: // Ground_terms
+      case 29: // Id_num
+      case 30: // Clause
+      case 31: // Head
+      case 32: // ORelation
+      case 33: // ORelations
+      case 34: // Literal
+      case 35: // Term
+      case 36: // Terms
+      case 37: // CTerm
+      case 38: // CTerms
+      case 39: // Num_var
         value.copy< TokenValue > (that.value);
         break;
 
@@ -594,22 +596,23 @@ namespace gdlparser { namespace parser { namespace yy {
       case 19: // "or"
       case 20: // "distinct"
       case 21: // "clause command"
-      case 23: // Start
-      case 24: // S
-      case 25: // Fact
-      case 26: // Ground_term
-      case 27: // Ground_terms
-      case 28: // Id_num
-      case 29: // Clause
-      case 30: // Head
-      case 31: // ORelation
-      case 32: // ORelations
-      case 33: // Literal
-      case 34: // Term
-      case 35: // Terms
-      case 36: // CTerm
-      case 37: // CTerms
-      case 38: // Num_var
+      case 22: // "line mark"
+      case 24: // Start
+      case 25: // S
+      case 26: // Fact
+      case 27: // Ground_term
+      case 28: // Ground_terms
+      case 29: // Id_num
+      case 30: // Clause
+      case 31: // Head
+      case 32: // ORelation
+      case 33: // ORelations
+      case 34: // Literal
+      case 35: // Term
+      case 36: // Terms
+      case 37: // CTerm
+      case 38: // CTerms
+      case 39: // Num_var
         yylhs.value.build< TokenValue > ();
         break;
 
@@ -631,29 +634,29 @@ namespace gdlparser { namespace parser { namespace yy {
         switch (yyn)
           {
   case 3:
-#line 110 "kif_parser.yy" // lalr1.cc:846
+#line 111 "kif_parser.yy" // lalr1.cc:846
     {
                             driver.AddFact(yystack_[1].value.as< TokenValue > (), yystack_[1].location); yystack_[0].value.as< TokenValue > ();
                         }
-#line 639 "kif_parser.tab.cc" // lalr1.cc:846
+#line 642 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 4:
-#line 113 "kif_parser.yy" // lalr1.cc:846
+#line 114 "kif_parser.yy" // lalr1.cc:846
     {
                             driver.AddClause(yystack_[1].value.as< TokenValue > (), yystack_[1].location); yystack_[0].value.as< TokenValue > ();
                         }
-#line 647 "kif_parser.tab.cc" // lalr1.cc:846
+#line 650 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 5:
-#line 116 "kif_parser.yy" // lalr1.cc:846
+#line 117 "kif_parser.yy" // lalr1.cc:846
     { }
-#line 653 "kif_parser.tab.cc" // lalr1.cc:846
+#line 656 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 6:
-#line 118 "kif_parser.yy" // lalr1.cc:846
+#line 119 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
@@ -664,11 +667,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         if(res == 1) error(yystack_[2].location, msg);
                                                         else if(res == 2) driver.Warn(yystack_[2].location, msg);
                                                     }
-#line 668 "kif_parser.tab.cc" // lalr1.cc:846
+#line 671 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 7:
-#line 128 "kif_parser.yy" // lalr1.cc:846
+#line 129 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
@@ -679,11 +682,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         if(res == 1) error(yystack_[2].location, msg);
                                                         else if(res == 2) driver.Warn(yystack_[2].location, msg);
                                                     }
-#line 683 "kif_parser.tab.cc" // lalr1.cc:846
+#line 686 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 8:
-#line 138 "kif_parser.yy" // lalr1.cc:846
+#line 139 "kif_parser.yy" // lalr1.cc:846
     {
                                                                     yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                                     yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
@@ -695,11 +698,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                                     if(res == 1) error(yystack_[3].location, msg);
                                                                     else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                                 }
-#line 699 "kif_parser.tab.cc" // lalr1.cc:846
+#line 702 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 9:
-#line 149 "kif_parser.yy" // lalr1.cc:846
+#line 150 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
@@ -710,11 +713,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         if(res == 1) error(yystack_[2].location, msg);
                                                         else if(res == 2) driver.Warn(yystack_[2].location, msg);
                                                     }
-#line 714 "kif_parser.tab.cc" // lalr1.cc:846
+#line 717 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 10:
-#line 159 "kif_parser.yy" // lalr1.cc:846
+#line 160 "kif_parser.yy" // lalr1.cc:846
     {
                                                                     yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                                     yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
@@ -726,11 +729,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                                     if(res == 1) error(yystack_[3].location, msg);
                                                                     else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                                 }
-#line 730 "kif_parser.tab.cc" // lalr1.cc:846
+#line 733 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 11:
-#line 170 "kif_parser.yy" // lalr1.cc:846
+#line 171 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
@@ -741,11 +744,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         if(res == 1) error(yystack_[2].location, msg);
                                                         else if(res == 2) driver.Warn(yystack_[2].location, msg);
                                                     }
-#line 745 "kif_parser.tab.cc" // lalr1.cc:846
+#line 748 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 12:
-#line 180 "kif_parser.yy" // lalr1.cc:846
+#line 181 "kif_parser.yy" // lalr1.cc:846
     {
                                                             yystack_[1].value.as< TokenValue > ().Type() = TokenValue::Function;
                                                             yystack_[1].value.as< TokenValue > ().Command() = yystack_[1].value.as< TokenValue > ().Value();
@@ -760,11 +763,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                             else if(res == 2) driver.Warn(yystack_[3].location, msg);
 
                                                         }
-#line 764 "kif_parser.tab.cc" // lalr1.cc:846
+#line 767 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 13:
-#line 194 "kif_parser.yy" // lalr1.cc:846
+#line 195 "kif_parser.yy" // lalr1.cc:846
     {
                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                             yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
@@ -774,11 +777,11 @@ namespace gdlparser { namespace parser { namespace yy {
                             if(res == 1) error(yystack_[0].location, msg);
                             else if(res == 2) driver.Warn(yystack_[0].location, msg);
                         }
-#line 778 "kif_parser.tab.cc" // lalr1.cc:846
+#line 781 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 14:
-#line 203 "kif_parser.yy" // lalr1.cc:846
+#line 204 "kif_parser.yy" // lalr1.cc:846
     {
                                                                     yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > ();
                                                                     if(yystack_[1].value.as< TokenValue > () != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > ();
@@ -792,11 +795,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                                     if(res == 1) error(yystack_[3].location, msg);
                                                                     else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                                 }
-#line 796 "kif_parser.tab.cc" // lalr1.cc:846
+#line 799 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 15:
-#line 216 "kif_parser.yy" // lalr1.cc:846
+#line 217 "kif_parser.yy" // lalr1.cc:846
     {
                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                             yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
@@ -806,11 +809,11 @@ namespace gdlparser { namespace parser { namespace yy {
                             if(res == 1) error(yystack_[0].location, msg);
                             else if(res == 2) driver.Warn(yystack_[0].location, msg);
                         }
-#line 810 "kif_parser.tab.cc" // lalr1.cc:846
+#line 813 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 16:
-#line 226 "kif_parser.yy" // lalr1.cc:846
+#line 227 "kif_parser.yy" // lalr1.cc:846
     {
                                                                     yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > ();
                                                                     if(yystack_[1].value.as< TokenValue > () != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > ();
@@ -824,11 +827,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                                     if(res == 1) error(yystack_[3].location, msg);
                                                                     else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                                 }
-#line 828 "kif_parser.tab.cc" // lalr1.cc:846
+#line 831 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 17:
-#line 239 "kif_parser.yy" // lalr1.cc:846
+#line 240 "kif_parser.yy" // lalr1.cc:846
     {
                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                             yylhs.value.as< TokenValue > ().Type() = TokenValue::Function;
@@ -838,11 +841,11 @@ namespace gdlparser { namespace parser { namespace yy {
                             if(res == 1) error(yystack_[0].location, msg);
                             else if(res == 2) driver.Warn(yystack_[0].location, msg);
                         }
-#line 842 "kif_parser.tab.cc" // lalr1.cc:846
+#line 845 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 18:
-#line 249 "kif_parser.yy" // lalr1.cc:846
+#line 250 "kif_parser.yy" // lalr1.cc:846
     {
                                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[1].value.as< TokenValue > ();
                                             if(yystack_[0].value.as< TokenValue > ().Value() != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
@@ -850,37 +853,37 @@ namespace gdlparser { namespace parser { namespace yy {
                                             yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                             yylhs.value.as< TokenValue > ().AddArguments(yystack_[0].value.as< TokenValue > ().Arguments());
                                         }
-#line 854 "kif_parser.tab.cc" // lalr1.cc:846
+#line 857 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 19:
-#line 256 "kif_parser.yy" // lalr1.cc:846
+#line 257 "kif_parser.yy" // lalr1.cc:846
     { }
-#line 860 "kif_parser.tab.cc" // lalr1.cc:846
+#line 863 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 20:
-#line 258 "kif_parser.yy" // lalr1.cc:846
+#line 259 "kif_parser.yy" // lalr1.cc:846
     {
                         yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Function;
                         yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
                     }
-#line 870 "kif_parser.tab.cc" // lalr1.cc:846
+#line 873 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 21:
-#line 263 "kif_parser.yy" // lalr1.cc:846
+#line 264 "kif_parser.yy" // lalr1.cc:846
     {
                         yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Function;
                         yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
                     }
-#line 880 "kif_parser.tab.cc" // lalr1.cc:846
+#line 883 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 22:
-#line 269 "kif_parser.yy" // lalr1.cc:846
+#line 270 "kif_parser.yy" // lalr1.cc:846
     {
                                                                                 yylhs.value.as< TokenValue > () = yystack_[5].value.as< TokenValue > () + " " + yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > ().Value() + " " + yystack_[2].value.as< TokenValue > ();
                                                                                 if(yystack_[1].value.as< TokenValue > () != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > ();
@@ -891,11 +894,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                                                 yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
                                                                                 yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
                                                                             }
-#line 895 "kif_parser.tab.cc" // lalr1.cc:846
+#line 898 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 23:
-#line 280 "kif_parser.yy" // lalr1.cc:846
+#line 281 "kif_parser.yy" // lalr1.cc:846
     {
                                                 yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                 yylhs.value.as< TokenValue > ().Command() = yystack_[2].value.as< TokenValue > ().Value();
@@ -906,11 +909,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                 if(res == 1) error(yystack_[2].location, msg);
                                                 else if(res == 2) driver.Warn(yystack_[2].location, msg);
                                             }
-#line 910 "kif_parser.tab.cc" // lalr1.cc:846
+#line 913 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 24:
-#line 290 "kif_parser.yy" // lalr1.cc:846
+#line 291 "kif_parser.yy" // lalr1.cc:846
     {
                                                 yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                 yylhs.value.as< TokenValue > ().Command() = yystack_[2].value.as< TokenValue > ().Value();
@@ -921,11 +924,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                 if(res == 1) error(yystack_[2].location, msg);
                                                 else if(res == 2) driver.Warn(yystack_[2].location, msg);
                                             }
-#line 925 "kif_parser.tab.cc" // lalr1.cc:846
+#line 928 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 25:
-#line 300 "kif_parser.yy" // lalr1.cc:846
+#line 301 "kif_parser.yy" // lalr1.cc:846
     {
                                                     yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                     yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
@@ -937,11 +940,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                     if(res == 1) error(yystack_[3].location, msg);
                                                     else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                 }
-#line 941 "kif_parser.tab.cc" // lalr1.cc:846
+#line 944 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 26:
-#line 311 "kif_parser.yy" // lalr1.cc:846
+#line 312 "kif_parser.yy" // lalr1.cc:846
     {
                                                 yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                 yylhs.value.as< TokenValue > ().Command() = yystack_[2].value.as< TokenValue > ().Value();
@@ -952,11 +955,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                 if(res == 1) error(yystack_[2].location, msg);
                                                 else if(res == 2) driver.Warn(yystack_[2].location, msg);
                                             }
-#line 956 "kif_parser.tab.cc" // lalr1.cc:846
+#line 959 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 27:
-#line 321 "kif_parser.yy" // lalr1.cc:846
+#line 322 "kif_parser.yy" // lalr1.cc:846
     {
                                                     yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                     yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
@@ -968,11 +971,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                     if(res == 1) error(yystack_[3].location, msg);
                                                     else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                 }
-#line 972 "kif_parser.tab.cc" // lalr1.cc:846
+#line 975 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 28:
-#line 332 "kif_parser.yy" // lalr1.cc:846
+#line 333 "kif_parser.yy" // lalr1.cc:846
     {
                                                 yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                 yylhs.value.as< TokenValue > ().Command() = yystack_[2].value.as< TokenValue > ().Value();
@@ -983,11 +986,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                 if(res == 1) error(yystack_[2].location, msg);
                                                 else if(res == 2) driver.Warn(yystack_[2].location, msg);
                                             }
-#line 987 "kif_parser.tab.cc" // lalr1.cc:846
+#line 990 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 29:
-#line 342 "kif_parser.yy" // lalr1.cc:846
+#line 343 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
@@ -999,11 +1002,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         if(res == 1) error(yystack_[3].location, msg);
                                                         else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                     }
-#line 1003 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1006 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 30:
-#line 353 "kif_parser.yy" // lalr1.cc:846
+#line 354 "kif_parser.yy" // lalr1.cc:846
     {
                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                             yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
@@ -1013,11 +1016,11 @@ namespace gdlparser { namespace parser { namespace yy {
                             if(res == 1) error(yystack_[0].location, msg);
                             else if(res == 2) driver.Warn(yystack_[0].location, msg);
                         }
-#line 1017 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1020 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 31:
-#line 362 "kif_parser.yy" // lalr1.cc:846
+#line 363 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > ();
                                                         if(yystack_[1].value.as< TokenValue > () != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > ();
@@ -1031,11 +1034,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         if(res == 1) error(yystack_[3].location, msg);
                                                         else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                     }
-#line 1035 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1038 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 32:
-#line 375 "kif_parser.yy" // lalr1.cc:846
+#line 376 "kif_parser.yy" // lalr1.cc:846
     {
                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                             yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
@@ -1045,17 +1048,17 @@ namespace gdlparser { namespace parser { namespace yy {
                             if(res == 1) error(yystack_[0].location, msg);
                             else if(res == 2) driver.Warn(yystack_[0].location, msg);
                         }
-#line 1049 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1052 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 33:
-#line 385 "kif_parser.yy" // lalr1.cc:846
+#line 386 "kif_parser.yy" // lalr1.cc:846
     { yylhs.value.as< TokenValue > () = yystack_[0].value.as< TokenValue > (); }
-#line 1055 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1058 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 34:
-#line 386 "kif_parser.yy" // lalr1.cc:846
+#line 387 "kif_parser.yy" // lalr1.cc:846
     {
                                                     yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                     yylhs.value.as< TokenValue > ().PerformNot();
@@ -1063,11 +1066,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                     yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                     yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                 }
-#line 1067 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1070 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 35:
-#line 393 "kif_parser.yy" // lalr1.cc:846
+#line 394 "kif_parser.yy" // lalr1.cc:846
     {
                                         yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[1].value.as< TokenValue > ();
                                         if(yystack_[0].value.as< TokenValue > () != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
@@ -1075,17 +1078,17 @@ namespace gdlparser { namespace parser { namespace yy {
                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                         yylhs.value.as< TokenValue > ().AddArguments(yystack_[0].value.as< TokenValue > ().Arguments());
                                     }
-#line 1079 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1082 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 36:
-#line 400 "kif_parser.yy" // lalr1.cc:846
+#line 401 "kif_parser.yy" // lalr1.cc:846
     { }
-#line 1085 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1088 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 37:
-#line 403 "kif_parser.yy" // lalr1.cc:846
+#line 404 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
@@ -1093,22 +1096,22 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     }
-#line 1097 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1100 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 38:
-#line 410 "kif_parser.yy" // lalr1.cc:846
+#line 411 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[2].value.as< TokenValue > ().Value();
                                                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     }
-#line 1108 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1111 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 39:
-#line 416 "kif_parser.yy" // lalr1.cc:846
+#line 417 "kif_parser.yy" // lalr1.cc:846
     {
                                                                 yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > ().Value() + " " + yystack_[0].value.as< TokenValue > ();
                                                                 yylhs.value.as< TokenValue > ().OrRestrict(yystack_[1].value.as< TokenValue > ());
@@ -1117,11 +1120,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                                 yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
                                                                 yylhs.value.as< TokenValue > ().AddArguments(yystack_[1].value.as< TokenValue > ().Arguments());
                                                             }
-#line 1121 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1124 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 40:
-#line 424 "kif_parser.yy" // lalr1.cc:846
+#line 425 "kif_parser.yy" // lalr1.cc:846
     {
                                                             yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                             yylhs.value.as< TokenValue > ().PerformNot();
@@ -1130,33 +1133,33 @@ namespace gdlparser { namespace parser { namespace yy {
                                                             yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
                                                             yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                         }
-#line 1134 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1137 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 41:
-#line 432 "kif_parser.yy" // lalr1.cc:846
+#line 433 "kif_parser.yy" // lalr1.cc:846
     {
                                                 yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                 yylhs.value.as< TokenValue > ().Command() = yystack_[2].value.as< TokenValue > ().Value();
                                                 yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                 yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                             }
-#line 1145 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1148 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 42:
-#line 438 "kif_parser.yy" // lalr1.cc:846
+#line 439 "kif_parser.yy" // lalr1.cc:846
     {
                                                 yylhs.value.as< TokenValue > () = yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                 yylhs.value.as< TokenValue > ().Command() = yystack_[2].value.as< TokenValue > ().Value();
                                                 yylhs.value.as< TokenValue > ().Type() = TokenValue::Relation;
                                                 yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                             }
-#line 1156 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1159 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 43:
-#line 444 "kif_parser.yy" // lalr1.cc:846
+#line 445 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
@@ -1164,11 +1167,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     }
-#line 1168 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1171 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 44:
-#line 451 "kif_parser.yy" // lalr1.cc:846
+#line 452 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
@@ -1176,11 +1179,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     }
-#line 1180 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1183 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 45:
-#line 458 "kif_parser.yy" // lalr1.cc:846
+#line 459 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
                                                         yylhs.value.as< TokenValue > ().Command() = yystack_[3].value.as< TokenValue > ().Value();
@@ -1188,20 +1191,20 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[2].value.as< TokenValue > ());
                                                         yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                                     }
-#line 1192 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1195 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 46:
-#line 465 "kif_parser.yy" // lalr1.cc:846
+#line 466 "kif_parser.yy" // lalr1.cc:846
     {
                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                             yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
                         }
-#line 1201 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1204 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 47:
-#line 469 "kif_parser.yy" // lalr1.cc:846
+#line 470 "kif_parser.yy" // lalr1.cc:846
     {
                                                             yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > ();
                                                             if(yystack_[1].value.as< TokenValue > () != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > ();
@@ -1215,11 +1218,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                             if(res == 1) error(yystack_[3].location, msg);
                                                             else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                         }
-#line 1219 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1222 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 48:
-#line 482 "kif_parser.yy" // lalr1.cc:846
+#line 483 "kif_parser.yy" // lalr1.cc:846
     {
                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                             yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
@@ -1229,11 +1232,11 @@ namespace gdlparser { namespace parser { namespace yy {
                             if(res == 1) error(yystack_[0].location, msg);
                             else if(res == 2) driver.Warn(yystack_[0].location, msg);
                         }
-#line 1233 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1236 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 49:
-#line 493 "kif_parser.yy" // lalr1.cc:846
+#line 494 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > ();
                                                         if(yystack_[1].value.as< TokenValue > () != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > ();
@@ -1247,11 +1250,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         if(res == 1) error(yystack_[3].location, msg);
                                                         else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                     }
-#line 1251 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1254 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 50:
-#line 506 "kif_parser.yy" // lalr1.cc:846
+#line 507 "kif_parser.yy" // lalr1.cc:846
     {
                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                             yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
@@ -1261,22 +1264,22 @@ namespace gdlparser { namespace parser { namespace yy {
                             if(res == 1) error(yystack_[0].location, msg);
                             else if(res == 2) driver.Warn(yystack_[0].location, msg);
                         }
-#line 1265 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1268 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 51:
-#line 515 "kif_parser.yy" // lalr1.cc:846
+#line 516 "kif_parser.yy" // lalr1.cc:846
     {
                         yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                         yylhs.value.as< TokenValue > ().AddVariable(yystack_[0].value.as< TokenValue > ());
                         yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Var;
                     }
-#line 1276 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1279 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 52:
-#line 522 "kif_parser.yy" // lalr1.cc:846
+#line 523 "kif_parser.yy" // lalr1.cc:846
     {
                                 yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[1].value.as< TokenValue > ();
                                 if(yystack_[0].value.as< TokenValue > () != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
@@ -1284,17 +1287,17 @@ namespace gdlparser { namespace parser { namespace yy {
                                 yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                 yylhs.value.as< TokenValue > ().AddArguments(yystack_[0].value.as< TokenValue > ().Arguments());
                             }
-#line 1288 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1291 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 53:
-#line 530 "kif_parser.yy" // lalr1.cc:846
+#line 531 "kif_parser.yy" // lalr1.cc:846
     { }
-#line 1294 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1297 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 54:
-#line 532 "kif_parser.yy" // lalr1.cc:846
+#line 533 "kif_parser.yy" // lalr1.cc:846
     {
                                                         yylhs.value.as< TokenValue > () = yystack_[4].value.as< TokenValue > () + " " + yystack_[3].value.as< TokenValue > () + " " + yystack_[2].value.as< TokenValue > ();
                                                         if(yystack_[1].value.as< TokenValue > () != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[1].value.as< TokenValue > ();
@@ -1308,11 +1311,11 @@ namespace gdlparser { namespace parser { namespace yy {
                                                         if(res == 1) error(yystack_[3].location, msg);
                                                         else if(res == 2) driver.Warn(yystack_[3].location, msg);
                                                     }
-#line 1312 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1315 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 55:
-#line 545 "kif_parser.yy" // lalr1.cc:846
+#line 546 "kif_parser.yy" // lalr1.cc:846
     {
                             yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                             yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
@@ -1322,22 +1325,22 @@ namespace gdlparser { namespace parser { namespace yy {
                             if(res == 1) error(yystack_[0].location, msg);
                             else if(res == 2) driver.Warn(yystack_[0].location, msg);
                         }
-#line 1326 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1329 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 56:
-#line 554 "kif_parser.yy" // lalr1.cc:846
+#line 555 "kif_parser.yy" // lalr1.cc:846
     {
                         yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                         yylhs.value.as< TokenValue > ().AddVariable(yystack_[0].value.as< TokenValue > ());
                         yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Var;
                     }
-#line 1337 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1340 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 57:
-#line 561 "kif_parser.yy" // lalr1.cc:846
+#line 562 "kif_parser.yy" // lalr1.cc:846
     {
                                 yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[1].value.as< TokenValue > ();
                                 if(yystack_[0].value.as< TokenValue > ().Value() != "") yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + " " + yystack_[0].value.as< TokenValue > ();
@@ -1346,37 +1349,37 @@ namespace gdlparser { namespace parser { namespace yy {
                                 yylhs.value.as< TokenValue > ().AddArgument(yystack_[1].value.as< TokenValue > ());
                                 yylhs.value.as< TokenValue > ().AddArguments(yystack_[0].value.as< TokenValue > ().Arguments());
                             }
-#line 1350 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1353 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 58:
-#line 570 "kif_parser.yy" // lalr1.cc:846
+#line 571 "kif_parser.yy" // lalr1.cc:846
     { }
-#line 1356 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1359 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 59:
-#line 572 "kif_parser.yy" // lalr1.cc:846
+#line 573 "kif_parser.yy" // lalr1.cc:846
     {
                         yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                         yylhs.value.as< TokenValue > ().Command() = yystack_[0].value.as< TokenValue > ().Value();
                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Function;
                     }
-#line 1366 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1369 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
   case 60:
-#line 577 "kif_parser.yy" // lalr1.cc:846
+#line 578 "kif_parser.yy" // lalr1.cc:846
     {
                         yylhs.value.as< TokenValue > () = yylhs.value.as< TokenValue > () + yystack_[0].value.as< TokenValue > ();
                         yylhs.value.as< TokenValue > ().AddVariable(yystack_[0].value.as< TokenValue > ());
                         yylhs.value.as< TokenValue > ().Type() = TokenValue::Var;
                     }
-#line 1376 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1379 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
 
-#line 1380 "kif_parser.tab.cc" // lalr1.cc:846
+#line 1383 "kif_parser.tab.cc" // lalr1.cc:846
           default:
             break;
           }
@@ -1748,34 +1751,34 @@ namespace gdlparser { namespace parser { namespace yy {
   const unsigned char
   KIFParser::yystos_[] =
   {
-       0,     3,     5,     7,    15,    23,    24,    25,    28,    29,
-       8,     9,    10,    11,    12,    13,    14,    21,    28,     0,
-       0,    24,    24,    28,     3,    26,    28,    26,    26,    26,
-      26,    26,     3,    15,    28,    30,    26,     4,    28,    26,
-       4,     4,    26,     4,     7,     8,     9,    10,    11,    12,
-      13,    14,    28,     3,    15,    28,    31,    33,    26,    27,
-      26,     4,     4,     4,     3,     6,    28,    34,    34,    34,
-      34,    34,    34,    34,    34,     8,     9,    11,    12,    14,
-      16,    17,    18,    19,    20,    28,    31,    32,    27,     4,
-      27,    28,     4,    34,     4,     4,    34,     4,     6,     7,
-      38,    34,    35,     3,     6,    28,    36,    36,    36,    36,
-      36,    36,    36,     3,    33,    31,    36,    36,    32,     4,
-       4,    34,     4,     4,     4,    35,     4,    28,     4,    36,
-       4,    36,    38,    36,     4,     4,    32,    36,    36,    37,
-      35,    36,     4,     4,     4,     4,     4,     4,    37,     4,
-       4,    37,     4
+       0,     3,     5,     7,    15,    24,    25,    26,    29,    30,
+       8,     9,    10,    11,    12,    13,    14,    21,    29,     0,
+       0,    25,    25,    29,     3,    27,    29,    27,    27,    27,
+      27,    27,     3,    15,    29,    31,    27,     4,    29,    27,
+       4,     4,    27,     4,     7,     8,     9,    10,    11,    12,
+      13,    14,    29,     3,    15,    29,    32,    34,    27,    28,
+      27,     4,     4,     4,     3,     6,    29,    35,    35,    35,
+      35,    35,    35,    35,    35,     8,     9,    11,    12,    14,
+      16,    17,    18,    19,    20,    29,    32,    33,    28,     4,
+      28,    29,     4,    35,     4,     4,    35,     4,     6,     7,
+      39,    35,    36,     3,     6,    29,    37,    37,    37,    37,
+      37,    37,    37,     3,    34,    32,    37,    37,    33,     4,
+       4,    35,     4,     4,     4,    36,     4,    29,     4,    37,
+       4,    37,    39,    37,     4,     4,    33,    37,    37,    38,
+      36,    37,     4,     4,     4,     4,     4,     4,    38,     4,
+       4,    38,     4
   };
 
   const unsigned char
   KIFParser::yyr1_[] =
   {
-       0,    22,    23,    24,    24,    24,    25,    25,    25,    25,
-      25,    25,    25,    25,    25,    25,    26,    26,    27,    27,
-      28,    28,    29,    30,    30,    30,    30,    30,    30,    30,
-      30,    30,    30,    31,    31,    32,    32,    33,    33,    33,
-      33,    33,    33,    33,    33,    33,    33,    33,    33,    34,
-      34,    34,    35,    35,    36,    36,    36,    37,    37,    38,
-      38
+       0,    23,    24,    25,    25,    25,    26,    26,    26,    26,
+      26,    26,    26,    26,    26,    26,    27,    27,    28,    28,
+      29,    29,    30,    31,    31,    31,    31,    31,    31,    31,
+      31,    31,    31,    32,    32,    33,    33,    34,    34,    34,
+      34,    34,    34,    34,    34,    34,    34,    34,    34,    35,
+      35,    35,    36,    36,    37,    37,    37,    38,    38,    39,
+      39
   };
 
   const unsigned char
@@ -1801,22 +1804,23 @@ namespace gdlparser { namespace parser { namespace yy {
   "\"closing bracket\"", "\"symbol\"", "\"variable\"", "\"number\"",
   "\"role\"", "\"input\"", "\"init\"", "\"base\"", "\"legal\"", "\"next\"",
   "\"goal\"", "\"terminal\"", "\"does\"", "\"true\"", "\"not\"", "\"or\"",
-  "\"distinct\"", "\"clause command\"", "$accept", "Start", "S", "Fact",
-  "Ground_term", "Ground_terms", "Id_num", "Clause", "Head", "ORelation",
-  "ORelations", "Literal", "Term", "Terms", "CTerm", "CTerms", "Num_var", YY_NULL
+  "\"distinct\"", "\"clause command\"", "\"line mark\"", "$accept",
+  "Start", "S", "Fact", "Ground_term", "Ground_terms", "Id_num", "Clause",
+  "Head", "ORelation", "ORelations", "Literal", "Term", "Terms", "CTerm",
+  "CTerms", "Num_var", YY_NULL
   };
 
 #if YYDEBUG
   const unsigned short int
   KIFParser::yyrline_[] =
   {
-       0,   108,   108,   110,   113,   116,   118,   128,   138,   149,
-     159,   170,   180,   194,   203,   216,   226,   239,   249,   256,
-     258,   263,   269,   280,   290,   300,   311,   321,   332,   342,
-     353,   362,   375,   385,   386,   393,   400,   403,   410,   416,
-     424,   432,   438,   444,   451,   458,   465,   469,   482,   493,
-     506,   515,   522,   530,   532,   545,   554,   561,   570,   572,
-     577
+       0,   109,   109,   111,   114,   117,   119,   129,   139,   150,
+     160,   171,   181,   195,   204,   217,   227,   240,   250,   257,
+     259,   264,   270,   281,   291,   301,   312,   322,   333,   343,
+     354,   363,   376,   386,   387,   394,   401,   404,   411,   417,
+     425,   433,   439,   445,   452,   459,   466,   470,   483,   494,
+     507,   516,   523,   531,   533,   546,   555,   562,   571,   573,
+     578
   };
 
   // Print the state stack on the debug stream.
@@ -1851,8 +1855,8 @@ namespace gdlparser { namespace parser { namespace yy {
 
 #line 12 "kif_parser.yy" // lalr1.cc:1156
 } } } // gdlparser::parser::yy
-#line 1855 "kif_parser.tab.cc" // lalr1.cc:1156
-#line 583 "kif_parser.yy" // lalr1.cc:1157
+#line 1859 "kif_parser.tab.cc" // lalr1.cc:1156
+#line 584 "kif_parser.yy" // lalr1.cc:1157
 
 
   typedef gdlparser::parser::yy::KIFParser KIFParser;

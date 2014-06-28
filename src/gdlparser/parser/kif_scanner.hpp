@@ -15,6 +15,16 @@
 
 #include "token_value.hpp"
 
+//! definition of yylex for Flex
+#ifndef YY_DECL
+
+#define	YY_DECL						\
+    gdlparser::parser::yy::KIFParser::symbol_type				\
+    gdlparser::parser::KIFScanner::lex()
+#endif
+
+#include "FlexLexer.h"
+
 namespace gdlparser
 {
 namespace parser
@@ -28,7 +38,7 @@ class KIFDriver;
  * files and returns location along with token for errors and warnings.
  *
  */
-class KIFScanner
+class KIFScanner : public yyFlexLexer
 {
     //! some useful typedefs
     typedef gdlparser::parser::yy::KIFParser::token token;
@@ -43,28 +53,32 @@ public:
     //! Constructor
     //! Reference to the calling parser class is stored for error and warning logging
     KIFScanner(const KIFDriver& driver)
-        : driver(driver), stream(NULL), file_index(0) { state = NoState; lineNo = 0; charNo = 0; isError = false; }
+        : yyFlexLexer(new std::stringstream(), NULL), driver(driver), file_index(0) { state = NoState; lineNo = 0; charNo = 0;}
 
-    ~KIFScanner() { delete stream; }
+    ~KIFScanner() { delete yyin; }
 
     //! Add file to be scanned
     void AddFile(const std::string& filename) { files.push_back(filename); }
 
     //! yylex function needed by parser.
     //! returns the next token if any along with its location
-    symbol_type yylex();
+    symbol_type lex();
 
     //! current location of the scanner
     int LineNo() { return lineNo + 1; }
     int CharNo() { return charNo; }
     std::string CurrentFile() { return files[file_index]; }
 
+    void set_debug(bool b)
+    {
+        yy_flex_debug = b;
+    }
+
+    int yywrap();
+
 private:
     //! reference of the calling driver object
     const KIFDriver& driver;
-
-    //! current scanning stream
-    std::ifstream* stream;
 
     //! store next token to be returned
     std::string nextTokenValue;
@@ -81,9 +95,6 @@ private:
 
     //! current file index
     size_t file_index;
-
-    //! to store error history
-    bool isError;
 };
 
 } // namespace parser

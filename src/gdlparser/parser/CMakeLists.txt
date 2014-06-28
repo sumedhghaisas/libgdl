@@ -5,7 +5,8 @@ set(SOURCES
   kif_driver.hpp
   kif_parser.tab.cc
   kif_parser.tab.hh
-  kif_scanner.cpp
+  FlexLexer.h
+  lex.yy.cc
   kif_scanner.hpp
   location.hh
   position.hh

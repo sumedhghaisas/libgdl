@@ -207,7 +207,7 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
 {
     // construct a clause from given token and add to vector of clauses
     Clause c(tok, kif.clauses.size());
-    kif.AddClause(c);
+    kif.AddClause(c, loc);
 
     const std::vector<Argument*>& args = c.premisses;
     const std::string& hcommand = c.head->val;
@@ -305,7 +305,7 @@ void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_in
 void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
 {
     Fact f(tok);
-    kif.AddFact(f);
+    kif.AddFact(f, loc);
 
     std::string command = f.arg.val;
     size_t arity = f.arg.args.size();

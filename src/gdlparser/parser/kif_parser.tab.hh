@@ -247,6 +247,7 @@ namespace gdlparser { namespace parser { namespace yy {
       // "or"
       // "distinct"
       // "clause command"
+      // "line mark"
       // Start
       // S
       // Fact
@@ -305,7 +306,8 @@ namespace gdlparser { namespace parser { namespace yy {
         nnot = 273,
         oor = 274,
         distinct = 275,
-        clause_command = 276
+        clause_command = 276,
+        hash_line = 277
       };
     };
 
@@ -479,6 +481,10 @@ namespace gdlparser { namespace parser { namespace yy {
     static inline
     symbol_type
     make_clause_command (const TokenValue& v, const location_type& l);
+
+    static inline
+    symbol_type
+    make_hash_line (const TokenValue& v, const location_type& l);
 
 
     /// Build a parser object.
@@ -686,7 +692,7 @@ namespace gdlparser { namespace parser { namespace yy {
       yyfinal_ = 19, //< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
-      yyntokens_ = 22    //< Number of tokens.
+      yyntokens_ = 23    //< Number of tokens.
     };
 
 
@@ -731,9 +737,9 @@ namespace gdlparser { namespace parser { namespace yy {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21
+      15,    16,    17,    18,    19,    20,    21,    22
     };
-    const unsigned int user_token_number_max_ = 276;
+    const unsigned int user_token_number_max_ = 277;
     const token_number_type undef_token_ = 2;
 
     if (static_cast<int>(t) <= yyeof_)
@@ -785,22 +791,23 @@ namespace gdlparser { namespace parser { namespace yy {
       case 19: // "or"
       case 20: // "distinct"
       case 21: // "clause command"
-      case 23: // Start
-      case 24: // S
-      case 25: // Fact
-      case 26: // Ground_term
-      case 27: // Ground_terms
-      case 28: // Id_num
-      case 29: // Clause
-      case 30: // Head
-      case 31: // ORelation
-      case 32: // ORelations
-      case 33: // Literal
-      case 34: // Term
-      case 35: // Terms
-      case 36: // CTerm
-      case 37: // CTerms
-      case 38: // Num_var
+      case 22: // "line mark"
+      case 24: // Start
+      case 25: // S
+      case 26: // Fact
+      case 27: // Ground_term
+      case 28: // Ground_terms
+      case 29: // Id_num
+      case 30: // Clause
+      case 31: // Head
+      case 32: // ORelation
+      case 33: // ORelations
+      case 34: // Literal
+      case 35: // Term
+      case 36: // Terms
+      case 37: // CTerm
+      case 38: // CTerms
+      case 39: // Num_var
         value.copy< TokenValue > (other.value);
         break;
 
@@ -840,22 +847,23 @@ namespace gdlparser { namespace parser { namespace yy {
       case 19: // "or"
       case 20: // "distinct"
       case 21: // "clause command"
-      case 23: // Start
-      case 24: // S
-      case 25: // Fact
-      case 26: // Ground_term
-      case 27: // Ground_terms
-      case 28: // Id_num
-      case 29: // Clause
-      case 30: // Head
-      case 31: // ORelation
-      case 32: // ORelations
-      case 33: // Literal
-      case 34: // Term
-      case 35: // Terms
-      case 36: // CTerm
-      case 37: // CTerms
-      case 38: // Num_var
+      case 22: // "line mark"
+      case 24: // Start
+      case 25: // S
+      case 26: // Fact
+      case 27: // Ground_term
+      case 28: // Ground_terms
+      case 29: // Id_num
+      case 30: // Clause
+      case 31: // Head
+      case 32: // ORelation
+      case 33: // ORelations
+      case 34: // Literal
+      case 35: // Term
+      case 36: // Terms
+      case 37: // CTerm
+      case 38: // CTerms
+      case 39: // Num_var
         value.copy< TokenValue > (v);
         break;
 
@@ -916,22 +924,23 @@ namespace gdlparser { namespace parser { namespace yy {
       case 19: // "or"
       case 20: // "distinct"
       case 21: // "clause command"
-      case 23: // Start
-      case 24: // S
-      case 25: // Fact
-      case 26: // Ground_term
-      case 27: // Ground_terms
-      case 28: // Id_num
-      case 29: // Clause
-      case 30: // Head
-      case 31: // ORelation
-      case 32: // ORelations
-      case 33: // Literal
-      case 34: // Term
-      case 35: // Terms
-      case 36: // CTerm
-      case 37: // CTerms
-      case 38: // Num_var
+      case 22: // "line mark"
+      case 24: // Start
+      case 25: // S
+      case 26: // Fact
+      case 27: // Ground_term
+      case 28: // Ground_terms
+      case 29: // Id_num
+      case 30: // Clause
+      case 31: // Head
+      case 32: // ORelation
+      case 33: // ORelations
+      case 34: // Literal
+      case 35: // Term
+      case 36: // Terms
+      case 37: // CTerm
+      case 38: // CTerms
+      case 39: // Num_var
         value.template destroy< TokenValue > ();
         break;
 
@@ -968,22 +977,23 @@ namespace gdlparser { namespace parser { namespace yy {
       case 19: // "or"
       case 20: // "distinct"
       case 21: // "clause command"
-      case 23: // Start
-      case 24: // S
-      case 25: // Fact
-      case 26: // Ground_term
-      case 27: // Ground_terms
-      case 28: // Id_num
-      case 29: // Clause
-      case 30: // Head
-      case 31: // ORelation
-      case 32: // ORelations
-      case 33: // Literal
-      case 34: // Term
-      case 35: // Terms
-      case 36: // CTerm
-      case 37: // CTerms
-      case 38: // Num_var
+      case 22: // "line mark"
+      case 24: // Start
+      case 25: // S
+      case 26: // Fact
+      case 27: // Ground_term
+      case 28: // Ground_terms
+      case 29: // Id_num
+      case 30: // Clause
+      case 31: // Head
+      case 32: // ORelation
+      case 33: // ORelations
+      case 34: // Literal
+      case 35: // Term
+      case 36: // Terms
+      case 37: // CTerm
+      case 38: // CTerms
+      case 39: // Num_var
         value.move< TokenValue > (s.value);
         break;
 
@@ -1037,7 +1047,7 @@ namespace gdlparser { namespace parser { namespace yy {
     {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276
+     275,   276,   277
     };
     return static_cast<token_type> (yytoken_number_[type]);
   }
@@ -1182,10 +1192,17 @@ namespace gdlparser { namespace parser { namespace yy {
 
   }
 
+  KIFParser::symbol_type
+  KIFParser::make_hash_line (const TokenValue& v, const location_type& l)
+  {
+    return symbol_type (token::hash_line, v, l);
+
+  }
+
 
 #line 12 "kif_parser.yy" // lalr1.cc:371
 } } } // gdlparser::parser::yy
-#line 1189 "kif_parser.tab.hh" // lalr1.cc:371
+#line 1206 "kif_parser.tab.hh" // lalr1.cc:371
 
 
 
