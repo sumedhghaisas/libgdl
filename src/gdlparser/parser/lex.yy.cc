@@ -526,8 +526,8 @@ static yyconst flex_int16_t yy_chk[117] =
 static yyconst flex_int16_t yy_rule_linenum[22] =
     {   0,
        61,   64,   67,   70,   73,   76,   79,   82,   85,   88,
-       91,   94,   97,  100,  103,  106,  109,  113,  116,  120,
-      122
+       91,   94,   97,  100,  103,  106,  109,  115,  118,  122,
+      124
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -558,7 +558,7 @@ typedef gdlparser::parser::yy::KIFParser::location_type location_type;
 typedef gdlparser::parser::yy::KIFParser KIFParser;
 
 #define IN_MAKE_FIRST std::string(yytext)
-#define IN_MAKE_SECOND location_type(NULL, lineNo + 1, charNo)
+#define IN_MAKE_SECOND location_type(&files[file_index - 1], lineNo + 1, charNo)
 #define IN_MAKE IN_MAKE_FIRST, IN_MAKE_SECOND
 
 /* By default yylex returns int, we use token_type. Unfortunately yyterminate
@@ -972,18 +972,20 @@ YY_RULE_SETUP
 {
     lineNo++;
     charNo = 0;
+    std::string comment(yytext);
+    if(comment.find("#line")!= std::string::npos) return KIFParser::make_hash_line(IN_MAKE);
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 113 "kif_scanner.ll"
+#line 115 "kif_scanner.ll"
 {
     return KIFParser::make_num(IN_MAKE);
 }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 116 "kif_scanner.ll"
+#line 118 "kif_scanner.ll"
 {
     if(yytext[0] == '?') return KIFParser::make_var(IN_MAKE);
     return KIFParser::make_id(IN_MAKE);
@@ -991,14 +993,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 120 "kif_scanner.ll"
+#line 122 "kif_scanner.ll"
 {
 }
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 122 "kif_scanner.ll"
+#line 124 "kif_scanner.ll"
 {
     lineNo++;
     charNo = 0;
@@ -1006,10 +1008,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 127 "kif_scanner.ll"
+#line 129 "kif_scanner.ll"
 ECHO;
 	YY_BREAK
-#line 1013 "lex.yy.cc"
+#line 1015 "lex.yy.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2058,7 +2060,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 127 "kif_scanner.ll"
+#line 129 "kif_scanner.ll"
 
 
 

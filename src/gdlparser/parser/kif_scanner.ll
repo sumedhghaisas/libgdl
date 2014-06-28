@@ -18,7 +18,7 @@ typedef gdlparser::parser::yy::KIFParser::location_type location_type;
 typedef gdlparser::parser::yy::KIFParser KIFParser;
 
 #define IN_MAKE_FIRST std::string(yytext)
-#define IN_MAKE_SECOND location_type(NULL, lineNo + 1, charNo)
+#define IN_MAKE_SECOND location_type(&files[file_index - 1], lineNo + 1, charNo)
 #define IN_MAKE IN_MAKE_FIRST, IN_MAKE_SECOND
 
 /* By default yylex returns int, we use token_type. Unfortunately yyterminate
@@ -109,6 +109,8 @@ typedef gdlparser::parser::yy::KIFParser KIFParser;
 [;].*\n {
     lineNo++;
     charNo = 0;
+    std::string comment(yytext);
+    if(comment.find("#line")!= std::string::npos) return KIFParser::make_hash_line(IN_MAKE);
 }
 [0-9]+ {
     return KIFParser::make_num(IN_MAKE);

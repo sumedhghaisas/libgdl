@@ -41,6 +41,9 @@ KIFDriver::~KIFDriver()
     scanner = NULL;
     delete(parser);
     parser = NULL;
+
+    for(std::list<std::string*>::iterator it = to_free.begin();it != to_free.end();it++)
+        delete *it;
 }
 
 void KIFDriver::Error(const location_type& loc, const std::string& msg) const
@@ -252,6 +255,48 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
 
     // add dependency to head of the clause against all arguments
     for(size_t i = 0; i < args.size(); i++) AddDependency(head, *args[i], kif.Clauses().size() - 1, loc, false);
+}
+
+void KIFDriver::AddLineMark(const TokenValue& tok)
+{
+    // get value from the tken
+    const std::string& val = tok.Value();
+
+    size_t start = val.find("#line");
+
+    // get line number
+    // if invalid return
+    size_t i = val.find(" ", start + 1);
+    if(i == std::string::npos) return;
+    size_t j = val.find(" ", i + 1);
+    if(j == std::string::npos) return;
+    std::string str_lineNo = val.substr(i + 1, j - i - 1).c_str();
+
+    for (size_t i = 0; i < str_lineNo.length(); i++)
+    {
+        if (!isdigit(str_lineNo[i])) return;
+    }
+    size_t lineNo = atoi(str_lineNo.c_str());
+
+    // get filename
+    // if none provided assume it to be ""
+    i = val.find("\"");
+    std::string filename = "";
+    if(i != std::string::npos)
+    {
+        j = val.find("\"", i + 1);
+        if(j == std::string::npos) return;
+        filename = val.substr(i + 1, j - i - 1);
+    }
+
+    std::string* temp = new std::string(filename);
+
+    to_free.push_back(temp);
+
+    // process facts and clauses accordingly
+    kif.AddLineMark(location_type(temp, lineNo, 0));
+    return;
+
 }
 
 void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_index,

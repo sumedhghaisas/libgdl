@@ -71,9 +71,36 @@ bool KIF::PrintToFile(const std::string& filename) const
         return false;
     }
 
-    for(size_t i = 0; i < facts.size(); i++) out << facts[i] << std::endl;
-    for(size_t i = 0; i < clauses.size(); i++) out << clauses[i] << std::endl;
+    for(size_t i = 0; i < facts.size(); i++)
+    {
+        if(isDebuggingSymbols) out << ";#line " << ds_facts[i].begin.line << " " << "\"" << *ds_facts[i].begin.filename << "\"" << std::endl;
+        out << facts[i] << std::endl;
+    }
+    for(size_t i = 0; i < clauses.size(); i++)
+    {
+        if(isDebuggingSymbols) out << ";#line " << ds_clauses[i].begin.line << " " << "\"" << *ds_clauses[i].begin.filename << "\"" << std::endl;
+        out << clauses[i] << std::endl;
+    }
 
     out.close();
     return true;
+}
+
+void KIF::AddLineMark(const location_type& loc)
+{
+    size_t f_size = facts.size();
+    size_t c_size = clauses.size();
+
+    for(size_t i = f_last_index_with_linemark;i < f_size;i++)
+        ds_facts.pop_back();
+    for(size_t i = f_last_index_with_linemark;i < f_size;i++)
+        ds_facts.push_back(loc);
+
+    for(size_t i = c_last_index_with_linemark;i < c_size;i++)
+        ds_clauses.pop_back();
+    for(size_t i = c_last_index_with_linemark;i < c_size;i++)
+        ds_clauses.push_back(loc);
+
+    f_last_index_with_linemark = f_size;
+    c_last_index_with_linemark = c_size;
 }

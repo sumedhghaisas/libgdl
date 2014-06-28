@@ -58,8 +58,12 @@ public:
         std::ostream& stream = std::cout)
         : stream(&stream), isWarn(isWarn),
         isDebuggingSymbols(isDebuggingSymbols),
-        o_level(0),
-        driver(*this) {}
+        o_level(o_level),
+        driver(*this)
+    {
+        f_last_index_with_linemark = 0;
+        c_last_index_with_linemark = 0;
+    }
 
     ~KIF();
 
@@ -75,6 +79,8 @@ public:
     {
         for(size_t i = 0; i < files.size(); i++) AddFile(files[i]);
     }
+
+    void AddLineMark(const location_type& loc);
 
     //! Parse the inputs
     //!
@@ -147,18 +153,20 @@ private:
     //! enable/disable warnings
     bool isWarn;
 
+    //! to generate debugging symbols in output file
     const bool isDebuggingSymbols;
 
+    //! yet not implemented
     const char o_level;
 
     //! All the facts
     std::vector<Fact> facts;
-
+    //! location of respective facts
     std::vector<location_type> ds_facts;
 
     //! All the clauses
     std::vector<Clause> clauses;
-
+    //! location of respective clauses
     std::vector<location_type> ds_clauses;
 
     //! dependency graph
@@ -166,6 +174,11 @@ private:
 
     //! driver to drive parsing
     KIFDriver driver;
+
+    //! index of the last fact tagged with "#line" location
+    size_t f_last_index_with_linemark;
+    //! index of the last clause tagged with "#line" location
+    size_t c_last_index_with_linemark;
 };
 
 } //namespace gdlparser

@@ -81,7 +81,7 @@ namespace gdlparser {
 %token  <TokenValue>  oor       "or"
 %token  <TokenValue>  distinct  "distinct"
 %token  <TokenValue>  clause_command    "clause command"
-%token  <TokenValue>  hash_line      "line mark"
+%token  <TokenValue>  hash_line "line mark"
 
 /* Nonterminals */
 
@@ -114,6 +114,9 @@ S           : Fact S    {
             | Clause S  {
                             driver.AddClause($1, @1); $2;
                         }
+            | hash_line S   {
+                                driver.AddLineMark($1);
+                            }
             | %empty    { }
 
 Fact        : Obracket role Id_num Cbracket         {

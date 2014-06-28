@@ -90,6 +90,9 @@ private:
     //! construct a rule from given token and location for verbore warnings and errors
     void AddClause(const TokenValue& clause, const location_type& loc);
 
+    //! add "#line" location mark
+    void AddLineMark(const TokenValue& mark);
+
     //! add entry of the given symbol in symbol table
     int AddEntry(const TokenValue& tok, bool isRelation, char arity, const location_type& loc, std::string& msg);
 
@@ -140,6 +143,8 @@ private:
     //! reference to the calling object
     KIF& kif;
 
+    //! pointers which needs to be freed in destruction
+    std::list<std::string*> to_free;
 };
 
 } // namespace parser
