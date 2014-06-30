@@ -11,7 +11,10 @@
 #define BASH_YELLOW "\033[0;33m"
 #define BASH_CLEAR "\033[0m"
 
+#include <gdlreasoner/kif_flattener.hpp>
+
 using namespace gdlparser;
+using namespace gdlreasoner;
 
 KIF::~KIF()
 {
@@ -103,4 +106,9 @@ void KIF::AddLineMark(const location_type& loc)
 
     f_last_index_with_linemark = f_size;
     c_last_index_with_linemark = c_size;
+}
+
+bool KIF::DeepScan()
+{
+
 }

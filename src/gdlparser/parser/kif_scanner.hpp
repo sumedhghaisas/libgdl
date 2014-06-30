@@ -52,13 +52,9 @@ public:
 
     //! Constructor
     //! Reference to the calling parser class is stored for error and warning logging
-    KIFScanner(const KIFDriver& driver)
-        : yyFlexLexer(new std::stringstream(), NULL), driver(driver), file_index(0) { state = NoState; lineNo = 0; charNo = 0;}
+    KIFScanner(const KIFDriver& driver);
 
     ~KIFScanner() { delete yyin; }
-
-    //! Add file to be scanned
-    void AddFile(const std::string& filename) { files.push_back(filename); }
 
     //! yylex function needed by parser.
     //! returns the next token if any along with its location
@@ -80,6 +76,9 @@ private:
     //! reference of the calling driver object
     const KIFDriver& driver;
 
+    //! files to be scanned
+    std::vector<std::string>& files;
+
     //! store next token to be returned
     std::string nextTokenValue;
 
@@ -89,9 +88,6 @@ private:
     //! to track the location of the token
     int lineNo;
     int charNo;
-
-    //! files to be scanned
-    std::vector<std::string> files;
 
     //! current file index
     size_t file_index;

@@ -77,9 +77,6 @@ public:
     //! method to start the parsing
     bool Parse();
 
-    //! Add file to parse
-    void AddFile(const std::string& filename) { scanner->AddFile(filename); }
-
 private:
     friend yy::KIFParser;
     friend KIFScanner;
@@ -142,6 +139,8 @@ private:
 
     //! reference to the calling object
     KIF& kif;
+
+    std::vector<std::string>& files;
 
     //! pointers which needs to be freed in destruction
     std::list<std::string*> to_free;

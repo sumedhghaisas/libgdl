@@ -2100,6 +2100,13 @@ int gdlparser::parser::KIFScanner::yywrap()
     return 0;
 }
 
+gdlparser::parser::KIFScanner::KIFScanner(const KIFDriver& driver)
+        : yyFlexLexer(new std::stringstream(), NULL),
+        driver(driver), files(driver.files),
+        file_index(0)
+{ state = NoState; lineNo = 0; charNo = 0;}
+
+
 int yyFlexLexer::yylex()
 {
     std::cerr << "in ExampleFlexLexer::yylex() !" << std::endl;

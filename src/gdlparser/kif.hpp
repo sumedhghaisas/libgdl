@@ -73,11 +73,26 @@ public:
     //!
     void AddFile(const std::string& filename)
     {
-        driver.AddFile(filename);
+        files.push_back(filename);
     }
-    void AddFile(const std::vector<std::string>& files)
+    void AddFile(const std::vector<std::string>& fvec)
     {
-        for(size_t i = 0; i < files.size(); i++) AddFile(files[i]);
+        for(size_t i = 0;i < fvec.size();i++) files.push_back(fvec[i]);
+    }
+
+    const std::vector<std::string>& Files() const
+    {
+        return files;
+    }
+
+    std::vector<std::string>& Files()
+    {
+        return files;
+    }
+
+    void ClearFiles()
+    {
+        files.clear();
     }
 
     void AddLineMark(const location_type& loc);
@@ -90,6 +105,8 @@ public:
     {
         return driver.Parse();
     }
+
+    bool DeepScan();
 
     //! Print the parsed knowledge to file
     //!
@@ -126,6 +143,7 @@ public:
         return clauses;
     }
 
+    //! get the dependency graph
     const std::map<std::string, DGraphNode*>& DependencyGraph() const
     {
         return dgraph;
@@ -171,6 +189,8 @@ private:
 
     //! dependency graph
     std::map<std::string, DGraphNode*> dgraph;
+
+    std::vector<std::string> files;
 
     //! driver to drive parsing
     KIFDriver driver;
