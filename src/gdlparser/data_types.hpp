@@ -94,6 +94,23 @@ struct Argument
     mutable const Argument* sub;
 };
 
+
+struct Location
+{
+    typedef parser::yy::KIFParser::location_type location_type;
+
+    Location() {}
+
+    Location(const location_type& loc)
+    {
+        filename = *loc.begin.filename;
+        lineNo = loc.begin.line;
+    }
+
+    std::string filename;
+    size_t lineNo;
+};
+
 /**
  * Represents a fact.
  * Fact is stored as command and its arguments.
@@ -103,22 +120,28 @@ struct Argument
  */
 struct Fact
 {
+    typedef parser::yy::KIFParser::location_type location_type;
+
     //! empty constructor
     Fact() {}
 
     //! constructs a fact with given command name and text
     Fact(const TokenValue& tok)
-            : text(tok.Value()), arg(tok) {}
+            : arg(tok) {}
     //! construct a fact fro argument
     //! does not check if argument has variables or not
     Fact(const Argument& arg) : arg(arg) {}
-    //! copy constructor
-    Fact(const Fact& f) : arg(f.arg) {}
     //! construct fact from string
     Fact(const std::string& str);
 
     //! Adds argument to this fact
     void AddArgument(const TokenValue& tok) { arg.AddArgument(tok); }
+
+    void AddLocation(const location_type& l)
+    {
+        isLocation = true;
+        loc = Location(l);
+    }
 
     const std::string& Command() const { return arg.val; }
 
@@ -128,10 +151,11 @@ struct Fact
     bool operator==(const Fact& fact) const;
     bool operator!=(const Fact& fact) const { return !(*this == fact); }
 
-    //! the original text of the fact
-    std::string  text;
     //! fact as argument
     Argument arg;
+
+    bool isLocation;
+    Location loc;
 };
 
 /**
@@ -143,8 +167,10 @@ struct Fact
  */
 struct Clause
 {
+    typedef parser::yy::KIFParser::location_type location_type;
+
     //! empty constructor
-    Clause() : head(NULL) {}
+    Clause() : head(NULL), isLocation(false) {}
     //! constructs clause from scanner token
     Clause(const TokenValue& tok, const size_t id);
     //! construct clause from string
@@ -157,10 +183,13 @@ struct Clause
     //! copy-assignment operator
     Clause& operator=(const Clause& c);
 
-    bool IsGround();
+    void AddLocation(const location_type& l)
+    {
+        isLocation = true;
+        loc = Location(l);
+    }
 
-    //! text representation
-    std::string text;
+    bool IsGround();
 
     //! Head of the clause
     Argument* head;
@@ -168,6 +197,9 @@ struct Clause
     std::vector<Argument*> premisses;
     //! to assign unique id
     size_t id;
+
+    bool isLocation;
+    Location loc;
 };
 
 /**
@@ -216,6 +248,7 @@ struct DGraphNode
 /// operator<< for above defined types
 std::ostream& operator<< (std::ostream& o, const gdlparser::Argument& arg);
 std::ostream& operator<< (std::ostream& o, const gdlparser::Argument::Type& t);
+std::ostream& operator<< (std::ostream& o, const gdlparser::Location& loc);
 std::ostream& operator<< (std::ostream& o, const gdlparser::Fact& fact);
 std::ostream& operator<< (std::ostream& o, const gdlparser::Clause& clause);
 

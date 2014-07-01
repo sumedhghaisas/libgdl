@@ -13,6 +13,7 @@
 
 #include <gdlparser/parser/kif_driver.hpp>
 #include <gdlparser/parser/kif_parser.tab.hh>
+#include <boost/unordered_map.hpp>
 
 namespace gdlparser
 {
@@ -46,6 +47,15 @@ class KIF
     //! Some useful typedefs
     typedef parser::KIFDriver KIFDriver;
     typedef parser::yy::KIFParser::location_type location_type;
+
+struct Symbol
+{
+    Symbol(size_t id, const std::string& name)
+        : id(id), name(name) {}
+
+    size_t id;
+    std::string name;
+};
 
 public:
     //! Constructor
@@ -103,7 +113,13 @@ public:
     //!
     bool Parse()
     {
-        return driver.Parse();
+        bool res = driver.Parse();
+        if(!res)
+        {
+            facts.clear();
+            clauses.clear();
+        }
+        return res;
     }
 
     bool DeepScan();
@@ -149,6 +165,11 @@ public:
         return dgraph;
     }
 
+    bool DebuggingSymbolSupport() const
+    {
+        return isDebuggingSymbols;
+    }
+
 private:
     //! make KIFDriver class friend
     friend KIFDriver;
@@ -157,13 +178,15 @@ private:
     void AddFact(const Fact& f, const location_type& loc)
     {
         facts.push_back(f);
-        if(isDebuggingSymbols) ds_facts.push_back(loc);
+        facts[facts.size() - 1].AddLocation(loc);
     }
     void AddClause(const Clause& c, const location_type& loc)
     {
         clauses.push_back(c);
-        if(isDebuggingSymbols) ds_clauses.push_back(loc);
+        clauses[clauses.size() - 1].AddLocation(loc);
     }
+
+    void UpdateSymbolTable(const Argument& arg, const Location& loc);
 
     //! pointer to logging stream
     mutable std::ostream* stream;
@@ -179,13 +202,9 @@ private:
 
     //! All the facts
     std::vector<Fact> facts;
-    //! location of respective facts
-    std::vector<location_type> ds_facts;
 
     //! All the clauses
     std::vector<Clause> clauses;
-    //! location of respective clauses
-    std::vector<location_type> ds_clauses;
 
     //! dependency graph
     std::map<std::string, DGraphNode*> dgraph;
@@ -199,6 +218,8 @@ private:
     size_t f_last_index_with_linemark;
     //! index of the last clause tagged with "#line" location
     size_t c_last_index_with_linemark;
+
+    std::vector<std::string> roles;
 };
 
 } //namespace gdlparser

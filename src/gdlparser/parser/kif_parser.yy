@@ -101,6 +101,8 @@ namespace gdlparser {
 %type   <TokenValue>  CTerm
 %type   <TokenValue>  CTerms
 %type   <TokenValue>  Literal
+%type   <TokenValue>  Basic_term
+%type   <TokenValue>  Basic_cterm
 
 %%
 
@@ -139,7 +141,7 @@ Fact        : Obracket role Id_num Cbracket         {
                                                         if(res == 1) error(@2, msg);
                                                         else if(res == 2) driver.Warn(@2, msg);
                                                     }
-            | Obracket input Ground_term Ground_term Cbracket   {
+            | Obracket input Id_num Ground_term Cbracket   {
                                                                     $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
                                                                     $$.Type() = TokenValue::Relation;
                                                                     $$.Command() = $2.Value();
@@ -160,7 +162,7 @@ Fact        : Obracket role Id_num Cbracket         {
                                                         if(res == 1) error(@2, msg);
                                                         else if(res == 2) driver.Warn(@2, msg);
                                                     }
-            | Obracket legal Ground_term Ground_term Cbracket   {
+            | Obracket legal Id_num Ground_term Cbracket   {
                                                                     $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
                                                                     $$.Type() = TokenValue::Relation;
                                                                     $$.Command() = $2.Value();
@@ -181,7 +183,7 @@ Fact        : Obracket role Id_num Cbracket         {
                                                         if(res == 1) error(@2, msg);
                                                         else if(res == 2) driver.Warn(@2, msg);
                                                     }
-            | Obracket goal Ground_term num Cbracket    {
+            | Obracket goal Id_num num Cbracket    {
                                                             $4.Type() = TokenValue::Function;
                                                             $4.Command() = $4.Value();
                                                             $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
@@ -281,16 +283,16 @@ Clause      : Obracket clause_command Head ORelation ORelations Cbracket    {
                                                                                 $$.AddArguments($5.Arguments());
                                                                             }
 
-Head        : Obracket role Term Cbracket   {
-                                                $$ = $1 + " " + $2 + " " + $3 + " " + $4;
-                                                $$.Command() = $2.Value();
-                                                $$.Type() = TokenValue::Relation;
-                                                $$.AddArgument($3);
-                                                std::string msg;
-                                                int res = driver.AddEntry($2, true, $$.Count(), @2, msg);
-                                                if(res == 1) error(@2, msg);
-                                                else if(res == 2) driver.Warn(@2, msg);
-                                            }
+Head        : Obracket role Basic_term Cbracket {
+                                                    $$ = $1 + " " + $2 + " " + $3 + " " + $4;
+                                                    $$.Command() = $2.Value();
+                                                    $$.Type() = TokenValue::Relation;
+                                                    $$.AddArgument($3);
+                                                    std::string msg;
+                                                    int res = driver.AddEntry($2, true, $$.Count(), @2, msg);
+                                                    if(res == 1) error(@2, msg);
+                                                    else if(res == 2) driver.Warn(@2, msg);
+                                                }
             | Obracket base Term Cbracket   {
                                                 $$ = $1 + " " + $2 + " " + $3 + " " + $4;
                                                 $$.Command() = $2.Value();
@@ -301,17 +303,17 @@ Head        : Obracket role Term Cbracket   {
                                                 if(res == 1) error(@2, msg);
                                                 else if(res == 2) driver.Warn(@2, msg);
                                             }
-            | Obracket input Term Term Cbracket {
-                                                    $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
-                                                    $$.Command() = $2.Value();
-                                                    $$.Type() = TokenValue::Relation;
-                                                    $$.AddArgument($3);
-                                                    $$.AddArgument($4);
-                                                    std::string msg;
-                                                    int res = driver.AddEntry($2, true, $$.Count(), @2, msg);
-                                                    if(res == 1) error(@2, msg);
-                                                    else if(res == 2) driver.Warn(@2, msg);
-                                                }
+            | Obracket input Basic_term Term Cbracket   {
+                                                            $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
+                                                            $$.Command() = $2.Value();
+                                                            $$.Type() = TokenValue::Relation;
+                                                            $$.AddArgument($3);
+                                                            $$.AddArgument($4);
+                                                            std::string msg;
+                                                            int res = driver.AddEntry($2, true, $$.Count(), @2, msg);
+                                                            if(res == 1) error(@2, msg);
+                                                            else if(res == 2) driver.Warn(@2, msg);
+                                                        }
             | Obracket init Term Cbracket   {
                                                 $$ = $1 + " " + $2 + " " + $3 + " " + $4;
                                                 $$.Command() = $2.Value();
@@ -322,17 +324,17 @@ Head        : Obracket role Term Cbracket   {
                                                 if(res == 1) error(@2, msg);
                                                 else if(res == 2) driver.Warn(@2, msg);
                                             }
-            | Obracket legal Term Term Cbracket {
-                                                    $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
-                                                    $$.Command() = $2.Value();
-                                                    $$.Type() = TokenValue::Relation;
-                                                    $$.AddArgument($3);
-                                                    $$.AddArgument($4);
-                                                    std::string msg;
-                                                    int res = driver.AddEntry($2, true, $$.Count(), @2, msg);
-                                                    if(res == 1) error(@2, msg);
-                                                    else if(res == 2) driver.Warn(@2, msg);
-                                                }
+            | Obracket legal Basic_term Term Cbracket   {
+                                                            $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
+                                                            $$.Command() = $2.Value();
+                                                            $$.Type() = TokenValue::Relation;
+                                                            $$.AddArgument($3);
+                                                            $$.AddArgument($4);
+                                                            std::string msg;
+                                                            int res = driver.AddEntry($2, true, $$.Count(), @2, msg);
+                                                            if(res == 1) error(@2, msg);
+                                                            else if(res == 2) driver.Warn(@2, msg);
+                                                        }
             | Obracket next Term Cbracket   {
                                                 $$ = $1 + " " + $2 + " " + $3 + " " + $4;
                                                 $$.Command() = $2.Value();
@@ -343,21 +345,21 @@ Head        : Obracket role Term Cbracket   {
                                                 if(res == 1) error(@2, msg);
                                                 else if(res == 2) driver.Warn(@2, msg);
                                             }
-            | Obracket goal Term Num_var Cbracket   {
-                                                        $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
-                                                        $$.Command() = $2.Value();
-                                                        $$.Type() = TokenValue::Relation;
-                                                        $$.AddArgument($3);
-                                                        $$.AddArgument($4);
-                                                        std::string msg;
-                                                        int res = driver.AddEntry($2, true, $$.Count(), @2, msg);
-                                                        if(res == 1) error(@2, msg);
-                                                        else if(res == 2) driver.Warn(@2, msg);
-                                                    }
+            | Obracket goal Basic_term Num_var Cbracket     {
+                                                                $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
+                                                                $$.Command() = $2.Value();
+                                                                $$.Type() = TokenValue::Relation;
+                                                                $$.AddArgument($3);
+                                                                $$.AddArgument($4);
+                                                                std::string msg;
+                                                                int res = driver.AddEntry($2, true, $$.Count(), @2, msg);
+                                                                if(res == 1) error(@2, msg);
+                                                                else if(res == 2) driver.Warn(@2, msg);
+                                                            }
             | terminal  {
                             $$ = $$ + $1;
                             $$.Command() = $1.Value();
-			    $$.Type() = TokenValue::Relation;
+                            $$.Type() = TokenValue::Relation;
                             std::string msg;
                             int res = driver.AddEntry($1, true, 0, @1, msg);
                             if(res == 1) error(@1, msg);
@@ -404,13 +406,13 @@ ORelations  : ORelation ORelations  {
             | %empty    { }
 
 
-Literal     : Obracket does CTerm CTerm Cbracket    {
-                                                        $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
-                                                        $$.Command() = $2.Value();
-                                                        $$.Type() = TokenValue::Relation;
-                                                        $$.AddArgument($3);
-                                                        $$.AddArgument($4);
-                                                    }
+Literal     : Obracket does Basic_cterm CTerm Cbracket  {
+                                                            $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
+                                                            $$.Command() = $2.Value();
+                                                            $$.Type() = TokenValue::Relation;
+                                                            $$.AddArgument($3);
+                                                            $$.AddArgument($4);
+                                                        }
             | Obracket ttrue CTerm Cbracket         {
                                                         $$ = $1 + " " + $2 + " " + $3 + " " + $4;
                                                         $$.Command() = $2.Value();
@@ -433,39 +435,39 @@ Literal     : Obracket does CTerm CTerm Cbracket    {
                                                             $$.AddArgument($3);
                                                             $$.AddArgument($4);
                                                         }
-            | Obracket role CTerm Cbracket  {
-                                                $$ = $1 + " " + $2 + " " + $3 + " " + $4;
-                                                $$.Command() = $2.Value();
-                                                $$.Type() = TokenValue::Relation;
-                                                $$.AddArgument($3);
-                                            }
+            | Obracket role Basic_cterm Cbracket    {
+                                                        $$ = $1 + " " + $2 + " " + $3 + " " + $4;
+                                                        $$.Command() = $2.Value();
+                                                        $$.Type() = TokenValue::Relation;
+                                                        $$.AddArgument($3);
+                                                    }
             | Obracket base CTerm Cbracket  {
                                                 $$ = $1 + " " + $2 + " " + $3 + " " + $4;
                                                 $$.Command() = $2.Value();
                                                 $$.Type() = TokenValue::Relation;
                                                 $$.AddArgument($3);
                                             }
-            | Obracket input CTerm CTerm Cbracket   {
-                                                        $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
-                                                        $$.Command() = $2.Value();
-                                                        $$.Type() = TokenValue::Relation;
-                                                        $$.AddArgument($3);
-                                                        $$.AddArgument($4);
-                                                    }
-            | Obracket legal CTerm CTerm Cbracket   {
-                                                        $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
-                                                        $$.Command() = $2.Value();
-                                                        $$.Type() = TokenValue::Relation;
-                                                        $$.AddArgument($3);
-                                                        $$.AddArgument($4);
-                                                    }
-            | Obracket goal CTerm Num_var Cbracket  {
-                                                        $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
-                                                        $$.Command() = $2.Value();
-                                                        $$.Type() = TokenValue::Relation;
-                                                        $$.AddArgument($3);
-                                                        $$.AddArgument($4);
-                                                    }
+            | Obracket input Basic_cterm CTerm Cbracket {
+                                                            $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
+                                                            $$.Command() = $2.Value();
+                                                            $$.Type() = TokenValue::Relation;
+                                                            $$.AddArgument($3);
+                                                            $$.AddArgument($4);
+                                                        }
+            | Obracket legal Basic_cterm CTerm Cbracket {
+                                                            $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
+                                                            $$.Command() = $2.Value();
+                                                            $$.Type() = TokenValue::Relation;
+                                                            $$.AddArgument($3);
+                                                            $$.AddArgument($4);
+                                                        }
+            | Obracket goal Basic_cterm Num_var Cbracket    {
+                                                                $$ = $1 + " " + $2 + " " + $3 + " " + $4 + " " + $5;
+                                                                $$.Command() = $2.Value();
+                                                                $$.Type() = TokenValue::Relation;
+                                                                $$.AddArgument($3);
+                                                                $$.AddArgument($4);
+                                                            }
             | terminal  {
                             $$ = $$ + $1;
                             $$.Command() = $1.Value();
@@ -533,6 +535,22 @@ Terms       : Term Terms    {
 
             | %empty    { }
 
+Basic_term  : Id_num    {
+                            $$ = $$ + $1;
+                            $$.Command() = $1.Value();
+                            $$.Type() = TokenValue::Function;
+                            std::string msg;
+                            int res = driver.AddEntry($1, false, 0, @1, msg);
+                            if(res == 1) error(@1, msg);
+                            else if(res == 2) driver.Warn(@1, msg);
+                        }
+            | var   {
+                        $$ = $$ + $1;
+                        $$.AddVariable($1);
+                        $$.Command() = $1.Value();
+                        $$.Type() = TokenValue::Var;
+                    }
+
 CTerm       : Obracket Id_num CTerm CTerms Cbracket {
                                                         $$ = $1 + " " + $2 + " " + $3;
                                                         if($4 != "") $$ = $$ + " " + $4;
@@ -572,6 +590,22 @@ CTerms      : CTerm CTerms  {
                             }
 
             | %empty    { }
+
+Basic_cterm : Id_num    {
+                            $$ = $$ + $1;
+                            $$.Command() = $1.Value();
+                            $$.Type() = TokenValue::Function;
+                            std::string msg;
+                            int res = driver.CheckEntry($1, false, 0, @1, msg);
+                            if(res == 1) error(@1, msg);
+                            else if(res == 2) driver.Warn(@1, msg);
+                        }
+            | var   {
+                        $$ = $$ + $1;
+                        $$.AddVariable($1);
+                        $$.Command() = $1.Value();
+                        $$.Type() = TokenValue::Var;
+                    }
 
 Num_var     : num   {
                         $$ = $$ + $1;

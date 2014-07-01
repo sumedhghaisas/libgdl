@@ -11,6 +11,8 @@
 #define BASH_YELLOW "\033[0;33m"
 #define BASH_CLEAR "\033[0m"
 
+#include <list>
+
 #include <gdlreasoner/kif_flattener.hpp>
 
 using namespace gdlparser;
@@ -76,12 +78,12 @@ bool KIF::PrintToFile(const std::string& filename) const
 
     for(size_t i = 0; i < facts.size(); i++)
     {
-        if(isDebuggingSymbols) out << ";#line " << ds_facts[i].begin.line << " " << "\"" << *ds_facts[i].begin.filename << "\"" << std::endl;
+        if(isDebuggingSymbols) out << ";#line " << facts[i].loc << std::endl;
         out << facts[i] << std::endl;
     }
     for(size_t i = 0; i < clauses.size(); i++)
     {
-        if(isDebuggingSymbols) out << ";#line " << ds_clauses[i].begin.line << " " << "\"" << *ds_clauses[i].begin.filename << "\"" << std::endl;
+        if(isDebuggingSymbols) out << ";#line " << clauses[i].loc  << std::endl;
         out << clauses[i] << std::endl;
     }
 
@@ -95,20 +97,15 @@ void KIF::AddLineMark(const location_type& loc)
     size_t c_size = clauses.size();
 
     for(size_t i = f_last_index_with_linemark;i < f_size;i++)
-        ds_facts.pop_back();
-    for(size_t i = f_last_index_with_linemark;i < f_size;i++)
-        ds_facts.push_back(loc);
+    {
+        facts[i].AddLocation(loc);
+    }
 
     for(size_t i = c_last_index_with_linemark;i < c_size;i++)
-        ds_clauses.pop_back();
-    for(size_t i = c_last_index_with_linemark;i < c_size;i++)
-        ds_clauses.push_back(loc);
+    {
+        clauses[i].AddLocation(loc);
+    }
 
     f_last_index_with_linemark = f_size;
     c_last_index_with_linemark = c_size;
-}
-
-bool KIF::DeepScan()
-{
-
 }

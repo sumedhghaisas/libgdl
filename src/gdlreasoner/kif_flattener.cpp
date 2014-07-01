@@ -133,9 +133,15 @@ bool KIFFlattener::PrintToFile(const std::string& filename)
     std::ofstream myfile(filename.c_str());
     if(!myfile.is_open()) return false;
     for(std::list<Fact>::iterator it = flattened_facts.begin();it != flattened_facts.end();it++)
+    {
+        if((*it).isLocation) myfile << ";#line " << (*it).loc << std::endl;
         myfile << *it << std::endl;
+    }
     for(std::list<Clause>::iterator it = flattened_clauses.begin();it != flattened_clauses.end();it++)
+    {
+        if((*it).isLocation) myfile << ";#line " << (*it).loc << std::endl;
         myfile << *it << std::endl;
+    }
     myfile.close();
     return true;
 }
@@ -199,11 +205,15 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n, const KnowledgeBase& all
                 to_add->head = NULL;
                 delete to_add;
                 f_facts.push_back(*h);
+                f_facts.back().loc = (*it).loc;
+                f_facts.back().isLocation = (*it).isLocation;
                 f_heads.push_back(h);
             }
             else
             {
                 f_clauses.push_back(*temp);
+                f_clauses.back().loc = (*it).loc;
+                f_clauses.back().isLocation = (*it).isLocation;
                 f_heads.push_back(temp->head);
                 temp->head = NULL;
                 delete temp;

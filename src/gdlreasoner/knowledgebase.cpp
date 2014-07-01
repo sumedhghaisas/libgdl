@@ -10,7 +10,7 @@ using namespace gdlreasoner;
 using namespace gdlreasoner::logicbase;
 using namespace gdlparser;
 
-KnowledgeBase::KnowledgeBase(const gdlparser::KIF& kif) : c_id(0)
+KnowledgeBase::KnowledgeBase(const gdlparser::KIF& kif) : c_id(0), isDebuggingSymbols(kif.DebuggingSymbolSupport())
 {
     const std::vector<Fact>& facts = kif.Facts();
     const std::vector<Clause>& clauses = kif.Clauses();

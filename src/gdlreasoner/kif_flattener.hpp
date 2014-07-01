@@ -49,7 +49,8 @@ class KIFFlattener
 
 public:
     //! empty constructor
-    KIFFlattener() {}
+    KIFFlattener(bool isDebuggingSymbol = true)
+        : isDebuggingSymbol(isDebuggingSymbol) {}
 
     //! flattened the knowledge in given KIF object and stores the flattened knowledge
     void Flatten(const gdlparser::KIF& kif);
@@ -102,6 +103,8 @@ private:
     std::list<Fact> flattened_facts;
     //! stores flattened clauses
     std::list<Clause> flattened_clauses;
+
+    const bool isDebuggingSymbol;
 };
 
 } // namespace gdlreasoner

@@ -352,7 +352,7 @@ bool Argument::IsEqualTo(const Argument& arg) const
     return true;
 }
 
-Fact::Fact(const std::string& str)
+Fact::Fact(const std::string& str) : isLocation(false)
 {
     if(str.find("?") != std::string::npos)
     {
@@ -363,10 +363,8 @@ Fact::Fact(const std::string& str)
     arg = Argument(str);
 }
 
-Clause::Clause(const TokenValue& tok, const size_t id) : id(id)
+Clause::Clause(const TokenValue& tok, const size_t id) : id(id), isLocation(false)
 {
-    text = tok.Value();
-
     const std::vector<TokenValue>& args = tok.Arguments();
 
     std::map<std::string, Argument*> v_map;
@@ -376,7 +374,7 @@ Clause::Clause(const TokenValue& tok, const size_t id) : id(id)
     for(size_t i = 1;i < args.size();i++) premisses.push_back(Argument::ConstructArgument(args[i], v_map));
 }
 
-Clause::Clause(const std::string& str)
+Clause::Clause(const std::string& str) : isLocation(false)
 {
     std::map<std::string, Argument*> v_map;
 
@@ -400,6 +398,9 @@ Clause::Clause(const Clause& c)
 
     id = c.id;
 
+    isLocation = c.isLocation;
+    loc = c.loc;
+
     head = Argument::ConstructArgument(*c.head, v_map);
 
     for(size_t i = 0;i < c.premisses.size();i++)
@@ -413,6 +414,9 @@ Clause& Clause::operator=(const Clause& c)
     std::map<std::string, Argument*> v_map;
 
     id = c.id;
+
+    isLocation = c.isLocation;
+    loc = c.loc;
 
     head = Argument::ConstructArgument(*c.head, v_map);
 
@@ -470,6 +474,12 @@ std::ostream& operator<<(std::ostream& o,const Argument& arg)
 
     for(size_t i = 0;i < arg.args.size();i++) o << " " << *(arg.args[i]);
     o << " " << ")";
+    return o;
+}
+
+std::ostream& operator<<(std::ostream& o, const Location& loc)
+{
+    o << loc.lineNo << " \"" << loc.filename << "\"";
     return o;
 }
 

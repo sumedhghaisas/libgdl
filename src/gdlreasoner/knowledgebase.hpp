@@ -96,6 +96,8 @@ private:
 
     //! clause id to assign to new clauses
     size_t c_id;
+
+    bool isDebuggingSymbols;
 };
 
 } // namespace gdlreasoner

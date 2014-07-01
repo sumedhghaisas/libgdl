@@ -261,8 +261,10 @@ namespace gdlparser { namespace parser { namespace yy {
       // Literal
       // Term
       // Terms
+      // Basic_term
       // CTerm
       // CTerms
+      // Basic_cterm
       // Num_var
       char dummy1[sizeof(TokenValue)];
 };
@@ -544,7 +546,7 @@ namespace gdlparser { namespace parser { namespace yy {
     /// \param yyvalue   the value to check
     static bool yy_table_value_is_error_ (int yyvalue);
 
-    static const short int yypact_ninf_;
+    static const signed char yypact_ninf_;
     static const signed char yytable_ninf_;
 
     /// Convert a scanner token number \a t to a symbol number.
@@ -561,7 +563,7 @@ namespace gdlparser { namespace parser { namespace yy {
   static const unsigned char yydefact_[];
 
   // YYPGOTO[NTERM-NUM].
-  static const short int yypgoto_[];
+  static const signed char yypgoto_[];
 
   // YYDEFGOTO[NTERM-NUM].
   static const short int yydefgoto_[];
@@ -686,8 +688,8 @@ namespace gdlparser { namespace parser { namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 207,           //< Last index in yytable_.
-      yynnts_ = 17,  //< Number of nonterminal symbols.
+      yylast_ = 213,           //< Last index in yytable_.
+      yynnts_ = 19,  //< Number of nonterminal symbols.
       yyempty_ = -2,
       yyfinal_ = 21, //< Termination state number.
       yyterror_ = 1,
@@ -805,9 +807,11 @@ namespace gdlparser { namespace parser { namespace yy {
       case 34: // Literal
       case 35: // Term
       case 36: // Terms
-      case 37: // CTerm
-      case 38: // CTerms
-      case 39: // Num_var
+      case 37: // Basic_term
+      case 38: // CTerm
+      case 39: // CTerms
+      case 40: // Basic_cterm
+      case 41: // Num_var
         value.copy< TokenValue > (other.value);
         break;
 
@@ -861,9 +865,11 @@ namespace gdlparser { namespace parser { namespace yy {
       case 34: // Literal
       case 35: // Term
       case 36: // Terms
-      case 37: // CTerm
-      case 38: // CTerms
-      case 39: // Num_var
+      case 37: // Basic_term
+      case 38: // CTerm
+      case 39: // CTerms
+      case 40: // Basic_cterm
+      case 41: // Num_var
         value.copy< TokenValue > (v);
         break;
 
@@ -938,9 +944,11 @@ namespace gdlparser { namespace parser { namespace yy {
       case 34: // Literal
       case 35: // Term
       case 36: // Terms
-      case 37: // CTerm
-      case 38: // CTerms
-      case 39: // Num_var
+      case 37: // Basic_term
+      case 38: // CTerm
+      case 39: // CTerms
+      case 40: // Basic_cterm
+      case 41: // Num_var
         value.template destroy< TokenValue > ();
         break;
 
@@ -991,9 +999,11 @@ namespace gdlparser { namespace parser { namespace yy {
       case 34: // Literal
       case 35: // Term
       case 36: // Terms
-      case 37: // CTerm
-      case 38: // CTerms
-      case 39: // Num_var
+      case 37: // Basic_term
+      case 38: // CTerm
+      case 39: // CTerms
+      case 40: // Basic_cterm
+      case 41: // Num_var
         value.move< TokenValue > (s.value);
         break;
 
@@ -1202,7 +1212,7 @@ namespace gdlparser { namespace parser { namespace yy {
 
 #line 12 "kif_parser.yy" // lalr1.cc:371
 } } } // gdlparser::parser::yy
-#line 1206 "kif_parser.tab.hh" // lalr1.cc:371
+#line 1216 "kif_parser.tab.hh" // lalr1.cc:371
 
 
 
