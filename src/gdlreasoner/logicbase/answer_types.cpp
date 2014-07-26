@@ -113,6 +113,7 @@ bool ClauseAnswer::next ()
         if(m_position == 0) fit = facts->begin();
         //if (m_kb.Debug() > 1) Log::Debug << LOGID << util::formatDepth (m_depth) << "Checking against fact " << fact << std::endl;
         const Fact& fact = *fit;
+
         // set question map to empty variable map
         v_set = o_v_set;
         // check for unification with the current fact
@@ -138,7 +139,7 @@ bool ClauseAnswer::next ()
         // check for infinite recursion
         if(visited.find(clause.id) != visited.end())
         {
-            m_position++; continue;
+            m_position++; cit++; continue;
         }
 
         if (m_subAnswers.empty())

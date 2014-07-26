@@ -65,8 +65,8 @@ public:
     KIF(bool isWarn = true,
         bool isDebuggingSymbols = true,
         char o_level = 0,
-        std::ostream& stream = std::cout)
-        : stream(&stream), isWarn(isWarn),
+        std::ostream* stream = &std::cout)
+        : stream(stream), isWarn(isWarn),
         isDebuggingSymbols(isDebuggingSymbols),
         o_level(o_level),
         driver(*this)
@@ -111,10 +111,10 @@ public:
     //!
     //! @return bool : success or failure
     //!
-    bool Parse()
+    bool Parse(bool ignoreErrors = false)
     {
         bool res = driver.Parse();
-        if(!res)
+        if(!res && !ignoreErrors)
         {
             facts.clear();
             clauses.clear();

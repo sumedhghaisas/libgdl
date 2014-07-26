@@ -49,24 +49,24 @@ KIFDriver::~KIFDriver()
 
 void KIFDriver::Error(const location_type& loc, const std::string& msg) const
 {
-    *kif.stream << BASH_RED "[ERROR] " BASH_CLEAR << loc << ": " << msg << std::endl;
+    if(kif.stream != NULL) *kif.stream << BASH_RED "[ERROR] " BASH_CLEAR << loc << ": " << msg << std::endl;
     anyError = true;
 }
 
 void KIFDriver::Warn(const location_type& loc, const std::string& msg) const
 {
-    if(kif.isWarn) *kif.stream << BASH_YELLOW "[WARN] " BASH_CLEAR << loc << ": " << msg << std::endl;
+    if(kif.isWarn && kif.stream != NULL) *kif.stream << BASH_YELLOW "[WARN] " BASH_CLEAR << loc << ": " << msg << std::endl;
 }
 
 void KIFDriver::Error(const std::string& msg) const
 {
-    *kif.stream << BASH_RED "[ERROR] " BASH_CLEAR << msg << std::endl;
+    if(kif.stream != NULL) *kif.stream << BASH_RED "[ERROR] " BASH_CLEAR << msg << std::endl;
     anyError = true;
 }
 
 void KIFDriver::Warn(const std::string& msg) const
 {
-    if(kif.isWarn) *kif.stream << BASH_YELLOW "[WARN] " BASH_CLEAR << msg << std::endl;
+    if(kif.isWarn && kif.stream != NULL) *kif.stream << BASH_YELLOW "[WARN] " BASH_CLEAR << msg << std::endl;
 }
 
 bool KIFDriver::Parse()

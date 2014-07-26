@@ -57,8 +57,14 @@ bool Unify::mgu(const Argument& arg1, const Argument& arg2, VariableSet& theta)
         const Argument* t = p.second;
 
         VariableSet::iterator it;
-        if(s->IsVariable() && (it = theta.find(s)) != theta.end()) s = s->sub;
-        if(t->IsVariable() && (it = theta.find(t)) != theta.end()) t = t->sub;
+        while(s->IsVariable() && (it = theta.find(s)) != theta.end())
+        {
+            s = s->sub;
+        }
+        while(t->IsVariable() && (it = theta.find(t)) != theta.end())
+        {
+            t = t->sub;
+        }
 
 
         if(s->IsVariable() && t->IsVariable())
