@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE(TerminalUndefinedTest)
 {
     MARK_START;
     OPEN_LOG;
-	KIF kif(false, false, 0, TEST_LOG);
+	  KIF kif(false, false, 0, TEST_LOG);
     kif.AddFile("data/parser_tests/ndef_terminal.kif");
     if(kif.Parse()) MARK_FAIL;
     MARK_END;

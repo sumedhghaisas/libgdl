@@ -18,6 +18,8 @@
 /// import unification module
 #include <gdlreasoner/logicbase/unify.hpp>
 
+#include <gdlparser/util/setop.hpp>
+
 namespace gdlreasoner
 {
 /// forward declaration for class KnowledgeBase
@@ -42,9 +44,10 @@ public:
 
     Answer(const Argument& question,
            const VariableSet& v_set,
+           const VariableSet& h_set,
            const KnowledgeBase & kb,
            const std::set<size_t>& v)
-        : kb (kb), question (question), visited(v), o_v_set(v_set) {}
+        : kb (kb), question (question), visited(v), o_v_set(v_set), h_set(h_set) {}
 
     virtual ~Answer() {}
 
@@ -53,9 +56,15 @@ public:
     virtual bool next () = 0;
     /// returns the variable mapping in which this solution is valid
     /// returns variable map of last viable solution after next() returns false
-    virtual VariableSet GetVariableSet()
+    inline VariableSet GetVariableSet()
     {
-        return v_set;
+        return gdlparser::util::setop::setUnion(v_set, h_set);
+    }
+
+    inline void DecodeVariables()
+    {
+        Unify::DecodeSubstitutions(o_v_set, v_set);
+        v_set = o_v_set;
     }
 
     const std::set<size_t>& Visited()
@@ -73,7 +82,9 @@ protected:
     //! set of visited clauses
     std::set<size_t> visited;
     //! default variable map
-    VariableSet o_v_set;
+    const VariableSet o_v_set;
+    //! history set
+    VariableSet h_set;
 };
 
 /**
@@ -86,8 +97,9 @@ class AnswerDecoder : public Answer
 {
 public:
     /// Constructs an Answer Decoder from given answer and question
-    AnswerDecoder (Answer* ans, const Argument& question, const KnowledgeBase & kb)
-        : Answer(question, VariableSet(), kb, std::set<size_t>()) , m_wasTrueTimes(0)
+    AnswerDecoder (Answer* ans, const Argument& question, const VariableSet& v_set,
+                   const VariableSet& h_set, const KnowledgeBase & kb)
+        : Answer(question, v_set, h_set, kb, std::set<size_t>()) , m_wasTrueTimes(0)
     {
         m_answer = ans;
     }
@@ -117,7 +129,8 @@ class ClauseAnswer : public Answer
 {
 public:
     //! Protected constructor ( can be accessed by KnowledgeBase)
-    ClauseAnswer (const Argument& question, const VariableSet& v_set, const KnowledgeBase & kb,
+    ClauseAnswer (const Argument& question, const VariableSet& v_set, const VariableSet& h_set,
+                  const KnowledgeBase & kb,
                   const std::set<size_t>& v);
 
     //! virtual empty destructor
@@ -173,9 +186,10 @@ public:
     //! Constructs the object with OR question and given knowledge base
     OrClauseAnswer(const Argument& question,
                    const VariableSet& m,
+                   const VariableSet& h_set,
                    const KnowledgeBase & kb,
                    const std::set<size_t>& v)
-        : Answer(question, m, kb, v), m_currentAnswer(NULL), current_arg(0) {}
+        : Answer(question, m, h_set, kb, v), m_currentAnswer(NULL), current_arg(0) {}
 
 
     //! destructor
@@ -205,7 +219,8 @@ class DistinctAnswer : public Answer
 {
 public:
     /// Construct DistinctAnswer from question and given knowledge base
-    DistinctAnswer (const Argument& q, const VariableSet& m, const KnowledgeBase & kb,
+    DistinctAnswer (const Argument& q, const VariableSet& m, const VariableSet& h_set,
+                    const KnowledgeBase & kb,
                     const std::set<size_t>& v);
 
     ~DistinctAnswer() {}
@@ -230,7 +245,8 @@ class NotAnswer : public Answer
 {
 public:
     //! Constructs NotAnswer from question and given knowledge base
-    NotAnswer (const Argument& q, const VariableSet& m, const KnowledgeBase & kb,
+    NotAnswer (const Argument& q, const VariableSet& m, const VariableSet& h_set,
+               const KnowledgeBase & kb,
                const std::set<size_t>& v);
     //! destructor
     ~NotAnswer()
@@ -260,9 +276,11 @@ class GroundQuestionAnswer : public Answer
 {
 public:
     //! constructs ground answer
-    GroundQuestionAnswer(Answer* ans, const Argument& q, const VariableSet& m, const KnowledgeBase& kb,
+    GroundQuestionAnswer(Answer* ans, const Argument& q, const VariableSet& m,
+                         const VariableSet& h_set,
+                         const KnowledgeBase& kb,
                          const std::set<size_t>& v)
-            : Answer(q, m, kb, v), ans(ans) { isAnswerReturned = false; }
+            : Answer(q, m, h_set, kb, v), ans(ans) { isAnswerReturned = false; }
 
     //! destructor
     ~GroundQuestionAnswer() { delete ans; }

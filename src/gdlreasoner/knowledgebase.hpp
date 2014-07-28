@@ -51,7 +51,8 @@ public:
     std::list<Argument*> Ask(const Argument& question, bool checkForDoubles = true) const;
 
     //! get the answer to the question than substitutions
-    Answer* GetAnswer(const Argument& question, const VariableSet& v_set, const std::set<size_t>& visited) const;
+    Answer* GetAnswer(const Argument& question, const VariableSet& v_set, const VariableSet& h_set,
+                      const std::set<size_t>& visited) const;
 
     //! returns if the question is satisfiable
     bool IsSatisfiable(const Argument& question) const;

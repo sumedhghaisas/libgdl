@@ -38,7 +38,7 @@ public:
     static bool mgu(const gdlparser::Argument& f, const gdlparser::Argument& arg, VariableSet& m);
 
     //! Prints Argument with substituted values(For variables)
-    static std::ostream& PrintSubstitution(std::ostream& stream, const gdlparser::Argument& arg);
+    static std::ostream& PrintSubstitution(std::ostream& stream, const gdlparser::Argument& arg, int index = -1);
 
     //! Equates the two arguments with substitution
     static bool EquateWithSubstitution(const gdlparser::Argument& arg1, const gdlparser::Argument& arg2);
@@ -47,11 +47,17 @@ public:
     //! the newly constructed argument is alloted in heap
     //! delete the result for yourself
     static Argument* GetSubstitutedArgument(const Argument* arg);
+    static Argument* GetSubstitutedArgument(const Argument* arg, char s_no);
 
     //! Applies substitution to given clause(head and premisses) and returns newly constructed clause
     //! the newly constructed clause is alloted in heap
     //! delete the result for yourself
     static Clause* GetSubstitutedClause(const Clause* c);
+
+    static void DecodeSubstitutions(const std::set<const Argument*>& o_v_set, const std::set<const Argument*>& v_set);
+    static std::set<const Argument*> EncodeSubstitutions(const Argument* arg, const std::set<const Argument*>& v_set);
+
+    static bool IsGroundQuestion(const Argument* arg, const std::set<const Argument*>& v_set);
 
     //! perform occur check or not
     static bool doOccurCheck;

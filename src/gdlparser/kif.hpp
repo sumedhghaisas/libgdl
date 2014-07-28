@@ -118,8 +118,9 @@ public:
         {
             facts.clear();
             clauses.clear();
+            return false;
         }
-        return res;
+        return true;
     }
 
     bool DeepScan();

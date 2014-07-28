@@ -17,6 +17,6 @@
 
 #define OPEN_LOG std::ofstream test_log("test_log.log", std::fstream::app)
 
-#define TEST_LOG test_log
+#define TEST_LOG &test_log
 
 #endif // _GDLPARSER_TESTS_GDLPARSER_TEST_HPP_INCLUDED

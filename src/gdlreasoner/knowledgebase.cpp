@@ -39,13 +39,16 @@ std::list<Argument*> KnowledgeBase::Ask(const Argument& arg, bool checkForDouble
     std::list<Argument*> out;
 
     // get answer
-    Answer *ans = GetAnswer(arg, Unify::VariableSet(), std::set<size_t>());
+    Answer *ans = GetAnswer(arg, Unify::VariableSet(), VariableSet(), std::set<size_t>());
     // get all the valid substitution and add them to list
 
     if(!checkForDoubles)
     {
         while(ans->next())
-            out.push_back(Unify::GetSubstitutedArgument(&arg));
+        {
+            Argument* temp = Unify::GetSubstitutedArgument(&arg);
+            out.push_back(temp);
+        }
     }
     else
     {
@@ -72,7 +75,7 @@ std::list<Argument*> KnowledgeBase::Ask(const Argument& arg, bool checkForDouble
 bool KnowledgeBase::IsSatisfiable(const Argument& arg) const
 {
     // get answer
-    Answer *ans = GetAnswer(arg, Unify::VariableSet(), std::set<size_t>());
+    Answer *ans = GetAnswer(arg, Unify::VariableSet(), Unify::VariableSet(), std::set<size_t>());
     // return if any valid substitution exists
     bool res = ans->next();
     delete ans;
@@ -184,33 +187,33 @@ const KnowledgeBase::ClauseVec* KnowledgeBase::GetClauses(const std::string& sig
 }
 
 Answer* KnowledgeBase::GetAnswer(const Argument& question, const VariableSet& v_set,
+                                 const VariableSet& h_set,
                                  const std::set<size_t>& visited) const
 {
     Answer *ans = NULL;
 
-    //std::cout << question << std::endl;
-    if(question.IsGround())
+    if(Unify::IsGroundQuestion(&question, v_set))
     {
         if(question.val == "or")
-            ans = new GroundQuestionAnswer(new OrClauseAnswer(question, v_set, *this, visited), question, v_set, *this, visited);
+            ans = new GroundQuestionAnswer(new OrClauseAnswer(question, v_set, h_set, *this, visited), question, v_set, h_set, *this, visited);
         else if(question.val == "distinct")
-            ans = new GroundQuestionAnswer(new DistinctAnswer(question, v_set, *this, visited), question, v_set, *this, visited);
+            ans = new GroundQuestionAnswer(new DistinctAnswer(question, v_set, h_set, *this, visited), question, v_set, h_set, *this, visited);
         else if(question.val == "not")
-            ans = new GroundQuestionAnswer(new NotAnswer(question, v_set, *this, visited), question, v_set, *this, visited);
-        else ans = new GroundQuestionAnswer(new ClauseAnswer(question, v_set, *this, visited), question, v_set, *this, visited);
+            ans = new GroundQuestionAnswer(new NotAnswer(question, v_set, h_set, *this, visited), question, v_set, h_set, *this, visited);
+        else ans = new GroundQuestionAnswer(new ClauseAnswer(question, v_set, h_set, *this, visited), question, v_set, h_set, *this, visited);
     }
     else
     {
         if(question.val == "or")
-            ans = new OrClauseAnswer(question, v_set, *this, visited);
+            ans = new OrClauseAnswer(question, v_set, h_set, *this, visited);
         else if(question.val == "distinct")
-            ans = new DistinctAnswer(question, v_set, *this, visited);
+            ans = new DistinctAnswer(question, v_set, h_set, *this, visited);
         else if(question.val == "not")
-            ans = new NotAnswer(question, v_set, *this, visited);
-        else ans = new ClauseAnswer(question, v_set, *this, visited);
+            ans = new NotAnswer(question, v_set, h_set, *this, visited);
+        else ans = new ClauseAnswer(question, v_set, h_set, *this, visited);
     }
 
-    return new AnswerDecoder(ans, question, *this);
+    return new AnswerDecoder(ans, question, v_set, h_set, *this);
 }
 
 std::ostream& operator<<(std::ostream& o, const KnowledgeBase& kb)
