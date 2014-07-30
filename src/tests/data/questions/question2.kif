@@ -1,0 +1,62 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Question 2
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Three men - Sam, Cam and Laurie - are married to Carrie, Billy and Tina, 
+;;; but not necessarily in the same order. Sam's wife and Billy's Husband play 
+;;; Carrie and Tina's husband at bridge. 
+;;; Condition 1 - No wife partners her husband.
+;;; Condition 2 - Cam does not play bridge.
+;;; Who is married to Cam? 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(man sam)
+(man cam)
+(man laurie)
+(woman carrie)
+(woman billy)
+(woman tina)
+
+(<= (mpairs ?a ?b ?c)
+    (man ?a) (man ?b) (man ?c)
+    (distinct ?a ?b)
+    (distinct ?b ?c)
+    (distinct ?a ?c))
+    
+(<= (with_pairs sam ?b ?c ?b carrie ?c carrie)
+    (mpairs sam ?b ?c))
+(<= (with_pairs ?a sam ?c sam billy ?c carrie)
+    (mpairs ?a sam ?c))
+(<= (with_pairs ?a ?b sam ?b tina sam carrie)
+    (mpairs ?a ?b sam))
+    
+;;; construct all the data with implicit condition
+(<= (cond0 ?a ?b ?c ?u ?v ?p ?q)
+    (with_pairs ?a ?b ?c ?u ?v ?p ?q)
+    (distinct ?u ?p)
+    (distinct ?v ?q))
+
+;;; impose condition 1
+(<= (cond1 ?a ?b ?c ?u ?v ?p ?q)
+    (cond0 ?a ?b ?c ?u ?v ?p ?q)
+    (or (distinct ?u ?a) (distinct ?v carrie))
+    (or (distinct ?u ?b) (distinct ?v billy))
+    (or (distinct ?u ?c) (distinct ?v tina))
+    (or (distinct ?p ?a) (distinct ?q carrie))
+    (or (distinct ?p ?b) (distinct ?q billy))
+    (or (distinct ?p ?c) (distinct ?q tina)))
+
+;;; impose condition 2
+(<= (cond2 ?a ?b ?c ?u ?v ?p ?q)
+    (cond1 ?a ?b ?c ?u ?v ?p ?q)
+    (distinct ?u cam)
+    (distinct ?p cam))
+
+;;; api for answers
+(<= (married cam carrie) 
+    (cond2 cam ?b ?c ?u ?v ?p ?q))
+(<= (married cam billy)
+    (cond2 ?a cam ?c ?u ?v ?p ?q))
+(<= (married cam tina)
+    (cond2 ?a ?b cam ?u ?v ?p ?q))

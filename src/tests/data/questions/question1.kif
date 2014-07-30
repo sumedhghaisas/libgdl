@@ -1,0 +1,75 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Question 1
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; One of Mr. Bajaj, his wife, their son and Mr. Bajaj's mother is an Engineer 
+;;; and another is a Doctor. 
+;;; Condition 1 - If the Doctor is a male, then the Engineer is a male. 
+;;; Condition 2 - If the Engineer is younger than the Doctor, then the Engineer 
+;;;               and the Doctor are not blood relatives. 
+;;; Condition 3 - If the Engineer is a female, then she and the Doctor are blood 
+;;;               relatives. 
+;;; Can you tell who is the Doctor and the Engineer? 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(person mother)
+(person wife)
+(person bajaj)
+(person son)
+
+(male bajaj)
+(male son)
+(female wife)
+(female mother)
+
+(<= (blood_rel ?x ?y) (blood_rel ?y ?x))
+(blood_rel bajaj son)
+(blood_rel bajaj mother)
+(blood_rel wife son)
+(blood_rel mother son)
+
+(younger son bajaj)
+(younger son wife)
+(younger bajaj mother)
+(younger wife mother)
+(<= (younger ?x ?y) (younger ?x ?z) (younger ?z ?y))
+
+;;; Construct all the data with imlicit conditions
+(<= (cond0 ?x ?y) (person ?x) (person ?y) (distinct ?x ?y))
+
+;;; impose condition 1
+(<= (cond1 ?x ?y)
+    (cond0 ?x ?y)
+    (male ?x)(male ?y))
+(<= (cond1 ?x ?y)
+    (cond0 ?x ?y)
+    (not (male ?x)))
+
+;;; impose condition 2
+(<= (cond2 ?x ?y)
+    (cond0 ?x ?y)
+    (younger ?y ?x)
+    (not (blood_rel ?x ?y)))
+(<= (cond2 ?x ?y)
+    (cond0 ?x ?y)
+    (not (younger ?y ?x)))
+ 
+;;; impose condition 3   
+(<= (cond3 ?x ?y)
+    (cond0 ?x ?y)
+    (female ?y)
+    (blood_rel ?x ?y))
+(<= (cond3 ?x ?y)
+    (cond0 ?x ?y)
+    (not (female ?y)))
+
+;;; get answer after imposing all the conditions    
+(<= (cond ?x ?y)
+    (cond1 ?x ?y)
+    (cond2 ?x ?y)
+    (cond3 ?x ?y))
+
+;;; api for answers
+(<= (doctor ?x) (cond ?x ?y))
+(<= (engineer ?y) (cond ?x ?y)) 
