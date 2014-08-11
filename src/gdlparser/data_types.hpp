@@ -4,8 +4,8 @@
  *
  * Declaration of data types used by driver.
  */
-#ifndef __GDLPARSER_TOKEN_TYPES_H
-#define __GDLPARSER_TOKEN_TYPES_H
+#ifndef __LIBGDL_GDLPARSER_DATA_TYPES_H
+#define __LIBGDL_GDLPARSER_DATA_TYPES_H
 
 #include <vector>
 #include <iostream>
@@ -27,91 +27,106 @@ namespace gdlparser
  */
 struct Argument
 {
-    typedef std::vector<std::string> StringVec;
+  typedef std::vector<std::string> StringVec;
 
-    //! enum type
-    enum Type { Relation, Function, Var };
+  //! enum type
+  enum Type { Relation, Function, Var };
 
-    //! empty constructor
-    Argument();
-    //! constucts argument from given token
-    Argument(const TokenValue& tok);
-    //! copy constructor
-    Argument(const Argument& arg);
-    //! construct argument from string
-    Argument(const std::string& str);
-    //! Destructor
-    ~Argument();
+  //! empty constructor
+  Argument();
+  //! constucts argument from given token
+  Argument(const TokenValue& tok);
+  //! copy constructor
+  Argument(const Argument& arg);
+  //! construct argument from string
+  Argument(const std::string& str);
+  //! Destructor
+  ~Argument();
 
-    //! copy-assignment operator
-    Argument& operator=(const Argument& arg);
+  //! copy-assignment operator
+  Argument& operator=(const Argument& arg);
 
-    //! Destroys arguments to this argument before deletion
-    //! called by destructor
-    //! v_set is the set of variables already deleted
-    //! updates it accordingly
-    void Destroy(std::set<Argument*>& v_set);
+  //! Destroys arguments to this argument before deletion
+  //! called by destructor
+  //! v_set is the set of variables already deleted
+  //! updates it accordingly
+  void Destroy(std::set<Argument*>& v_set);
 
-    //! comparison operator
-    bool operator==(const Argument& arg) const;
-    bool operator!=(const Argument& arg) const { return !(*this == arg); }
+  //! comparison operator
+  bool operator==(const Argument& arg) const;
+  bool operator!=(const Argument& arg) const { return !(*this == arg); }
 
-    //! special comparison operator
-    //! checks value and arguments(recursively check)
-    //! for 'or' if given argument matches any argument to 'or' true is returned
-    bool OrEquate(const Argument& arg);
+  //! special comparison operator
+  //! checks value and arguments(recursively check)
+  //! for 'or' if given argument matches any argument to 'or' true is returned
+  bool OrEquate(const Argument& arg);
 
-    //! return true if given argument is there in arguments
-    bool HasAsArgument(const Argument& arg) const;
+  //! return true if given argument is there in arguments
+  bool HasAsArgument(const Argument& arg) const;
 
-    //! returns if current argument is ground
-    bool IsGround() const;
+  //! returns if current argument is ground
+  bool IsGround() const;
 
-    //! returns if current argument is a variable
-    bool IsVariable() const { if(t == Var) return true; else return false; }
+  //! returns if current argument is a variable
+  bool IsVariable() const { if(t == Var) return true; else return false; }
 
-    //! equivalent to comparison operator but 'or' conditions is removed in this
-    bool IsEqualTo(const Argument& arg) const;
+  //! equivalent to comparison operator but 'or' conditions is removed in this
+  bool IsEqualTo(const Argument& arg) const;
 
-    //! adds argument to this command
-    void AddArgument(const TokenValue& tok) { args.push_back(new Argument(tok)); }
+  //! adds argument to this command
+  void AddArgument(const TokenValue& tok) { args.push_back(new Argument(tok)); }
 
-    //! type of this argument
-    Type t;
-    //! command value
-    std::string val;
-    //! vector of arguments
-    std::vector<Argument*> args;
+  //! type of this argument
+  Type t;
+  //! command value
+  std::string val;
+  //! vector of arguments
+  std::vector<Argument*> args;
 
-    //! used by copy constructors
-    static Argument* ConstructArgument(const Argument& arg, std::map<std::string, Argument*>& v_map);
-    static Argument* ConstructArgument(const TokenValue& tok, std::map<std::string, Argument*>& v_map);
-    static Argument* ConstructArgument(const std::string& str, std::map<std::string, Argument*>& v_map);
+  //! used by copy constructors
+  static Argument* ConstructArgument(const Argument& arg, 
+                                     std::map<std::string, 
+                                     Argument*>& v_map);
+  static Argument* ConstructArgument(const TokenValue& tok, 
+                                     std::map<std::string, 
+                                     Argument*>& v_map);
+  static Argument* ConstructArgument(const std::string& str, 
+                                     std::map<std::string, 
+                                     Argument*>& v_map);
 
-    static bool SeparateCommand (const std::string & input, std::string & cmd, std::vector <std::string> & args);
+  //! separates a string input into command and arguments
+  static bool SeparateCommand (const std::string & input, 
+                               std::string & cmd, 
+                               std::vector <std::string> & args);
+}; // class Argument
 
-    //! used by GDLReasoner
-    //mutable const Argument** sub;
-    //mutable char *sub_no;
-    //mutable char sub_count;
-};
-
-
+/**
+ * This class represents location of the identifier. It stores the filename and 
+ * lineNo for tracking. Location is used in debugging KnowledgeBase. Location
+ * is used in place of location_type (implicitly defined by gdlparser) so 
+ * that filename (the string variable) will be destroyed properly. location_type 
+ * class holds pointer to filename (string) which sometimes create problems. 
+ */ 
 struct Location
 {
-    typedef parser::yy::KIFParser::location_type location_type;
-
-    Location() {}
-
-    Location(const location_type& loc)
-    {
-        filename = *loc.begin.filename;
-        lineNo = loc.begin.line;
-    }
-
-    std::string filename;
-    size_t lineNo;
-};
+  //! some useful typedefs
+  typedef parser::yy::KIFParser::location_type location_type;
+  
+  //! empty constructor
+  Location() {}
+  
+  //! constructs location object from location_type of parser
+  Location(const location_type& loc)
+  {
+    filename = *loc.begin.filename;
+    lineNo = loc.begin.line;
+  }
+  
+  //! holds filename
+  std::string filename;
+  //! holds line number
+  size_t lineNo;
+}; // class Location
 
 /**
  * Represents a fact.
@@ -122,43 +137,49 @@ struct Location
  */
 struct Fact
 {
-    typedef parser::yy::KIFParser::location_type location_type;
+  //! some useful typedefs
+  typedef parser::yy::KIFParser::location_type location_type;
 
-    //! empty constructor
-    Fact() {}
+  //! empty constructor
+  Fact() {}
 
-    //! constructs a fact with given command name and text
-    Fact(const TokenValue& tok)
-            : arg(tok) {}
-    //! construct a fact fro argument
-    //! does not check if argument has variables or not
-    Fact(const Argument& arg) : arg(arg) {}
-    //! construct fact from string
-    Fact(const std::string& str);
+  //! constructs a fact with given command name and text
+  Fact(const TokenValue& tok)
+    : arg(tok) {}
+  //! construct a fact fro argument
+  //! does not check if argument has variables or not
+  Fact(const Argument& arg) : arg(arg) {}
+  //! construct fact from string
+  Fact(const std::string& str);
 
-    //! Adds argument to this fact
-    void AddArgument(const TokenValue& tok) { arg.AddArgument(tok); }
+  //! Adds argument to this fact
+  void AddArgument(const TokenValue& tok) { arg.AddArgument(tok); }
+  
+  //! Assign location to this fact
+  void AddLocation(const location_type& l)
+  {
+    isLocation = true;
+    loc = Location(l);
+  }
+  
+  //! get command name of this fact
+  const std::string& Command() const { return arg.val; }
+  
+  //! get arguments of this fact
+  const std::vector<Argument*>& Arguments() const { return arg.args; }
 
-    void AddLocation(const location_type& l)
-    {
-        isLocation = true;
-        loc = Location(l);
-    }
+  //! comparison operators
+  bool operator==(const Fact& fact) const;
+  bool operator!=(const Fact& fact) const { return !(*this == fact); }
 
-    const std::string& Command() const { return arg.val; }
-
-    const std::vector<Argument*>& Arguments() const { return arg.args; }
-
-    //! comparison operators
-    bool operator==(const Fact& fact) const;
-    bool operator!=(const Fact& fact) const { return !(*this == fact); }
-
-    //! fact as argument
-    Argument arg;
-
-    bool isLocation;
-    Location loc;
-};
+  //! fact as argument
+  Argument arg;
+  
+  //! is location assigned
+  bool isLocation;
+  //! location value
+  Location loc;
+}; // class Fact
 
 /**
  * Represents a Clause.
@@ -202,7 +223,7 @@ struct Clause
 
     bool isLocation;
     Location loc;
-};
+}; // class Clause
 
 /**
  * Represents dependency graph node.
@@ -243,15 +264,15 @@ struct DGraphNode
     //! extra variables for Tarjan's algorithm
     int index;
     int low_link;
-};
+}; // class DGraphNode
 
-} // namespace gdlparser
+}; // namespace gdlparser
 
-/// operator<< for above defined types
+//! operator<< for above defined types
 std::ostream& operator<< (std::ostream& o, const gdlparser::Argument& arg);
 std::ostream& operator<< (std::ostream& o, const gdlparser::Argument::Type& t);
 std::ostream& operator<< (std::ostream& o, const gdlparser::Location& loc);
 std::ostream& operator<< (std::ostream& o, const gdlparser::Fact& fact);
 std::ostream& operator<< (std::ostream& o, const gdlparser::Clause& clause);
 
-#endif
+#endif // __LIBGDL_GDLPARSER_DATA_TYPES_H
