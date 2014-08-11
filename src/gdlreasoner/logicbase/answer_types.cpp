@@ -18,7 +18,7 @@ bool AnswerDecoder::next()
     bool result = m_answer->next();
     // update variable map if result is valid
 
-    v_set = m_answer->GetVariableSet();
+    v_map = m_answer->GetVariableMap();
 
     // remember total valid results
     if (result) m_wasTrueTimes++;
@@ -47,11 +47,10 @@ bool AnswerDecoder::next()
 }
 
 ClauseAnswer::ClauseAnswer(const Argument& question,
-                           const VariableSet& m,
-                           const VariableSet& h_set,
+                           const VariableMap& m,
                            const KnowledgeBase & kb,
                            const std::set<size_t>& v)
-    : Answer(question, m, h_set, kb, v)
+    : Answer(question, m, kb, v)
 {
     m_position = 0;
     m_onAnAnswer = false;
@@ -103,8 +102,6 @@ bool ClauseAnswer::next ()
     {
         // set flag that this object is not on answer anymore
         m_onAnAnswer = false;
-
-        DecodeVariables();
         return false;
     }
 
@@ -115,16 +112,14 @@ bool ClauseAnswer::next ()
         //if (m_kb.Debug() > 1) Log::Debug << LOGID << util::formatDepth (m_depth) << "Checking against fact " << fact << std::endl;
         const Fact& fact = *fit;
 
-        // set question map to empty variable map
-        DecodeVariables();
-        // check for unification with the current fact
+        v_map = o_v_map;
 
-        if (Unify::mgu(question, fact.arg, v_set))
+        if (Unify::mgu(question, fact.arg, v_map))
         {
             m_position++;
             fit++;
             m_isFactAnswer = true;
-
+            //Unify::PrintVariableMap(std::cout, v_map);
             return true;
         }
         fit++;
@@ -146,9 +141,10 @@ bool ClauseAnswer::next ()
         if (m_subAnswers.empty())
         {
             // checking the head of the clause
-            v_set = o_v_set;
-            if (Unify::mgu(question, *(clause.head), v_set))
+            v_map = o_v_map;
+            if (Unify::mgu(question, *(clause.head), v_map))
             {
+              //Unify::PrintVariableMap(std::cout, v_map);
                 if (clause.premisses.empty())
                 {
                     // clauses having no tail
@@ -161,12 +157,12 @@ bool ClauseAnswer::next ()
                 // putting sub answers onto the stack
                 SubAnswer sanswer;
                 sanswer.nextPremiss = clause.premisses.begin();
-                sanswer.headMap = v_set;
+                sanswer.headMap = v_map;
                 std::vector<Argument*>::const_iterator& current = sanswer.nextPremiss;
                 std::set<size_t>* t_visited = new std::set<size_t>(visited);
                 t_visited->insert(clause.id);
 
-                sanswer.partAnswer = kb.GetAnswer(**current, Unify::EncodeSubstitutions(*current, sanswer.headMap), sanswer.headMap, *t_visited);
+                sanswer.partAnswer = kb.GetAnswer(**current, sanswer.headMap, *t_visited);
                 delete t_visited;
                 sanswer.nextPremiss++;
                 m_subAnswers.push_back(sanswer);
@@ -183,34 +179,31 @@ bool ClauseAnswer::next ()
                 {
                     SubAnswer nextTail;
                     nextTail.nextPremiss = tail.nextPremiss;
-                    nextTail.headMap = tail.partAnswer->GetVariableSet();
-                    nextTail.partAnswer = kb.GetAnswer(**nextTail.nextPremiss, Unify::EncodeSubstitutions(*nextTail.nextPremiss, nextTail.headMap), nextTail.headMap, tail.partAnswer->Visited());
+                    nextTail.headMap = tail.partAnswer->GetVariableMap();
+                    //Unify::PrintVariableMap(std::cout, nextTail.headMap);
+                    nextTail.partAnswer = kb.GetAnswer(**nextTail.nextPremiss, nextTail.headMap, tail.partAnswer->Visited());
                     nextTail.nextPremiss++; // shall show onto the next
                     m_subAnswers.push_back (nextTail);
                 }
                 else
                 {
                     // final solution
-                    v_set = tail.partAnswer->GetVariableSet();
+                    v_map = tail.partAnswer->GetVariableMap();
+                    //Unify::PrintVariableMap(std::cout, v_map);
                     return true;
                 }
             }
             else
             {
-                v_set = tail.partAnswer->GetVariableSet();
                 delete tail.partAnswer;
                 m_subAnswers.pop_back ();
             }
         }
         m_position++;
         cit++;
-        DecodeVariables();
     }
 
     m_onAnAnswer = false;
-
-    DecodeVariables();
-
     return false;
 }
 
@@ -221,7 +214,7 @@ bool OrClauseAnswer::next()
     {
         if (m_currentAnswer->next())
         {
-            v_set = m_currentAnswer->GetVariableSet();
+            v_map = m_currentAnswer->GetVariableMap();
             return true;
         }
     }
@@ -231,11 +224,11 @@ bool OrClauseAnswer::next()
         // delete the previous answer
         delete m_currentAnswer;
         // query knowledge base for answer to this token
-        m_currentAnswer = kb.GetAnswer(*question.args[current_arg - 1], Unify::EncodeSubstitutions(question.args[current_arg - 1], o_v_set), o_v_set, visited);
+        m_currentAnswer = kb.GetAnswer(*question.args[current_arg - 1], o_v_map, visited);
         // if there exists a valid result update the variable map with the same
         if (m_currentAnswer->next())
         {
-            v_set = m_currentAnswer->GetVariableSet();
+            v_map = m_currentAnswer->GetVariableMap();
             //std::cout << m_questionMap << std::endl;
             return true;
         }
@@ -245,14 +238,13 @@ bool OrClauseAnswer::next()
 }
 
 DistinctAnswer::DistinctAnswer(const Argument& q,
-                               const VariableSet& m,
-                               const VariableSet& h_set,
+                               const VariableMap& m,
                                const KnowledgeBase & kb,
                                const std::set<size_t>& v)
-    : Answer(q, m, h_set, kb, v)
+    : Answer(q, m, kb, v)
 {
-    v_set = m;
-    m_distinct = !Unify::EquateWithSubstitution(*q.args[0], *q.args[1]);
+    v_map = m;
+    m_distinct = !Unify::EquateWithSubstitution(*q.args[0], *q.args[1], v_map);
     m_returnedResult = false;
 }
 
@@ -263,14 +255,14 @@ bool DistinctAnswer::next ()
     return m_distinct;
 }
 
-NotAnswer::NotAnswer (const Argument& q, const VariableSet& m, const VariableSet& h_set,
+NotAnswer::NotAnswer (const Argument& q, const VariableMap& m,
                       const KnowledgeBase& kb,
                       const std::set<size_t>& v)
-    :  Answer(q, m, h_set, kb, v)
+    :  Answer(q, m, kb, v)
 {
-    v_set = m;
+    v_map = m;
     // TODO : here encode substitution can be removed...
-    m_subAnswer = kb.GetAnswer(*q.args[0], Unify::EncodeSubstitutions(q.args[0], v_set), v_set, v);
+    m_subAnswer = kb.GetAnswer(*q.args[0], v_map, v);
     m_returnedResult = false;
 }
 
@@ -279,7 +271,6 @@ bool NotAnswer::next()
     if (m_returnedResult) return false;
 
     m_not = !m_subAnswer->next();
-    m_subAnswer->DecodeVariables();
     m_returnedResult = true;
     return m_not;
 }
@@ -287,12 +278,11 @@ bool NotAnswer::next()
 bool GroundQuestionAnswer::next()
 {
     // return true if any result found for question
-    v_set = o_v_set;
+    v_map = o_v_map;
     if(isAnswerReturned == false)
     {
         isAnswerReturned = true;
         bool out = ans->next();
-        ans->DecodeVariables();
         return out;
     }
     else return false;

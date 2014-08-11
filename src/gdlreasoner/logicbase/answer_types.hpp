@@ -37,54 +37,46 @@ namespace logicbase
  */
 class Answer
 {
-public:
-    /// A map from variables to values
-    typedef gdlparser::Argument Argument;
-    typedef Unify::VariableSet VariableSet;
+ public:
+  //! A map from variables to values
+  typedef gdlparser::Argument Argument;
+  typedef Unify::VariableMap VariableMap;
 
-    Answer(const Argument& question,
-           const VariableSet& v_set,
-           const VariableSet& h_set,
-           const KnowledgeBase & kb,
-           const std::set<size_t>& v)
-        : kb (kb), question (question), visited(v), o_v_set(v_set), h_set(h_set) {}
+  Answer(const Argument& question,
+         const VariableMap& o_v_map,
+         const KnowledgeBase & kb,
+         const std::set<size_t>& v)
+      : kb (kb), question (question), visited(v), o_v_map(o_v_map) {}
 
-    virtual ~Answer() {}
+  virtual ~Answer() {}
 
-    /// go to the next result
-    /// returns false if no next result is available
-    virtual bool next () = 0;
-    /// returns the variable mapping in which this solution is valid
-    /// returns variable map of last viable solution after next() returns false
-    inline VariableSet GetVariableSet()
-    {
-        return gdlparser::util::setop::setUnion(v_set, h_set);
-    }
+  //! go to the next result
+  //! returns false if no next result is available
+  virtual bool next () = 0;
 
-    inline void DecodeVariables()
-    {
-        Unify::DecodeSubstitutions(o_v_set, v_set);
-        v_set = o_v_set;
-    }
+  /// returns the variable mapping in which this solution is valid
+  /// returns variable map of last viable solution after next() returns false
+  inline virtual VariableMap GetVariableMap()
+  {
+    return Unify::DecodeSubstitutions(v_map, &question, o_v_map);
+  }
 
-    const std::set<size_t>& Visited()
-    {
-        return visited;
-    }
+  const std::set<size_t>& Visited()
+  {
+    return visited;
+  }
 
-protected:
-    //! variable map of the current result
-    VariableSet v_set;
-    //! KnowledgeBase
-    const KnowledgeBase& kb;
-    /// Original question (for hinting purposes)s
-    const Argument& question;
-    //! set of visited clauses
-    std::set<size_t> visited;
-    //! default variable map
-    const VariableSet o_v_set;
-    //! history set
-    VariableSet h_set;
+ protected:
+  //! variable map of the current result
+  VariableMap v_map;
+  //! KnowledgeBase
+  const KnowledgeBase& kb;
+  /// Original question (for hinting purposes)s
+  const Argument& question;
+  //! set of visited clauses
+  std::set<size_t> visited;
+  //! default variable map
+  const VariableMap o_v_map;
 };
 
 /**
@@ -97,9 +89,9 @@ class AnswerDecoder : public Answer
 {
 public:
     /// Constructs an Answer Decoder from given answer and question
-    AnswerDecoder (Answer* ans, const Argument& question, const VariableSet& v_set,
-                   const VariableSet& h_set, const KnowledgeBase & kb)
-        : Answer(question, v_set, h_set, kb, std::set<size_t>()) , m_wasTrueTimes(0)
+    AnswerDecoder (Answer* ans, const Argument& question, const VariableMap& v_map,
+                   const KnowledgeBase & kb)
+        : Answer(question, v_map, kb, std::set<size_t>()) , m_wasTrueTimes(0)
     {
         m_answer = ans;
     }
@@ -108,6 +100,11 @@ public:
     ~AnswerDecoder ()
     {
         delete m_answer;
+    }
+
+    inline VariableMap GetVariableMap()
+    {
+      return v_map;
     }
 
     /// Go to the next result
@@ -129,7 +126,7 @@ class ClauseAnswer : public Answer
 {
 public:
     //! Protected constructor ( can be accessed by KnowledgeBase)
-    ClauseAnswer (const Argument& question, const VariableSet& v_set, const VariableSet& h_set,
+    ClauseAnswer (const Argument& question, const VariableMap& v_map,
                   const KnowledgeBase & kb,
                   const std::set<size_t>& v);
 
@@ -150,7 +147,7 @@ protected:
         //! Answer* instance at this point
         Answer * partAnswer;
         //! Head map until this
-        VariableSet headMap;
+        VariableMap headMap;
     };
 
     //! Position of the fact for next answer to check
@@ -185,11 +182,10 @@ class OrClauseAnswer : public Answer
 public:
     //! Constructs the object with OR question and given knowledge base
     OrClauseAnswer(const Argument& question,
-                   const VariableSet& m,
-                   const VariableSet& h_set,
+                   const VariableMap& m,
                    const KnowledgeBase & kb,
                    const std::set<size_t>& v)
-        : Answer(question, m, h_set, kb, v), m_currentAnswer(NULL), current_arg(0) {}
+        : Answer(question, m, kb, v), m_currentAnswer(NULL), current_arg(0) {}
 
 
     //! destructor
@@ -219,7 +215,7 @@ class DistinctAnswer : public Answer
 {
 public:
     /// Construct DistinctAnswer from question and given knowledge base
-    DistinctAnswer (const Argument& q, const VariableSet& m, const VariableSet& h_set,
+    DistinctAnswer (const Argument& q, const VariableMap& m,
                     const KnowledgeBase & kb,
                     const std::set<size_t>& v);
 
@@ -245,7 +241,7 @@ class NotAnswer : public Answer
 {
 public:
     //! Constructs NotAnswer from question and given knowledge base
-    NotAnswer (const Argument& q, const VariableSet& m, const VariableSet& h_set,
+    NotAnswer (const Argument& q, const VariableMap& m,
                const KnowledgeBase & kb,
                const std::set<size_t>& v);
     //! destructor
@@ -276,11 +272,10 @@ class GroundQuestionAnswer : public Answer
 {
 public:
     //! constructs ground answer
-    GroundQuestionAnswer(Answer* ans, const Argument& q, const VariableSet& m,
-                         const VariableSet& h_set,
+    GroundQuestionAnswer(Answer* ans, const Argument& q, const VariableMap& m,
                          const KnowledgeBase& kb,
                          const std::set<size_t>& v)
-            : Answer(q, m, h_set, kb, v), ans(ans) { isAnswerReturned = false; }
+            : Answer(q, m, kb, v), ans(ans) { isAnswerReturned = false; }
 
     //! destructor
     ~GroundQuestionAnswer() { delete ans; }

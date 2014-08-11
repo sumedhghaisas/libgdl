@@ -189,11 +189,11 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n, const KnowledgeBase& all
         size_t c_index = m_kb.Tell(*p_clause);
 
         // after adding the head of the clause will be the question to ask
-        Answer* ans = m_kb.GetAnswer(*p_clause->head, Unify::VariableSet(), Unify::VariableSet(), std::set<size_t>());
+        Answer* ans = m_kb.GetAnswer(*p_clause->head, Unify::VariableMap(), std::set<size_t>());
         while(ans->next())
         {
             // compute the answer with substitution
-            Clause* to_add = Unify::GetSubstitutedClause(&(*it));
+            Clause* to_add = Unify::GetSubstitutedClause(&(*it), ans->GetVariableMap());
 
             // remove all the occurrences of data relations
             Clause* temp = RemoveDataFromClause(to_add, state_independent);

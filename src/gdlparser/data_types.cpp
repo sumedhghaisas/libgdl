@@ -16,9 +16,9 @@ using namespace gdlparser;
 Argument::Argument()
     : t(Relation)
 {
-    sub = new const Argument*[BUFFER_SIZE];
-    sub_no = new char[BUFFER_SIZE];
-    sub_count = 0;
+    //sub = new const Argument*[BUFFER_SIZE];
+    //sub_no = new char[BUFFER_SIZE];
+    //sub_count = 0;
 }
 
 Argument::Argument(const TokenValue& tok)
@@ -37,9 +37,9 @@ Argument::Argument(const TokenValue& tok)
     // add them as arguments
     for(size_t i = 0;i < args.size();i++) AddArgument(args[i]);
 
-    sub = new const Argument*[BUFFER_SIZE];
-    sub_no = new char[BUFFER_SIZE];
-    sub_count = 0;
+//    sub = new const Argument*[BUFFER_SIZE];
+//    sub_no = new char[BUFFER_SIZE];
+//    sub_count = 0;
 }
 
 Argument::Argument(const Argument& arg)
@@ -48,9 +48,9 @@ Argument::Argument(const Argument& arg)
     {
         t = arg.t;
         val = arg.val;
-        sub = new const Argument*[BUFFER_SIZE];
-        sub_no = new char[BUFFER_SIZE];
-        sub_count = 0;
+//        sub = new const Argument*[BUFFER_SIZE];
+//        sub_no = new char[BUFFER_SIZE];
+//        sub_count = 0;
         return;
     }
 
@@ -66,9 +66,9 @@ Argument::Argument(const Argument& arg)
     for(size_t i = 0;i < arg.args.size();i++)
         args.push_back(ConstructArgument(*arg.args[i], v_map));
 
-    sub = new const Argument*[BUFFER_SIZE];
-    sub_no = new char[BUFFER_SIZE];
-    sub_count = 0;
+//    sub = new const Argument*[BUFFER_SIZE];
+//    sub_no = new char[BUFFER_SIZE];
+//    sub_count = 0;
 }
 
 Argument::Argument(const std::string& str)
@@ -80,9 +80,9 @@ Argument::Argument(const std::string& str)
         if(str[0] == '?') t = Argument::Var;
         else t = Argument::Function;
         val = str;
-        sub = new const Argument*[BUFFER_SIZE];
-        sub_no = new char[BUFFER_SIZE];
-        sub_count = 0;
+//        sub = new const Argument*[BUFFER_SIZE];
+//        sub_no = new char[BUFFER_SIZE];
+//        sub_count = 0;
         return;
     }
 
@@ -91,9 +91,9 @@ Argument::Argument(const std::string& str)
     if(!SeparateCommand(str, cmd, args))
     {
         std::cerr << "Unable to construct argument from " << str << std::endl;
-        sub = new const Argument*[BUFFER_SIZE];
-        sub_no = new char[BUFFER_SIZE];
-        sub_count = 0;
+//        sub = new const Argument*[BUFFER_SIZE];
+//        sub_no = new char[BUFFER_SIZE];
+//        sub_count = 0;
         return;
     }
 
@@ -105,9 +105,9 @@ Argument::Argument(const std::string& str)
         this->args.push_back(ConstructArgument(args[i], v_map));
     }
 
-    sub = new const Argument*[BUFFER_SIZE];
-    sub_no = new char[BUFFER_SIZE];
-    sub_count = 0;
+//    sub = new const Argument*[BUFFER_SIZE];
+//    sub_no = new char[BUFFER_SIZE];
+//    sub_count = 0;
 }
 
 bool Argument::SeparateCommand (const std::string & input, std::string & cmd, std::vector <std::string> & args)

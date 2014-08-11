@@ -29,7 +29,7 @@ class KnowledgeBase
     typedef gdlparser::Fact Fact;
     typedef gdlparser::Clause Clause;
     typedef gdlparser::Argument Argument;
-    typedef logicbase::Unify::VariableSet VariableSet;
+    typedef logicbase::Unify::VariableMap VariableMap;
     typedef logicbase::Answer Answer;
 
 public:
@@ -51,7 +51,7 @@ public:
     std::list<Argument*> Ask(const Argument& question, bool checkForDoubles = true) const;
 
     //! get the answer to the question than substitutions
-    Answer* GetAnswer(const Argument& question, const VariableSet& v_set, const VariableSet& h_set,
+    Answer* GetAnswer(const Argument& question, const VariableMap& v_map,
                       const std::set<size_t>& visited) const;
 
     //! returns if the question is satisfiable

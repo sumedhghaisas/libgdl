@@ -91,9 +91,9 @@ struct Argument
     static bool SeparateCommand (const std::string & input, std::string & cmd, std::vector <std::string> & args);
 
     //! used by GDLReasoner
-    mutable const Argument** sub;
-    mutable char *sub_no;
-    mutable char sub_count;
+    //mutable const Argument** sub;
+    //mutable char *sub_no;
+    //mutable char sub_count;
 };
 
 
