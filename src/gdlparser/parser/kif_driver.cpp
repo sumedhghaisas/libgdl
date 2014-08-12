@@ -210,8 +210,8 @@ int KIFDriver::CheckEntry(const TokenValue& tok, bool isRelation, char arity,
 void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
 {
     // construct a clause from given token and add to vector of clauses
-    Clause c(tok, kif.clauses.size());
-    kif.AddClause(c, loc);
+    Clause c_t(tok, kif.clauses.size());
+    const Clause& c = kif.AddClause(c_t, loc);
 
     const std::vector<Argument*>& args = c.premisses;
     const std::string& hcommand = c.head->val;
@@ -353,11 +353,11 @@ void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_in
 
 void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
 {
-    Fact f(tok);
-    kif.AddFact(f, loc);
+    Fact f_t(tok);
+    const Fact& f = kif.AddFact(std::move(f_t), loc);
 
-    std::string command = f.arg.val;
-    size_t arity = f.arg.args.size();
+    std::string command = f.arg->val;
+    size_t arity = f.arg->args.size();
     std::map<std::string, DGraphNode*>::iterator it = dgraph.find(command);
     if(it == dgraph.end())
     {

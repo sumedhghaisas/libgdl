@@ -38,189 +38,183 @@ namespace gdlparser
  * kif.PrintDependencyGraph("test.dot");
  * @endcode
  *
- * This will generate a file 'test.dot' along 'test.kif' containing DOT representation
- * of dependency graph. This DOT file can be visualized with graph visualization libraries
- * like GraphViz.
+ * This will generate a file 'test.dot' along 'test.kif' containing DOT
+ * representation of dependency graph. This DOT file can be visualized with
+ * graph visualization libraries like GraphViz.
  */
 class KIF
 {
-    //! Some useful typedefs
-    typedef parser::KIFDriver KIFDriver;
-    typedef parser::yy::KIFParser::location_type location_type;
+  //! Some useful typedefs
+  typedef parser::KIFDriver KIFDriver;
+  typedef parser::yy::KIFParser::location_type location_type;
 
-struct Symbol
-{
+  struct Symbol
+  {
     Symbol(size_t id, const std::string& name)
-        : id(id), name(name) {}
+      : id(id), name(name) {}
 
     size_t id;
     std::string name;
-};
+  };
 
-public:
-    //! Constructor
-    //!
-    //! @param isWarn bool : enable or disable warnings
-    //! @param stream std::ostream& : stream to print errors and warnings
-    KIF(bool isWarn = true,
-        bool isDebuggingSymbols = true,
-        char o_level = 0,
-        std::ostream* stream = &std::cout)
-        : stream(stream), isWarn(isWarn),
-        isDebuggingSymbols(isDebuggingSymbols),
-        o_level(o_level),
-        driver(*this)
+ public:
+  //! Constructor
+  //!
+  //! @param isWarn bool : enable or disable warnings
+  //! @param stream std::ostream& : stream to print errors and warnings
+  KIF(bool isWarn = true,
+      bool isDebuggingSymbols = true,
+      char o_level = 0,
+      std::ostream* stream = &std::cout)
+    : stream(stream), isWarn(isWarn),
+      isDebuggingSymbols(isDebuggingSymbols),
+      o_level(o_level),
+      driver(*this)
+  {
+    f_last_index_with_linemark = 0;
+    c_last_index_with_linemark = 0;
+  }
+
+  //! KIF destructor
+  ~KIF();
+
+  //! Add given file as input
+  //!
+  //! @param filename const std::string& : filename of the file to be added
+  //!
+  void AddFile(const std::string& filename)
+  {
+    files.push_back(filename);
+  }
+  void AddFile(const std::vector<std::string>& fvec)
+  {
+    for(size_t i = 0;i < fvec.size();i++) files.push_back(fvec[i]);
+  }
+
+  //! Access files added
+  const std::vector<std::string>& Files() const { return files; }
+  std::vector<std::string>& Files() { return files; }
+
+  //! clear all the files added
+  void ClearFiles() { files.clear(); }
+
+
+  void AddLineMark(const location_type& loc);
+
+  //! Parse the inputs
+  //!
+  //! @return bool : success or failure
+  //!
+  bool Parse(bool ignoreErrors = false)
+  {
+    bool res = driver.Parse();
+    if(!res && !ignoreErrors)
     {
-        f_last_index_with_linemark = 0;
-        c_last_index_with_linemark = 0;
+      facts.clear();
+      clauses.clear();
+      return false;
     }
+    return true;
+  }
 
-    ~KIF();
+  //! Print the parsed knowledge to file
+  //!
+  //! @param filename const std::string& : output filename
+  //! @return bool : success or failure
+  //!
+  bool PrintToFile(const std::string& filename) const;
 
-    //! Add given file as input
-    //!
-    //! @param filename const std::string& : filename of the file to be added
-    //!
-    void AddFile(const std::string& filename)
-    {
-        files.push_back(filename);
-    }
-    void AddFile(const std::vector<std::string>& fvec)
-    {
-        for(size_t i = 0;i < fvec.size();i++) files.push_back(fvec[i]);
-    }
+  //! Print dependency graph generated to file(DOT format).
+  //!
+  //! \param filename const std::string& : output filename
+  //! \return bool : success or failure
+  //!
+  //!
+  bool PrintDependencyGraph(const std::string& filename) const;
 
-    const std::vector<std::string>& Files() const
-    {
-        return files;
-    }
+  //! Access facts
+  std::vector<Fact>& Facts() { return facts; }
+  const std::vector<Fact>& Facts() const { return facts; }
 
-    std::vector<std::string>& Files()
-    {
-        return files;
-    }
+  //! Access Clauses
+  std::vector<Clause>& Clauses() { return clauses; }
+  const std::vector<Clause> Clauses() const { return clauses; }
 
-    void ClearFiles()
-    {
-        files.clear();
-    }
+  //! get the dependency graph
+  const std::map<std::string, DGraphNode*>& DependencyGraph() const
+  {
+    return dgraph;
+  }
 
-    void AddLineMark(const location_type& loc);
+  //! set or reset debugging symbol generation
+  bool DebuggingSymbolSupport() const { return isDebuggingSymbols; }
 
-    //! Parse the inputs
-    //!
-    //! @return bool : success or failure
-    //!
-    bool Parse(bool ignoreErrors = false)
-    {
-        bool res = driver.Parse();
-        if(!res && !ignoreErrors)
-        {
-            facts.clear();
-            clauses.clear();
-            return false;
-        }
-        return true;
-    }
+ private:
+  //! make KIFDriver class friend
+  friend KIFDriver;
 
-    bool DeepScan();
+  //! add fact and clause to this kif -- used by KIFDriver
+  const Fact& AddFact(const Fact& f, const location_type& loc)
+  {
+    facts.push_back(f);
+    facts[facts.size() - 1].AddLocation(loc);
 
-    //! Print the parsed knowledge to file
-    //!
-    //! @param filename const std::string& : output filename
-    //! @return bool : success or failure
-    //!
-    bool PrintToFile(const std::string& filename) const;
+    return facts.back();
+  }
+  const Fact& AddFact(Fact&& f, const location_type& loc)
+  {
+    facts.push_back(std::move(f));
+    facts[facts.size() - 1].AddLocation(loc);
 
+    return facts.back();
+  }
+  const Clause& AddClause(const Clause& c, const location_type& loc)
+  {
+    clauses.push_back(c);
+    clauses[clauses.size() - 1].AddLocation(loc);
 
-    //! Print dependency graph generated to file(DOT format).
-    //!
-    //! \param filename const std::string& : output filename
-    //! \return bool : success or failure
-    //!
-    //!
-    bool PrintDependencyGraph(const std::string& filename) const;
+    return clauses.back();
+  }
+  const Clause& AddClause(Clause&& c, const location_type& loc)
+  {
+    clauses.push_back(std::move(c));
+    clauses[clauses.size() - 1].AddLocation(loc);
 
-    //! get facts
-    std::vector<Fact>& Facts()
-    {
-        return facts;
-    }
-    const std::vector<Fact>& Facts() const
-    {
-        return facts;
-    }
-    //! get clauses
-    std::vector<Clause>& Clauses()
-    {
-        return clauses;
-    }
-    const std::vector<Clause> Clauses() const
-    {
-        return clauses;
-    }
+    return clauses.back();
+  }
 
-    //! get the dependency graph
-    const std::map<std::string, DGraphNode*>& DependencyGraph() const
-    {
-        return dgraph;
-    }
+  void UpdateSymbolTable(const Argument& arg, const Location& loc);
 
-    bool DebuggingSymbolSupport() const
-    {
-        return isDebuggingSymbols;
-    }
+  //! pointer to logging stream
+  mutable std::ostream* stream;
 
-private:
-    //! make KIFDriver class friend
-    friend KIFDriver;
+  //! enable/disable warnings
+  bool isWarn;
 
-    //! add fact and clause to this kif -- used by KIFDriver
-    void AddFact(const Fact& f, const location_type& loc)
-    {
-        facts.push_back(f);
-        facts[facts.size() - 1].AddLocation(loc);
-    }
-    void AddClause(const Clause& c, const location_type& loc)
-    {
-        clauses.push_back(c);
-        clauses[clauses.size() - 1].AddLocation(loc);
-    }
+  //! to generate debugging symbols in output file
+  const bool isDebuggingSymbols;
 
-    void UpdateSymbolTable(const Argument& arg, const Location& loc);
+  //! yet not implemented
+  const char o_level;
 
-    //! pointer to logging stream
-    mutable std::ostream* stream;
+  //! All the facts
+  std::vector<Fact> facts;
 
-    //! enable/disable warnings
-    bool isWarn;
+  //! All the clauses
+  std::vector<Clause> clauses;
 
-    //! to generate debugging symbols in output file
-    const bool isDebuggingSymbols;
+  //! dependency graph
+  std::map<std::string, DGraphNode*> dgraph;
 
-    //! yet not implemented
-    const char o_level;
+  std::vector<std::string> files;
 
-    //! All the facts
-    std::vector<Fact> facts;
+  //! driver to drive parsing
+  KIFDriver driver;
 
-    //! All the clauses
-    std::vector<Clause> clauses;
-
-    //! dependency graph
-    std::map<std::string, DGraphNode*> dgraph;
-
-    std::vector<std::string> files;
-
-    //! driver to drive parsing
-    KIFDriver driver;
-
-    //! index of the last fact tagged with "#line" location
-    size_t f_last_index_with_linemark;
-    //! index of the last clause tagged with "#line" location
-    size_t c_last_index_with_linemark;
-
-    std::vector<std::string> roles;
+  //! index of the last fact tagged with "#line" location
+  size_t f_last_index_with_linemark;
+  //! index of the last clause tagged with "#line" location
+  size_t c_last_index_with_linemark;
 };
 
 } //namespace gdlparser

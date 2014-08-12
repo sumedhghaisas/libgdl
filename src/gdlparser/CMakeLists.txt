@@ -14,7 +14,6 @@ set(SOURCES
   kif.hpp
   kif.cpp
   data_types.hpp
-  data_types.cpp
 )
 
 # add directory name to sources

@@ -19,7 +19,7 @@ KnowledgeBase::KnowledgeBase(const gdlparser::KIF& kif) : c_id(0), isDebuggingSy
     for(size_t i = 0; i < facts.size(); i++)
     {
         std::stringstream stream;
-        stream << facts[i].arg.args.size();
+        stream << facts[i].arg->args.size();
         std::string command = facts[i].Command() + "/" + stream.str();
         m_facts[command].push_back(facts[i]);
     }
@@ -99,8 +99,8 @@ size_t KnowledgeBase::Tell(const Fact& f)
 {
     // compute signature and add to appropriate FactVec
     std::stringstream stream;
-    stream << f.arg.args.size();
-    std::string command = f.arg.val + "/" + stream.str();
+    stream << f.arg->args.size();
+    std::string command = f.arg->val + "/" + stream.str();
     m_facts[command].push_back(f);
 
     // return the index of this fact in the FactVec
@@ -157,8 +157,8 @@ bool KnowledgeBase::Erase(const Fact& f, size_t index)
     std::map<std::string, FactVec>::iterator it;
 
     std::stringstream stream;
-    stream << f.arg.args.size();
-    std::string command = f.arg.val + "/" + stream.str();
+    stream << f.arg->args.size();
+    std::string command = f.arg->val + "/" + stream.str();
     it = m_facts.find(command);
     if(it == m_facts.end()) return false;
 

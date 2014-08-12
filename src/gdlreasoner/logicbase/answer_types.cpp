@@ -114,7 +114,7 @@ bool ClauseAnswer::next ()
 
         v_map = o_v_map;
 
-        if (Unify::mgu(question, fact.arg, v_map))
+        if (Unify::mgu(question, *(fact.arg), v_map))
         {
             m_position++;
             fit++;

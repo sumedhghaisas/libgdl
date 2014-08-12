@@ -13,6 +13,14 @@ set(SOURCES
   stack.hh
   token_value.cpp
   token_value.hpp
+  location.hpp
+  clause.hpp
+  clause.cpp
+  fact.hpp
+  fact.cpp
+  dgraph_node.hpp
+  argument.hpp
+  argument.cpp
 )
 
 # add directory name to sources
