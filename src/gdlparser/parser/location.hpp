@@ -30,13 +30,25 @@ struct Location
 
   //! empty constructor
   Location() {}
-
   //! constructs location object from location_type of parser
   Location(const location_type& loc)
   {
     filename = *loc.begin.filename;
     lineNo = loc.begin.line;
   }
+  //! constructs location from line number and filename
+  Location(size_t lineNo, const std::string& filename)
+    : filename(filename), lineNo(lineNo) {}
+
+  //! Comparison operators
+  bool operator==(const Location& loc) const
+  {
+    if(lineNo != loc.lineNo) return false;
+    if(filename != loc.filename) return false;
+    return true;
+  }
+  bool operator!=(const Location& loc) const { return !(*this == loc); }
+
 
   //! holds filename
   std::string filename;

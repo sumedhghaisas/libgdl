@@ -103,7 +103,7 @@ struct Fact
 inline std::ostream& operator<<(std::ostream& o,
                                 const gdlparser::parser::Fact& f)
 {
-  o << f.arg;
+  o << *f.arg;
   return o;
 }
 
