@@ -2,7 +2,7 @@
  * @file data_types.cpp
  * @author Sumedh Ghaisas
  *
- * Implementation of data types used by driver.
+ * Implementation of data types used by gdlparser and gdlreasoner.
  */
 #include "data_types.hpp"
 
@@ -11,15 +11,7 @@
 
 using namespace gdlparser;
 
-#define BUFFER_SIZE 100
-
-Argument::Argument()
-    : t(Relation)
-{
-    //sub = new const Argument*[BUFFER_SIZE];
-    //sub_no = new char[BUFFER_SIZE];
-    //sub_count = 0;
-}
+size_t Argument::copy_calls = 0;
 
 Argument::Argument(const TokenValue& tok)
 {
@@ -37,20 +29,17 @@ Argument::Argument(const TokenValue& tok)
     // add them as arguments
     for(size_t i = 0;i < args.size();i++) AddArgument(args[i]);
 
-//    sub = new const Argument*[BUFFER_SIZE];
-//    sub_no = new char[BUFFER_SIZE];
-//    sub_count = 0;
+
 }
 
 Argument::Argument(const Argument& arg)
 {
+  copy_calls++;
+
     if(arg.IsVariable())
     {
         t = arg.t;
         val = arg.val;
-//        sub = new const Argument*[BUFFER_SIZE];
-//        sub_no = new char[BUFFER_SIZE];
-//        sub_count = 0;
         return;
     }
 
@@ -65,10 +54,6 @@ Argument::Argument(const Argument& arg)
     // call recursively on arguments
     for(size_t i = 0;i < arg.args.size();i++)
         args.push_back(ConstructArgument(*arg.args[i], v_map));
-
-//    sub = new const Argument*[BUFFER_SIZE];
-//    sub_no = new char[BUFFER_SIZE];
-//    sub_count = 0;
 }
 
 Argument::Argument(const std::string& str)
@@ -80,9 +65,6 @@ Argument::Argument(const std::string& str)
         if(str[0] == '?') t = Argument::Var;
         else t = Argument::Function;
         val = str;
-//        sub = new const Argument*[BUFFER_SIZE];
-//        sub_no = new char[BUFFER_SIZE];
-//        sub_count = 0;
         return;
     }
 
@@ -91,9 +73,6 @@ Argument::Argument(const std::string& str)
     if(!SeparateCommand(str, cmd, args))
     {
         std::cerr << "Unable to construct argument from " << str << std::endl;
-//        sub = new const Argument*[BUFFER_SIZE];
-//        sub_no = new char[BUFFER_SIZE];
-//        sub_count = 0;
         return;
     }
 
@@ -104,10 +83,6 @@ Argument::Argument(const std::string& str)
     {
         this->args.push_back(ConstructArgument(args[i], v_map));
     }
-
-//    sub = new const Argument*[BUFFER_SIZE];
-//    sub_no = new char[BUFFER_SIZE];
-//    sub_count = 0;
 }
 
 bool Argument::SeparateCommand (const std::string & input, std::string & cmd, std::vector <std::string> & args)
@@ -290,27 +265,9 @@ bool Argument::operator==(const Argument& arg) const
     return true;
 }
 
-Argument& Argument::operator=(const Argument& arg)
+Argument& Argument::operator=(Argument arg)
 {
-    if(arg.IsVariable())
-    {
-        t = arg.t;
-        val = arg.val;
-        return *this;
-    }
-
-    // map to hold variable name versus assigned location mapping
-    // this is important as all the occurrences of a variable in a clause
-    // are assigned same object
-    std::map<std::string, Argument*> v_map;
-
-    t = arg.t;
-    val = arg.val;
-
-    // call recursively on arguments
-    for(size_t i = 0;i < arg.args.size();i++)
-        args.push_back(ConstructArgument(*arg.args[i], v_map));
-
+    swap(*this, arg);
     return *this;
 }
 

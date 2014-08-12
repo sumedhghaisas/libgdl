@@ -33,7 +33,7 @@ struct Argument
   enum Type { Relation, Function, Var };
 
   //! empty constructor
-  Argument();
+  Argument() : t(Relation) {}
   //! constucts argument from given token
   Argument(const TokenValue& tok);
   //! copy constructor
@@ -43,8 +43,19 @@ struct Argument
   //! Destructor
   ~Argument();
 
+  //! swap function
+  friend inline void swap(Argument& arg1, Argument& arg2)
+  {
+    using std::swap;
+
+    swap(arg1.t, arg2.t);
+    swap(arg1.val, arg2.val);
+    swap(arg1.args, arg2.args);
+  }
+
+
   //! copy-assignment operator
-  Argument& operator=(const Argument& arg);
+  Argument& operator=(Argument arg);
 
   //! Destroys arguments to this argument before deletion
   //! called by destructor
@@ -84,44 +95,47 @@ struct Argument
   std::vector<Argument*> args;
 
   //! used by copy constructors
-  static Argument* ConstructArgument(const Argument& arg, 
-                                     std::map<std::string, 
+  static Argument* ConstructArgument(const Argument& arg,
+                                     std::map<std::string,
                                      Argument*>& v_map);
-  static Argument* ConstructArgument(const TokenValue& tok, 
-                                     std::map<std::string, 
+  static Argument* ConstructArgument(const TokenValue& tok,
+                                     std::map<std::string,
                                      Argument*>& v_map);
-  static Argument* ConstructArgument(const std::string& str, 
-                                     std::map<std::string, 
+  static Argument* ConstructArgument(const std::string& str,
+                                     std::map<std::string,
                                      Argument*>& v_map);
 
   //! separates a string input into command and arguments
-  static bool SeparateCommand (const std::string & input, 
-                               std::string & cmd, 
+  static bool SeparateCommand (const std::string & input,
+                               std::string & cmd,
                                std::vector <std::string> & args);
+
+  static size_t copy_calls;
+
 }; // class Argument
 
 /**
- * This class represents location of the identifier. It stores the filename and 
+ * This class represents location of the identifier. It stores the filename and
  * lineNo for tracking. Location is used in debugging KnowledgeBase. Location
- * is used in place of location_type (implicitly defined by gdlparser) so 
- * that filename (the string variable) will be destroyed properly. location_type 
- * class holds pointer to filename (string) which sometimes create problems. 
- */ 
+ * is used in place of location_type (implicitly defined by gdlparser) so
+ * that filename (the string variable) will be destroyed properly. location_type
+ * class holds pointer to filename (string) which sometimes create problems.
+ */
 struct Location
 {
   //! some useful typedefs
   typedef parser::yy::KIFParser::location_type location_type;
-  
+
   //! empty constructor
   Location() {}
-  
+
   //! constructs location object from location_type of parser
   Location(const location_type& loc)
   {
     filename = *loc.begin.filename;
     lineNo = loc.begin.line;
   }
-  
+
   //! holds filename
   std::string filename;
   //! holds line number
@@ -154,17 +168,17 @@ struct Fact
 
   //! Adds argument to this fact
   void AddArgument(const TokenValue& tok) { arg.AddArgument(tok); }
-  
+
   //! Assign location to this fact
   void AddLocation(const location_type& l)
   {
     isLocation = true;
     loc = Location(l);
   }
-  
+
   //! get command name of this fact
   const std::string& Command() const { return arg.val; }
-  
+
   //! get arguments of this fact
   const std::vector<Argument*>& Arguments() const { return arg.args; }
 
@@ -174,7 +188,7 @@ struct Fact
 
   //! fact as argument
   Argument arg;
-  
+
   //! is location assigned
   bool isLocation;
   //! location value
