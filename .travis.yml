@@ -1,6 +1,6 @@
 language: cpp
 compiler:
-- gcc
+- g++
 
 before_install:
 - sudo apt-get install cmake libboost-program-options-dev libboost-test-dev
