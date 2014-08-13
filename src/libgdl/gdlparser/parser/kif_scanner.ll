@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include <libgdl/core.hpp>
+
 #include "kif_scanner.hpp"
 #include "kif_driver.hpp"
 
@@ -150,11 +152,7 @@ int libgdl::gdlparser::parser::KIFScanner::yywrap()
     {
         std::ifstream* temp = new std::ifstream(files[file_index].c_str());
         // if invalid file
-        if(!temp->is_open())
-        {
-            driver.Error("Could not open file " + files[file_index]);
-            return 1;
-        }
+        ASSERT(TEMP->is_open(), "Could not open file " + files[file_index]);
         delete yyin;
         yyin = temp;
     }
