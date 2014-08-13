@@ -76,4 +76,4 @@ ENDIF("${isSystemDir}" STREQUAL "-1")
 
 
 # Recurse into the rest of the project.
-add_subdirectory(src)
+add_subdirectory(src/libgdl)
