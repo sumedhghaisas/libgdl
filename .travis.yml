@@ -3,6 +3,6 @@ compiler:
 - g++
 
 before_install:
-- sudo apt-get install cmake libboost-program-options-dev libboost-test-dev
+- sudo apt-get install g++-4.8 cmake libboost-program-options-dev libboost-test-dev
 
 script: mkdir build && cd build && cmake ../ && make
