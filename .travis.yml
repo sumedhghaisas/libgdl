@@ -3,6 +3,6 @@ compiler:
 - gcc
 
 before_install:
-- sudo apt-get install cmake
+- sudo apt-get install cmake libboost-program-options-dev libboost-test-dev
 
 script: mkdir build && cd build && cmake ../ && make
