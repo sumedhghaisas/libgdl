@@ -65,15 +65,7 @@ class KIF
   KIF(bool isWarn = true,
       bool isDebuggingSymbols = true,
       char o_level = 0,
-      std::ostream* stream = &std::cout)
-    : stream(stream), isWarn(isWarn),
-      isDebuggingSymbols(isDebuggingSymbols),
-      o_level(o_level),
-      driver(*this)
-  {
-    f_last_index_with_linemark = 0;
-    c_last_index_with_linemark = 0;
-  }
+      std::ostream* stream = &std::cout);
 
   //! KIF destructor
   ~KIF();
@@ -82,10 +74,8 @@ class KIF
   //!
   //! @param filename const std::string& : filename of the file to be added
   //!
-  void AddFile(const std::string& filename)
-  {
-    files.push_back(filename);
-  }
+  void AddFile(const std::string& filename) { files.push_back(filename); }
+
   void AddFile(const std::vector<std::string>& fvec)
   {
     for(size_t i = 0;i < fvec.size();i++) files.push_back(fvec[i]);
@@ -95,27 +85,14 @@ class KIF
   const std::vector<std::string>& Files() const { return files; }
   std::vector<std::string>& Files() { return files; }
 
-  //! clear all the files added
-  void ClearFiles() { files.clear(); }
-
-
-  void AddLineMark(const location_type& loc);
+  //! clears all the files added and knowledge
+  void Clear() { files.clear(); facts.clear(); clauses.clear(); }
 
   //! Parse the inputs
   //!
   //! @return bool : success or failure
   //!
-  bool Parse(bool ignoreErrors = false)
-  {
-    bool res = driver.Parse();
-    if(!res && !ignoreErrors)
-    {
-      facts.clear();
-      clauses.clear();
-      return false;
-    }
-    return true;
-  }
+  bool Parse(bool ignoreErrors = false);
 
   //! Print the parsed knowledge to file
   //!
@@ -153,35 +130,13 @@ class KIF
   //! make KIFDriver class friend
   friend KIFDriver;
 
+  void AddLineMark(const location_type& loc);
+
   //! add fact and clause to this kif -- used by KIFDriver
-  const Fact& AddFact(const Fact& f, const location_type& loc)
-  {
-    facts.push_back(f);
-    facts[facts.size() - 1].AddLocation(loc);
-
-    return facts.back();
-  }
-  const Fact& AddFact(Fact&& f, const location_type& loc)
-  {
-    facts.push_back(std::move(f));
-    facts[facts.size() - 1].AddLocation(loc);
-
-    return facts.back();
-  }
-  const Clause& AddClause(const Clause& c, const location_type& loc)
-  {
-    clauses.push_back(c);
-    clauses[clauses.size() - 1].AddLocation(loc);
-
-    return clauses.back();
-  }
-  const Clause& AddClause(Clause&& c, const location_type& loc)
-  {
-    clauses.push_back(std::move(c));
-    clauses[clauses.size() - 1].AddLocation(loc);
-
-    return clauses.back();
-  }
+  const Fact& AddFact(const Fact& f, const location_type& loc);
+  const Fact& AddFact(Fact&& f, const location_type& loc);
+  const Clause& AddClause(const Clause& c, const location_type& loc);
+  const Clause& AddClause(Clause&& c, const location_type& loc);
 
   void UpdateSymbolTable(const Argument& arg, const Location& loc);
 
@@ -215,7 +170,7 @@ class KIF
   size_t f_last_index_with_linemark;
   //! index of the last clause tagged with "#line" location
   size_t c_last_index_with_linemark;
-};
+}; // class KIF
 
 } //namespace gdlparser
 

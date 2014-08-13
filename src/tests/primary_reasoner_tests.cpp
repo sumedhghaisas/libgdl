@@ -24,8 +24,8 @@ using namespace gdlreasoner;
  */
 BOOST_AUTO_TEST_CASE(NormalReasonerTest)
 {
-    MARK_START;
-    OPEN_LOG;
+  MARK_START;
+  OPEN_LOG;
 	KIF kif(false, false, 0, TEST_LOG);
 	kif.AddFile("data/parser_tests/8puzzle.kif");
 	kif.Parse();
@@ -39,9 +39,9 @@ BOOST_AUTO_TEST_CASE(NormalReasonerTest)
  * Check knowledge base for normal question
  */
 BOOST_AUTO_TEST_CASE(QuestionTest)
-{
-    MARK_START;
-    OPEN_LOG;
+{ 
+  MARK_START;
+  OPEN_LOG;
 	KnowledgeBase kb;
 	kb.Tell("(<= (test ?x) (test2 ?x))");
 	kb.Tell("(test2 1)");
@@ -54,8 +54,8 @@ BOOST_AUTO_TEST_CASE(QuestionTest)
  */
 BOOST_AUTO_TEST_CASE(OrQuestionTest)
 {
-    MARK_START;
-    OPEN_LOG;
+  MARK_START;
+  OPEN_LOG;
 	KnowledgeBase kb;
 	kb.Tell("(<= (test ?x) (or (test2 ?x) (test3 ?x)))");
 	kb.Tell("(test2 1)");
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(OrQuestionTest)
 	std::list<Argument*> result;
 	if((result = kb.Ask(Argument("(test ?x)"))).size() != 2) MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
-        delete *it;
+    delete *it;
 	MARK_END;
 }
 
@@ -72,8 +72,8 @@ BOOST_AUTO_TEST_CASE(OrQuestionTest)
  */
 BOOST_AUTO_TEST_CASE(NotQuestionTest)
 {
-    MARK_START;
-    OPEN_LOG;
+  MARK_START;
+  OPEN_LOG;
 	KnowledgeBase kb;
 	kb.Tell("(<= (test ?x) (test2 ?x) (not (test3 ?x)))");
 	kb.Tell("(test2 1)");
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(NotQuestionTest)
 	std::list<Argument*> result;
 	if((result = kb.Ask(Argument("(test ?x)"))).size() != 1) MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
-        delete *it;
+    delete *it;
 	MARK_END;
 }
 
@@ -91,8 +91,8 @@ BOOST_AUTO_TEST_CASE(NotQuestionTest)
  */
 BOOST_AUTO_TEST_CASE(DistinctQuestionTest)
 {
-    MARK_START;
-    OPEN_LOG;
+  MARK_START;
+  OPEN_LOG;
 	KnowledgeBase kb;
 	kb.Tell("(<= (test ?x ?y) (test2 ?x) (test3 ?y) (distinct ?x ?y))");
 	kb.Tell("(test2 1)");
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(DistinctQuestionTest)
 	std::list<Argument*> result;
 	if((result = kb.Ask(Argument("(test ?x ?y)"))).size() != 1) MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
-        delete *it;
+    delete *it;
 	MARK_END;
 }
 
@@ -110,16 +110,34 @@ BOOST_AUTO_TEST_CASE(DistinctQuestionTest)
  */
 BOOST_AUTO_TEST_CASE(RecursiveDependencyTest)
 {
-    MARK_START;
-    OPEN_LOG;
+  MARK_START;
+  OPEN_LOG;
 	KnowledgeBase kb;
 	kb.Tell("(<= (test ?x) (test ?x))");
 	kb.Tell("(test 1)");
 	std::list<Argument*> result;
 	if((result = kb.Ask(Argument("(test ?x)"))).size() != 1) MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
-        delete *it;
+    delete *it;
 	MARK_END;
+}
+
+/**
+ * Check Knowledgebase Erase.
+ */ 
+BOOST_AUTO_TEST_CASE(EraseTest)
+{
+  MARK_START;
+  OPEN_LOG;
+	KnowledgeBase kb;
+	kb.Tell("(<= (test ?x) (test2 ?x))");
+	size_t f_i = kb.Tell("(test2 1)");
+	kb.Erase(Fact("(test2 1)"), f_i);
+	std::list<Argument*> result;
+	if((result = kb.Ask(Argument("(test ?x)"))).size() != 0) MARK_FAIL;
+	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
+    delete *it;
+  MARK_END;
 }
 
 BOOST_AUTO_TEST_SUITE_END();

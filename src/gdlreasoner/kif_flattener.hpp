@@ -53,7 +53,7 @@ public:
         : isDebuggingSymbol(isDebuggingSymbol) {}
 
     //! flattened the knowledge in given KIF object and stores the flattened knowledge
-    void Flatten(const gdlparser::KIF& kif);
+    void Flatten(gdlparser::KIF& kif);
 
     //! print the current flattened knowledge
     bool PrintToFile(const std::string& filename);

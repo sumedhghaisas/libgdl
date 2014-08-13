@@ -15,7 +15,7 @@ using namespace gdlreasoner;
 using namespace gdlparser;
 using namespace gdlreasoner::logicbase;
 
-void KIFFlattener::Flatten(const KIF& kif)
+void KIFFlattener::Flatten(KIF& kif)
 {
     // clear all the lists
     flattened_facts.clear();
