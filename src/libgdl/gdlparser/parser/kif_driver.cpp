@@ -26,7 +26,7 @@ using namespace libgdl::gdlparser::parser;
 KIFDriver::KIFDriver(KIF& kif)
     : dgraph(kif.dgraph),
     kif(kif),
-    files(kif.files)
+    streams(kif.streams)
 {
     scanner = new KIFScanner(*this);
     parser = NULL;

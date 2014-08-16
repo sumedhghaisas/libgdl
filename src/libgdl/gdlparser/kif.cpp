@@ -30,6 +30,15 @@ KIF::KIF(bool isWarn,
   c_last_index_with_linemark = 0;
 }
 
+bool KIF::AddFile(const std::string& filename)
+{
+  std::ifstream* temp = new std::ifstream(filename);
+  // if invalid file
+  if(!temp->is_open()) return false;
+  streams.push_back(util::GDLStream(filename, temp));
+  return true;
+}
+
 bool KIF::Parse(bool ignoreErrors)
 {
   bool res = driver.Parse();

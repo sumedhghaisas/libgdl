@@ -14,6 +14,7 @@
 
 #include <libgdl/gdlparser/parser/kif_driver.hpp>
 #include <libgdl/gdlparser/parser/kif_parser.tab.hh>
+#include <libgdl/core/util/gdl_stream.hpp>
 
 namespace libgdl
 {
@@ -75,20 +76,12 @@ class KIF
   //! Add given file as input
   //!
   //! @param filename const std::string& : filename of the file to be added
+  //! @return returns true if file is successfully opened
   //!
-  void AddFile(const std::string& filename) { files.push_back(filename); }
-
-  void AddFile(const std::vector<std::string>& fvec)
-  {
-    for(size_t i = 0;i < fvec.size();i++) files.push_back(fvec[i]);
-  }
-
-  //! Access files added
-  const std::vector<std::string>& Files() const { return files; }
-  std::vector<std::string>& Files() { return files; }
+  bool AddFile(const std::string& filename);
 
   //! clears all the files added and knowledge
-  void Clear() { files.clear(); facts.clear(); clauses.clear(); }
+  void Clear() { streams.clear(); facts.clear(); clauses.clear(); }
 
   //! Parse the inputs
   //!
@@ -163,7 +156,7 @@ class KIF
   //! dependency graph
   std::map<std::string, DGraphNode*> dgraph;
 
-  std::vector<std::string> files;
+  std::vector<util::GDLStream> streams;
 
   //! driver to drive parsing
   KIFDriver driver;

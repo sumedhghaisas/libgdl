@@ -15,6 +15,7 @@
 #include <stack>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/util/gdl_stream.hpp>
 
 #include "kif_scanner.hpp"
 #include "kif_parser.tab.hh"
@@ -143,7 +144,7 @@ private:
     //! reference to the calling object
     KIF& kif;
 
-    std::vector<std::string>& files;
+    std::vector<util::GDLStream>& streams;
 
     //! pointers which needs to be freed in destruction
     std::list<std::string*> to_free;

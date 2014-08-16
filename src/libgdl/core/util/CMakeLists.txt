@@ -2,6 +2,7 @@
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
   setop.hpp
+  gdl_stream.hpp
 )
 
 # add directory name to sources

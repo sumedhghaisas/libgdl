@@ -525,9 +525,9 @@ static yyconst flex_int16_t yy_chk[117] =
 
 static yyconst flex_int16_t yy_rule_linenum[22] =
     {   0,
-       61,   64,   67,   70,   73,   76,   79,   82,   85,   88,
-       91,   94,   97,  100,  103,  106,  109,  115,  118,  122,
-      124
+       63,   66,   69,   72,   75,   78,   81,   84,   87,   90,
+       93,   96,   99,  102,  105,  108,  111,  117,  120,  124,
+      126
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -548,6 +548,8 @@ static yyconst flex_int16_t yy_rule_linenum[22] =
 
 #include <string>
 
+#include <libgdl/core.hpp>
+
 #include "kif_scanner.hpp"
 #include "kif_driver.hpp"
 
@@ -558,7 +560,7 @@ typedef libgdl::gdlparser::parser::yy::KIFParser::location_type location_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 
 #define IN_MAKE_FIRST std::string(yytext)
-#define IN_MAKE_SECOND location_type(&files[file_index - 1], lineNo + 1, charNo)
+#define IN_MAKE_SECOND location_type(&streams[stream_index - 1].Name(), lineNo + 1, charNo)
 #define IN_MAKE IN_MAKE_FIRST, IN_MAKE_SECOND
 
 /* By default yylex returns int, we use token_type. Unfortunately yyterminate
@@ -577,9 +579,9 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
  * versions. */
 /* no support for include files is planned */
 /* enables the use of start condition stacks */
-#line 56 "kif_scanner.ll"
+#line 58 "kif_scanner.ll"
 #define YY_USER_ACTION  charNo = charNo + yyleng;
-#line 583 "lex.yy.cc"
+#line 585 "lex.yy.cc"
 
 #define INITIAL 0
 
@@ -741,10 +743,10 @@ YY_DECL
 	register int yy_act;
 
 /* %% [7.0] user's declarations go here */
-#line 59 "kif_scanner.ll"
+#line 61 "kif_scanner.ll"
 
 
-#line 748 "lex.yy.cc"
+#line 750 "lex.yy.cc"
 
 	if ( !(yy_init) )
 		{
@@ -855,112 +857,112 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 61 "kif_scanner.ll"
+#line 63 "kif_scanner.ll"
 {
     return KIFParser::make_Obracket(IN_MAKE);
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 64 "kif_scanner.ll"
+#line 66 "kif_scanner.ll"
 {
     return KIFParser::make_Cbracket(IN_MAKE);
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 67 "kif_scanner.ll"
+#line 69 "kif_scanner.ll"
 {
     return KIFParser::make_role(IN_MAKE);
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 70 "kif_scanner.ll"
+#line 72 "kif_scanner.ll"
 {
     return KIFParser::make_base(IN_MAKE);
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 73 "kif_scanner.ll"
+#line 75 "kif_scanner.ll"
 {
     return KIFParser::make_input(IN_MAKE);
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 76 "kif_scanner.ll"
+#line 78 "kif_scanner.ll"
 {
     return KIFParser::make_init(IN_MAKE);
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 79 "kif_scanner.ll"
+#line 81 "kif_scanner.ll"
 {
     return KIFParser::make_legal(IN_MAKE);
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 82 "kif_scanner.ll"
+#line 84 "kif_scanner.ll"
 {
     return KIFParser::make_goal(IN_MAKE);
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 85 "kif_scanner.ll"
+#line 87 "kif_scanner.ll"
 {
     return KIFParser::make_terminal(IN_MAKE);
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 88 "kif_scanner.ll"
+#line 90 "kif_scanner.ll"
 {
     return KIFParser::make_next(IN_MAKE);
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 91 "kif_scanner.ll"
+#line 93 "kif_scanner.ll"
 {
     return KIFParser::make_oor(IN_MAKE);
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 94 "kif_scanner.ll"
+#line 96 "kif_scanner.ll"
 {
     return KIFParser::make_nnot(IN_MAKE);
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 97 "kif_scanner.ll"
+#line 99 "kif_scanner.ll"
 {
     return KIFParser::make_ttrue(IN_MAKE);
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 100 "kif_scanner.ll"
+#line 102 "kif_scanner.ll"
 {
     return KIFParser::make_distinct(IN_MAKE);
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 103 "kif_scanner.ll"
+#line 105 "kif_scanner.ll"
 {
     return KIFParser::make_does(IN_MAKE);
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 106 "kif_scanner.ll"
+#line 108 "kif_scanner.ll"
 {
     return KIFParser::make_clause_command(IN_MAKE);
 }
@@ -968,7 +970,7 @@ YY_RULE_SETUP
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 109 "kif_scanner.ll"
+#line 111 "kif_scanner.ll"
 {
     lineNo++;
     charNo = 0;
@@ -978,14 +980,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 115 "kif_scanner.ll"
+#line 117 "kif_scanner.ll"
 {
     return KIFParser::make_num(IN_MAKE);
 }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 118 "kif_scanner.ll"
+#line 120 "kif_scanner.ll"
 {
     if(yytext[0] == '?') return KIFParser::make_var(IN_MAKE);
     return KIFParser::make_id(IN_MAKE);
@@ -993,14 +995,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 122 "kif_scanner.ll"
+#line 124 "kif_scanner.ll"
 {
 }
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 124 "kif_scanner.ll"
+#line 126 "kif_scanner.ll"
 {
     lineNo++;
     charNo = 0;
@@ -1008,10 +1010,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 129 "kif_scanner.ll"
+#line 131 "kif_scanner.ll"
 ECHO;
 	YY_BREAK
-#line 1015 "lex.yy.cc"
+#line 1017 "lex.yy.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2060,7 +2062,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 129 "kif_scanner.ll"
+#line 131 "kif_scanner.ll"
 
 
 
@@ -2075,35 +2077,27 @@ void yyfree (void * ptr )
 
 int libgdl::gdlparser::parser::KIFScanner::yywrap()
 {
-    // if no file to scan
-    if(files.size() == 0)
+    // if no stream to scan
+    if(streams.size() == 0)
     {
-        driver.Warn("No file provided...");
+        driver.Warn("No streams provided...");
         return 1;
     }
     // choose file file to scan
-    else if(file_index < files.size())
+    else if(stream_index < streams.size())
     {
-        std::ifstream* temp = new std::ifstream(files[file_index].c_str());
-        // if invalid file
-        if(!temp->is_open())
-        {
-            driver.Error("Could not open file " + files[file_index]);
-            return 1;
-        }
-        delete yyin;
-        yyin = temp;
+        yyin = streams[stream_index].Stream();
     }
     else return 1;
     // increment file index
-    file_index++;
+    stream_index++;
     return 0;
 }
 
 libgdl::gdlparser::parser::KIFScanner::KIFScanner(const KIFDriver& driver)
         : yyFlexLexer(new std::stringstream(), NULL),
-        driver(driver), files(driver.files),
-        file_index(0)
+        driver(driver), streams(driver.streams),
+        stream_index(0)
 { state = NoState; lineNo = 0; charNo = 0;}
 
 

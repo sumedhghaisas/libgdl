@@ -7,6 +7,9 @@
 #ifndef _GDLPARSER_PARSER_KIF_SCANNER_HPP_INCLUDED
 #define _GDLPARSER_PARSER_KIF_SCANNER_HPP_INCLUDED
 
+#include <libgdl/core.hpp>
+#include <libgdl/core/util/gdl_stream.hpp>
+
 #include "kif_parser.tab.hh"
 
 #include <iostream>
@@ -65,7 +68,7 @@ public:
     //! current location of the scanner
     int LineNo() { return lineNo + 1; }
     int CharNo() { return charNo; }
-    std::string CurrentFile() { return files[file_index]; }
+    std::string CurrentFile() { return streams[stream_index].Name(); }
 
     void set_debug(bool b)
     {
@@ -79,7 +82,7 @@ private:
     const KIFDriver& driver;
 
     //! files to be scanned
-    std::vector<std::string>& files;
+    std::vector<util::GDLStream>& streams;
 
     //! store next token to be returned
     std::string nextTokenValue;
@@ -92,7 +95,7 @@ private:
     int charNo;
 
     //! current file index
-    size_t file_index;
+    size_t stream_index;
 };
 
 }; // namespace parser

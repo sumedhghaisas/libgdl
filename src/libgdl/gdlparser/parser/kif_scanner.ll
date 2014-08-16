@@ -20,7 +20,7 @@ typedef libgdl::gdlparser::parser::yy::KIFParser::location_type location_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 
 #define IN_MAKE_FIRST std::string(yytext)
-#define IN_MAKE_SECOND location_type(&files[file_index - 1], lineNo + 1, charNo)
+#define IN_MAKE_SECOND location_type(&streams[stream_index - 1].Name(), lineNo + 1, charNo)
 #define IN_MAKE IN_MAKE_FIRST, IN_MAKE_SECOND
 
 /* By default yylex returns int, we use token_type. Unfortunately yyterminate
@@ -141,31 +141,27 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 
 int libgdl::gdlparser::parser::KIFScanner::yywrap()
 {
-    // if no file to scan
-    if(files.size() == 0)
+    // if no stream to scan
+    if(streams.size() == 0)
     {
-        driver.Warn("No file provided...");
+        driver.Warn("No streams provided...");
         return 1;
     }
     // choose file file to scan
-    else if(file_index < files.size())
+    else if(stream_index < streams.size())
     {
-        std::ifstream* temp = new std::ifstream(files[file_index].c_str());
-        // if invalid file
-        ASSERT(TEMP->is_open(), "Could not open file " + files[file_index]);
-        delete yyin;
-        yyin = temp;
+        yyin = streams[stream_index].Stream();
     }
     else return 1;
     // increment file index
-    file_index++;
+    stream_index++;
     return 0;
 }
 
 libgdl::gdlparser::parser::KIFScanner::KIFScanner(const KIFDriver& driver)
         : yyFlexLexer(new std::stringstream(), NULL),
-        driver(driver), files(driver.files),
-        file_index(0)
+        driver(driver), streams(driver.streams),
+        stream_index(0)
 { state = NoState; lineNo = 0; charNo = 0;}
 
 

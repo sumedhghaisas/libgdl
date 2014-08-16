@@ -109,7 +109,11 @@ int main(int argc, char* argv[])
     }
 
     KIF kif(warn, std::cerr);
-    kif.AddFile(files);
+    for(size_t i = 0;i < files.size();i++)
+      if(!kif.AddFile(files[i]))
+      {
+        cerr << "Unable to open file " << files[i] << endl;
+      }
     if(!kif.Parse()) return 1;
     kif.PrintToFile(output_filename);
     if(toGraph)
