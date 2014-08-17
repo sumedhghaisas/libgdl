@@ -3,6 +3,11 @@
 set(SOURCES
   setop.hpp
   gdl_stream.hpp
+  nulloutstream.hpp
+  prefixedoutstream.hpp
+  prefixedoutstream_impl.hpp
+  log.hpp
+  logid.hpp
 )
 
 # add directory name to sources

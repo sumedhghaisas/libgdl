@@ -3,7 +3,7 @@ project(libgdl C CXX)
 
 # First, define all the compilation options.
 # We default to debugging mode for developers.
-option(DEBUG "Compile with debugging information" ON)
+option(DEBUG "Compile with debugging information" OFF)
 
 # Set the CFLAGS and CXXFLAGS depending on the options the user specified.
 # Only GCC-like compilers support -Wextra, and other compilers give tons of
