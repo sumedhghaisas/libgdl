@@ -20,8 +20,8 @@ using namespace libgdl::gdlparser;
 KIF::KIF(bool isWarn,
          bool isDebuggingSymbols,
          char o_level,
-         ostream* stream)
-  : stream(stream), isWarn(isWarn),
+         const Log& log)
+  : log(log), isWarn(isWarn),
     isDebuggingSymbols(isDebuggingSymbols),
     o_level(o_level),
     driver(*this)
@@ -63,8 +63,8 @@ bool KIF::PrintDependencyGraph(const string& filename) const
   ofstream graph(filename.c_str());
   if(!graph.is_open())
   {
-    *stream << BASH_RED "[ERROR] " BASH_CLEAR;
-    cout << "Unable to open file " << filename << " for saving graph" << endl;
+    log.Fatal << LOGID << "Unable to open file "
+                              << filename << " for saving graph" << endl;
     return false;
   }
 
@@ -108,8 +108,7 @@ bool KIF::PrintToFile(const string& filename) const
   ofstream out(filename.c_str());
   if(!out.is_open())
   {
-    *stream << BASH_RED "[ERROR] " BASH_CLEAR;
-    cout << "Unable to open file " << filename << std::endl;
+    log.Fatal << LOGID << "Unable to open file " << filename << std::endl;
     return false;
   }
 

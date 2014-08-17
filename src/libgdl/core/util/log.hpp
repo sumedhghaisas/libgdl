@@ -70,16 +70,13 @@ class Log
 #endif
       Info(util::PrefixedOutStream(stream,
                                    BASH_GREEN "[INFO ] " BASH_CLEAR,
-                                   false /* unless --verbose */,
-                                   false)),
+                                   false /* unless --verbose */)),
       Warn(util::PrefixedOutStream(stream,
                                    BASH_YELLOW "[WARN ] " BASH_CLEAR,
-                                   false,
                                    false)),
       Fatal(util::PrefixedOutStream(stream,
                                    BASH_RED "[FATAL] " BASH_CLEAR,
-                                   false,
-                                   true /* fatal */))
+                                   false))
   {
   }
 

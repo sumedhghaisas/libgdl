@@ -6,6 +6,7 @@ set(SOURCES
   nulloutstream.hpp
   prefixedoutstream.hpp
   prefixedoutstream_impl.hpp
+  prefixedoutstream.cpp
   log.hpp
   logid.hpp
 )

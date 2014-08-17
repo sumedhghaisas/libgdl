@@ -55,15 +55,13 @@ class PrefixedOutStream
    */
   PrefixedOutStream(std::ostream& destination,
                     const std::string& prefix,
-                    bool ignoreInput = false,
-                    bool fatal = false) :
+                    bool ignoreInput = false) :
       destination(destination),
       ignoreInput(ignoreInput),
       prefix(prefix),
       // We want the first call to operator<< to prefix the prefix so we set
       // carriageReturned to true.
-      carriageReturned(true),
-      fatal(fatal)
+      carriageReturned(true)
     { /* nothing to do */ }
 
   //! Write a streambuf to the stream.
@@ -110,10 +108,6 @@ class PrefixedOutStream
   //! If true, the previous call to operator<< encountered a CR, and a prefix
   //! will be necessary.
   bool carriageReturned;
-
-  //! If true, the application will terminate with an error code when a CR is
-  //! encountered.
-  bool fatal;
 };
 
 }; // namespace util

@@ -12,6 +12,7 @@
 #include <vector>
 #include <boost/unordered_map.hpp>
 
+#include <libgdl/core.hpp>
 #include <libgdl/gdlparser/parser/kif_driver.hpp>
 #include <libgdl/gdlparser/parser/kif_parser.tab.hh>
 #include <libgdl/core/util/gdl_stream.hpp>
@@ -68,7 +69,7 @@ class KIF
   KIF(bool isWarn = true,
       bool isDebuggingSymbols = true,
       char o_level = 0,
-      std::ostream* stream = &std::cout);
+      const Log& log = std::cout);
 
   //! KIF destructor
   ~KIF();
@@ -121,6 +122,8 @@ class KIF
   //! set or reset debugging symbol generation
   bool DebuggingSymbolSupport() const { return isDebuggingSymbols; }
 
+  Log& GetLog() { return log; }
+
  private:
   //! make KIFDriver class friend
   friend KIFDriver;
@@ -135,8 +138,8 @@ class KIF
 
   void UpdateSymbolTable(const Argument& arg, const Location& loc);
 
-  //! pointer to logging stream
-  mutable std::ostream* stream;
+  //! logging stream
+  mutable Log log;
 
   //! enable/disable warnings
   bool isWarn;

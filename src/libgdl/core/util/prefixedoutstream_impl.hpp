@@ -88,9 +88,7 @@ void PrefixedOutStream::BaseLogic(const T& val)
     }
   }
 
-  // If we displayed a newline and we need to terminate afterwards, do that.
-  if (fatal && newlined)
-    exit(1);
+  (void)newlined;
 }
 
 // This is an inline function (that is why it is here and not in .cc).
