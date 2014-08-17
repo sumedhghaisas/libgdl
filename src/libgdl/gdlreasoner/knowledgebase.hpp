@@ -102,6 +102,8 @@ class KnowledgeBase
   //! returns all the clauses in the knowledgebase in stored form
   const ClauseMap& GetAllClauses() const { return m_clauses; }
 
+  Log& GetLog() { return log; }
+
  private:
   //! all the facts stored in map for faster lookup
   FactMap m_facts;
@@ -113,6 +115,9 @@ class KnowledgeBase
 
   //! is debugging sysbols supported
   bool isDebuggingSymbols;
+
+  //! logging stream
+  mutable Log log;
 }; // CLASS KNOWLEDGEBASE
 
 }; // namespace gdlreasoner

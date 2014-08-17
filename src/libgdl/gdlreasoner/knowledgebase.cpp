@@ -121,13 +121,13 @@ size_t KnowledgeBase::Tell(const std::string& str)
   std::vector<std::string> args;
   if(!Argument::SeparateCommand(str, cmd, args))
   {
-    std::cerr << "Unable to construct argument from " << str << std::endl;
+    log.Fatal << "Unable to construct argument from " << str << std::endl;
     return 0;
   }
 
   if(cmd == "<=" && args.size() < 2)
   {
-    std::cerr << "Unable to construct argument from " << str << std::endl;
+    log.Fatal << "Unable to construct argument from " << str << std::endl;
     return 0;
   }
   else if(cmd != "<=") return Tell(Fact(str));

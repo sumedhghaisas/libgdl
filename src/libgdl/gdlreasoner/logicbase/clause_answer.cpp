@@ -112,7 +112,6 @@ bool ClauseAnswer::next ()
       v_map = o_v_map;
       if (Unify::mgu(question, *(clause.head), v_map))
       {
-        //Unify::PrintVariableMap(std::cout, v_map);
         if (clause.premisses.empty())
         {
           // clauses having no tail
@@ -148,7 +147,6 @@ bool ClauseAnswer::next ()
           SubAnswer nextTail;
           nextTail.nextPremiss = tail.nextPremiss;
           nextTail.headMap = tail.partAnswer->GetVariableMap();
-          //Unify::PrintVariableMap(std::cout, nextTail.headMap);
           nextTail.partAnswer = kb.GetAnswer(**nextTail.nextPremiss,
                                              nextTail.headMap,
                                              tail.partAnswer->Visited());
@@ -159,7 +157,6 @@ bool ClauseAnswer::next ()
         {
           // final solution
           v_map = tail.partAnswer->GetVariableMap();
-          //Unify::PrintVariableMap(std::cout, v_map);
           return true;
         }
       }

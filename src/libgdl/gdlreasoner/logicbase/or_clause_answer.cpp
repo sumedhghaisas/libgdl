@@ -32,7 +32,6 @@ bool OrClauseAnswer::next()
     if (m_currentAnswer->next())
     {
       v_map = m_currentAnswer->GetVariableMap();
-      //std::cout << m_questionMap << std::endl;
       return true;
     }
   }

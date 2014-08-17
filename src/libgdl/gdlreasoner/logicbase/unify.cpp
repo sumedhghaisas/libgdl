@@ -91,7 +91,9 @@ bool Unify::mgu(const Argument& arg1, const Argument& arg2, VariableMap& theta)
   return true;
 }
 
-bool Unify::EquateWithSubstitution(const Argument& arg1, const Argument& arg2, const VariableMap& v_map)
+bool Unify::EquateWithSubstitution(const Argument& arg1,
+                                   const Argument& arg2,
+                                   const VariableMap& v_map)
 {
     typedef std::pair<const Argument*, const Argument*> ArgPair;
 
@@ -131,10 +133,12 @@ bool Unify::EquateWithSubstitution(const Argument& arg1, const Argument& arg2, c
     return true;
 }
 
-Argument* Unify::GetSubstitutedArgument(const Argument* arg, const VariableMap& v_map)
+Argument* Unify::GetSubstitutedArgument(const Argument* arg,
+                                        const VariableMap& v_map)
 {
     //std::cout << *arg << std::endl;
-    if(arg->IsVariable()) return GetSubstitutedArgument(v_map.find(arg)->second, v_map);
+    if(arg->IsVariable())
+      return GetSubstitutedArgument(v_map.find(arg)->second, v_map);
 
     Argument* out = new Argument();
     out->t = arg->t;
@@ -160,7 +164,9 @@ Clause* Unify::GetSubstitutedClause(const Clause* c, const VariableMap& v_map)
 }
 
 
-Unify::VariableMap Unify::DecodeSubstitutions(const VariableMap& v_map, const Argument* question, const VariableMap& o_v_map)
+Unify::VariableMap Unify::DecodeSubstitutions(const VariableMap& v_map,
+                                              const Argument* question,
+                                              const VariableMap& o_v_map)
 {
   VariableMap out = o_v_map;
 
@@ -218,26 +224,3 @@ bool Unify::IsGroundQuestion(const Argument* arg, const VariableMap& v_map)
     }
     return true;
 }
-
-/*
-std::ostream& Unify::PrintSubstitution(std::ostream& o, const Argument& arg, int index)
-{
-    if(arg.args.size() == 0)
-    {
-        if(!arg.IsVariable()) o << arg.val;
-        else if(index == -1) PrintSubstitution(o, *(arg.sub[arg.sub_count - 1]), arg.sub_no[arg.sub_count - 1]);
-        else PrintSubstitution(o, *(arg.sub[index]), arg.sub_no[index]);
-        return o;
-    }
-
-    else o << "( " + arg.val;
-
-    for(size_t i = 0; i < arg.args.size(); i++)
-    {
-        o << " ";
-        PrintSubstitution(o, *(arg.args[i]));
-    }
-    o << " " << ")";
-    return o;
-}
-*/
