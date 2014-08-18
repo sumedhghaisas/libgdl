@@ -159,7 +159,7 @@ int libgdl::gdlparser::parser::KIFScanner::yywrap()
 }
 
 libgdl::gdlparser::parser::KIFScanner::KIFScanner(const KIFDriver& driver)
-        : yyFlexLexer(new std::stringstream(), NULL),
+        : yyFlexLexer(&empty_stringstream, NULL),
         driver(driver), streams(driver.streams),
         stream_index(0)
 { state = NoState; lineNo = 0; charNo = 0;}

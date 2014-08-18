@@ -49,6 +49,7 @@
 #define __FLEX_LEXER_H
 
 #include <iostream>
+#include <sstream>
 #  ifndef FLEX_STD
 #    define FLEX_STD std::
 #  endif

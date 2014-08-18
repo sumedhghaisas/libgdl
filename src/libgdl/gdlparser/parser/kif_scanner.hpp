@@ -78,6 +78,9 @@ public:
     int yywrap();
 
 private:
+    //! empty stringstream
+    std::stringstream empty_stringstream;
+
     //! reference of the calling driver object
     const KIFDriver& driver;
 
