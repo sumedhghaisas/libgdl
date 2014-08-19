@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <boost/unordered_map.hpp>
 
 #include <libgdl/gdlparser/parser/token_value.hpp>
 
@@ -89,6 +90,9 @@ struct Argument
 
   //! adds argument to this command
   void AddArgument(const TokenValue& tok) { args.push_back(new Argument(tok)); }
+
+  //! compute hash value
+  size_t Hash(const boost::unordered_map<std::string, size_t>& id_map);
 
   //! type of this argument
   Type t;

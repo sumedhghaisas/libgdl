@@ -9,6 +9,8 @@ set(SOURCES
   clause.cpp
   dgraph_node.hpp
   location.hpp
+  state.hpp
+  state.cpp
 )
 
 # add directory name to sources

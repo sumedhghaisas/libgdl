@@ -9,6 +9,8 @@
 #include <stack>
 #include <sstream>
 
+using namespace std;
+using namespace boost;
 using namespace libgdl;
 
 Argument::Argument(const TokenValue& tok)
@@ -258,6 +260,18 @@ Argument* Argument::ConstructArgument(const std::string& str,
     out->args.push_back(ConstructArgument(args[i], v_map));
   }
   return out;
+}
+
+size_t Argument::Hash(const unordered_map<string, size_t>& id_map)
+{
+  size_t out = id_map.find(val)->second;
+  size_t total = 0;
+  for(size_t i = 0;i < args.size();i++)
+  {
+    total += args[i]->Hash(id_map);
+  }
+  if(total != 0) return total * out;
+  else return out;
 }
 
 bool Argument::operator==(const Argument& arg) const
