@@ -38,7 +38,7 @@ void PrefixedOutStream::BaseLogic(const T& val)
     PrefixIfNeeded();
     if (!ignoreInput)
     {
-      destination << "Failed lexical_cast<std::string>(T) for output; output"
+      *destination << "Failed lexical_cast<std::string>(T) for output; output"
           " not shown." << std::endl;
       newlined = true;
     }
@@ -53,7 +53,7 @@ void PrefixedOutStream::BaseLogic(const T& val)
     {
       // The prefix cannot be necessary at this point.
       if (!ignoreInput) // Only if the user wants it.
-        destination << val;
+        *destination << val;
 
       return;
     }
@@ -70,8 +70,8 @@ void PrefixedOutStream::BaseLogic(const T& val)
       // Only output if the user wants it.
       if (!ignoreInput)
       {
-        destination << line.substr(pos, nl - pos);
-        destination << std::endl;
+        *destination << line.substr(pos, nl - pos);
+        *destination << std::endl;
         newlined = true;
       }
 
@@ -84,7 +84,7 @@ void PrefixedOutStream::BaseLogic(const T& val)
     {
       PrefixIfNeeded();
       if (!ignoreInput)
-        destination << line.substr(pos);
+        *destination << line.substr(pos);
     }
   }
 
@@ -98,7 +98,7 @@ void PrefixedOutStream::PrefixIfNeeded()
   if (carriageReturned)
   {
     if (!ignoreInput) // But only if we are allowed to.
-      destination << prefix;
+      *destination << prefix;
 
     carriageReturned = false; // Denote that the prefix has been displayed.
   }

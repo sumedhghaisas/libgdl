@@ -8,6 +8,8 @@
 
 namespace libgdl
 {
+namespace cache
+{
 
 template<class key_type, class value_type>
 LRUCache<key_type, value_type>::
@@ -209,4 +211,5 @@ void LRUCache<key_type, value_type>::
   default_f = f;
 }
 
+}; // namespace cache
 }; // namespace libgdl

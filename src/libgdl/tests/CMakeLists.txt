@@ -5,6 +5,7 @@ add_executable(libgdl_test
   primary_reasoner_tests.cpp
   question_tests.cpp
   parser_ds_test.cpp
+  cache_tests.cpp
 )
 # Link dependencies of test executable.
 target_link_libraries(libgdl_test

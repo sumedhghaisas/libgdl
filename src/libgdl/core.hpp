@@ -16,5 +16,6 @@
 #include <libgdl/core/util/setop.hpp>
 #include <libgdl/core/util/logid.hpp>
 #include <libgdl/core/util/log.hpp>
+#include <libgdl/core/util/timer.hpp>
 
 #endif // __LIBGDL_CORE_HPP

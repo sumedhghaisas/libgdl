@@ -9,6 +9,7 @@ set(SOURCES
   prefixedoutstream.cpp
   log.hpp
   logid.hpp
+  timer.hpp
 )
 
 # add directory name to sources

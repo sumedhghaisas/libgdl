@@ -13,10 +13,11 @@
 
 namespace libgdl
 {
-
+namespace cache
+{
 /**
  * LRU Cache module.
- * Hit time : around 13 microseconds (highly dependent on the machine and the
+ * Hit time : around 2 microseconds (highly dependent on the machine and the
                                       compiler)
  *
  * key_type should implement a getHash() function which returns a size_t hash
@@ -148,6 +149,7 @@ class LRUCache
   mutable Log log;
 }; // class LRUache
 
+}; // namespace cache
 }; // namespace libgdl
 
 

@@ -56,7 +56,7 @@ class PrefixedOutStream
   PrefixedOutStream(std::ostream& destination,
                     const std::string& prefix,
                     bool ignoreInput = false) :
-      destination(destination),
+      destination(&destination),
       ignoreInput(ignoreInput),
       prefix(prefix),
       // We want the first call to operator<< to prefix the prefix so we set
@@ -77,12 +77,13 @@ class PrefixedOutStream
   template<typename T>
   PrefixedOutStream& operator<<(const T& s);
 
-  const std::ostream& Stream() const { return destination; }
-  std::ostream& Stream() { return destination; }
+  const std::ostream& Stream() { return *destination; }
+  std::ostream& Stream() const { return *destination; }
+  void SetStream(std::ostream& stream) { destination = &stream; }
 
  private:
    //! The output stream that all data is to be sent too; example: std::cout.
-  std::ostream& destination;
+  std::ostream* destination;
 
   //! Discards input, prints nothing if true.
   bool ignoreInput;

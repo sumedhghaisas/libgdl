@@ -107,6 +107,16 @@ class Log
 
   //! Prints fatal messages prefixed with [FATAL], then terminates the program.
   util::PrefixedOutStream Fatal;
+
+  void SetStream(std::ostream& stream)
+  {
+#ifdef DEBUG
+    Debug.Stream() = stream;
+#endif
+    Info.SetStream(stream);
+    Warn.SetStream(stream);
+    Fatal.SetStream(stream);
+  }
 };
 
 }; //namespace libgdl
