@@ -128,7 +128,6 @@ bool ClauseAnswer::next ()
         std::vector<Argument*>::const_iterator& current = sanswer.nextPremiss;
         std::set<size_t>* t_visited = new std::set<size_t>(visited);
         t_visited->insert(clause.id);
-
         sanswer.partAnswer = kb.GetAnswer(**current, sanswer.headMap, *t_visited);
         delete t_visited;
         sanswer.nextPremiss++;

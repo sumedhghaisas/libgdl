@@ -2,6 +2,7 @@
 set(DIRS
   data_types
   util
+  cache
 )
 
 foreach(dir ${DIRS})

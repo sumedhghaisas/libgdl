@@ -136,7 +136,6 @@ bool Unify::EquateWithSubstitution(const Argument& arg1,
 Argument* Unify::GetSubstitutedArgument(const Argument* arg,
                                         const VariableMap& v_map)
 {
-    //std::cout << *arg << std::endl;
     if(arg->IsVariable())
       return GetSubstitutedArgument(v_map.find(arg)->second, v_map);
 

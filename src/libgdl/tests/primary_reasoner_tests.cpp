@@ -115,10 +115,11 @@ BOOST_AUTO_TEST_CASE(RecursiveDependencyTest)
   MARK_START;
   OPEN_LOG;
 	KnowledgeBase kb;
-	kb.Tell("(<= (test ?x) (test ?x))");
-	kb.Tell("(test 1)");
+	kb.Tell("(<= (knows ?x ?z) (knows ?x ?y) (knows ?y ?z))");
+	kb.Tell("(knows p q)");
+	kb.Tell("(knows q r)");
 	std::list<Argument*> result;
-	if((result = kb.Ask(Argument("(test ?x)"))).size() != 1) MARK_FAIL;
+	if((result = kb.Ask(Argument("(knows p r)"))).size() != 1) MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
     delete *it;
 	MARK_END;

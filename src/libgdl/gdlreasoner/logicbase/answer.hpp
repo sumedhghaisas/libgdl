@@ -55,7 +55,7 @@ class Answer
     return Unify::DecodeSubstitutions(v_map, &question, o_v_map);
   }
 
-  const std::set<size_t>& Visited() { return visited; }
+  virtual inline const std::set<size_t>& Visited() { return visited; }
 
  protected:
   //! variable map of the current result

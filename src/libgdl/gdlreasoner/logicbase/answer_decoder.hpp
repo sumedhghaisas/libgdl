@@ -39,6 +39,8 @@ public:
 
   inline VariableMap GetVariableMap() { return v_map; }
 
+  inline const std::set<size_t>& Visited() { return m_answer->Visited(); }
+
   /// Go to the next result
   bool next ();
 

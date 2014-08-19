@@ -49,10 +49,10 @@ add_custom_command(TARGET libgdl_headers POST_BUILD
     
 # Then copy each of the header files over to that directory.
 foreach(incl_file ${INCLUDE_FILES})
-  add_custom_command(TARGET mlpack_headers POST_BUILD
+  add_custom_command(TARGET libgdl_headers POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E
       copy ${CMAKE_CURRENT_SOURCE_DIR}/${incl_file}
-           ${CMAKE_BINARY_DIR}/include/mlpack/${incl_file})
+           ${CMAKE_BINARY_DIR}/include/libgdl/${incl_file})
 endforeach()
 
 # At install time, we simply install that directory of header files we
