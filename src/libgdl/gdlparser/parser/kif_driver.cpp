@@ -18,6 +18,7 @@
 #define BASH_YELLOW "\033[0;33m"
 #define BASH_CLEAR "\033[0m"
 
+using namespace std;
 using namespace libgdl;
 using namespace libgdl::util;
 using namespace libgdl::gdlparser;
@@ -120,6 +121,13 @@ bool KIFDriver::Parse()
 int KIFDriver::AddEntry(const TokenValue& tok, bool isRelation, char arity,
                         const location_type& loc, std::string& msg)
 {
+    boost::unordered_map<string, size_t>::const_iterator it_k = kif.id_map->find(tok.Value());
+
+    if(it_k == kif.id_map->end())
+    {
+      (*kif.id_map)[tok.Value()] = kif.id_index++;
+    }
+
     // check if an entry exists against this symbol
     std::map<std::string, Symbol>::iterator it = symbol_table.find(tok.Value());
     // else create a new one
@@ -169,6 +177,13 @@ int KIFDriver::AddEntry(const TokenValue& tok, bool isRelation, char arity,
 int KIFDriver::CheckEntry(const TokenValue& tok, bool isRelation, char arity,
                           const location_type& loc, std::string& msg)
 {
+    boost::unordered_map<string, size_t>::const_iterator it_k = kif.id_map->find(tok.Value());
+
+    if(it_k == kif.id_map->end())
+    {
+      (*kif.id_map)[tok.Value()] = kif.id_index++;
+    }
+
     // check if an entry exists against this symbol
     std::map<std::string, Symbol>::iterator it = symbol_table.find(tok.Value());
     // else create a new one

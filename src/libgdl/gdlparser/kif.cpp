@@ -28,6 +28,9 @@ KIF::KIF(bool isWarn,
 {
   f_last_index_with_linemark = 0;
   c_last_index_with_linemark = 0;
+
+  id_index = 0;
+  id_map = new boost::unordered_map<string, size_t>();
 }
 
 bool KIF::AddFile(const std::string& filename)
@@ -55,7 +58,8 @@ KIF::~KIF()
 {
   for(map<std::string, DGraphNode*>::iterator it = dgraph.begin();
                                                       it != dgraph.end();it++)
-      delete it->second;
+  delete it->second;
+  delete id_map;
 }
 
 bool KIF::PrintDependencyGraph(const string& filename) const

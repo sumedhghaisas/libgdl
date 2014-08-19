@@ -13,6 +13,7 @@
 #include <map>
 #include <vector>
 #include <stack>
+#include <boost/unordered_map.hpp>
 
 #include <libgdl/core.hpp>
 #include <libgdl/core/util/gdl_stream.hpp>

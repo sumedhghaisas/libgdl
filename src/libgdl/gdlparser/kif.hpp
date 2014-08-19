@@ -122,6 +122,16 @@ class KIF
   //! set or reset debugging symbol generation
   bool DebuggingSymbolSupport() const { return isDebuggingSymbols; }
 
+  const boost::unordered_map<std::string,size_t>* IDMap() const
+  {
+    return id_map;
+  }
+  boost::unordered_map<std::string, size_t>* IDMap()
+  {
+    return id_map;
+  }
+
+  //! get this object's logging stream
   Log& GetLog() { return log; }
 
  private:
@@ -168,6 +178,9 @@ class KIF
   size_t f_last_index_with_linemark;
   //! index of the last clause tagged with "#line" location
   size_t c_last_index_with_linemark;
+
+  size_t id_index;
+  boost::unordered_map<std::string, size_t>* id_map;
 }; // class KIF
 
 }; // namespace gdlparser
