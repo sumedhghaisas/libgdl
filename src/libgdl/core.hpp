@@ -11,6 +11,7 @@
 #include <libgdl/core/data_types/clause.hpp>
 #include <libgdl/core/data_types/dgraph_node.hpp>
 #include <libgdl/core/data_types/fact.hpp>
+#include <libgdl/core/data_types/state.hpp>
 #include <libgdl/core/data_types/location.hpp>
 
 #include <libgdl/core/util/setop.hpp>

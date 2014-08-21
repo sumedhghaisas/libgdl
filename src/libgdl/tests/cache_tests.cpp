@@ -2,7 +2,7 @@
  * @file cache_tests.cpp
  * @author Sumedh Ghaisas
  *
- * Test file for GDLReasoner.
+ * Test file of LRUCache
  */
 #include <libgdl/core.hpp>
 #include <libgdl/core/cache/lru_cache.hpp>
@@ -91,4 +91,5 @@ BOOST_AUTO_TEST_CASE(LRUCacheReplacementPolicyTest)
   (void)t1;
   MARK_END;
 }
+
 BOOST_AUTO_TEST_SUITE_END();

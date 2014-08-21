@@ -82,7 +82,7 @@ class KIF
   bool AddFile(const std::string& filename);
 
   //! clears all the files added and knowledge
-  void Clear() { streams.clear(); facts.clear(); clauses.clear(); }
+  void Clear() { streams.clear(); facts.clear(); clauses.clear(); id_map = NULL;}
 
   //! Parse the inputs
   //!
