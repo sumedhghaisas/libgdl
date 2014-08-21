@@ -101,6 +101,19 @@ size_t KnowledgeBase::Tell(const Clause& c)
   return cvec.size() - 1;
 }
 
+size_t KnowledgeBase::Tell(Clause&& c)
+{
+  // add the given clause to correct ClauseVec
+  std::stringstream stream;
+  stream << c.head->args.size();
+  std::string command = c.head->val + "/" + stream.str();
+  ClauseVec& cvec = m_clauses[command];
+  cvec.push_back(std::move(c));
+  cvec.back().id = c_id++;
+  // return the index where the clause is added
+  return cvec.size() - 1;
+}
+
 size_t KnowledgeBase::Tell(const Fact& f)
 {
   // compute signature and add to appropriate FactVec
@@ -112,6 +125,19 @@ size_t KnowledgeBase::Tell(const Fact& f)
   // return the index of this fact in the FactVec
   return m_facts[command].size() - 1;
 }
+
+size_t KnowledgeBase::Tell(Fact&& f)
+{
+  // compute signature and add to appropriate FactVec
+  std::stringstream stream;
+  stream << f.arg->args.size();
+  std::string command = f.arg->val + "/" + stream.str();
+  m_facts[command].push_back(std::move(f));
+
+  // return the index of this fact in the FactVec
+  return m_facts[command].size() - 1;
+}
+
 
 size_t KnowledgeBase::Tell(const std::string& str)
 {

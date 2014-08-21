@@ -30,7 +30,7 @@ struct Fact
   typedef gdlparser::parser::TokenValue TokenValue;
 
   //! empty constructor
-  Fact() : arg(NULL) {}
+  Fact() : arg(NULL), isLocation(false) {}
   //! copy constructor
   Fact(const Fact& f)
     : arg(new Argument(*f.arg)), isLocation(f.isLocation), loc(f.loc) {}

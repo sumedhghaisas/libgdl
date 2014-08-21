@@ -74,11 +74,13 @@ class KnowledgeBase
   //! returns index of this clause in the list
   //! this added clause can be delete by passing this index along with the clause
   size_t Tell(const Clause& c);
+  size_t Tell(Clause&& c);
 
   //! adds given knowledge to knowledge base
   //! returns index of this fact in the list
   //! this added fact can be delete by passing this index along with the clause
   size_t Tell(const Fact& f);
+  size_t Tell(Fact&& f);
 
   size_t Tell(const std::string& str);
 
