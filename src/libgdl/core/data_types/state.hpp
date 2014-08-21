@@ -7,10 +7,11 @@
 #ifndef _LIBGDL_GDL_STATES_HPP_INCLUDED
 #define _LIBGDL_GDL_STATES_HPP_INCLUDED
 
-#include <libgdl/core/data_types/argument.hpp>
-
-#include <vector>
+#include <list>
 #include <string>
+#include <boost/unordered_map.hpp>
+
+#include <libgdl/core/data_types/argument.hpp>
 
 namespace libgdl
 {
