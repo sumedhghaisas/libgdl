@@ -76,4 +76,34 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateCacheTest)
   MARK_END;
 }
 
+/**
+ * Test GDL abstraction for IsTerminal
+ 
+BOOST_AUTO_TEST_CASE(GDLGetNextStateCacheTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  
+  KIF kif;
+  kif.GetLog() = TEST_LOG;
+  kif.AddFile("data/games/3puzzle.kif");
+  if(!kif.Parse()) MARK_FAIL;
+  
+  GDL gdl(kif);
+  
+  const State& s1 = gdl.InitState();
+  
+  if(gdl.IsTerminal(s1)) MARK_FAIL;
+  
+  vector<Argument*> moves;
+  moves.push_back(new Argument("right"));
+  
+  State s2 = gdl.GetNextState(s1, moves);
+  
+  if(s2.GetHash() != 52) MARK_FAIL;
+  
+  MARK_END;
+}
+*/
+
 BOOST_AUTO_TEST_SUITE_END();

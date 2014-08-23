@@ -2,7 +2,7 @@
  * @file state.hpp
  * @author Sumedh Ghaisas
  *
- * Declaration of State.
+ * Declaration of State which is used to represent the state of the game.
  */
 #ifndef _LIBGDL_GDL_STATES_HPP_INCLUDED
 #define _LIBGDL_GDL_STATES_HPP_INCLUDED

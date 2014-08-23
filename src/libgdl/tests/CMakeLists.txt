@@ -1,10 +1,8 @@
 # GDLParser test executable.
 add_executable(libgdl_test
   libgdl_test.cpp
-  primary_parser_tests.cpp
-  primary_reasoner_tests.cpp
-  question_tests.cpp
-  parser_ds_test.cpp
+  kif_tests.cpp
+  knowledgebase_tests.cpp
   cache_tests.cpp
   state_tests.cpp
   gdl_tests.cpp

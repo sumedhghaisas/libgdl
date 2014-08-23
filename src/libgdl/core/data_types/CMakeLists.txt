@@ -11,6 +11,7 @@ set(SOURCES
   location.hpp
   state.hpp
   state.cpp
+  move.hpp
 )
 
 # add directory name to sources
