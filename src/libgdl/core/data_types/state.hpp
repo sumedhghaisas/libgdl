@@ -32,15 +32,23 @@ struct State
   State (const std::list<Argument*> & facts,
          const boost::unordered_map<std::string, size_t>& id_map);
 
+  State(const State& s);
+
+  ~State()
+  {
+    for(std::list<Argument*>::const_iterator it = facts.begin();it != facts.end();it++)
+      delete *it;
+  }
+
   //! Returns the hash value o this state
   //! States with identical set of true base proposition will have
   //! same value of hash.
-  const size_t& Hash() const { return hash; }
+  const size_t& GetHash() const { return hash; }
 
   //! comparison operators for State class
   bool operator==(const State& s) const
   {
-    if (hash != s.Hash()) return false;
+    if (hash != s.GetHash()) return false;
     return true;
   }
   bool operator!=(const State& s) const {return !(*this == s); }

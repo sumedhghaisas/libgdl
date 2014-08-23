@@ -42,7 +42,11 @@ class Answer
          const std::set<size_t>& v)
       : kb (kb), question (question), visited(v), o_v_map(o_v_map) {}
 
-  virtual ~Answer() {}
+  virtual ~Answer()
+  {
+    for(std::list<Argument*>::iterator it = to_del.begin();it != to_del.end();it++)
+      delete *it;
+  }
 
   //! go to the next result
   //! returns false if no next result is available
@@ -52,7 +56,7 @@ class Answer
   /// returns variable map of last viable solution after next() returns false
   inline virtual VariableMap GetVariableMap()
   {
-    return Unify::DecodeSubstitutions(v_map, &question, o_v_map);
+    return Unify::DecodeSubstitutions(v_map, &question, o_v_map, to_del);
   }
 
   virtual inline const std::set<size_t>& Visited() { return visited; }
@@ -68,6 +72,8 @@ class Answer
   std::set<size_t> visited;
   //! default variable map
   const VariableMap o_v_map;
+
+  std::list<Argument*> to_del;
 };
 
 }; // namespace logicbase

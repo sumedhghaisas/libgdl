@@ -64,7 +64,7 @@ class Log
   Log(std::ostream& stream = std::cout)
     :
 #ifdef DEBUG
-      Debug(PrefixedOutStream(stream, BASH_CYAN "[DEBUG] " BASH_CLEAR)),
+      Debug(util::PrefixedOutStream(stream, BASH_CYAN "[DEBUG] " BASH_CLEAR, false)),
 #else
       Debug(util::NullOutStream()),
 #endif
@@ -74,6 +74,7 @@ class Log
       Warn(util::PrefixedOutStream(stream,
                                    BASH_YELLOW "[WARN ] " BASH_CLEAR,
                                    false)),
+
       Fatal(util::PrefixedOutStream(stream,
                                    BASH_RED "[FATAL] " BASH_CLEAR,
                                    false))
@@ -111,7 +112,7 @@ class Log
   void SetStream(std::ostream& stream)
   {
 #ifdef DEBUG
-    Debug.Stream() = stream;
+    Debug.SetStream(stream);
 #endif
     Info.SetStream(stream);
     Warn.SetStream(stream);

@@ -18,7 +18,7 @@ namespace cache
 /**
  * LRU Cache module.
  * Hit time : around 2 microseconds (highly dependent on the machine and the
-                                      compiler)
+ *                                   compiler)
  *
  * key_type should implement a getHash() function which returns a size_t hash
  * value or overload of Get function can be used which accepts a function
@@ -56,10 +56,19 @@ class LRUCache
 
   //! Constructor
   //!
-  //! \param unsigned short capacity = 1024
+  //! \param unsigned short capacity = 1024d
   //!
   //!
   LRUCache(unsigned short capacity = 1024);
+
+  ~LRUCache()
+  {
+    for(size_t i = 0;i < capacity;i++) delete values[i];
+    delete[] values;
+    delete[] hashs;
+    delete[] forward_pointing;
+    delete[] backward_pointing;
+  }
 
   //! Returns the value associated with the given key.
   //! The key is identified by its hash value obtained by function getHash()

@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(StateHashTest)
   
   State s1(result, id_map);
   
-  if(s1.Hash() != 448) MARK_FAIL;
+  if(s1.GetHash() != 448) MARK_FAIL;
   
   list<Argument*> result2;
   result2.push_back(new Argument("(init (cell 2 2 1))"));

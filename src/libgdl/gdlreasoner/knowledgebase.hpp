@@ -19,6 +19,9 @@
 
 namespace libgdl
 {
+
+class GDL;
+
 namespace gdlreasoner
 {
 /**
@@ -107,6 +110,7 @@ class KnowledgeBase
   Log& GetLog() { return log; }
 
  private:
+  friend GDL;
   //! all the facts stored in map for faster lookup
   FactMap m_facts;
   //! all the clauses stored in map for faster lookup

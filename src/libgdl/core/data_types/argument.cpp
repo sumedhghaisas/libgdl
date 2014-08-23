@@ -81,6 +81,24 @@ Argument::Argument(const std::string& str)
   }
 }
 
+bool Argument::HasVariables() const
+{
+  stack<const Argument*> S;
+  S.push(this);
+
+  while(!S.empty())
+  {
+    const Argument* t = S.top();
+    S.pop();
+
+    if(t->IsVariable())
+      return true;
+    else for(size_t i = 0;i < t->args.size();i++)
+      S.push(t->args[i]);
+  }
+  return false;
+}
+
 bool Argument::SeparateCommand (const std::string & input,
                                 std::string & cmd,
                                 std::vector <std::string> & args)

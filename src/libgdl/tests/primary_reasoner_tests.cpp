@@ -126,6 +126,22 @@ BOOST_AUTO_TEST_CASE(RecursiveDependencyTest)
 }
 
 /**
+ * Check knowledgebase for function implementation
+ */
+BOOST_AUTO_TEST_CASE(KBFunctionTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  KnowledgeBase kb;
+  kb.Tell(Fact("(true (step 1))"));
+  kb.Tell(Clause("(<= (test (step ?x)) (true (step ?x)))"));
+  
+  list<Argument*> result = kb.Ask(Argument("(test ?x)"));
+  if(result.size() != 1) MARK_FAIL;
+  MARK_END;
+}
+
+/**
  * Check Knowledgebase Erase.
  */
 BOOST_AUTO_TEST_CASE(EraseTest)

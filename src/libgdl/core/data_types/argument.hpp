@@ -85,6 +85,8 @@ struct Argument
   //! returns if current argument is a variable
   bool IsVariable() const { if(t == Var) return true; else return false; }
 
+  bool HasVariables() const;
+
   //! equivalent to comparison operator but 'or' conditions is removed in this
   bool IsEqualTo(const Argument& arg) const;
 

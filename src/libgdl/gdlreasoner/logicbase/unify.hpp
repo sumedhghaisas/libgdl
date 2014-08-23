@@ -47,16 +47,21 @@ public:
     //! Applies substitution to given argument and returns newly constructed argument
     //! the newly constructed argument is alloted in heap
     //! delete the result for yourself
-    static Argument* GetSubstitutedArgument(const Argument* arg, const VariableMap& v_map);
+    static Argument* GetSubstitutedArgument(const Argument* arg,
+                                            const VariableMap& v_map);
 
-    static Clause* GetSubstitutedClause(const Clause* clause, const VariableMap& v_map);
+    static Clause* GetSubstitutedClause(const Clause* clause,
+                                        const VariableMap& v_map);
 
     //! Applies substitution to given clause(head and premisses) and returns newly constructed clause
     //! the newly constructed clause is alloted in heap
     //! delete the result for yourself
     static Clause* GetSubstitutedClause(const Clause* c);
 
-    static VariableMap DecodeSubstitutions(const VariableMap& v_set, const Argument* question, const VariableMap& o_v_map);
+    static VariableMap DecodeSubstitutions(const VariableMap& v_set,
+                                           const Argument* question,
+                                           const VariableMap& o_v_map,
+                                           std::list<Argument*>& to_del);
 
     static bool IsGroundQuestion(const Argument* question, const VariableMap& v_map);
 

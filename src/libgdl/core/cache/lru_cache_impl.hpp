@@ -19,6 +19,7 @@ LRUCache<key_type, value_type>::
 {
   hashs = new size_t[capacity];
   values = new value_type*[capacity];
+  for(size_t i = 0;i < capacity;i++) values[i] = NULL;
   forward_pointing = new unsigned short[capacity];
   backward_pointing = new unsigned short[capacity];
 
@@ -68,7 +69,7 @@ value_type* LRUCache<key_type, value_type>::Get(const key_type& keyin)
   }
 
   boost::function<size_t (const key_type&)>
-      hash_funct(boost::bind(key_type::getHash, &keyin));
+      hash_funct(boost::bind(key_type::GetHash, &keyin));
   return Get(keyin, default_f, hash_funct);
 }
 

@@ -165,7 +165,8 @@ Clause* Unify::GetSubstitutedClause(const Clause* c, const VariableMap& v_map)
 
 Unify::VariableMap Unify::DecodeSubstitutions(const VariableMap& v_map,
                                               const Argument* question,
-                                              const VariableMap& o_v_map)
+                                              const VariableMap& o_v_map,
+                                              list<Argument*>& to_del)
 {
   VariableMap out = o_v_map;
 
@@ -184,7 +185,13 @@ Unify::VariableMap Unify::DecodeSubstitutions(const VariableMap& v_map,
       {
         temp = v_map.find(temp)->second;
       }
-      out[t] = temp;
+      if(temp->HasVariables())
+      {
+        Argument* temp2 = Unify::GetSubstitutedArgument(temp, v_map);
+        to_del.push_back(temp2);
+        out[t] = temp2;
+      }
+      else out[t] = temp;
     }
     else
     {

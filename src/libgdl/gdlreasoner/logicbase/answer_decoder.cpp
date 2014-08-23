@@ -15,10 +15,12 @@ bool AnswerDecoder::next()
   bool result = m_answer->next();
   // update variable map if result is valid
 
-  v_map = m_answer->GetVariableMap();
-
   // remember total valid results
-  if (result) m_wasTrueTimes++;
+  if (result)
+  {
+    m_wasTrueTimes++;
+    v_map = m_answer->GetVariableMap();
+  }
   // store hints in the knowledge base about the current question
   if (!result)
   {

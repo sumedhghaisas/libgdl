@@ -15,7 +15,14 @@ State::State (const list<Argument*>& facts,
               const unordered_map<string, size_t>& id_map)
   : facts(facts)
 {
-    calcHash(id_map);
+  calcHash(id_map);
+}
+
+State::State(const State& s)
+{
+  for(list<Argument*>::const_iterator it = s.facts.begin();it != s.facts.end();it++)
+    facts.push_back(new Argument(**it));
+  hash = s.hash;
 }
 
 void State::calcHash(const unordered_map<string, size_t>& id_map)
