@@ -91,7 +91,7 @@ class LRUCache
   //!
   //!
   value_type* Get(const key_type& key,
-                  boost::function<value_type* (const key_type&)>& f_override);
+                  const boost::function<value_type* (const key_type&)>& f_override);
 
   //! Returns the value associated with the given key.
   //! The key is identified by its hash value obtained by boost function
@@ -107,13 +107,13 @@ class LRUCache
   //!
   //!
   value_type* Get(const key_type& key,
-                  boost::function<value_type* (const key_type&)>& f_override,
-                  boost::function<size_t (const key_type&)>& hash_funct_override);
+                  const boost::function<value_type* (const key_type&)>& f_override,
+                  const boost::function<size_t (const key_type&)>& hash_funct_override);
 
   value_type* Query(const key_type& key);
 
   value_type* Query(const key_type& key,
-                    boost::function<size_t (const key_type&)>& hash_funct_override);
+                    const boost::function<size_t (const key_type&)>& hash_funct_override);
 
   //! sets cache is with default miss function
   //!
@@ -121,7 +121,7 @@ class LRUCache
   //! \return void
   //!
   //!
-  void SetDefaultFunction(boost::function<value_type* (const key_type&)> default_f);
+  void SetDefaultFunction(const boost::function<value_type* (const key_type&)>& default_f);
 
   Log& GetLog() { return log; }
 

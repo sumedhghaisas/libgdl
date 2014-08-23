@@ -34,6 +34,8 @@ struct State
 
   State(const State& s);
 
+  State& operator=(const State& state);
+
   ~State()
   {
     for(std::list<Argument*>::const_iterator it = facts.begin();it != facts.end();it++)

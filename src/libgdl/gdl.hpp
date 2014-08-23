@@ -47,16 +47,16 @@ class GDL
   State GetNextState(const State& state,
                      const std::vector<Argument*>& moves,
                      bool useCache = true);
-//
-//  //! Returns if the given state is terminal.
-//  //! If useCache is true function returns the answer from cache if it exists
-//  //!
-//  //! \param state const State&
-//  //! \param true bool useCache
-//  //! \return bool
-//  //!
-//  //!
-//  bool IsTerminal(const State& state, bool useCache = true) const;
+
+  //! Returns if the given state is terminal.
+  //! If useCache is true function returns the answer from cache if it exists
+  //!
+  //! \param state const State&
+  //! \param true bool useCache
+  //! \return bool
+  //!
+  //!
+  bool IsTerminal(const State& state, bool useCache = true);
 //
 //  //! Returns all the legal move combinations possible in the given state
 //  //! if you have 3 roles; first role has 4 possibility (ABCD), second role 3 possibilites (012),
@@ -158,8 +158,15 @@ class GDL
 private:
   State* cached_GetNextState(const State& state,
                              const std::vector<Argument*>& moves);
+  bool* cached_IsTerminal(const State& state);
+
   size_t StateMoveHash(const State& state,
                        const std::vector<Argument*>& moves);
+
+  inline void ApplyState(const State& state);
+  inline void ApplyActions(const std::vector<Argument*>& moves);
+  inline void RemoveState();
+  inline void RemoveActions();
 
   boost::unordered_map<std::string, size_t>* id_map;
 
@@ -174,9 +181,72 @@ private:
   size_t next_state_cache_capacity;
   cache::LRUCache<State, State> next_state_cache;
 
+  size_t isTerminal_cache_capacity;
+  cache::LRUCache<State, bool> isTerminal_cache;
 };
 
-};
+inline void GDL::ApplyState(const State& state)
+{
+  const std::list<Argument*>& facts = state.facts;
+  for(std::list<Argument*>::const_iterator it = facts.begin();it != facts.end();
+                                                                          it++)
+  {
+    Argument *temp = new Argument;
+    temp->val = "true";
+    temp->t = Argument::Relation;
+    temp->args.push_back(*it);
 
+    Fact f;
+    f.arg = temp;
+    base_rules.m_facts["true/1"].push_back(std::move(f));
+  }
+}
+
+inline void GDL::ApplyActions(const std::vector<Argument*>& moves)
+{
+  size_t r_index = 0;
+  for(std::list<Argument*>::const_iterator it = roles.begin();it != roles.end();it++)
+  {
+    Argument *temp = new Argument;
+    temp->val = "does";
+    temp->t = Argument::Relation;
+    temp->args.push_back(*it);
+    temp->args.push_back(moves[r_index]);
+
+    Fact f;
+    f.arg = temp;
+    base_rules.m_facts["does/2"].push_back(std::move(f));
+  }
+}
+
+inline void GDL::RemoveState()
+{
+  gdlreasoner::KnowledgeBase::FactMap::iterator
+                                      m_it = base_rules.m_facts.find("true/1");
+  gdlreasoner::KnowledgeBase::FactVec& fvec = m_it->second;
+  for(gdlreasoner::KnowledgeBase::FactVec::iterator it = fvec.begin();
+                                                        it != fvec.end();it++)
+  {
+    Fact& f = *it;
+    f.arg->args.clear();
+  }
+  base_rules.m_facts.erase(m_it);
+}
+
+inline void GDL::RemoveActions()
+{
+  gdlreasoner::KnowledgeBase::FactMap::iterator
+                                      m_it = base_rules.m_facts.find("does/2");
+  gdlreasoner::KnowledgeBase::FactVec& fvec2 = m_it->second;
+  for(gdlreasoner::KnowledgeBase::FactVec::iterator it = fvec2.begin();
+                                                        it != fvec2.end();it++)
+  {
+    Fact& f = *it;
+    f.arg->args.clear();
+  }
+  base_rules.m_facts.erase(m_it);
+}
+
+};
 
 #endif // _EPICURUS_GDL_HPP_INCLUDED

@@ -14,7 +14,11 @@ GDL::GDL(KIF& kif, unsigned short state_cache_capacity)
   : id_map(kif.IDMap()),
     base_rules(kif),
     next_state_cache_capacity(state_cache_capacity),
-    next_state_cache(next_state_cache_capacity)
+    next_state_cache(next_state_cache_capacity),
+    isTerminal_cache_capacity(state_cache_capacity),
+    isTerminal_cache(bind(&GDL::cached_IsTerminal, this, _1),
+                      isTerminal_cache_capacity)
+
 {
   list<Argument*> result = base_rules.Ask(Argument("(role ?x)"));
   for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
@@ -40,8 +44,6 @@ GDL::GDL(KIF& kif, unsigned short state_cache_capacity)
 //  function<vector<StringVec>* (const State& state)>
 //                  f_combination(bind(&GDL::cached_GetLegalJointMoves,this,_1));
 //
-//  // terminal_cache which handles isTerminal queries
-//  isTerminal_cache = new LRUCache<State, bool>(f_terminal, state_cache_capacity);
 //
 //  // legal move combination cache which stores legal move combinations of certain states
 //  combination_cache = new LRUCache<State, std::vector<StringVec> >(f_combination, state_cache_capacity);
@@ -63,30 +65,27 @@ GDL::GDL(KIF& kif, unsigned short state_cache_capacity)
 
 }
 
-//bool GDL::IsTerminal(const State& state, bool useCache) const
-//{
-//    // flush the knowledge base cache
-//    base_rules.flushCache();
-//
-//    // apply the given state to the knowledge base
-//    const StringVec& facts = state.getFacts();
-//    for(size_t i = 0; i < facts.size(); i++)
-//    {
-//        logicbase::Fact f ("(" + Compress("true") + " " + facts[i] + ")");
-//        // add to map
-//        base_rules.m_facts[s_sig].push_back(f);
-//    }
-//
-//    bool* out;
-//    if(useCache) out = isTerminal_cache->Get(state);
-//    else out = cached_IsTerminal(state);
-//
-//    // remove the knowledge of state from the knowledge base
-//    base_rules.m_facts.erase(base_rules.m_facts.find(s_sig));
-//
-//    return *out;
-//}
-//
+bool GDL::IsTerminal(const State& state, bool useCache)
+{
+  bool* out;
+  if(useCache) out = isTerminal_cache.Get(state);
+  else out = cached_IsTerminal(state);
+
+  return *out;
+}
+
+bool* GDL::cached_IsTerminal(const State& state)
+{
+    ApplyState(state);
+
+    // check if terminal is satisfiable with current knowledge
+    bool* result = new bool(base_rules.IsSatisfiable(Argument("terminal")));
+
+    RemoveState();
+
+    return result;
+}
+
 //std::vector<GDL::StringVec> GDL::GetLegalJointMoves(const State& state, bool useCache) const
 //{
 //    // flush the knowledge base cache
@@ -131,55 +130,19 @@ State GDL::GetNextState(const State& state,
 State* GDL::cached_GetNextState(const State& state,
                                 const vector<Argument*>& moves)
 {
-  const list<Argument*>& facts = state.facts;
-  for(list<Argument*>::const_iterator it = facts.begin();it != facts.end();it++)
-  {
-    Argument *temp = new Argument;
-    temp->val = "true";
-    temp->t = Argument::Relation;
-    temp->args.push_back(*it);
-
-    Fact f;
-    f.arg = temp;
-    base_rules.m_facts["true/1"].push_back(std::move(f));
-  }
-
-  size_t r_index = 0;
-  for(list<Argument*>::const_iterator it = roles.begin();it != roles.end();it++)
-  {
-    Argument *temp = new Argument;
-    temp->val = "does";
-    temp->t = Argument::Relation;
-    temp->args.push_back(*it);
-    temp->args.push_back(moves[r_index]);
-
-    Fact f;
-    f.arg = temp;
-    base_rules.m_facts["does/2"].push_back(std::move(f));
-  }
+  ApplyState(state);
+  ApplyActions(moves);
 
   // get base propositions true in the next state
   list<Argument*> result = base_rules.Ask(Argument("(next ?x)"));
 
-  KnowledgeBase::FactMap::iterator m_it = base_rules.m_facts.find("true/1");
-  KnowledgeBase::FactVec& fvec = m_it->second;
-  for(KnowledgeBase::FactVec::iterator it = fvec.begin();it != fvec.end();it++)
-  {
-    Fact& f = *it;
-    f.arg->args.clear();
-  }
-  base_rules.m_facts.erase(m_it);
+  RemoveState();
+  RemoveActions();
 
-  m_it = base_rules.m_facts.find("does/2");
-  KnowledgeBase::FactVec& fvec2 = m_it->second;
-  for(KnowledgeBase::FactVec::iterator it = fvec2.begin();it != fvec2.end();it++)
-  {
-    Fact& f = *it;
-    f.arg->args.clear();
-  }
-  base_rules.m_facts.erase(m_it);
-
-  return new State(result, *id_map);
+  list<Argument*> temp;
+  for(list<Argument*>::const_iterator it = result.begin();it != result.end();it++)
+    temp.push_back((*it)->args[0]);
+  return new State(temp, *id_map);
 }
 
 size_t GDL::StateMoveHash(const State& state,
@@ -674,22 +637,7 @@ size_t GDL::StateMoveHash(const State& state,
 //    return all;
 //}
 //
-//bool* GDL::cached_IsTerminal(const State& state) const
-//{
-//    (void)state; // to remove unused warning
-//
-//    // check if terminal is satisfiable with current knowledge
-//    bool* result = new bool(base_rules.isSatisfiable(Compress("terminal")));
-//
-//    return result;
-//}
-//
 
-//    // m_hash is again hashed taking seed as the hash value of the state
-//    size_t out = state.getHash();
-//    boost::hash_combine(out, m_hash);
-//    return out;
-//}
 //
 //KnowledgeBase GDL::GetDataKnowledge(std::map<logicbase::RelationSignature, std::vector<logicbase::RelationSignature> >& domain_map) const
 //{

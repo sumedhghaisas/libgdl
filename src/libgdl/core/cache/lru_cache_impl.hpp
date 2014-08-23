@@ -69,25 +69,25 @@ value_type* LRUCache<key_type, value_type>::Get(const key_type& keyin)
   }
 
   boost::function<size_t (const key_type&)>
-      hash_funct(boost::bind(key_type::GetHash, &keyin));
+      hash_funct(boost::bind(&key_type::GetHash, &keyin));
   return Get(keyin, default_f, hash_funct);
 }
 
 template<class key_type, class value_type>
 value_type* LRUCache<key_type, value_type>::
   Get(const key_type& keyin,
-      boost::function<value_type* (const key_type&)>& f_override)
+      const boost::function<value_type* (const key_type&)>& f_override)
 {
   boost::function<size_t (const key_type&)>
-      hash_funct(boost::bind(key_type::getHash, &keyin));
+      hash_funct(boost::bind(&key_type::getHash, &keyin));
   return Get(keyin, f_override, hash_funct);
 }
 
 template<class key_type, class value_type>
 value_type* LRUCache<key_type, value_type>::
   Get(const key_type& keyin,
-      boost::function<value_type* (const key_type&)>& f_override,
-      boost::function<size_t (const key_type&)>& hash_funct)
+      const boost::function<value_type* (const key_type&)>& f_override,
+      const boost::function<size_t (const key_type&)>& hash_funct)
 {
   // get hash value of the key
   size_t hash = hash_funct(keyin);
@@ -191,7 +191,7 @@ value_type* LRUCache<key_type, value_type>::Query(const key_type& keyin)
 template<class key_type, class value_type>
 value_type* LRUCache<key_type, value_type>::
   Query(const key_type& key,
-        boost::function<size_t (const key_type&)>& hash_funct)
+        const boost::function<size_t (const key_type&)>& hash_funct)
 {
   // get hash value of the key
   size_t hash = hash_funct(key);
@@ -206,7 +206,7 @@ value_type* LRUCache<key_type, value_type>::
 
 template<class key_type, class value_type>
 void LRUCache<key_type, value_type>::
-    SetDefaultFunction(boost::function<value_type* (const key_type&)> f)
+    SetDefaultFunction(const boost::function<value_type* (const key_type&)>& f)
 {
   isInitialized = true;
   default_f = f;
