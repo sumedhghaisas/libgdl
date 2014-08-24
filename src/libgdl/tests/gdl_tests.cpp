@@ -5,7 +5,6 @@
  * Test file for GDL class.
  */
 #include <libgdl/core.hpp>
-#include <libgdl/gdlparser/kif.hpp>
 #include <libgdl/gdl.hpp>
 
 #include <boost/test/unit_test.hpp>
@@ -16,7 +15,6 @@ BOOST_AUTO_TEST_SUITE(GDLTests);
 
 using namespace std;
 using namespace libgdl;
-using namespace libgdl::gdlparser;
 
 /**
  * Test GDL abstraction for GetNextState
@@ -26,18 +24,11 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateTest)
   MARK_START;
   OPEN_LOG;
   
-  KIF kif;
-  kif.GetLog() = TEST_LOG;
-  kif.AddFile("data/games/3puzzle.kif");
-  if(!kif.Parse()) MARK_FAIL;
-  
-  GDL gdl(kif);
+  GDL gdl("data/games/3puzzle.kif");
   
   const State& s1 = gdl.InitState();
   
-  vector<Argument*> moves;
-  moves.push_back(new Argument("right"));
-  
+  Move moves("right");  
   State s2 = gdl.GetNextState(s1, moves);
   
   if(s2.GetHash() != 52) MARK_FAIL;
@@ -53,17 +44,11 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateCacheTest)
   MARK_START;
   OPEN_LOG;
   
-  KIF kif;
-  kif.GetLog() = TEST_LOG;
-  kif.AddFile("data/games/3puzzle.kif");
-  if(!kif.Parse()) MARK_FAIL;
-  
-  GDL gdl(kif);
+  GDL gdl("data/games/3puzzle.kif");
   
   const State& s1 = gdl.InitState();
   
-  vector<Argument*> moves;
-  moves.push_back(new Argument("right"));
+  Move moves("right");
   
   gdl.GetNextState(s1, moves);
   

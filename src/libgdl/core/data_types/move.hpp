@@ -11,6 +11,8 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <boost/unordered_map.hpp>
+#include <boost/functional/hash.hpp>
 
 #include "argument.hpp"
 
@@ -19,37 +21,42 @@ namespace libgdl
 
 struct Move
 {
-  Move() {};
+  Move(const std::string& str)
+  {
+    moves.push_back(new Argument(str));
+    hash = 0;
+    boost::hash_combine(hash, str);
+  }
+
   Move(const Move& m)
   {
     for(size_t i = 0;i < m.moves.size();i++)
       moves.push_back(new Argument(*m.moves[i]));
+    hash = m.hash;
+  }
+
+  Move& operator=(const Move& m)
+  {
+    for(size_t i = 0;i < moves.size();i++)
+      delete moves[i];
+    moves.clear();
+
+    for(size_t i = 0;i < m.moves.size();i++)
+      moves.push_back(new Argument(*m.moves[i]));
+    return *this;
   }
 
   ~Move()
-  {
-    Clear();
-  }
-
-  void AddAction(const std::string& action)
-  {
-    moves.push_back(new Argument(action));
-  }
-
-  void AddAction(const std::vector<std::string>& actions)
-  {
-    for(size_t i = 0;i < actions.size();i++)
-      moves.push_back(new Argument(actions[i]));
-  }
-
-  void Clear()
   {
     for(size_t i = 0;i < moves.size();i++)
       delete moves[i];
     moves.clear();
   }
 
+  size_t Hash() const { return hash; }
+
   std::vector<Argument*> moves;
+  size_t hash;
 }; // struct Move
 
 }; // namespace libgdl

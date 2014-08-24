@@ -10,7 +10,47 @@ using namespace libgdl;
 using namespace libgdl::gdlparser;
 using namespace libgdl::gdlreasoner;
 
-GDL::GDL(KIF& kif, unsigned short state_cache_capacity)
+GDL::GDL(const string& filename, size_t state_cache_capacity)
+  : next_state_cache_capacity(state_cache_capacity),
+    next_state_cache(next_state_cache_capacity),
+    isTerminal_cache_capacity(state_cache_capacity),
+    isTerminal_cache(bind(&GDL::cached_IsTerminal, this, _1),
+                      isTerminal_cache_capacity)
+{
+  KIF kif;
+  kif.GetLog() = log;
+  kif.AddFile(filename);
+  if(!kif.Parse())
+  {
+    log.Fatal << "Could Not create a gdl object from file " << filename << endl;
+    exit(1);
+  }
+
+  id_map = kif.IDMap();
+  base_rules = KnowledgeBase(kif);
+  kif.Clear();
+
+  list<Argument*> result = base_rules.Ask(Argument("(role ?x)"));
+  for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
+  {
+    roles.push_back((*it)->args[0]);
+    (*it)->args.clear();
+    delete *it;
+  }
+  result.clear();
+
+  result = base_rules.Ask(Argument("(init ?x)"));
+  list<Argument*> temp;
+  for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
+  {
+    temp.push_back((*it)->args[0]);
+    (*it)->args.clear();
+    delete *it;
+  }
+  init = new State(temp, *id_map);
+}
+
+GDL::GDL(KIF& kif, size_t state_cache_capacity)
   : id_map(kif.IDMap()),
     base_rules(kif),
     next_state_cache_capacity(state_cache_capacity),
@@ -20,6 +60,8 @@ GDL::GDL(KIF& kif, unsigned short state_cache_capacity)
                       isTerminal_cache_capacity)
 
 {
+  kif.Clear();
+
   list<Argument*> result = base_rules.Ask(Argument("(role ?x)"));
   for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
   {
@@ -111,7 +153,7 @@ bool* GDL::cached_IsTerminal(const State& state)
 //}
 //
 State GDL::GetNextState(const State& state,
-                        const vector<Argument*>& moves,
+                        const Move& moves,
                         bool useCache)
 {
   State* out;
@@ -128,7 +170,7 @@ State GDL::GetNextState(const State& state,
 }
 
 State* GDL::cached_GetNextState(const State& state,
-                                const vector<Argument*>& moves)
+                                const Move& moves)
 {
   ApplyState(state);
   ApplyActions(moves);
@@ -146,13 +188,10 @@ State* GDL::cached_GetNextState(const State& state,
 }
 
 size_t GDL::StateMoveHash(const State& state,
-                          const vector<Argument*>& moves)
+                          const Move& moves)
 {
   size_t seed = state.GetHash();
-  for(vector<Argument*>::const_iterator it = moves.begin();it != moves.end();it++)
-  {
-    hash_combine(seed, (*it)->Hash(*id_map));
-  }
+  hash_combine(seed, moves.Hash());
   return seed;
 }
 

@@ -18,13 +18,16 @@ class GDL
 {
   typedef std::vector<std::string> StringVec;
  public:
+  GDL(const std::string& filename, size_t state_cache_capacity = 1024);
+
   //! Constructs a GDL object from KIF.
   //!
   //! \param kif& KIF object
   //! \param state_cache_capacity cache capacity for all caches
   //!
   //!
-  GDL(gdlparser::KIF& kif, unsigned short state_cache_capacity = 1024);
+  GDL(gdlparser::KIF& kif, size_t state_cache_capacity = 1024);
+
 
   ~GDL()
   {
@@ -45,7 +48,7 @@ class GDL
   //!
   //!
   State GetNextState(const State& state,
-                     const std::vector<Argument*>& moves,
+                     const Move& moves,
                      bool useCache = true);
 
   //! Returns if the given state is terminal.
@@ -145,6 +148,8 @@ class GDL
 //
   //! returns the initial state of the GDL
   const State& InitState() const { return *init; }
+
+  Log& GetLog() { return log; }
 //
 //    //! returns roles involved in this GDL
 //    const StringVec& GetRoles() const { return roles; }
@@ -157,14 +162,14 @@ class GDL
 
 private:
   State* cached_GetNextState(const State& state,
-                             const std::vector<Argument*>& moves);
+                             const Move& moves);
   bool* cached_IsTerminal(const State& state);
 
   size_t StateMoveHash(const State& state,
-                       const std::vector<Argument*>& moves);
+                       const Move& moves);
 
   inline void ApplyState(const State& state);
-  inline void ApplyActions(const std::vector<Argument*>& moves);
+  inline void ApplyActions(const Move& moves);
   inline void RemoveState();
   inline void RemoveActions();
 
@@ -183,6 +188,8 @@ private:
 
   size_t isTerminal_cache_capacity;
   cache::LRUCache<State, bool> isTerminal_cache;
+
+  Log log;
 };
 
 inline void GDL::ApplyState(const State& state)
@@ -202,7 +209,7 @@ inline void GDL::ApplyState(const State& state)
   }
 }
 
-inline void GDL::ApplyActions(const std::vector<Argument*>& moves)
+inline void GDL::ApplyActions(const Move& moves)
 {
   size_t r_index = 0;
   for(std::list<Argument*>::const_iterator it = roles.begin();it != roles.end();it++)
@@ -211,7 +218,7 @@ inline void GDL::ApplyActions(const std::vector<Argument*>& moves)
     temp->val = "does";
     temp->t = Argument::Relation;
     temp->args.push_back(*it);
-    temp->args.push_back(moves[r_index]);
+    temp->args.push_back(moves.moves[r_index]);
 
     Fact f;
     f.arg = temp;
