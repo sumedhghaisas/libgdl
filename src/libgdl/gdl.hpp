@@ -5,6 +5,7 @@
 #include <string>
 #include <set>
 #include <boost/unordered_map.hpp>
+#include <iostream>
 
 #include <libgdl/core.hpp>
 #include <libgdl/core/cache/lru_cache.hpp>
@@ -18,7 +19,9 @@ class GDL
 {
   typedef std::vector<std::string> StringVec;
  public:
-  GDL(const std::string& filename, size_t state_cache_capacity = 1024);
+  GDL(const std::string& filename,
+      size_t state_cache_capacity = 1024,
+      const Log& log = Log());
 
   //! Constructs a GDL object from KIF.
   //!
@@ -26,7 +29,9 @@ class GDL
   //! \param state_cache_capacity cache capacity for all caches
   //!
   //!
-  GDL(gdlparser::KIF& kif, size_t state_cache_capacity = 1024);
+  GDL(gdlparser::KIF& kif,
+      size_t state_cache_capacity = 1024,
+      const Log& log = Log());
 
 
   ~GDL()
@@ -189,7 +194,7 @@ private:
   size_t isTerminal_cache_capacity;
   cache::LRUCache<State, bool> isTerminal_cache;
 
-  Log log;
+  mutable Log log;
 };
 
 inline void GDL::ApplyState(const State& state)
