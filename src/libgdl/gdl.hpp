@@ -154,6 +154,8 @@ class GDL
   //! returns the initial state of the GDL
   const State& InitState() const { return *init; }
 
+  const boost::unordered_map<std::string, size_t>& IDMap() { return *id_map; }
+
   Log& GetLog() { return log; }
 //
 //    //! returns roles involved in this GDL

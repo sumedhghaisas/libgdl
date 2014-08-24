@@ -189,7 +189,11 @@ State* GDL::cached_GetNextState(const State& state,
 
   list<Argument*> temp;
   for(list<Argument*>::const_iterator it = result.begin();it != result.end();it++)
+  {
     temp.push_back((*it)->args[0]);
+    (*it)->args.clear();
+    delete *it;
+  }
   return new State(temp, *id_map);
 }
 
