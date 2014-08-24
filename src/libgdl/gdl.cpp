@@ -3,6 +3,7 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/functional/hash.hpp>
+#include <sstream>
 
 using namespace std;
 using namespace boost;
@@ -17,7 +18,10 @@ GDL::GDL(const string& filename,
     next_state_cache(next_state_cache_capacity),
     isTerminal_cache_capacity(state_cache_capacity),
     isTerminal_cache(bind(&GDL::cached_IsTerminal, this, _1),
-                      isTerminal_cache_capacity),
+                     isTerminal_cache_capacity),
+    getLegalMoves_cache_capacity(state_cache_capacity),
+    getLegalMoves_cache(bind(&GDL::cached_getLegalMoves, this, _1),
+                        getLegalMoves_cache_capacity),
     log(l)
 {
   KIF kif;
@@ -63,6 +67,9 @@ GDL::GDL(KIF& kif,
     isTerminal_cache_capacity(state_cache_capacity),
     isTerminal_cache(bind(&GDL::cached_IsTerminal, this, _1),
                       isTerminal_cache_capacity),
+    getLegalMoves_cache_capacity(state_cache_capacity),
+    getLegalMoves_cache(bind(&GDL::cached_getLegalMoves, this, _1),
+                        getLegalMoves_cache_capacity),
     log(l)
 
 {
@@ -86,31 +93,6 @@ GDL::GDL(KIF& kif,
     delete *it;
   }
   init = new State(temp, *id_map);
-
-//  function<bool* (const State&)>
-//        f_terminal(bind(&GDL::cached_IsTerminal, this, _1));
-//  function<vector<StringVec>* (const State& state)>
-//                  f_combination(bind(&GDL::cached_GetLegalJointMoves,this,_1));
-//
-//
-//  // legal move combination cache which stores legal move combinations of certain states
-//  combination_cache = new LRUCache<State, std::vector<StringVec> >(f_combination, state_cache_capacity);
-//
-//    // goal value cache which stores the goal values associated with certain states for different roles
-//    goal_cache = new LRUCache<State, int*>(state_cache_capacity);
-//
-//
-//    // simulation caches
-//
-//    // simulation terminal cache
-//    sim_isTerminal_cache = new LRUCache<State, bool>(f_terminal, sim_cache_capacity);
-//
-//    // simulation cache for storing legal joint moves
-//    sim_combination_cache = new LRUCache<State, std::vector<StringVec> >(f_combination, sim_cache_capacity);
-//
-//    // simulation next state cache
-//    sim_next_state_cache = new LRUCache<State, State>(sim_cache_capacity);
-
 }
 
 bool GDL::IsTerminal(const State& state, bool useCache)
@@ -124,40 +106,99 @@ bool GDL::IsTerminal(const State& state, bool useCache)
 
 bool* GDL::cached_IsTerminal(const State& state)
 {
-    ApplyState(state);
+  ApplyState(state);
 
-    // check if terminal is satisfiable with current knowledge
-    bool* result = new bool(base_rules.IsSatisfiable(Argument("terminal")));
+  // check if terminal is satisfiable with current knowledge
+  bool* result = new bool(base_rules.IsSatisfiable(Argument("terminal")));
 
-    RemoveState();
+  RemoveState();
 
-    return result;
+  return result;
 }
 
-//std::vector<GDL::StringVec> GDL::GetLegalJointMoves(const State& state, bool useCache) const
-//{
-//    // flush the knowledge base cache
-//    base_rules.flushCache();
-//
-//    // apply the given state to the knowledge base
-//    const StringVec& facts = state.getFacts();
-//    for(size_t i = 0; i < facts.size(); i++)
-//    {
-//        logicbase::Fact f ("(" + Compress("true") + " " + facts[i] + ")");
-//        // add to map
-//        base_rules.m_facts[s_sig].push_back(f);
-//    }
-//
-//    std::vector<GDL::StringVec>* out;
-//    if(useCache) out = combination_cache->Get(state);
-//    else out = cached_GetLegalJointMoves(state);
-//
-//    // remove the knowledge of state from the knowledge base
-//    base_rules.m_facts.erase(base_rules.m_facts.find(s_sig));
-//
-//    return *out;
-//}
-//
+list<Move> GDL::GetLegalMoves(const State& state, bool useCache)
+{
+  list<Move>* out;
+  if(useCache)
+  {
+    //size_t start = microtimer();
+    out = getLegalMoves_cache.Get(state);
+    //cout << microtimer() - start << endl;
+  }
+  else out = cached_getLegalMoves(state);
+
+  return *out;
+}
+
+list<Move>* GDL::cached_getLegalMoves(const State& state)
+{
+  ApplyState(state);
+
+  // get legal moves for all the roles
+  list<Argument*> result[roles.size()];
+
+  size_t i = 0;
+  for(list<Argument*>::const_iterator it = roles.begin();it != roles.end();it++)
+  {
+    result[i] = base_rules.Ask(Argument("(legal " + (*it)->val + " ?x)"));
+    i++;
+  }
+
+  RemoveState();
+
+  list<Argument*>::iterator it[roles.size()];
+  for(size_t i = 0;i < roles.size();i++)
+    it[i] = result[i].begin();
+
+  list<Move>* out = new list<Move>();
+
+  while(true)
+  {
+    vector<Argument*> moves;
+    for(size_t i = 0;i < roles.size();i++)
+    {
+      moves.push_back((*it[i])->args[1]);
+    }
+    out->push_back(Move(moves, *id_map));
+
+    it[0]++;
+    size_t index = 1;
+    if(it[0] == result[0].end())
+    {
+      it[0] = result[0].begin();
+
+      while(true)
+      {
+        if(index == roles.size() ||
+                (it[index] == (--result[index].end()) && index == roles.size() - 1))
+        {
+          for(size_t i = 0;i < roles.size();i++)
+          {
+            for(list<Argument*>::iterator it = result[i].begin();
+                                                    it != result[i].end();it++)
+            {
+              delete *it;
+            }
+          }
+          return out;
+        }
+        else if(it[index] == (--result[index].end()))
+        {
+          it[index] = result[index].begin();
+          index++;
+        }
+        else
+        {
+          it[index]++;
+          break;
+        }
+      }
+    }
+  }
+  return out;
+}
+
+
 State GDL::GetNextState(const State& state,
                         const Move& moves,
                         bool useCache)
@@ -165,8 +206,10 @@ State GDL::GetNextState(const State& state,
   State* out;
   if(useCache)
   {
-    boost::function<size_t (const State&)> hash_f(bind(&GDL::StateMoveHash, this, _1, moves));
-    boost::function<State* (const State&)> miss_f(bind(&GDL::cached_GetNextState, this, _1, moves));
+    boost::function<size_t (const State&)>
+                      hash_f(bind(&GDL::StateMoveHash, this, _1, moves));
+    boost::function<State* (const State&)>
+                      miss_f(bind(&GDL::cached_GetNextState, this, _1, moves));
 
     out = next_state_cache.Get(state, miss_f, hash_f);
   }
@@ -197,86 +240,61 @@ State* GDL::cached_GetNextState(const State& state,
   return new State(temp, *id_map);
 }
 
-size_t GDL::StateMoveHash(const State& state,
-                          const Move& moves)
+size_t GDL::StateMoveHash(const State& state, const Move& moves) const
 {
   size_t seed = state.GetHash();
   hash_combine(seed, moves.Hash());
   return seed;
 }
 
+size_t GDL::GetGoal(const State& state, const size_t rid, bool useCache)
+{
+  size_t* out;
+  if(useCache)
+  {
+    boost::function<size_t (const State&)>
+                      hash_f(bind(&GDL::StateRoleHash, this, _1, rid));
+    boost::function<size_t* (const State&)>
+                      miss_f(bind(&GDL::cached_getGoal, this, _1, rid));
+
+    out = getGoal_cache.Get(state, miss_f, hash_f);
+  }
+  else out = cached_getGoal(state, rid);
+
+  return *out;
+}
+
+
+size_t* GDL::cached_getGoal(const State& state, const size_t rid)
+{
+  ApplyState(state);
+
+  list<Argument*>::iterator it = roles.begin();
+  for(size_t i = 0;i < rid;i++) it++;
+
+  // get goal value for the given role
+  list<Argument*> result =
+              base_rules.Ask(Argument("(goal " + (*it)->val + " ?x)"));
+
+  RemoveState();
+
+  stringstream stream;
+  stream << *(*result.begin())->args[1];
+  size_t *out = new size_t;
+  stream >> *out;
+
+  delete *result.begin();
+
+  return out;
+}
+
+size_t GDL::StateRoleHash(const State& state, const size_t role) const
+{
+  size_t seed = role;
+  hash_combine(seed, state.GetHash());
+  return seed;
+}
 //
-//GDL::StringVec GDL::GetLegalMoves(const State& state, const std::string& role) const
-//{
-//    // flush the knowledge base cache
-//    base_rules.flushCache();
-//
-//    // apply the given state to the knowledge base
-//    const StringVec& facts = state.getFacts();
-//    for(size_t i = 0; i < facts.size(); i++)
-//    {
-//        logicbase::Fact f ("(" + Compress("true") + " " + facts[i] + ")");
-//        // add to map
-//        base_rules.m_facts[s_sig].push_back(f);
-//    }
-//
-//    // get legal moves for the given role
-//    StringVec result = base_rules.ask("(" + Compress("legal") + " " + role + " ?x)", "?x",true);
-//
-//    // remove the knowledge of state from the knowledge base
-//    base_rules.m_facts.erase(base_rules.m_facts.find(s_sig));
-//
-//    return result;
-//}
-//
-//int GDL::GetGoal(const State& state, size_t rid, bool useCache) const
-//{
-//    // flush the knowledge base cache
-//    base_rules.flushCache();
-//
-//    // apply the given state to the knowledge base
-//    const StringVec& facts = state.getFacts();
-//    for(size_t i = 0; i < facts.size(); i++)
-//    {
-//        logicbase::Fact f ("(" + Compress("true") + " " + facts[i] + ")");
-//        // add to map
-//        base_rules.m_facts[s_sig].push_back(f);
-//    }
-//
-//    int out;
-//    if(useCache)
-//    {
-//        // get the array of goal values associated with the state
-//        boost::function<int** (const State&)> f_temp(boost::bind(&GDL::cached_GetGoal, this, _1, rid));
-//        int **result = goal_cache->Get(state, f_temp);
-//
-//        int& slot = (*result)[rid];
-//
-//        // if goal value for given role exists in that array return that value
-//        if(slot != -1)
-//        {
-//            out = slot;
-//        }
-//        // if it does not exist
-//        else
-//        {
-//            // compute the goal value for given role and update it in the array
-//            int** temp = cached_GetGoal(state,rid);
-//            slot = (*temp)[rid];
-//            out = slot;
-//        }
-//    }
-//    else
-//    {
-//        int** temp = cached_GetGoal(state,rid);
-//        out = (*temp)[rid];
-//    }
-//
-//    // remove the knowledge of state from the knowledge base
-//    base_rules.m_facts.erase(base_rules.m_facts.find(s_sig));
-//
-//    return out;
-//}
 //
 //int GDL::GetGoal(const State& state, const std::string& role, bool useCache) const
 //{
@@ -437,255 +455,6 @@ size_t GDL::StateMoveHash(const State& state,
 //    while(true);
 //    return t_state;
 //}
-//
-//KIF GDL::GetFlattenedKIF() const
-//{
-//    StringVec flattenedClauses;
-//
-//    std::map<logicbase::RelationSignature, std::vector<logicbase::RelationSignature> > domain_map;
-//    KnowledgeBase data_kb = GetDataKnowledge(domain_map);
-//    Log::Info << data_kb << std::endl;
-//
-//    const StringVec& m_facts = kif.Facts();
-//    StringVec m_clauses = kif.Clauses();
-//
-//    for(size_t i = 0;i < m_facts.size();i++)
-//    {
-//        if(!IsDataPremiss(m_facts[i], data_kb))
-//        {
-//            flattenedClauses.push_back(m_facts[i]);
-//        }
-//    }
-//
-//    for(size_t i = 0;i < flattenedClauses.size();i++) Log::Info << flattenedClauses[i] << std::endl;
-//
-//    for(size_t i = 0;i < m_clauses.size();i++)
-//    {
-//        std::string head;
-//        StringSet temp;
-//        Log::Info << m_clauses[i] << std::endl;
-//        Log::Info << ProcessClause(m_clauses[i], head, temp, data_kb, i) << std::endl;
-//        Log::Debug << head << std::endl;
-//        Log::Debug << m_clauses[i] << std::endl;
-//
-//    }
-//
-//    return KIF();
-////    int isDebug = 2;
-////
-////    std::list<std::string> FlattenedClauses;
-////
-////    std::map<logicbase::RelationSignature, std::vector<size_t> > domain_map;
-////
-////    KnowledgeBase data_kb = GetDataKnowledge(domain_map);
-////    data_kb.optimizeSpecialRelations();
-////
-////    KnowledgeBase all_kb;
-////
-////    const StringVec& m_facts = kif.Facts();
-////    const StringVec& m_clauses = kif.Clauses();
-////
-////    // add processed facts to temporary knowledge base
-////    StringSet tset;
-////    for(size_t i = 0; i < m_facts.size(); i++) all_kb.add(ProcessProposition(m_facts[i], tset, data_kb));
-////    tset.clear();
-////
-////    // Array to indicate which clauses should be considered for next pass
-////    bool clausesToConsider[m_clauses.size()];
-////
-////    // Initialize the array to all 1
-////    for(size_t i = 0; i < m_clauses.size(); i++) clausesToConsider[i] = true;
-////
-////    std::map<logicbase::RelationSignature, size_t> newly_added;
-////    StringSet prop_map;
-////
-////    bool anyNew = true;
-////
-////    // Helps to neglect non-variable(basically flattened) clauses not to be considered after first pass
-////    bool isSecondTime = false;
-////
-////    while(anyNew)
-////    {
-////        for(size_t c_index = 0; c_index < m_clauses.size(); c_index++)
-////        {
-////            const std::string& clause = m_clauses[c_index];
-////
-////            if(!clausesToConsider[c_index]) continue;
-////
-////            clausesToConsider[c_index] = false;
-////
-////            if(isDebug > 1)
-////            {
-////                Log::Debug << "Unprocessed clause is" << std::endl;
-////                Log::Debug << clause << std::endl;
-////            }
-////
-////            std::string question;
-////            std::string processed_clause = ProcessClause(clause, question, tset, data_kb);
-////            tset.clear();
-////
-////            if(isDebug > 1)
-////            {
-////                Log::Debug << "Processed clause is " << std::endl;
-////                Log::Debug << processed_clause << " with domains" << std::endl;
-////            }
-////
-////            // variables in the clause
-////            StringSet vars = KIFSyntax::getVariables(clause);
-////
-////            // If the clause is already flattened
-////            if(vars.size() == 0)
-////            {
-////                // Dont consider the flattened clause in second pass
-////                if(!isSecondTime)
-////                {
-////                    logicbase::RelationSignature h_sig(question);
-////
-////                    newly_added[h_sig] = c_index;
-////
-////                    const std::string& cmd = h_sig.name;
-////                    if(cmd != "legal" && cmd != "goal" && cmd != "terminal" && cmd != "next" && cmd != "init")
-////                        all_kb.add(question);
-////
-////                    FlattenedClauses.push_back(clause);
-////                }
-////                continue;
-////            }
-////
-////            if(isDebug > 1) Log::Debug << "question is " << question << ", clause is " << processed_clause << std::endl;;
-////
-////            StringVec patterns;
-////            patterns.push_back(clause);
-////            patterns.push_back(question);
-////
-////            std::vector<StringVec> mul_result = all_kb.added(processed_clause)->ask_multiple_patterns(question, patterns, true);
-////
-////            const StringVec& result = mul_result[0];
-////            const StringVec& temp_prop = mul_result[1];
-////
-////            // Adds appropriate props to kb for flattening further clasues
-////            // Adds clauses to final clause list while avoiding duplicates
-////            // Also updates newly added list accordingly
-////            for(size_t r_index = 0; r_index < result.size(); r_index++)
-////            {
-////                const std::string& clause = result[r_index];
-////                const std::string& toCheck = temp_prop[r_index];
-////
-////                std::string temp;
-////                StringVec args;
-////                KIFSyntax::separateCommand(clause, temp, args);
-////                std::string head = args[0];
-////
-////                logicbase::RelationSignature h_sig(head);
-////                newly_added[h_sig] = c_index;
-////
-////                std::ostringstream c_index_str;
-////                c_index_str << c_index;
-////
-////                const StringSet::const_iterator it = prop_map.find(toCheck + "_" + c_index_str.str());
-////                if(it == prop_map.end())
-////                {
-////                    prop_map.insert(toCheck + "_" + c_index_str.str());
-////                    FlattenedClauses.push_back(clause);
-////                }
-////
-////                const std::string& cmd = h_sig.name;
-////                if(cmd != "legal" && cmd != "next" && cmd != "goal" && cmd != "terminal" && cmd != "init")
-////                {
-////                    // Add head to knowledge base for flattening further clauses
-////                    all_kb.add(head);
-////                }
-////            }
-////
-////        }
-////    }
-//}
-//
-//std::string GDL::Compress(const std::string& str) const
-//{
-//    if(kif.IsCompressed())
-//    {
-//        std::string out;
-//        kif.Compress(str, out);
-//        return out;
-//    }
-//    return str;
-//}
-//
-//int** GDL::cached_GetGoal(const State& state, size_t rid) const
-//{
-//    (void)state; // to remove unused warning
-//
-//    // get goal value for the given role
-//    StringVec result = base_rules.ask("(" + Compress("goal") + " " + roles[rid] + " ?x)","?x", true);
-//
-//    // create an array and update the slot corresponding to the given role with the goal value
-//    // all the other values are initialized to -1
-//    int** out = new int*[1];
-//    out[0] = new int[roles.size()];
-//    for(size_t i = 0; i < roles.size(); i++) (*out)[i] = -1;
-//    (*out)[rid] = atoi(result[0].c_str());
-//
-//    return out;
-//}
-//
-
-
-//std::vector<GDL::StringVec>* GDL::cached_GetLegalJointMoves(const State& state) const
-//{
-//    (void)state; // to remove unused warning
-//
-//    // get legal moves for all the roles
-//    StringVec result[roles.size()];
-//    for(size_t i = 0; i < roles.size(); i++)
-//        result[i] = base_rules.ask("(" + Compress("legal") + " " + roles[i] + " ?x)","?x",true);
-//
-//    // compute and store all the combination of legal moves of all the roles
-//    std::vector<StringVec>* all = new std::vector<StringVec>();
-//    size_t index[roles.size()];
-//    for(size_t i = 0; i < roles.size(); i++) index[i] = 0;
-//
-//    // if there is more than 1 role
-//    if(roles.size() > 1)
-//    {
-//        bool isDone = false;
-//        // loop till all the legal move combinations encountered
-//        while(true)
-//        {
-//            StringVec temp;
-//            for(size_t i = 0; i < roles.size(); i++) temp.push_back(result[i][index[i]]);
-//            all->push_back(temp);
-//            index[0]++;
-//            for(size_t i = 0; i < roles.size(); i++)
-//            {
-//                if(index[i] == result[i].size())
-//                {
-//                    if(i == roles.size() - 1)
-//                    {
-//                        isDone = true;
-//                        break;
-//                    }
-//                    index[i] = 0;
-//                    index[i + 1]++;
-//                }
-//            }
-//            if(isDone) break;
-//        }
-//    }
-//    // if only 1 role...
-//    else
-//    {
-//        for(size_t i = 0; i < result[0].size(); i++)
-//        {
-//            StringVec temp;
-//            temp.push_back(result[0][i]);
-//            all->push_back(temp);
-//        }
-//    }
-//
-//    return all;
-//}
-//
 
 //
 //KnowledgeBase GDL::GetDataKnowledge(std::map<logicbase::RelationSignature, std::vector<logicbase::RelationSignature> >& domain_map) const

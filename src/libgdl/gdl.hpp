@@ -37,7 +37,8 @@ class GDL
   ~GDL()
   {
     delete init;
-    for(std::list<Argument*>::const_iterator it = roles.begin();it != roles.end();it++)
+    for(std::list<Argument*>::const_iterator it = roles.begin();
+                                                        it != roles.end();it++)
       delete *it;
     delete id_map;
   }
@@ -65,40 +66,32 @@ class GDL
   //!
   //!
   bool IsTerminal(const State& state, bool useCache = true);
-//
-//  //! Returns all the legal move combinations possible in the given state
-//  //! if you have 3 roles; first role has 4 possibility (ABCD), second role 3 possibilites (012),
-//  //! third has 2 possibilities (XY) then function returns vector with following string vectors
-//	//! A0X, A0Y, A1X, A1Y, A2X, A2Y, B0X, B0Y, B1X, B1Y, B2X, B2Y ... D0X, D0Y, D1X, D1Y, D2X, D2Y (size=24)
-//	//! If useCache is true function returns the answer from cache if it exists
-//  //!
-//  //! \param state const State&
-//  //! \param true bool useCache
-//  //! \return std::vector<StringVec>
-//  //!
-//  //!
-//  std::vector<StringVec> GetLegalJointMoves(const State& state, bool useCache = true) const;
-//
-//  //! Returns legal moves for the given role and given state
-//  //! This function does not use cache
-//  //!
-//  //! \param state const State&
-//  //! \param role const std::string&
-//  //! \return StringVec
-//  //!
-//  //!
-//  StringVec GetLegalMoves(const State& state, const std::string& role) const;
-//
-//    //! Returns goal value associated with the given state for given role
-//    //! If useCache is true function returns the answer from cache if it exists
-//    //!
-//    //! \param state const State&
-//    //! \param role const std::string&
-//    //! \param true bool useCache
-//    //! \return int
-//    //!
-//    //!
-//    int GetGoal(const State& state, const std::string& role, bool useCache = true) const;
+
+  //! Returns all the legal move combinations possible in the given state
+  //! if you have 3 roles; first role has 4 possibility (ABCD), second role 3
+  //! possibilites (012), third has 2 possibilities (XY) then function returns
+  //! vector with following Move A0X, A0Y, A1X, A1Y, A2X, A2Y, B0X, B0Y, B1X,
+  //! B1Y, B2X, B2Y ... D0X, D0Y, D1X, D1Y, D2X, D2Y (size=24)
+	//! If useCache is true function returns the answer from cache if it exists
+  //!
+  //! \param state const State&
+  //! \param true bool useCache
+  //! \return std::list<Move>
+  //!
+  //!
+  std::list<Move> GetLegalMoves(const State& state, bool useCache = true);
+
+
+    //! Returns goal value associated with the given state for given role
+    //! If useCache is true function returns the answer from cache if it exists
+    //!
+    //! \param state const State&
+    //! \param role const std::string&
+    //! \param true bool useCache
+    //! \return int
+    //!
+    //!
+    size_t GetGoal(const State& state, const size_t role, bool useCache = true);
 //
 //    //! Returns goal value associated with the given state for given role id
 //    //! If useCache is true function returns the answer from cache if it exists
@@ -140,17 +133,6 @@ class GDL
 //    //!
 //    State PerformRandomDepthCharge(const State& state, RandomNumberGenerator& ran, bool useCache = true) const;
 //
-//    KIF GetFlattenedKIF() const;
-//
-//    //! Get Compressed string if compression is on
-//    //! else it returns the passed string
-//    //!
-//    //! \param str const std::string&
-//    //! \return std::string
-//    //!
-//    //!
-//    std::string Compress(const std::string& str) const;
-//
   //! returns the initial state of the GDL
   const State& InitState() const { return *init; }
 
@@ -165,15 +147,18 @@ class GDL
 //
 //    static int sim_cache_capacity;
 
-
-
 private:
   State* cached_GetNextState(const State& state,
                              const Move& moves);
+  size_t StateMoveHash(const State& state,
+                       const Move& moves) const;
+
   bool* cached_IsTerminal(const State& state);
 
-  size_t StateMoveHash(const State& state,
-                       const Move& moves);
+  std::list<Move>* cached_getLegalMoves(const State& state);
+
+  size_t* cached_getGoal(const State& state, const size_t rid);
+  size_t StateRoleHash(const State& state, const size_t role) const;
 
   inline void ApplyState(const State& state);
   inline void ApplyActions(const Move& moves);
@@ -195,6 +180,12 @@ private:
 
   size_t isTerminal_cache_capacity;
   cache::LRUCache<State, bool> isTerminal_cache;
+
+  size_t getLegalMoves_cache_capacity;
+  cache::LRUCache<State, std::list<Move> > getLegalMoves_cache;
+
+  size_t getGoal_cache_capacity;
+  cache::LRUCache<State, size_t> getGoal_cache;
 
   mutable Log log;
 };
@@ -219,7 +210,8 @@ inline void GDL::ApplyState(const State& state)
 inline void GDL::ApplyActions(const Move& moves)
 {
   size_t r_index = 0;
-  for(std::list<Argument*>::const_iterator it = roles.begin();it != roles.end();it++)
+  for(std::list<Argument*>::const_iterator it = roles.begin();
+                                                        it != roles.end();it++)
   {
     Argument *temp = new Argument;
     temp->val = "does";

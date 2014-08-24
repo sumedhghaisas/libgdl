@@ -125,4 +125,102 @@ BOOST_AUTO_TEST_CASE(GDLIsTerminalCacheTest)
   MARK_END;
 }
 
+/**
+ * Test GDL abstraction for GetLegalMoves
+ */
+BOOST_AUTO_TEST_CASE(GDLGetLegalMovesTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  
+  GDL gdl("data/games/nine_board_tictactoe.kif", 1024, TEST_LOG);
+  
+  const State& init = gdl.InitState();
+  
+  list<Move> moves = gdl.GetLegalMoves(init);
+    
+  if(moves.size() != 81) MARK_FAIL;
+    
+  MARK_END;
+}
+
+/**
+ * Test GDL abstraction for GetLegalMoves cache
+ */
+BOOST_AUTO_TEST_CASE(GDLGetLegalMovesCacheTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  
+  GDL gdl("data/games/nine_board_tictactoe.kif", 1024, TEST_LOG);
+  
+  const State& init = gdl.InitState();
+  
+  gdl.GetLegalMoves(init);
+  size_t start = microtimer();
+  gdl.GetLegalMoves(init);
+  size_t end = microtimer();
+  
+  if(end - start > 90) MARK_FAIL;
+    
+  MARK_END;
+}
+
+/**
+ * Test GDL abstraction for GetGoal
+ */
+BOOST_AUTO_TEST_CASE(GDLGetGoalTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  
+  GDL gdl("data/games/3puzzle.kif", 1024, TEST_LOG);
+  
+  const State& init = gdl.InitState();
+  
+  size_t g1 = gdl.GetGoal(init, 0);
+  if(g1 != 0) MARK_FAIL;
+  
+  State s = init;
+  
+  vector<Move> moves;
+  moves.push_back(Move("down"));
+  moves.push_back(Move("right"));
+  moves.push_back(Move("up"));
+  moves.push_back(Move("left"));
+  moves.push_back(Move("down"));
+  moves.push_back(Move("right"));
+  
+  for(size_t i = 0;i < moves.size();i++)
+    s = gdl.GetNextState(s, moves[i]);
+    
+  g1 = gdl.GetGoal(s, 0);
+  if(g1 != 100) MARK_FAIL;
+    
+  MARK_END;
+}
+
+/**
+ * Test GDL abstraction for GetGoal cache
+ */
+BOOST_AUTO_TEST_CASE(GDLGetGoalCacheTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  
+  GDL gdl("data/games/nine_board_tictactoe.kif", 1024, TEST_LOG);
+  
+  const State& init = gdl.InitState();
+  
+  gdl.GetGoal(init, 0);
+  size_t start = microtimer();
+  gdl.GetGoal(init, 0);
+  size_t end = microtimer();
+  
+  if(end - start > 15) MARK_FAIL;
+    
+  MARK_END;
+}
+
+
 BOOST_AUTO_TEST_SUITE_END();

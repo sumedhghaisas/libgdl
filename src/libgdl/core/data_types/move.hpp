@@ -28,6 +28,18 @@ struct Move
     boost::hash_combine(hash, str);
   }
 
+  Move(const std::vector<Argument*>& m,
+       const boost::unordered_map<std::string, size_t>& id_map)
+  {
+    hash = 0;
+    for(std::vector<Argument*>::const_iterator it = m.begin();it != m.end();it++)
+    {
+      moves.push_back(new Argument(**it));
+      size_t temp = (*it)->Hash(id_map);
+      boost::hash_combine(hash, temp);
+    }
+  }
+
   Move(const Move& m)
   {
     for(size_t i = 0;i < m.moves.size();i++)
@@ -60,6 +72,15 @@ struct Move
 }; // struct Move
 
 }; // namespace libgdl
+
+inline std::ostream& operator<<(std::ostream& s, const libgdl::Move& m)
+{
+  for(size_t i = 0;i < m.moves.size();i++)
+  {
+    s << *m.moves[i] << std::endl;
+  }
+  return s;
+}
 
 
 #endif // MOVE_HPP_INCLUDED
