@@ -2,7 +2,7 @@
  * @file gdl_tests.cpp
  * @author Sumedh Ghaisas
  *
- * Test file for GDL class.
+ * Test file for Argument data structure.
  */
 #include <libgdl/core.hpp>
 

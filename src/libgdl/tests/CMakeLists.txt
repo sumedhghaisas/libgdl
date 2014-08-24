@@ -2,6 +2,8 @@
 add_executable(libgdl_test
   libgdl_test.cpp
   argument_tests.cpp
+  fact_tests.cpp
+  clause_tests.cpp
   cache_tests.cpp
   kif_tests.cpp
   knowledgebase_tests.cpp
