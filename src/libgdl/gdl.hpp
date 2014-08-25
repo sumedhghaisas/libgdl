@@ -17,7 +17,9 @@ namespace libgdl
 
 class GDL
 {
-  typedef std::vector<std::string> StringVec;
+  template<typename T>
+  using intrusive_ptr = boost::intrusive_ptr<T>;
+
  public:
   GDL(const std::string& filename,
       size_t state_cache_capacity = 1024,
@@ -79,7 +81,7 @@ class GDL
   //! \return std::list<Move>
   //!
   //!
-  std::list<Move> GetLegalMoves(const State& state, bool useCache = true);
+  MoveList GetLegalMoves(const State& state, bool useCache = true);
 
 
     //! Returns goal value associated with the given state for given role
@@ -155,7 +157,7 @@ private:
 
   bool* cached_IsTerminal(const State& state);
 
-  std::list<Move>* cached_getLegalMoves(const State& state);
+  MoveList* cached_getLegalMoves(const State& state);
 
   size_t* cached_getGoal(const State& state, const size_t rid);
   size_t StateRoleHash(const State& state, const size_t role) const;
@@ -182,7 +184,7 @@ private:
   cache::LRUCache<State, bool> isTerminal_cache;
 
   size_t getLegalMoves_cache_capacity;
-  cache::LRUCache<State, std::list<Move> > getLegalMoves_cache;
+  cache::LRUCache<State, MoveList> getLegalMoves_cache;
 
   size_t getGoal_cache_capacity;
   cache::LRUCache<State, size_t> getGoal_cache;

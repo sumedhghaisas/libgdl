@@ -12,6 +12,8 @@ set(SOURCES
   state.hpp
   state.cpp
   move.hpp
+  move.cpp
+  intrusive_list.hpp
 )
 
 # add directory name to sources

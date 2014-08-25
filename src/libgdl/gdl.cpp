@@ -116,9 +116,9 @@ bool* GDL::cached_IsTerminal(const State& state)
   return result;
 }
 
-list<Move> GDL::GetLegalMoves(const State& state, bool useCache)
+MoveList GDL::GetLegalMoves(const State& state, bool useCache)
 {
-  list<Move>* out;
+  MoveList* out;
   if(useCache)
   {
     //size_t start = microtimer();
@@ -130,7 +130,7 @@ list<Move> GDL::GetLegalMoves(const State& state, bool useCache)
   return *out;
 }
 
-list<Move>* GDL::cached_getLegalMoves(const State& state)
+MoveList* GDL::cached_getLegalMoves(const State& state)
 {
   ApplyState(state);
 
@@ -150,7 +150,7 @@ list<Move>* GDL::cached_getLegalMoves(const State& state)
   for(size_t i = 0;i < roles.size();i++)
     it[i] = result[i].begin();
 
-  list<Move>* out = new list<Move>();
+  MoveList* out = new MoveList(new IntrusiveList<Move>());
 
   while(true)
   {
@@ -159,7 +159,7 @@ list<Move>* GDL::cached_getLegalMoves(const State& state)
     {
       moves.push_back((*it[i])->args[1]);
     }
-    out->push_back(Move(moves, *id_map));
+    (*out)->push_back(Move(moves, *id_map));
 
     it[0]++;
     size_t index = 1;

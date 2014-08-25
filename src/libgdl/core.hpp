@@ -14,6 +14,7 @@
 #include <libgdl/core/data_types/state.hpp>
 #include <libgdl/core/data_types/location.hpp>
 #include <libgdl/core/data_types/move.hpp>
+#include <libgdl/core/data_types/intrusive_list.hpp>
 
 #include <libgdl/core/util/setop.hpp>
 #include <libgdl/core/util/logid.hpp>

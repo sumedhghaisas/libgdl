@@ -10,6 +10,7 @@
 #include <list>
 #include <string>
 #include <boost/unordered_map.hpp>
+#include <boost/intrusive_ptr.hpp>
 
 #include <libgdl/core/data_types/argument.hpp>
 
@@ -66,6 +67,8 @@ struct State
   //! list of base propositions (sorted)
   std::list<Argument*> facts;
 }; // struct State
+
+typedef boost::intrusive_ptr<State> State_ptr;
 
 }; // namespace libgdl
 

@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(GDLGetLegalMovesTest)
   
   const State& init = gdl.InitState();
   
-  list<Move> moves = gdl.GetLegalMoves(init);
+  MoveList moves = gdl.GetLegalMoves(init);
     
   if(moves.size() != 81) MARK_FAIL;
     
