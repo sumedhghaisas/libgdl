@@ -18,14 +18,14 @@ public:
 };
 
 template<typename T>
-inline void intrusive_ptr_release(T* p)
+inline void intrusive_ptr_release(IntrusiveList<T>* p)
 {
    if (--p->count == 0u)
         delete p;
 }
 
 template<typename T>
-inline void intrusive_ptr_add_ref(T* p)
+inline void intrusive_ptr_add_ref(IntrusiveList<T>* p)
 {
   ++p->count;
 }

@@ -11,21 +11,22 @@ using namespace std;
 using namespace boost;
 using namespace libgdl;
 
-State::State (const list<Argument*>& facts,
-              const unordered_map<string, size_t>& id_map)
-  : facts(facts)
+RawState::RawState (const list<Argument*>& facts,
+                    const unordered_map<string, size_t>& id_map)
+  : facts(facts), count(0u)
 {
   calcHash(id_map);
 }
 
-State::State(const State& s)
+RawState::RawState(const RawState& s)
+  : count(0u)
 {
   for(list<Argument*>::const_iterator it = s.facts.begin();it != s.facts.end();it++)
     facts.push_back(new Argument(**it));
   hash = s.hash;
 }
 
-State& State::operator=(const State& s)
+RawState& RawState::operator=(const RawState& s)
 {
   for(list<Argument*>::iterator it = facts.begin();it != facts.end();it++)
     delete *it;
@@ -38,7 +39,7 @@ State& State::operator=(const State& s)
   return *this;
 }
 
-void State::calcHash(const unordered_map<string, size_t>& id_map)
+void RawState::calcHash(const unordered_map<string, size_t>& id_map)
 {
   hash = 0;
   for(list<Argument*>::const_iterator it = facts.begin();it != facts.end();it++)

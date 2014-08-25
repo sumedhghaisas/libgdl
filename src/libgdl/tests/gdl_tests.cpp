@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateTest)
   result2.push_back(new Argument("(cell 2 2 1)"));
   result2.push_back(new Argument("(step 2)"));
 
-  State s3(result2, gdl.IDMap());
+  State s3(new RawState(result2, gdl.IDMap()));
   
   if(s2 != s3) MARK_FAIL;
   
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateCacheTest)
   gdl.GetNextState(s1, moves);
   size_t end = microtimer();
   
-  if(end - start > 15) MARK_FAIL;
+  if(end - start > 8) MARK_FAIL;
   
   MARK_END;
 }
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(GDLIsTerminalCacheTest)
   gdl.IsTerminal(s);
   size_t end = microtimer();
   
-  if(end - start > 15) MARK_FAIL;
+  if(end - start > 4) MARK_FAIL;
     
   MARK_END;
 }
@@ -161,7 +161,8 @@ BOOST_AUTO_TEST_CASE(GDLGetLegalMovesCacheTest)
   gdl.GetLegalMoves(init);
   size_t end = microtimer();
   
-  if(end - start > 90) MARK_FAIL;
+  // for safety its 3, should be 2
+  if(end - start > 3) MARK_FAIL;
     
   MARK_END;
 }
@@ -217,7 +218,7 @@ BOOST_AUTO_TEST_CASE(GDLGetGoalCacheTest)
   gdl.GetGoal(init, 0);
   size_t end = microtimer();
   
-  if(end - start > 15) MARK_FAIL;
+  if(end - start > 4) MARK_FAIL;
     
   MARK_END;
 }

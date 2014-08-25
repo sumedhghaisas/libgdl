@@ -54,7 +54,7 @@ GDL::GDL(const string& filename,
     (*it)->args.clear();
     delete *it;
   }
-  init = new State(temp, *id_map);
+  init = new State(new RawState(temp, *id_map));
 }
 
 GDL::GDL(KIF& kif,
@@ -92,7 +92,7 @@ GDL::GDL(KIF& kif,
     (*it)->args.clear();
     delete *it;
   }
-  init = new State(temp, *id_map);
+  init = new State(new RawState(temp, *id_map));
 }
 
 bool GDL::IsTerminal(const State& state, bool useCache)
@@ -204,16 +204,20 @@ State GDL::GetNextState(const State& state,
                         bool useCache)
 {
   State* out;
+  //size_t start = microtimer();
   if(useCache)
   {
+    //start = microtimer();
     boost::function<size_t (const State&)>
                       hash_f(bind(&GDL::StateMoveHash, this, _1, moves));
     boost::function<State* (const State&)>
                       miss_f(bind(&GDL::cached_GetNextState, this, _1, moves));
+    //cout << microtimer() - start << endl;
 
     out = next_state_cache.Get(state, miss_f, hash_f);
   }
   else out = cached_GetNextState(state, moves);
+  //cout << microtimer() - start << " haha" << endl;
 
   return *out;
 }
@@ -237,7 +241,7 @@ State* GDL::cached_GetNextState(const State& state,
     (*it)->args.clear();
     delete *it;
   }
-  return new State(temp, *id_map);
+  return new State(new RawState(temp, *id_map));
 }
 
 size_t GDL::StateMoveHash(const State& state, const Move& moves) const

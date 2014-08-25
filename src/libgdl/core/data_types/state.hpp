@@ -7,6 +7,7 @@
 #ifndef _LIBGDL_GDL_STATES_HPP_INCLUDED
 #define _LIBGDL_GDL_STATES_HPP_INCLUDED
 
+#include <atomic>
 #include <list>
 #include <string>
 #include <boost/unordered_map.hpp>
@@ -25,36 +26,36 @@ namespace libgdl
  *
  * @see KnowledgeBase
  */
-struct State
+struct RawState
 {
   //! Generates a state out of a existing vector of facts
   //! if isSorted is false facts are sorted before adding
   //! if isSorted is true vector is assumed to be sorted
-  State (const std::list<Argument*> & facts,
+  RawState (const std::list<Argument*> & facts,
          const boost::unordered_map<std::string, size_t>& id_map);
 
-  State(const State& s);
+  RawState(const RawState& s);
 
-  State& operator=(const State& state);
+  RawState& operator=(const RawState& state);
 
-  ~State()
+  ~RawState()
   {
     for(std::list<Argument*>::const_iterator it = facts.begin();it != facts.end();it++)
       delete *it;
   }
 
-  //! Returns the hash value o this state
+  //! Returns the hash value of this state
   //! States with identical set of true base proposition will have
   //! same value of hash.
   const size_t& GetHash() const { return hash; }
 
   //! comparison operators for State class
-  bool operator==(const State& s) const
+  bool operator==(const RawState& s) const
   {
     if (hash != s.GetHash()) return false;
     return true;
   }
-  bool operator!=(const State& s) const {return !(*this == s); }
+  bool operator!=(const RawState& s) const {return !(*this == s); }
 
   //! Returns true base propositions
   const std::list<Argument*>& Facts() const { return facts; }
@@ -66,13 +67,40 @@ struct State
   size_t hash;
   //! list of base propositions (sorted)
   std::list<Argument*> facts;
+
+  size_t ref_count() { return count; }
+
+  std::atomic_size_t count;
 }; // struct State
 
-typedef boost::intrusive_ptr<State> State_ptr;
+struct State : public boost::intrusive_ptr<RawState>
+{
+  State(RawState* s)
+    : boost::intrusive_ptr<RawState>(s) {}
+
+  const size_t& GetHash() const { return get()->GetHash(); }
+
+  const std::list<Argument*>& Facts() const { return get()->facts; }
+  std::list<Argument*>& Facts() { return get()->facts; }
+
+  bool operator==(const State& s) { return *get() == *s.get(); }
+  bool operator!=(const State& s) { return *get() != *s.get(); }
+};
+
+inline void intrusive_ptr_release(RawState* p)
+{
+   if (--p->count == 0u)
+        delete p;
+}
+
+inline void intrusive_ptr_add_ref(RawState* p)
+{
+  ++p->count;
+}
 
 }; // namespace libgdl
 
-inline std::ostream& operator<<(std::ostream & ss, const libgdl::State& s)
+inline std::ostream& operator<<(std::ostream & ss, const libgdl::RawState& s)
 {
   ss << "State: ";
   for(std::list<libgdl::Argument*>::const_iterator it = s.facts.begin();
@@ -82,6 +110,12 @@ inline std::ostream& operator<<(std::ostream & ss, const libgdl::State& s)
   }
 
   ss << "\tHash = " << std::hex << s.hash << std::dec;
+  return ss;
+}
+
+inline std::ostream& operator<<(std::ostream& ss, const libgdl::State& s)
+{
+  ss << *s << std::endl;
   return ss;
 }
 

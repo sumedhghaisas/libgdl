@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(StateHashTest)
   kb.GetLog() = TEST_LOG;
   list<Argument*> result = kb.Ask(Argument("(init ?x)"));
   
-  State s1(result, id_map);
+  State s1(new RawState(result, id_map));
   
   list<Argument*> result2;
   result2.push_back(new Argument("(init (cell 2 2 1))"));
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(StateHashTest)
   result2.push_back(new Argument("(init (cell 2 1 2))"));
   result2.push_back(new Argument("(init (step 1))"));
 
-  State s2(result2, id_map);
+  State s2(new RawState(result2, id_map));
 
   if(s1 != s2) MARK_FAIL;
   
