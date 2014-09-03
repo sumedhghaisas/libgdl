@@ -1,27 +1,8 @@
-## Recurse parser
-set(DIRS
- syntax_tree_types
-)
-
-foreach(dir ${DIRS})
-    add_subdirectory(${dir})
-endforeach()
-
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
-  kif_driver.cpp
-  kif_driver.hpp
-  kif_parser.tab.cc
-  kif_parser.tab.hh
-  FlexLexer.h
-  lex.yy.cc
-  kif_scanner.hpp
-  location.hh
-  position.hh
-  stack.hh
-  token_value.cpp
-  token_value.hpp
+  basic_construct.hpp
+  basic_construct_impl.hpp
 )
 
 # add directory name to sources

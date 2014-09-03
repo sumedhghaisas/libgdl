@@ -18,12 +18,14 @@
 
 #include "token_value.hpp"
 
-//! definition of yylex for Flex
 #ifndef YY_DECL
 
 #define	YY_DECL						\
-    libgdl::gdlparser::parser::yy::KIFParser::symbol_type				\
-    libgdl::gdlparser::parser::KIFScanner::lex()
+    libgdl::gdlparser::parser::yy::KIFParser::token_type				\
+    libgdl::gdlparser::parser::KIFScanner::lex(				\
+	libgdl::gdlparser::parser::yy::KIFParser::semantic_type* yylval,		\
+	libgdl::gdlparser::parser::yy::KIFParser::location_type* yylloc		\
+    )
 #endif
 
 #include "FlexLexer.h"
@@ -46,8 +48,8 @@ class KIFDriver;
 class KIFScanner : public yyFlexLexer
 {
     //! some useful typedefs
-    typedef gdlparser::parser::yy::KIFParser::token token;
-    typedef gdlparser::parser::yy::KIFParser::symbol_type symbol_type;
+    typedef gdlparser::parser::yy::KIFParser::semantic_type semantic_type;
+    typedef gdlparser::parser::yy::KIFParser::token_type token_type;
     typedef gdlparser::parser::yy::KIFParser::location_type location_type;
 
     //! to store state of the scanner
@@ -63,12 +65,13 @@ public:
 
     //! yylex function needed by parser.
     //! returns the next token if any along with its location
-    symbol_type lex();
+    token_type lex(semantic_type* yylval,
+                   location_type* yylloc);
 
     //! current location of the scanner
     int LineNo() { return lineNo + 1; }
     int CharNo() { return charNo; }
-    std::string CurrentFile() { return streams[stream_index].Name(); }
+    std::string& CurrentFile() { return streams[stream_index].Name(); }
 
     void set_debug(bool b)
     {

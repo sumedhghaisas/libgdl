@@ -14,18 +14,15 @@
 #include "kif_driver.hpp"
 
 /* import the parser's token type into a local typedef */
+typedef libgdl::gdlparser::parser::yy::KIFParser::semantic_type semantic_type;
+typedef libgdl::gdlparser::parser::yy::KIFParser::token_type token_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser::token token;
-typedef libgdl::gdlparser::parser::yy::KIFParser::symbol_type symbol_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser::location_type location_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 
-#define IN_MAKE_FIRST std::string(yytext)
-#define IN_MAKE_SECOND location_type(&streams[stream_index - 1].Name(), lineNo + 1, charNo)
-#define IN_MAKE IN_MAKE_FIRST, IN_MAKE_SECOND
-
 /* By default yylex returns int, we use token_type. Unfortunately yyterminate
  * by default returns 0, which is not of token_type. */
-#define yyterminate() return KIFParser::make_END(IN_MAKE_SECOND);
+#define yyterminate() return token::END
 
 /* This disables inclusion of unistd.h, which is not available under Visual C++
  * on Win32. The C++ scanner uses STL streams instead. */
@@ -38,7 +35,7 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 /* enable c++ scanner class generation */
 %option c++
 
-/* change the name of the scanner class. results in "ExampleFlexLexer" */
+/* change the name of the scanner class. */
 %option prefix="yy"
 
 /* the manual says "somewhat more optimized" */
@@ -55,77 +52,66 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 %option stack
 
 %{
-#define YY_USER_ACTION  charNo = charNo + yyleng;
+#define YY_USER_ACTION  yylloc->columns(yyleng);
 %}
 
 %% /*** Regular Expressions Part ***/
 
+ /* code to place at the beginning of yylex() */
+%{
+    // reset location
+    yylloc->step();
+%}
+
 "(" {
-    return KIFParser::make_Obracket(IN_MAKE);
+  return token::OBRACKET;
 }
+
 ")" {
-    return KIFParser::make_Cbracket(IN_MAKE);
+  return token::CBRACKET;
 }
-"role" {
-    return KIFParser::make_role(IN_MAKE);
-}
-"base" {
-    return KIFParser::make_base(IN_MAKE);
-}
-"input" {
-    return KIFParser::make_input(IN_MAKE);
-}
-"init" {
-    return KIFParser::make_init(IN_MAKE);
-}
-"legal" {
-    return KIFParser::make_legal(IN_MAKE);
-}
-"goal" {
-    return KIFParser::make_goal(IN_MAKE);
-}
-"terminal" {
-    return KIFParser::make_terminal(IN_MAKE);
-}
-"next" {
-    return KIFParser::make_next(IN_MAKE);
-}
+
 "or" {
-    return KIFParser::make_oor(IN_MAKE);
+  return token::OR;
 }
+
 "not" {
-    return KIFParser::make_nnot(IN_MAKE);
+  return token::NOT;
 }
-"true" {
-    return KIFParser::make_ttrue(IN_MAKE);
-}
-"distinct" {
-    return KIFParser::make_distinct(IN_MAKE);
-}
-"does" {
-    return KIFParser::make_does(IN_MAKE);
-}
+
 "<=" {
-    return KIFParser::make_clause_command(IN_MAKE);
+  return token::CCOMMAND;
 }
+
 [;].*\n {
-    lineNo++;
-    charNo = 0;
-    std::string comment(yytext);
-    if(comment.find("#line")!= std::string::npos) return KIFParser::make_hash_line(IN_MAKE);
+  yylval->stringVal = new std::string(yytext, yyleng);
+  std::string comment(yytext);
+  if(comment.find("#line")!= std::string::npos) return token::HLINE;
 }
+
 [0-9]+ {
-    return KIFParser::make_num(IN_MAKE);
+  yylval->num = atoi(yytext);
+  return token::NUMBER;
 }
-[^()[:blank:]\n]+ {
-    if(yytext[0] == '?') return KIFParser::make_var(IN_MAKE);
-    return KIFParser::make_id(IN_MAKE);
+
+[?][A-Za-z][A-Za-z0-9_]* {
+  yylval->stringVal = new std::string(yytext, yyleng);
+  return token::VARIABLE;
 }
-[[:blank:]] {
+
+[A-Za-z][A-Za-z0-9_]* {
+  yylval->stringVal = new std::string(yytext, yyleng);
+  return token::ID;
 }
-[\n] {
-    lineNo++;
-    charNo = 0;
+
+ /* gobble up white-spaces */
+[ \t\r]+ {
+  yylloc->step();
+}
+
+ /* gobble up end-of-lines */
+\n {
+  yylloc->lines(yyleng); yylloc->step();
 }
 
 %% /*** Additional Code ***/
