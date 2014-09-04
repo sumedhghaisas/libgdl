@@ -3,6 +3,7 @@
 set(SOURCES
   basic_construct.hpp
   basic_construct_impl.hpp
+  node.hpp
 )
 
 # add directory name to sources

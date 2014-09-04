@@ -1,14 +1,9 @@
-## Recurse parser
-set(DIRS
-  data_types
-  util
-  cache
-  symbol_table
+# Define the files we need to compile.
+# Anything not in this list will not be compiled into libGDL.
+set(SOURCES
+  symbol_table.hpp
+  symbols.hpp
 )
-
-foreach(dir ${DIRS})
-    add_subdirectory(${dir})
-endforeach()
 
 # add directory name to sources
 set(DIR_SRCS)
@@ -18,3 +13,4 @@ endforeach()
 # Append sources (with directory name) to list of all libgdl sources (used at
 # the parent scope).
 set(GDL_SRCS ${GDL_SRCS} ${DIR_SRCS} PARENT_SCOPE)
+
