@@ -10,7 +10,9 @@
 #include <string>
 #include <list>
 
-#include <libgdl/core.hpp>
+#include <libgdl/core/data_types/variable_map.hpp>
+
+#include "node.hpp"
 
 namespace libgdl
 {
@@ -20,9 +22,7 @@ namespace parser
 {
 
 class TerminalHold
-{
-
-};
+{};
 
 template <class Policy, class Head, class Hold>
 class BasicConstruct : public Node
@@ -52,18 +52,22 @@ class BasicConstruct : public Node
 
   operator std::string() const;
 
+  void CodeGen(Driver& driver,
+               VariableMap& v_map = VariableMap())
+  {
+    Policy::CodeGen(driver, command, args, v_map);
+  }
+
   template<class T>
   void CodeGen(T*& out,
-               SymbolTable& symbol_table,
                Driver& driver,
-               std::map<std::string, Argument*>& v_map =
-                                            std::map<std::string, Argument*>())
+               VariableMap& v_map = VariableMap())
   {
-    Policy::CodeGen(out, symbol_table, driver, command, args, v_map);
+    Policy::CodeGen(out, driver, command, args, v_map);
   }
 
  private:
-  Head* head;
+  Head* command;
   std::list<Hold*> args;
 };
 
@@ -95,13 +99,22 @@ class BasicConstruct<Policy, Head, TerminalHold> : public Node
 
   operator std::string() const;
 
-  Object* CodeGen(SymbolTable& symbol_table, Driver& driver)
+  void CodeGen(Driver& driver,
+               VariableMap& v_map = VariableMap())
   {
-    return Policy::CodeGen(symbol_table, driver, command, args);
+    Policy::CodeGen(driver, command, args, v_map);
+  }
+
+  template<class T>
+  void CodeGen(T*& out,
+               Driver& driver,
+               VariableMap& v_map = VariableMap())
+  {
+    Policy::CodeGen(out, driver, command, args, v_map);
   }
 
  private:
-  Object* command;
+  Head* command;
   std::list<BasicConstruct<Policy, Head, TerminalHold>* > args;
 };
 

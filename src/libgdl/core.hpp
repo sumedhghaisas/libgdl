@@ -20,5 +20,6 @@
 #include <libgdl/core/util/logid.hpp>
 #include <libgdl/core/util/log.hpp>
 #include <libgdl/core/util/timer.hpp>
+#include <libgdl/core/util/to_string.hpp>
 
 #endif // __LIBGDL_CORE_HPP

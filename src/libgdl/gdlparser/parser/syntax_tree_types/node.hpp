@@ -14,6 +14,7 @@
 #include <map>
 
 #include <libgdl/core/symbol_table/symbol_table.hpp>
+#include <libgdl/core/data_types/variable_map.hpp>
 #include <libgdl/gdlparser/parser/location.hh>
 
 namespace libgdl
@@ -41,10 +42,8 @@ class Node
     return "testing";
   }
 
-  template<class T>
-  virtual T* CodeGen(T*& out,
-                     SymbolTable& symbol_table,
-                     Driver& driver) = 0;
+  virtual void CodeGen(Driver& driver,
+                       VariableMap& v_map) = 0;
 
  protected:
   location loc;

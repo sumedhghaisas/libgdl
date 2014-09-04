@@ -17,15 +17,15 @@ BasicConstruct<Policy, Head, Hold>::operator std::string() const
   std::string o = "";
   if(args.size() > 0)
   {
-    o += "(" + std::string(*command);
+    o += "(" + ToString(*command);
     for(typename std::list<Hold*>::const_iterator it = args.begin();
                                                         it != args.end(); it++)
     {
-      o += " " + std::string(**it);
+      o += " " + ToString(**it);
     }
     o += ")";
   }
-  else o += std::string(*command);
+  else o += ToString(*command);
   return o;
 }
 
@@ -35,15 +35,15 @@ BasicConstruct<Policy, Head, TerminalHold>::operator std::string() const
   std::string o = "";
   if(args.size() > 0)
   {
-    o += "(" + std::string(*command);
-    for(typename std::list<BasicConstruct<Policy, TerminalHold>*>::
+    o += "(" + ToString(*command);
+    for(typename std::list<BasicConstruct<Policy, Head, TerminalHold>*>::
                       const_iterator it = args.begin(); it != args.end(); it++)
     {
-      o += " " + std::string(**it);
+      o += " " + ToString(**it);
     }
     o += ")";
   }
-  else o += std::string(*command);
+  else o += ToString(*command);
   return o;
 }
 

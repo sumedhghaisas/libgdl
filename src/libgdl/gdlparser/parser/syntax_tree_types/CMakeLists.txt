@@ -4,6 +4,8 @@ set(SOURCES
   basic_construct.hpp
   basic_construct_impl.hpp
   node.hpp
+  function_policy.hpp
+  function_policy_impl.hpp
 )
 
 # add directory name to sources

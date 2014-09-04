@@ -17,6 +17,7 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/core/util/gdl_stream.hpp>
+#include <libgdl/core/symbol_table/symbol_table.hpp>
 
 #include "kif_scanner.hpp"
 #include "kif_parser.tab.hh"
@@ -149,6 +150,8 @@ private:
 
     //! pointers which needs to be freed in destruction
     std::list<std::string*> to_free;
+
+    SymbolTable sym_table;
 };
 
 }; // namespace parser

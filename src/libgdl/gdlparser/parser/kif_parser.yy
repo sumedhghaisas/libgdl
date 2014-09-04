@@ -39,12 +39,15 @@
 %union {
     size_t                      num;
     std::string*                stringVal;
+    Node*                       node;
 }
 
 %code requires // *.hh
 {
 #include <list>
 #include <string>
+
+#include "syntax_tree_types_decl.hpp"
 
 namespace libgdl {
 namespace gdlparser {
@@ -70,6 +73,9 @@ namespace gdlparser {
 // driver class declaration.
 #include "kif_driver.hpp"
 
+#include "syntax_tree_types_includes.hpp"
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
 // use yylex function in scanner class instead of predefiend yylex
 #undef yylex
 #define yylex scanner.lex
@@ -92,14 +98,20 @@ namespace gdlparser {
 
 /* Nonterminals */
 
-%type   <stringVal>   start
+%type   <node>        start
+%type   <node>        S
 
 %%
 
 /* Grammer */
 
-start : ID  {
+start : S   {
               std::cout << "yolo" << std::endl;
+            }
+S     : ID  {
+              Symbol* sym = new FunctionSymbol(*$1, 0, @1);
+              size_t* id = new size_t(driver.sym_table.AddEntry(*$1, sym));
+              $$ = new Term(id, @1);
             }
 
 %%

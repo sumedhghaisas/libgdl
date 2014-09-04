@@ -49,7 +49,7 @@
 
 #line 51 "kif_parser.tab.cc" // lalr1.cc:406
 // Unqualified %code blocks.
-#line 64 "kif_parser.yy" // lalr1.cc:407
+#line 67 "kif_parser.yy" // lalr1.cc:407
 
 #include <algorithm>
 #include <iostream>
@@ -59,12 +59,15 @@
 // driver class declaration.
 #include "kif_driver.hpp"
 
+#include "syntax_tree_types_includes.hpp"
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
 // use yylex function in scanner class instead of predefiend yylex
 #undef yylex
 #define yylex scanner.lex
 
 
-#line 68 "kif_parser.tab.cc" // lalr1.cc:407
+#line 71 "kif_parser.tab.cc" // lalr1.cc:407
 
 
 #ifndef YY_
@@ -150,7 +153,7 @@
 
 #line 23 "kif_parser.yy" // lalr1.cc:473
 namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
-#line 154 "kif_parser.tab.cc" // lalr1.cc:473
+#line 157 "kif_parser.tab.cc" // lalr1.cc:473
 
   /* Return YYSTR after stripping away unnecessary quotes and
      backslashes, so that it's suitable for yyerror.  The heuristic is
@@ -497,7 +500,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     yyla.location.begin.filename = yyla.location.end.filename = &scanner.CurrentFile();
 }
 
-#line 501 "kif_parser.tab.cc" // lalr1.cc:726
+#line 504 "kif_parser.tab.cc" // lalr1.cc:726
 
     /* Initialize the stack.  The initial state will be set in
        yynewstate, since the latter expects the semantical and the
@@ -607,15 +610,25 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
         switch (yyn)
           {
   case 2:
-#line 101 "kif_parser.yy" // lalr1.cc:846
+#line 108 "kif_parser.yy" // lalr1.cc:846
     {
               std::cout << "yolo" << std::endl;
             }
-#line 615 "kif_parser.tab.cc" // lalr1.cc:846
+#line 618 "kif_parser.tab.cc" // lalr1.cc:846
+    break;
+
+  case 3:
+#line 111 "kif_parser.yy" // lalr1.cc:846
+    {
+              Symbol* sym = new FunctionSymbol(*(yystack_[0].value.stringVal), 0, yystack_[0].location);
+              size_t* id = new size_t(driver.sym_table.AddEntry(*(yystack_[0].value.stringVal), sym));
+              (yylhs.value.node) = new Term(id, yystack_[0].location);
+            }
+#line 628 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
 
-#line 619 "kif_parser.tab.cc" // lalr1.cc:846
+#line 632 "kif_parser.tab.cc" // lalr1.cc:846
           default:
             break;
           }
@@ -876,31 +889,31 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   const signed char
   KIFParser::yypact_[] =
   {
-      -5,    -6,     1,    -6
+      -5,    -6,     1,    -6,    -6
   };
 
   const unsigned char
   KIFParser::yydefact_[] =
   {
-       0,     2,     0,     1
+       0,     3,     0,     2,     1
   };
 
   const signed char
   KIFParser::yypgoto_[] =
   {
-      -6,    -6
+      -6,    -6,    -6
   };
 
   const signed char
   KIFParser::yydefgoto_[] =
   {
-      -1,     2
+      -1,     2,     3
   };
 
   const unsigned char
   KIFParser::yytable_[] =
   {
-       1,     3
+       1,     4
   };
 
   const unsigned char
@@ -912,19 +925,19 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   const unsigned char
   KIFParser::yystos_[] =
   {
-       0,     5,    14,     0
+       0,     5,    14,    15,     0
   };
 
   const unsigned char
   KIFParser::yyr1_[] =
   {
-       0,    13,    14
+       0,    13,    14,    15
   };
 
   const unsigned char
   KIFParser::yyr2_[] =
   {
-       0,     2,     1
+       0,     2,     1,     1
   };
 
 
@@ -937,14 +950,14 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   "\"end of file\"", "error", "$undefined", "\"opening bracket\"",
   "\"closing bracket\"", "\"symbol\"", "\"variable\"", "\"number\"",
   "\"true\"", "\"not\"", "\"or\"", "\"clause command\"", "\"line mark\"",
-  "$accept", "start", YY_NULL
+  "$accept", "start", "S", YY_NULL
   };
 
 #if YYDEBUG
   const unsigned char
   KIFParser::yyrline_[] =
   {
-       0,   101,   101
+       0,   108,   108,   111
   };
 
   // Print the state stack on the debug stream.
@@ -1026,8 +1039,8 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 
 #line 23 "kif_parser.yy" // lalr1.cc:1156
 } } } } // libgdl::gdlparser::parser::yy
-#line 1030 "kif_parser.tab.cc" // lalr1.cc:1156
-#line 105 "kif_parser.yy" // lalr1.cc:1157
+#line 1043 "kif_parser.tab.cc" // lalr1.cc:1156
+#line 117 "kif_parser.yy" // lalr1.cc:1157
 
 
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
