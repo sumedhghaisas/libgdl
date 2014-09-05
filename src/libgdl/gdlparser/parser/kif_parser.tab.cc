@@ -620,9 +620,9 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   case 3:
 #line 111 "kif_parser.yy" // lalr1.cc:846
     {
-              Symbol* sym = new FunctionSymbol(*(yystack_[0].value.stringVal), 0, yystack_[0].location);
-              size_t* id = new size_t(driver.sym_table.AddEntry(*(yystack_[0].value.stringVal), sym));
+              size_t* id = new size_t(driver.sym_table.AddEntry(*(yystack_[0].value.stringVal), yystack_[0].location, 0));
               (yylhs.value.node) = new Term(id, yystack_[0].location);
+              delete (yystack_[0].value.stringVal);
             }
 #line 628 "kif_parser.tab.cc" // lalr1.cc:846
     break;

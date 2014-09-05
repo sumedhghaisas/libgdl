@@ -25,15 +25,27 @@ struct Location
 {
   //! some useful typedefs
   typedef gdlparser::parser::yy::location location_type;
+  typedef gdlparser::parser::yy::position position;
 
   //! empty constructor
   Location() {}
+  //! copy constructor
+  Location(const Location& loc)
+    : filename(loc.filename),
+      begin(&filename, loc.begin.line, loc.begin.column),
+      end(&filename, loc.end.line, loc.end.column)
+  {
+    // empty constructor
+  }
   //! constructs location object from location_type of parser
   Location(const location_type& loc)
+    : filename(*loc.begin.filename),
+      begin(&filename, loc.begin.line, loc.begin.column),
+      end(&filename, loc.end.line, loc.end.column)
   {
-    filename = *loc.begin.filename;
-    lineNo = loc.begin.line;
+    // empty constructor
   }
+
   //! constructs location from line number and filename
   Location(size_t lineNo, const std::string& filename)
     : filename(filename), lineNo(lineNo) {}
@@ -52,6 +64,9 @@ struct Location
   std::string filename;
   //! holds line number
   size_t lineNo;
+
+  position begin;
+  position end;
 }; // struct Location
 
 }; // namespace libgdl

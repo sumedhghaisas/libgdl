@@ -14,6 +14,8 @@
 
 #include "symbols.hpp"
 
+#include <libgdl/core/data_types/location.hpp>
+
 namespace libgdl
 {
 
@@ -31,8 +33,16 @@ class SymbolTable
       delete it->second;
   }
 
-  size_t AddEntry(const std::string& name, Symbol* sym)
+  size_t AddEntry(const std::string& name,
+                  const Location& loc,
+                  size_t arity = 0,
+                  bool isRelation = false)
   {
+    Symbol* sym;
+    if(isRelation)
+      sym = new RelationSymbol(name, arity, loc);
+    else sym = new FunctionSymbol(name, arity, loc);
+
     id_table[name] = index;
     symbol_tables[index] = sym;
     index++;
