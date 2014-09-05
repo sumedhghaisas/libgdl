@@ -13,6 +13,8 @@
 
 #include <list>
 
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::gdlparser;
@@ -24,7 +26,8 @@ KIF::KIF(bool isWarn,
   : log(log), isWarn(isWarn),
     isDebuggingSymbols(isDebuggingSymbols),
     o_level(o_level),
-    driver(*this)
+    driver(*this),
+    symbol_table(new SymbolTable())
 {
   f_last_index_with_linemark = 0;
   c_last_index_with_linemark = 0;
@@ -51,6 +54,11 @@ bool KIF::Parse(bool ignoreErrors)
     clauses.clear();
     return false;
   }
+
+  SymbolDecodeStream stream(symbol_table);
+  for(size_t i = 0;i < facts.size();i++)
+    stream << facts[i] << endl;
+
   return true;
 }
 

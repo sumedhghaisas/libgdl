@@ -13,7 +13,6 @@
 #include <list>
 #include <map>
 
-#include <libgdl/core/symbol_table/symbol_table.hpp>
 #include <libgdl/core/data_types/variable_map.hpp>
 #include <libgdl/gdlparser/parser/location.hh>
 
@@ -25,7 +24,7 @@ namespace gdlparser
 namespace parser
 {
 
-class Driver;
+class KIFDriver;
 
 class Node
 {
@@ -42,8 +41,10 @@ class Node
     return "testing";
   }
 
-  virtual void CodeGen(Driver& driver,
+  virtual void CodeGen(KIFDriver& driver,
                        VariableMap& v_map) = 0;
+
+  const location& GetLocation() { return loc; }
 
  protected:
   location loc;

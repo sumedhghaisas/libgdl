@@ -5,7 +5,9 @@ set(SOURCES
   basic_construct_impl.hpp
   node.hpp
   function_policy.hpp
+  function_policy.cpp
   relation_policy.hpp
+  relation_policy.cpp
 )
 
 # add directory name to sources

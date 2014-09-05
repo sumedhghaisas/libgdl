@@ -52,18 +52,18 @@ class BasicConstruct : public Node
 
   operator std::string() const;
 
-  void CodeGen(Driver& driver,
+  void CodeGen(KIFDriver& driver,
                VariableMap& v_map = VariableMap())
   {
-    Policy::CodeGen(driver, command, args, v_map);
+    Policy::CodeGen(driver, command, args, v_map, loc);
   }
 
   template<class T>
-  void CodeGen(T*& out,
-               Driver& driver,
+  bool CodeGen(T*& out,
+               KIFDriver& driver,
                VariableMap& v_map = VariableMap())
   {
-    Policy::CodeGen(out, driver, command, args, v_map);
+    return Policy::CodeGen(out, driver, command, args, v_map, loc);
   }
 
  private:
@@ -99,18 +99,18 @@ class BasicConstruct<Policy, Head, TerminalHold> : public Node
 
   operator std::string() const;
 
-  void CodeGen(Driver& driver,
+  void CodeGen(KIFDriver& driver,
                VariableMap& v_map = VariableMap())
   {
-    Policy::CodeGen(driver, command, args, v_map);
+    Policy::CodeGen(driver, command, args, v_map, loc);
   }
 
   template<class T>
-  void CodeGen(T*& out,
-               Driver& driver,
+  bool CodeGen(T*& out,
+               KIFDriver& driver,
                VariableMap& v_map = VariableMap())
   {
-    Policy::CodeGen(out, driver, command, args, v_map);
+    return Policy::CodeGen(out, driver, command, args, v_map, loc);
   }
 
  private:

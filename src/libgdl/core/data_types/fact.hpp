@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
 #include "argument.hpp"
 #include "location.hpp"
 
@@ -86,6 +88,11 @@ struct Fact
   //! comparison operators
   bool operator==(const Fact& fact) const;
   bool operator!=(const Fact& fact) const { return !(*this == fact); }
+
+  std::string DecodeToString(const SymbolTable& symbol_table) const
+  {
+    return arg->DecodeToString(symbol_table);
+  }
 
   //! fact as argument
   Argument* arg;

@@ -13,9 +13,12 @@
 #include <boost/unordered_map.hpp>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/util/gdl_stream.hpp>
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
 #include <libgdl/gdlparser/parser/kif_driver.hpp>
 #include <libgdl/gdlparser/parser/kif_parser.tab.hh>
-#include <libgdl/core/util/gdl_stream.hpp>
+#include <libgdl/gdlparser/parser/error_type.hpp>
 
 namespace libgdl
 {
@@ -143,6 +146,11 @@ class KIF
   //! add fact and clause to this kif -- used by KIFDriver
   const Fact& AddFact(const Fact& f, const location_type& loc);
   const Fact& AddFact(Fact&& f, const location_type& loc);
+  const Fact& AddFact(Fact&& f)
+  {
+    facts.push_back(std::move(f));
+    return facts.back();
+  }
   const Clause& AddClause(const Clause& c, const location_type& loc);
   const Clause& AddClause(Clause&& c, const location_type& loc);
 
@@ -181,6 +189,10 @@ class KIF
 
   size_t id_index;
   boost::unordered_map<std::string, size_t>* id_map;
+
+  std::list<parser::ErrorType> errors;
+
+  SymbolTable* symbol_table;
 }; // class KIF
 
 }; // namespace gdlparser

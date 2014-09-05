@@ -3,6 +3,8 @@
 set(SOURCES
   symbol_table.hpp
   symbols.hpp
+  symbol_decode_stream.hpp
+  symbol_decode_stream.cpp
 )
 
 # add directory name to sources

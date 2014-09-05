@@ -12,9 +12,11 @@
 #include <map>
 #include <boost/unordered_map.hpp>
 
-#include "symbols.hpp"
-
+#include <libgdl/core/util/log.hpp>
+#include <libgdl/core/util/to_string.hpp>
 #include <libgdl/core/data_types/location.hpp>
+
+#include "symbols.hpp"
 
 namespace libgdl
 {
@@ -28,8 +30,8 @@ class SymbolTable
 
   ~SymbolTable()
   {
-    for(SymbolMap::iterator it = symbol_tables.begin();
-                                                it != symbol_tables.end();it++)
+    for(SymbolMap::iterator it = symbol_table.begin();
+                                                it != symbol_table.end();it++)
       delete it->second;
   }
 
@@ -44,7 +46,7 @@ class SymbolTable
     else sym = new FunctionSymbol(name, arity, loc);
 
     id_table[name] = index;
-    symbol_tables[index] = sym;
+    symbol_table[index] = sym;
     index++;
     return index - 1;
   }
@@ -57,15 +59,44 @@ class SymbolTable
       symbol = NULL;
       return 0;
     }
-    symbol = symbol_tables[it->second];
+    symbol = symbol_table[it->second];
     return it->second;
   }
 
+  std::string GetCommandName(size_t id) const
+  {
+    const SymbolMap::const_iterator it = symbol_table.find(id);
+    if(it != symbol_table.end()) return (it->second)->Name();
+    else
+    {
+      log.Warn << "Identifier " << ToString(id) << " does not exist" << std::endl;
+      return "";
+    }
+  }
+
+  Log& GetLog() { return log; }
+
+  friend std::ostream& operator<<(std::ostream& s,
+                                  const libgdl::SymbolTable& symbol_table)
+  {
+    for(libgdl::SymbolTable::IDMap::const_iterator it = symbol_table.id_table.begin();
+                                          it != symbol_table.id_table.end();it++)
+    {
+      s << it->second << " -> " << it->second;
+      libgdl::SymbolTable::SymbolMap::const_iterator it2 =
+                                        symbol_table.symbol_table.find(it->second);
+      s << " -> " << *it2->second << std::endl;
+    }
+    return s;
+  }
+
  private:
-  SymbolMap symbol_tables;
+  SymbolMap symbol_table;
   IDMap id_table;
 
   size_t index;
+
+  mutable Log log;
 }; // class SymbolTable
 
 }; // namespace libgdl

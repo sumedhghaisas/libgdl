@@ -27,7 +27,8 @@ using namespace libgdl::gdlparser::parser;
 KIFDriver::KIFDriver(KIF& kif)
     : dgraph(kif.dgraph),
     kif(kif),
-    streams(kif.streams)
+    streams(kif.streams),
+    errors(kif.errors)
 {
     scanner = new KIFScanner(*this);
     parser = NULL;
@@ -46,6 +47,16 @@ KIFDriver::~KIFDriver()
 
     for(std::list<std::string*>::iterator it = to_free.begin();it != to_free.end();it++)
         delete *it;
+}
+
+const SymbolTable* KIFDriver::GetSymbolTable() const
+{
+  return kif.symbol_table;
+}
+
+SymbolTable* KIFDriver::GetSymbolTable()
+{
+  return kif.symbol_table;
 }
 
 void KIFDriver::Error(const location_type& loc, const std::string& msg) const
@@ -384,6 +395,20 @@ void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
     else if(f.Command() == "goal" && f.Arguments()[1]->val != "100")
     {
         Warn(loc, "Goal relation is defined with goal value not equal to 100. Unsupported by the winnable criterion of GDL.");
+    }
+}
+
+void KIFDriver::AddFact(Fact&& f_t)
+{
+    const Fact& f = kif.AddFact(std::move(f_t));
+
+    std::string command = f.arg->val;
+    size_t arity = f.arg->args.size();
+    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(command);
+    if(it == dgraph.end())
+    {
+        DGraphNode* rel = new DGraphNode(command, arity);
+        dgraph[command] = rel;
     }
 }
 

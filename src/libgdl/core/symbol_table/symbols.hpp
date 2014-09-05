@@ -7,10 +7,12 @@
 #ifndef _LIBGDL_CORE_SYMBOLS_HPP_INCLUDED
 #define _LIBGDL_CORE_SYMBOLS_HPP_INCLUDED
 
+#include <iostream>
 #include <string>
 #include <list>
 
 #include <libgdl/core/data_types/location.hpp>
+#include <libgdl/core/util/to_string.hpp>
 
 namespace libgdl
 {
@@ -28,12 +30,12 @@ struct Symbol
 
   virtual ~Symbol() {}
 
-  const Type& SymbolType() { return t; }
-  const Location& GetLocation() { return loc; }
+  const Type& SymbolType() const { return t; }
+  const Location& GetLocation() const { return loc; }
 
-  const std::string& Name() { return name; }
+  const std::string& Name() const { return name; }
 
-  size_t Arity() { return arity; }
+  size_t Arity() const { return arity; }
 
   void AddUsed(const Location& loc)
   {
@@ -53,8 +55,8 @@ struct Symbol
     }
   }
 
-  bool IsDef() { return isDef; }
-  bool IsUsed() { return isUsed; }
+  bool IsDef() const { return isDef; }
+  bool IsUsed() const { return isUsed; }
 
   Type t;
   std::string name;
@@ -87,5 +89,15 @@ struct RelationSymbol : public Symbol
 }; // RelationSymbol
 
 }; // namespace libgdl
+
+inline std::ostream& operator<<(std::ostream& s, const libgdl::Symbol& sym)
+{
+  if(sym.SymbolType() == libgdl::Symbol::RELATION)
+    s << "Relation: ";
+  else
+    s << "Function: ";
+  s << sym.Name() << "/" << libgdl::ToString(sym.Arity());
+  return s;
+}
 
 #endif // SYMBOLS_HPP_INCLUDED

@@ -75,6 +75,7 @@ namespace gdlparser {
 
 #include "syntax_tree_types_includes.hpp"
 #include <libgdl/core/symbol_table/symbol_table.hpp>
+#include <libgdl/core/data_types/variable_map.hpp>
 
 // use yylex function in scanner class instead of predefiend yylex
 #undef yylex
@@ -106,7 +107,8 @@ namespace gdlparser {
 /* Grammer */
 
 start : S   {
-              std::cout << "yolo" << std::endl;
+              VariableMap v_map;
+              $1->CodeGen(driver, v_map);
             }
 S     : ID  {
               $$ = new Sentence($1, @1);

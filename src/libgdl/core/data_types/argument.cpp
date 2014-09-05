@@ -397,3 +397,22 @@ bool Argument::IsEqualTo(const Argument& arg) const
     if(args[i] != arg.args[i]) return false;
   return true;
 }
+
+std::string Argument::DecodeToString(const SymbolTable& symbol_table) const
+{
+  string out = "";
+  if(args.size() == 0 && t != Argument::Var)
+  {
+    return symbol_table.GetCommandName(value);
+  }
+  else if(args.size() == 0)
+  {
+    return val;
+  }
+  else out = "( " + symbol_table.GetCommandName(value);
+
+  for(size_t i = 0;i < args.size();i++)
+    out += " " + (args[i])->DecodeToString(symbol_table);
+  out += " )";
+  return out;
+}

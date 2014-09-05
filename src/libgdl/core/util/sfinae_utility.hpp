@@ -7,6 +7,9 @@
 #ifndef _LIBGDL_CORE_UTIL_SFINAE_UTILITY_HPP_INCLUDED
 #define _LIBGDL_CORE_UTIL_SFINAE_UTILITY_HPP_INCLUDED
 
+#include <boost/utility/enable_if.hpp>
+#include <boost/type_traits.hpp>
+
 namespace libgdl
 {
 namespace sfinae
@@ -26,6 +29,17 @@ struct SupportsStringOperator
 
 }
 }
+
+#define HAS_MEM_FUNC(FUNC, NAME)                                               \
+template<typename T, typename sig>                                             \
+struct NAME {                                                                  \
+  typedef char yes[1];                                                         \
+  typedef char no [2];                                                         \
+  template<typename U, U> struct type_check;                                   \
+  template<typename _1> static yes &chk(type_check<sig, &_1::FUNC> *);         \
+  template<typename   > static no  &chk(...);                                  \
+  static bool const value = sizeof(chk<T>(0)) == sizeof(yes);                  \
+};
 
 
 #endif // _LIBGDL_CORE_UTIL_SFINAE_UTILITY_HPP_INCLUDED

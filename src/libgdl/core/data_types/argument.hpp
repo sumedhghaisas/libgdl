@@ -12,6 +12,8 @@
 #include <map>
 #include <boost/unordered_map.hpp>
 
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
 #include <libgdl/gdlparser/parser/token_value.hpp>
 
 namespace libgdl
@@ -96,10 +98,13 @@ struct Argument
   //! compute hash value
   size_t Hash(const boost::unordered_map<std::string, size_t>& id_map);
 
+  std::string DecodeToString(const SymbolTable& symbol_table) const;
+
   //! type of this argument
   Type t;
   //! command value
   std::string val;
+  size_t value;
   //! vector of arguments
   std::vector<Argument*> args;
 

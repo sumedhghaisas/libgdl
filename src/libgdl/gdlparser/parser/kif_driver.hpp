@@ -22,6 +22,7 @@
 #include "kif_scanner.hpp"
 #include "kif_parser.tab.hh"
 #include "token_value.hpp"
+#include "error_type.hpp"
 
 namespace libgdl
 {
@@ -82,6 +83,16 @@ public:
 
     //! method to start the parsing
     bool Parse();
+
+    const SymbolTable* GetSymbolTable() const;
+    SymbolTable* GetSymbolTable();
+
+    void Error(const ErrorType& error)
+    {
+      errors.push_back(error);
+    }
+
+    void AddFact(Fact&& f_t);
 
 private:
     friend yy::KIFParser;
@@ -151,7 +162,7 @@ private:
     //! pointers which needs to be freed in destruction
     std::list<std::string*> to_free;
 
-    SymbolTable sym_table;
+    std::list<ErrorType>& errors;
 };
 
 }; // namespace parser
