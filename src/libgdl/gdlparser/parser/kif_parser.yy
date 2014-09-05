@@ -109,9 +109,7 @@ start : S   {
               std::cout << "yolo" << std::endl;
             }
 S     : ID  {
-              size_t* id = new size_t(driver.sym_table.AddEntry(*$1, @1, 0));
-              $$ = new Term(id, @1);
-              delete $1;
+              $$ = new Sentence($1, @1);
             }
 
 %%

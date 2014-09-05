@@ -620,15 +620,13 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   case 3:
 #line 111 "kif_parser.yy" // lalr1.cc:846
     {
-              size_t* id = new size_t(driver.sym_table.AddEntry(*(yystack_[0].value.stringVal), yystack_[0].location, 0));
-              (yylhs.value.node) = new Term(id, yystack_[0].location);
-              delete (yystack_[0].value.stringVal);
+              (yylhs.value.node) = new Sentence((yystack_[0].value.stringVal), yystack_[0].location);
             }
-#line 628 "kif_parser.tab.cc" // lalr1.cc:846
+#line 626 "kif_parser.tab.cc" // lalr1.cc:846
     break;
 
 
-#line 632 "kif_parser.tab.cc" // lalr1.cc:846
+#line 630 "kif_parser.tab.cc" // lalr1.cc:846
           default:
             break;
           }
@@ -1039,8 +1037,8 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 
 #line 23 "kif_parser.yy" // lalr1.cc:1156
 } } } } // libgdl::gdlparser::parser::yy
-#line 1043 "kif_parser.tab.cc" // lalr1.cc:1156
-#line 117 "kif_parser.yy" // lalr1.cc:1157
+#line 1041 "kif_parser.tab.cc" // lalr1.cc:1156
+#line 115 "kif_parser.yy" // lalr1.cc:1157
 
 
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;

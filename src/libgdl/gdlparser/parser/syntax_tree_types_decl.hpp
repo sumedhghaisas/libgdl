@@ -14,6 +14,8 @@ namespace gdlparser
 namespace parser
 {
 
+class Node;
+
 class TerminalHold;
 
 template<class Policy, class Head, class Hold>
@@ -21,9 +23,10 @@ class BasicConstruct;
 
 class FunctionPolicy;
 
-class Node;
+class RelationPolicy;
 
-typedef BasicConstruct<FunctionPolicy, size_t, TerminalHold> Term;
+typedef BasicConstruct<FunctionPolicy, std::string, TerminalHold> Term;
+typedef BasicConstruct<RelationPolicy, std::string, Term> Sentence;
 
 }
 }

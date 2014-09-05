@@ -20,18 +20,28 @@ namespace parser
 
 struct FunctionPolicy
 {
-  typedef BasicConstruct<FunctionPolicy, size_t, TerminalHold> Term;
+  typedef BasicConstruct<FunctionPolicy, std::string, TerminalHold> Term;
+
+  static void CodeGen(Argument*& out,
+                      Driver& driver,
+                      std::string* command,
+                      std::list<Term*>& terms,
+                      VariableMap& v_map)
+  {
+
+  }
 
   static void CodeGen(Driver& driver,
-                      size_t* command,
+                      std::string* command,
                       std::list<Term*>& terms,
-                      VariableMap& v_map);
+                      VariableMap& v_map)
+  {
+
+  }
 };
 
 }
 }
 }
-
-#include "function_policy_impl.hpp"
 
 #endif // _LIBGDL_GDLPARSER_PARSER_FUNCTION_POLICY_HPP_INCLUDED
