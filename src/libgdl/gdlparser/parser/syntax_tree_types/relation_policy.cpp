@@ -32,6 +32,20 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
                              VariableMap& v_map,
                              const Location& command_loc)
 {
+  if(*command == "does" || *command == "true")
+  {
+    Q_ERROR(error,
+            "Relation " + *command + " cannot appear as a fact.",
+            command_loc);
+    driver.Error(error);
+  }
+  else if(*command == "role" || terms.size() != 1)
+  {
+    PR_ARITY_ERROR(error, *command, 1, terms.size(), command_loc);
+    driver.Error(error);
+    return false;
+  }
+
   SymbolTable* symbol_table = driver.GetSymbolTable();
   Symbol* sym;
   size_t id = symbol_table->CheckEntry(*command, sym);
@@ -39,13 +53,21 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
   {
     if(sym->Arity() != terms.size())
     {
-      ARITY_ERROR(error, *command, terms.size(), sym->Arity(), command_loc, sym->GetLocation());
+      ARITY_ERROR(error,
+                  *command, terms.size(),
+                  sym->Arity(),
+                  command_loc,
+                  sym->GetLocation());
       driver.Error(error);
       return false;
     }
     else if(sym->SymbolType() != Symbol::RELATION)
     {
-      RF_ERROR(error, *command, "Relation", "Function", command_loc, sym->GetLocation());
+      RF_ERROR(error,
+               *command,
+               "Relation", "Function",
+               command_loc,
+               sym->GetLocation());
       driver.Error(error);
       return false;
     }
@@ -63,6 +85,12 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
     {
       delete arg;
       return false;
+    }
+    else if(temp->HasVariables())
+    {
+      ErrorType error;
+      error.AddEntry("Variables cannot appear in facts.", command_loc);
+      driver.Error(error);
     }
     arg->args.push_back(temp);
   }

@@ -87,10 +87,9 @@ public:
     const SymbolTable* GetSymbolTable() const;
     SymbolTable* GetSymbolTable();
 
-    void Error(const ErrorType& error)
-    {
-      errors.push_back(error);
-    }
+    void Error(const ErrorType& error);
+
+    void Warning(const ErrorType& warn);
 
     void AddFact(Fact&& f_t);
 
@@ -161,8 +160,6 @@ private:
 
     //! pointers which needs to be freed in destruction
     std::list<std::string*> to_free;
-
-    std::list<ErrorType>& errors;
 };
 
 }; // namespace parser

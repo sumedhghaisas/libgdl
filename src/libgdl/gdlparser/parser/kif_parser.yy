@@ -78,6 +78,7 @@ namespace gdlparser {
 
 // driver class declaration.
 #include "kif_driver.hpp"
+#include "error_type.hpp"
 
 #include "syntax_tree_types_includes.hpp"
 #include <libgdl/core/util/to_string.hpp>
@@ -148,6 +149,9 @@ Fact      : Command {
 Term      : Command {
                       $$ = new Term($1, @$);
                     }
+          | VARIABLE  {
+                        $$ = new Term($1, @$);
+                      }
           | OBRACKET Command Term Terms CBRACKET  {
                                                     $$ = new Term($2, @$);
                                                     $$->AddArgument($3);
@@ -178,5 +182,7 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 // Mandatory error function
 void KIFParser::error (const KIFParser::location_type& loc, const std::string& msg)
 {
-  driver.Error(loc, msg);
+  libgdl::gdlparser::parser::ErrorType error;
+  error.AddEntry(msg, loc);
+  driver.Error(error);
 }

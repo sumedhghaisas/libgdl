@@ -191,6 +191,7 @@ class KIF
   boost::unordered_map<std::string, size_t>* id_map;
 
   std::list<parser::ErrorType> errors;
+  std::list<parser::ErrorType> warnings;
 
   SymbolTable* symbol_table;
 }; // class KIF

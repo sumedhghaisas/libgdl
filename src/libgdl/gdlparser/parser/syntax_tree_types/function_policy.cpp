@@ -23,6 +23,37 @@ bool FunctionPolicy::CodeGen(Argument*& out,
                              VariableMap& v_map,
                              const Location& command_loc)
 {
+  if((*command)[0] == '?')
+  {
+    VariableMap::const_iterator it = v_map.find(*command);
+    if(it == v_map.end())
+    {
+      out = new Argument;
+      out->val = *command;
+      out->t = Argument::Var;
+
+      v_map[*command] = out;
+    }
+    else out = it->second;
+    return true;
+  }
+  else if(*command == "role" ||
+          *command == "base" ||
+          *command == "input" ||
+          *command == "init" ||
+          *command == "legal" ||
+          *command == "next" ||
+          *command == "true" ||
+          *command == "does" ||
+          *command == "goal" ||
+          *command == "terminal" ||
+          *command == "distinct")
+  {
+    Q_ERROR(error, *command + " cannot be used as function.", command_loc);
+    driver.Error(error);
+    return false;
+  }
+
   SymbolTable* symbol_table = driver.GetSymbolTable();
   Symbol* sym;
   size_t id = symbol_table->CheckEntry(*command, sym);

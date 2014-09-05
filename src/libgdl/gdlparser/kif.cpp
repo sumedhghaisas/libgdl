@@ -54,6 +54,12 @@ bool KIF::Parse(bool ignoreErrors)
   for(std::list<ErrorType>::const_iterator it = errors.begin();it != errors.end();it++)
     log.Fatal << *it << std::endl;
 
+  if(isWarn)
+  {
+    for(std::list<ErrorType>::const_iterator it = warnings.begin();it != warnings.end();it++)
+      log.Warn << *it << std::endl;
+  }
+
   if(!res && !ignoreErrors)
   {
     facts.clear();

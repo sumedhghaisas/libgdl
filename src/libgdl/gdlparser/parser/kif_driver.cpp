@@ -27,8 +27,7 @@ using namespace libgdl::gdlparser::parser;
 KIFDriver::KIFDriver(KIF& kif)
     : dgraph(kif.dgraph),
     kif(kif),
-    streams(kif.streams),
-    errors(kif.errors)
+    streams(kif.streams)
 {
     scanner = new KIFScanner(*this);
     parser = NULL;
@@ -59,10 +58,20 @@ SymbolTable* KIFDriver::GetSymbolTable()
   return kif.symbol_table;
 }
 
+void KIFDriver::Error(const ErrorType& error)
+{
+  kif.errors.push_back(error);
+}
+
+void KIFDriver::Warning(const ErrorType& warn)
+{
+  kif.warnings.push_back(warn);
+}
+
 void KIFDriver::Error(const location_type& loc, const std::string& msg) const
 {
-    kif.log.Fatal << loc << ": " << msg << std::endl;
-    anyError = true;
+  kif.log.Fatal << loc << ": " << msg << std::endl;
+  anyError = true;
 }
 
 void KIFDriver::Warn(const location_type& loc, const std::string& msg) const
