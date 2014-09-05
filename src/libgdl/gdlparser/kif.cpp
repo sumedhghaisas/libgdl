@@ -18,6 +18,7 @@
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::gdlparser;
+using namespace libgdl::gdlparser::parser;
 
 KIF::KIF(bool isWarn,
          bool isDebuggingSymbols,
@@ -47,7 +48,12 @@ bool KIF::AddFile(const std::string& filename)
 
 bool KIF::Parse(bool ignoreErrors)
 {
+  errors.clear();
   bool res = driver.Parse();
+
+  for(std::list<ErrorType>::const_iterator it = errors.begin();it != errors.end();it++)
+    log.Fatal << *it << std::endl;
+
   if(!res && !ignoreErrors)
   {
     facts.clear();
@@ -68,6 +74,8 @@ KIF::~KIF()
                                                       it != dgraph.end();it++)
   delete it->second;
   delete id_map;
+
+  delete symbol_table;
 }
 
 bool KIF::PrintDependencyGraph(const string& filename) const

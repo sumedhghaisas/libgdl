@@ -39,7 +39,13 @@
 %union {
     size_t                      num;
     std::string*                stringVal;
+
     Node*                       node;
+
+    Sentence*                   sentence;
+
+    Term*                       term;
+    std::list<Term*>*           terms;
 }
 
 %code requires // *.hh
@@ -74,6 +80,7 @@ namespace gdlparser {
 #include "kif_driver.hpp"
 
 #include "syntax_tree_types_includes.hpp"
+#include <libgdl/core/util/to_string.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
 #include <libgdl/core/data_types/variable_map.hpp>
 
@@ -100,20 +107,70 @@ namespace gdlparser {
 /* Nonterminals */
 
 %type   <node>        start
+
 %type   <node>        S
+
+%type   <sentence>    Fact
+
+%type   <term>        Term
+%type   <terms>       Terms
+
+%type   <stringVal>   Command
 
 %%
 
 /* Grammer */
 
-start : S   {
-              VariableMap v_map;
-              $1->CodeGen(driver, v_map);
-            }
-S     : ID  {
-              $$ = new Sentence($1, @1);
-            }
+start     : S   start {
+                        VariableMap v_map;
+                        $1->CodeGen(driver, v_map);
+                        delete $1;
+                      }
+          | %empty  {
+                      $$ = NULL;
+                    }
 
+S         : Fact  {
+                    $$ = $1;
+                  }
+
+Fact      : Command {
+                      $$ = new Sentence($1, @$);
+                    }
+          | OBRACKET Command Term Terms CBRACKET  {
+                                                    $$ = new Sentence($2, @$);
+                                                    $$->AddArgument($3);
+                                                    if($4 != NULL)
+                                                      $$->AddArgument(*$4);
+                                                    delete $4;
+                                                  }
+
+Term      : Command {
+                      $$ = new Term($1, @$);
+                    }
+          | OBRACKET Command Term Terms CBRACKET  {
+                                                    $$ = new Term($2, @$);
+                                                    $$->AddArgument($3);
+                                                    if($4 != NULL)
+                                                      $$->AddArgument(*$4);
+                                                    delete $4;
+                                                  }
+
+Terms     : Term Terms  {
+                          if($2 == NULL)
+                            $$ = new std::list<Term*>();
+                          $2->push_front($1);
+                        }
+          | %empty  {
+                      $$ = NULL;
+                    }
+
+Command   : ID  {
+                  $$ = $1;
+                }
+          | NUMBER  {
+                      $$ = new std::string(ToString($1));
+                    }
 %%
 
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;

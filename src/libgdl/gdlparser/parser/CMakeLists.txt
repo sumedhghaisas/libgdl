@@ -24,6 +24,7 @@ set(SOURCES
   token_value.hpp
   syntax_tree_types_decl.hpp
   syntax_tree_types_includes.hpp
+  error_type.hpp
 )
 
 # add directory name to sources

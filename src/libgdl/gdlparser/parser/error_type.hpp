@@ -7,6 +7,7 @@
 #ifndef _LIBGDL_GDLPARSER_PARSER_ERROR_TYPE_HPP_INCLUDED
 #define _LIBGDL_GDLPARSER_PARSER_ERROR_TYPE_HPP_INCLUDED
 
+#include <iostream>
 #include <string>
 
 #include <libgdl/core/data_types/location.hpp>
@@ -40,6 +41,24 @@ struct ErrorType
 
 }
 }
+}
+
+inline std::ostream& operator<<(std::ostream& s,
+                                const libgdl::gdlparser::parser::ErrorType::Entry& entry)
+{
+  s << entry.loc << ": " << entry.text;
+  return s;
+}
+
+inline std::ostream& operator<<(std::ostream& s,
+                                const libgdl::gdlparser::parser::ErrorType& error)
+{
+  for(std::list<libgdl::gdlparser::parser::ErrorType::Entry>::const_iterator
+      it = error.entries.begin(); it!= error.entries.end();it++)
+  {
+    s << *it << std::endl;
+  }
+  return s;
 }
 
 #define ARITY_ERROR(NAME, VAR, UARITY, DARITY, ULOC, DLOC)                    \

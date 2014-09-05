@@ -40,7 +40,7 @@
 #ifndef YY_YY_KIF_PARSER_TAB_HH_INCLUDED
 # define YY_YY_KIF_PARSER_TAB_HH_INCLUDED
 // //                    "%code requires" blocks.
-#line 46 "kif_parser.yy" // lalr1.cc:371
+#line 52 "kif_parser.yy" // lalr1.cc:371
 
 #include <list>
 #include <string>
@@ -92,9 +92,15 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 
     size_t                      num;
     std::string*                stringVal;
+
     Node*                       node;
 
-#line 98 "kif_parser.tab.hh" // lalr1.cc:371
+    Sentence*                   sentence;
+
+    Term*                       term;
+    std::list<Term*>*           terms;
+
+#line 104 "kif_parser.tab.hh" // lalr1.cc:371
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -300,7 +306,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   // number is the opposite.  If YYTABLE_NINF, syntax error.
   static const unsigned char yytable_[];
 
-  static const unsigned char yycheck_[];
+  static const signed char yycheck_[];
 
   // YYSTOS[STATE-NUM] -- The (internal number of the) accessing
   // symbol of state STATE-NUM.
@@ -415,10 +421,10 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 1,           //< Last index in yytable_.
-      yynnts_ = 3,  //< Number of nonterminal symbols.
+      yylast_ = 20,           //< Last index in yytable_.
+      yynnts_ = 7,  //< Number of nonterminal symbols.
       yyempty_ = -2,
-      yyfinal_ = 4, //< Termination state number.
+      yyfinal_ = 9, //< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
       yyntokens_ = 13    //< Number of tokens.
@@ -433,7 +439,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 
 #line 23 "kif_parser.yy" // lalr1.cc:371
 } } } } // libgdl::gdlparser::parser::yy
-#line 437 "kif_parser.tab.hh" // lalr1.cc:371
+#line 443 "kif_parser.tab.hh" // lalr1.cc:371
 
 
 

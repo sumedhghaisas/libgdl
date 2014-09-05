@@ -71,11 +71,24 @@ struct Location
 
 }; // namespace libgdl
 
-inline std::ostream& operator<<(std::ostream& o,
-                                const libgdl::Location& loc)
+
+inline std::ostream& operator<<(std::ostream& ostr, const libgdl::Location& loc)
 {
-  o << loc.lineNo << " \"" << loc.filename << "\"";
-  return o;
+  unsigned int end_col = 0 < loc.end.column ? loc.end.column - 1 : 0;
+
+  ostr << loc.begin;
+
+  if (loc.end.filename
+      && (!loc.begin.filename
+          || *loc.begin.filename != *loc.end.filename))
+  {
+    ostr << '-' << loc.end.filename << ':' << loc.end.line << '.' << end_col;
+  }
+  else if (loc.begin.line < loc.end.line)
+    ostr << '-' << loc.end.line << '.' << end_col;
+  else if (loc.begin.column < end_col)
+    ostr << '-' << end_col;
+  return ostr;
 }
 
 #endif // _LIBGDL_CORE_HPP_INCLUDED

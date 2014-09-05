@@ -60,3 +60,13 @@ bool FunctionPolicy::CodeGen(Argument*& out,
 
   return true;
 }
+
+bool FunctionPolicy::CodeGen(KIFDriver& driver,
+                             std::string* command,
+                             std::list<Term*>& terms,
+                             VariableMap& v_map,
+                             const Location& command_loc)
+{
+  return false;
+}
+
