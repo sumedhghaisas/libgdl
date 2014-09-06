@@ -2,6 +2,7 @@
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
   symbol_table.hpp
+  symbol_table.cpp
   symbols.hpp
   symbol_decode_stream.hpp
   symbol_decode_stream.cpp

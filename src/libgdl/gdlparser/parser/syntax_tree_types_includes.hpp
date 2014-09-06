@@ -12,5 +12,6 @@
 #include "syntax_tree_types/basic_construct.hpp"
 #include "syntax_tree_types/function_policy.hpp"
 #include "syntax_tree_types/relation_policy.hpp"
+#include "syntax_tree_types/clause_policy.hpp"
 
 #endif // _LIBGDL_GDLPARSER_SYNTAX_TREE_TYPES_INCLUDES_HPP_INCLUDED

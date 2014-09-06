@@ -9,6 +9,7 @@
 #include <stack>
 #include <sstream>
 
+using namespace std;
 using namespace libgdl;
 
 Clause::Clause(const TokenValue& tok, const size_t id)
@@ -103,4 +104,19 @@ bool Clause::IsGround()
     if(!(premisses[i]->IsGround())) return false;
 
   return true;
+}
+
+std::string Clause::DecodeToString(const SymbolTable& symbol_table) const
+{
+  if(head == NULL) return "head is null!!";
+
+  string out = "(<= ";
+  out += head->DecodeToString(symbol_table) + " ";
+
+  for(size_t i = 0;i < premisses.size();i++)
+  {
+    out += premisses[i]->DecodeToString(symbol_table) + " ";
+  }
+  out += ")";
+  return out;
 }

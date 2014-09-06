@@ -22,4 +22,6 @@
 #include <libgdl/core/util/timer.hpp>
 #include <libgdl/core/util/to_string.hpp>
 
+#define MARK_USED(X) (void)X;
+
 #endif // __LIBGDL_CORE_HPP

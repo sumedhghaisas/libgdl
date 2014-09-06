@@ -153,6 +153,11 @@ class KIF
   }
   const Clause& AddClause(const Clause& c, const location_type& loc);
   const Clause& AddClause(Clause&& c, const location_type& loc);
+  const Clause& AddClause(Clause&& c)
+  {
+    clauses.push_back(std::move(c));
+    return clauses.back();
+  }
 
   void UpdateSymbolTable(const Argument& arg, const Location& loc);
 

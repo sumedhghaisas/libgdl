@@ -22,17 +22,32 @@ namespace parser
 
 struct RelationPolicy
 {
-  typedef BasicConstruct<FunctionPolicy, std::string, TerminalHold> Term;
+  typedef FunctionPolicy::Term Term;
+  typedef BasicConstruct<RelationPolicy, std::string, Term> Sentence;
 
   static bool CodeGen(Argument*& out,
                       KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
-                      VariableMap& v_map);
+                      VariableMap& v_map,
+                      const Location& loc);
 
   static bool CodeGen(KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
+                      VariableMap& v_map,
+                      const Location& command_loc);
+
+  static bool CodeGen(Argument*& out,
+                      KIFDriver& driver,
+                      std::string* command,
+                      std::list<Sentence*>& sentences,
+                      VariableMap& v_map,
+                      const Location& loc);
+
+  static bool CodeGen(KIFDriver& driver,
+                      std::string* command,
+                      std::list<Sentence*>& sentences,
                       VariableMap& v_map,
                       const Location& command_loc);
 };

@@ -98,6 +98,12 @@ bool FunctionPolicy::CodeGen(KIFDriver& driver,
                              VariableMap& v_map,
                              const Location& command_loc)
 {
+  MARK_USED(driver);
+  MARK_USED(command);
+  MARK_USED(terms);
+  MARK_USED(v_map);
+  MARK_USED(command_loc);
+  exit(1);
   return false;
 }
 

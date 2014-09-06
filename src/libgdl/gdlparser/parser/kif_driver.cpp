@@ -386,27 +386,6 @@ void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_in
     (head->in).push_back(rel);
 }
 
-void KIFDriver::AddFact(const TokenValue& tok, const location_type& loc)
-{
-    Fact f_t(tok);
-    const Fact& f = kif.AddFact(std::move(f_t), loc);
-
-    std::string command = f.arg->val;
-    size_t arity = f.arg->args.size();
-    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(command);
-    if(it == dgraph.end())
-    {
-        DGraphNode* rel = new DGraphNode(command, arity);
-        dgraph[command] = rel;
-    }
-
-    if(f.Command() == "terminal") Warn(loc, "'terminal' is defined as a fact.");
-    else if(f.Command() == "goal" && f.Arguments()[1]->val != "100")
-    {
-        Warn(loc, "Goal relation is defined with goal value not equal to 100. Unsupported by the winnable criterion of GDL.");
-    }
-}
-
 void KIFDriver::AddFact(Fact&& f_t)
 {
     const Fact& f = kif.AddFact(std::move(f_t));
@@ -419,6 +398,11 @@ void KIFDriver::AddFact(Fact&& f_t)
         DGraphNode* rel = new DGraphNode(command, arity);
         dgraph[command] = rel;
     }
+}
+
+void KIFDriver::AddClause(Clause&& c_t)
+{
+    kif.AddClause(std::move(c_t));
 }
 
 void KIFDriver::CheckCycles()

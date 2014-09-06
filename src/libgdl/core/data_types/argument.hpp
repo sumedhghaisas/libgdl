@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 #include <boost/unordered_map.hpp>
 
 #include <libgdl/core/symbol_table/symbol_table.hpp>
@@ -89,6 +90,8 @@ struct Argument
 
   bool HasVariables() const;
 
+  std::set<const Argument*> GetVariables() const;
+
   //! equivalent to comparison operator but 'or' conditions is removed in this
   bool IsEqualTo(const Argument& arg) const;
 
@@ -116,6 +119,7 @@ struct Argument
                                      std::map<std::string,
                                      Argument*>& v_map);
   static Argument* ConstructArgument(const std::string& str,
+
                                      std::map<std::string,
                                      Argument*>& v_map);
 
@@ -127,6 +131,7 @@ struct Argument
 }; // struct Argument
 
 }; //namespace libgdl
+
 
 inline std::ostream& operator<<(std::ostream& o, const libgdl::Argument& arg)
 {

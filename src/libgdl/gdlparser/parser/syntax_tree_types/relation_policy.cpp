@@ -21,9 +21,55 @@ bool RelationPolicy::CodeGen(Argument*& out,
                              KIFDriver& driver,
                              std::string* command,
                              std::list<Term*>& terms,
-                             VariableMap& v_map)
+                             VariableMap& v_map,
+                             const Location& command_loc)
 {
+  SymbolTable* symbol_table = driver.GetSymbolTable();
+  Symbol* sym;
+  size_t id = symbol_table->CheckEntry(*command, sym);
+  if(sym != NULL)
+  {
+    if(sym->Arity() != terms.size())
+    {
+      ARITY_ERROR(error,
+                  *command, terms.size(),
+                  sym->Arity(),
+                  command_loc,
+                  sym->GetLocation());
+      driver.Error(error);
+      return false;
+    }
+    else if(sym->SymbolType() != Symbol::RELATION)
+    {
+      RF_ERROR(error,
+               *command,
+               "Relation", "Function",
+               command_loc,
+               sym->GetLocation());
+      driver.Error(error);
+      return false;
+    }
+  }
+  else id = symbol_table->AddEntry(*command, command_loc, terms.size(), true);
 
+  Argument* arg = new Argument();
+  arg->t = Argument::Relation;
+  arg->value = id;
+
+  for(std::list<Term*>::const_iterator it = terms.begin();it != terms.end();it++)
+  {
+    Argument* temp;
+    if(!(*it)->CodeGen(temp, driver, v_map))
+    {
+      delete arg;
+      return false;
+    }
+    arg->args.push_back(temp);
+  }
+
+  out = arg;
+
+  return true;
 }
 
 bool RelationPolicy::CodeGen(KIFDriver& driver,
@@ -74,6 +120,8 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
   }
   else id = symbol_table->AddEntry(*command, command_loc, terms.size(), true);
 
+  symbol_table->AddDefined(id, command_loc);
+
   Argument* arg = new Argument();
   arg->t = Argument::Relation;
   arg->value = id;
@@ -102,4 +150,62 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
   driver.AddFact(std::move(f));
 
   return true;
+}
+
+bool RelationPolicy::CodeGen(Argument*& out,
+                             KIFDriver& driver,
+                             std::string* command,
+                             std::list<Sentence*>& sentences,
+                             VariableMap& v_map,
+                             const Location& command_loc)
+{
+  MARK_USED(command_loc);
+
+  if(*command == "")
+  {
+    if(!(*sentences.begin())->CodeGen(out, driver, v_map))
+      return false;
+    return true;
+  }
+
+  SymbolTable* symbol_table = driver.GetSymbolTable();
+  Symbol* sym;
+
+  size_t id = symbol_table->CheckEntry(*command, sym);
+
+  Argument* arg = new Argument();
+  arg->t = Argument::Relation;
+  arg->value = id;
+
+  for(std::list<Sentence*>::const_iterator it = sentences.begin();
+                                              it != sentences.end();it++)
+  {
+    Argument* temp;
+    if(!(*it)->CodeGen(temp, driver, v_map))
+    {
+      delete arg;
+      return false;
+    }
+    arg->args.push_back(temp);
+  }
+
+  out = arg;
+
+  return true;
+}
+
+bool RelationPolicy::CodeGen(KIFDriver& driver,
+                             std::string* command,
+                             std::list<Sentence*>& sentences,
+                             VariableMap& v_map,
+                             const Location& command_loc)
+{
+  MARK_USED(driver);
+  MARK_USED(command);
+  MARK_USED(sentences);
+  MARK_USED(v_map);
+  MARK_USED(command_loc);
+  cout << "lol2" << endl;
+  exit(1);
+  return false;
 }

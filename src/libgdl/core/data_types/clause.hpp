@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
 #include "argument.hpp"
 #include "location.hpp"
 
@@ -67,6 +69,8 @@ struct Clause
     loc = Location(l);
   }
 
+  std::string DecodeToString(const SymbolTable& symbol_table) const;
+
   bool IsGround();
 
   //! Head of the clause
@@ -91,7 +95,5 @@ inline std::ostream& operator<<(std::ostream& o, const libgdl::Clause& clause)
   o << ")";
   return o;
 }
-
-
 
 #endif // _LIBGDL_CORE_DATATYPES_CLAUSE_HPP_INCLUDED

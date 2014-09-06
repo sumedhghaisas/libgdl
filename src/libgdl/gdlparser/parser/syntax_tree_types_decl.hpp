@@ -22,11 +22,13 @@ template<class Policy, class Head, class Hold>
 class BasicConstruct;
 
 class FunctionPolicy;
-
 class RelationPolicy;
+class ClausePolicy;
 
 typedef BasicConstruct<FunctionPolicy, std::string, TerminalHold> Term;
 typedef BasicConstruct<RelationPolicy, std::string, Term> Sentence;
+typedef BasicConstruct<RelationPolicy, std::string, Sentence> Premiss;
+typedef BasicConstruct<ClausePolicy, Sentence, Premiss> ClauseConstruct;
 
 }
 }

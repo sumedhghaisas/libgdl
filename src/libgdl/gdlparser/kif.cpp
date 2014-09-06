@@ -68,8 +68,12 @@ bool KIF::Parse(bool ignoreErrors)
   }
 
   SymbolDecodeStream stream(symbol_table);
+
   for(size_t i = 0;i < facts.size();i++)
     stream << facts[i] << endl;
+
+  for(size_t i = 0;i < clauses.size();i++)
+    stream << clauses[i] << endl;
 
   return true;
 }

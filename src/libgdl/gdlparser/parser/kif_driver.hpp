@@ -92,13 +92,11 @@ public:
     void Warning(const ErrorType& warn);
 
     void AddFact(Fact&& f_t);
+    void AddClause(Clause&& c_t);
 
 private:
     friend yy::KIFParser;
     friend KIFScanner;
-
-    //! construct a fact from given token
-    void AddFact(const TokenValue& fact, const location_type& loc);
 
     //! construct a rule from given token and location for verbore warnings and errors
     void AddClause(const TokenValue& clause, const location_type& loc);

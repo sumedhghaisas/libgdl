@@ -28,51 +28,18 @@ class SymbolTable
  public:
   SymbolTable() : index(0) {}
 
-  ~SymbolTable()
-  {
-    for(SymbolMap::iterator it = symbol_table.begin();
-                                                it != symbol_table.end();it++)
-      delete it->second;
-  }
+  ~SymbolTable();
 
   size_t AddEntry(const std::string& name,
                   const Location& loc,
                   size_t arity = 0,
-                  bool isRelation = false)
-  {
-    Symbol* sym;
-    if(isRelation)
-      sym = new RelationSymbol(name, arity, loc);
-    else sym = new FunctionSymbol(name, arity, loc);
+                  bool isRelation = false);
 
-    id_table[name] = index;
-    symbol_table[index] = sym;
-    index++;
-    return index - 1;
-  }
+  size_t CheckEntry(const std::string& name, Symbol*& symbol);
 
-  size_t CheckEntry(const std::string& name, Symbol*& symbol)
-  {
-    IDMap::const_iterator it = id_table.find(name);
-    if(it == id_table.end())
-    {
-      symbol = NULL;
-      return 0;
-    }
-    symbol = symbol_table[it->second];
-    return it->second;
-  }
+  std::string GetCommandName(size_t id) const;
 
-  std::string GetCommandName(size_t id) const
-  {
-    const SymbolMap::const_iterator it = symbol_table.find(id);
-    if(it != symbol_table.end()) return (it->second)->Name();
-    else
-    {
-      log.Warn << "Identifier " << ToString(id) << " does not exist" << std::endl;
-      return "";
-    }
-  }
+  bool AddDefined(size_t id, const Location& loc);
 
   Log& GetLog() { return log; }
 
@@ -89,6 +56,16 @@ class SymbolTable
     }
     return s;
   }
+
+  const SymbolMap& GetSymbolMap() const
+  {
+    return symbol_table;
+  }
+  const IDMap& GetIDMap() const
+  {
+    return id_table;
+  }
+
 
  private:
   SymbolMap symbol_table;

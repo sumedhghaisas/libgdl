@@ -42,7 +42,13 @@
 
     Node*                       node;
 
+    ClauseConstruct*            clause;
+
+    Premiss*                    premiss;
+    std::list<Premiss*>*        premisses;
+
     Sentence*                   sentence;
+    std::list<Sentence*>*       sentences;
 
     Term*                       term;
     std::list<Term*>*           terms;
@@ -113,6 +119,14 @@ namespace gdlparser {
 
 %type   <sentence>    Fact
 
+%type   <clause>      Clause
+
+%type   <premiss>     Premiss
+%type   <premisses>   Premisses
+
+%type   <sentence>    Sentence;
+%type   <sentences>   Sentences;
+
 %type   <term>        Term
 %type   <terms>       Terms
 
@@ -134,8 +148,50 @@ start     : S   start {
 S         : Fact  {
                     $$ = $1;
                   }
+          | Clause  {
+                      $$ = $1;
+                    }
 
-Fact      : Command {
+Fact      : Sentence  {
+                        $$ = $1;
+                      }
+
+Clause    : OBRACKET CCOMMAND Sentence Premiss Premisses CBRACKET
+                      {
+                        $$ = new ClauseConstruct($3, @$);
+                        $$->AddArgument($4);
+                        if($5 != NULL) $$->AddArgument(*$5);
+                        delete $5;
+                      }
+
+Premiss   : Sentence  {
+                        $$ = new Premiss(new std::string(""), @$);
+                        $$->AddArgument($1);
+                      }
+          | OBRACKET NOT Sentence CBRACKET
+                    {
+                      $$ = new Premiss(new std::string("not"), @$);
+                      $$->AddArgument($3);
+                    }
+          | OBRACKET OR Sentence Sentences CBRACKET
+                    {
+                      $$ = new Premiss(new std::string("or"), @$);
+                      $$->AddArgument($3);
+                      if($4 != NULL) $$->AddArgument(*$4);
+                      delete $4;
+                    }
+
+Premisses : Premiss Premisses {
+                                if($2 == NULL)
+                                  $$ = new std::list<Premiss*>();
+                                else $$ = $2;
+                                $$->push_front($1);
+                              }
+          | %empty  {
+                      $$ = NULL;
+                    }
+
+Sentence  : Command {
                       $$ = new Sentence($1, @$);
                     }
           | OBRACKET Command Term Terms CBRACKET  {
@@ -145,6 +201,16 @@ Fact      : Command {
                                                       $$->AddArgument(*$4);
                                                     delete $4;
                                                   }
+
+Sentences : Sentence Sentences  {
+                                  if($2 == NULL)
+                                    $$ = new std::list<Sentence*>();
+                                  else $$ = $2;
+                                  $$->push_front($1);
+                                }
+          | %empty  {
+                      $$ = NULL;
+                    }
 
 Term      : Command {
                       $$ = new Term($1, @$);
@@ -163,7 +229,8 @@ Term      : Command {
 Terms     : Term Terms  {
                           if($2 == NULL)
                             $$ = new std::list<Term*>();
-                          $2->push_front($1);
+                          else $$ = $2;
+                          $$->push_front($1);
                         }
           | %empty  {
                       $$ = NULL;

@@ -294,7 +294,14 @@ size_t Argument::Hash(const unordered_map<string, size_t>& id_map)
 
 bool Argument::operator==(const Argument& arg) const
 {
-  if(val != arg.val) return false;
+  if(t != arg.t) return false;
+  if(t == Var)
+  {
+    if(val != arg.val) return false;
+    else return true;
+  }
+
+  if(value != arg.value) return false;
   if(args.size() != arg.args.size()) return false;
 
   for(size_t i = 0;i < args.size();i++)
@@ -415,4 +422,30 @@ std::string Argument::DecodeToString(const SymbolTable& symbol_table) const
     out += " " + (args[i])->DecodeToString(symbol_table);
   out += " )";
   return out;
+}
+
+set<const Argument*> Argument::GetVariables() const
+{
+  set<const Argument*> variables;
+
+  stack<const Argument*> S;
+  S.push(this);
+
+  while(!S.empty())
+  {
+    const Argument* arg = S.top();
+    S.pop();
+
+    if(arg->IsVariable())
+    {
+      variables.insert(arg);
+      continue;
+    }
+
+    for(size_t i = 0;i < arg->args.size();i++)
+    {
+      S.push(arg->args[i]);
+    }
+  }
+  return variables;
 }
