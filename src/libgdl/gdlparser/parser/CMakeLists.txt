@@ -20,8 +20,6 @@ set(SOURCES
   location.hh
   position.hh
   stack.hh
-  token_value.cpp
-  token_value.hpp
   syntax_tree_types_decl.hpp
   syntax_tree_types_includes.hpp
 )

@@ -31,8 +31,6 @@ KIFDriver::KIFDriver(KIF& kif)
   scanner = new KIFScanner(*this);
   parser = NULL;
 
-  anyError = false;
-
   current_id = 0;
 }
 
@@ -79,91 +77,55 @@ void KIFDriver::Warn(const ErrorType& warn)
 
 bool KIFDriver::Parse()
 {
-    // create a new parser object
-    parser = new yy::KIFParser( (*scanner), (*this));
+  // create a new parser object
+  parser = new yy::KIFParser( (*scanner), (*this));
 
-    // perform syntactical stage of parsing
-    if( parser->parse() != 0 || anyError == true)
-    {
-        // if failed
-        return false;
-    }
-
-//    //! check if role, terminal, goal and legal relations are defined
-//    std::vector<std::string> c_rels;
-//    c_rels.push_back("role");
-//    c_rels.push_back("terminal");
-//    c_rels.push_back("goal");
-//    c_rels.push_back("legal");
-//    for(size_t i = 0; i < c_rels.size(); i++)
-//    {
-//        std::map<std::string, Symbol>::const_iterator it = symbol_table.find(c_rels[i]);
-//        if(it == symbol_table.end() || (it->second).isDefined == false)
-//            Error("No '" + c_rels[i] + "' relations found in the input.");
-//    }
-
-    // check for stratification
-    //CheckCycles();
-
-    // check that relation init, base and input are not dependent on true or does
-    // check that relation legal is not dependent on relation legal
-    //CheckRecursiveDependencies();
-
-//    // show undefiend symbol warnings
-//    for(std::map<std::string, Symbol>::iterator it = symbol_table.begin(); it != symbol_table.end(); it++)
-//    {
-//        if((it->second).isDefined == false) Warn((it->second).first_occurrence, "Undefined symbol " + (it->second).name);
-//    }
-
-  if(anyError)
-  {
+  // perform syntactical stage of parsing
+  if(parser->parse() != 0)
     return false;
-  }
-
   return true;
 }
 
-void KIFDriver::AddLineMark(const TokenValue& tok)
-{
-    // get value from the tken
-    const std::string& val = tok.Value();
-
-    size_t start = val.find("#line");
-
-    // get line number
-    // if invalid return
-    size_t i = val.find(" ", start + 1);
-    if(i == std::string::npos) return;
-    size_t j = val.find(" ", i + 1);
-    if(j == std::string::npos) return;
-    std::string str_lineNo = val.substr(i + 1, j - i - 1).c_str();
-
-    for (size_t i = 0; i < str_lineNo.length(); i++)
-    {
-        if (!isdigit(str_lineNo[i])) return;
-    }
-    size_t lineNo = atoi(str_lineNo.c_str());
-
-    // get filename
-    // if none provided assume it to be ""
-    i = val.find("\"");
-    std::string filename = "";
-    if(i != std::string::npos)
-    {
-        j = val.find("\"", i + 1);
-        if(j == std::string::npos) return;
-        filename = val.substr(i + 1, j - i - 1);
-    }
-
-    std::string* temp = new std::string(filename);
-
-    to_free.push_back(temp);
-
-    // process facts and clauses accordingly
-    kif.AddLineMark(location_type(temp, lineNo, 0));
-    return;
-
-}
+//void KIFDriver::AddLineMark(const TokenValue& tok)
+//{
+//    // get value from the tken
+//    const std::string& val = tok.Value();
+//
+//    size_t start = val.find("#line");
+//
+//    // get line number
+//    // if invalid return
+//    size_t i = val.find(" ", start + 1);
+//    if(i == std::string::npos) return;
+//    size_t j = val.find(" ", i + 1);
+//    if(j == std::string::npos) return;
+//    std::string str_lineNo = val.substr(i + 1, j - i - 1).c_str();
+//
+//    for (size_t i = 0; i < str_lineNo.length(); i++)
+//    {
+//        if (!isdigit(str_lineNo[i])) return;
+//    }
+//    size_t lineNo = atoi(str_lineNo.c_str());
+//
+//    // get filename
+//    // if none provided assume it to be ""
+//    i = val.find("\"");
+//    std::string filename = "";
+//    if(i != std::string::npos)
+//    {
+//        j = val.find("\"", i + 1);
+//        if(j == std::string::npos) return;
+//        filename = val.substr(i + 1, j - i - 1);
+//    }
+//
+//    std::string* temp = new std::string(filename);
+//
+//    to_free.push_back(temp);
+//
+//    // process facts and clauses accordingly
+//    kif.AddLineMark(location_type(temp, lineNo, 0));
+//    return;
+//}
 
 const Fact& KIFDriver::AddFact(Fact&& f_t)
 {
@@ -174,64 +136,3 @@ const Clause& KIFDriver::AddClause(Clause&& c_t)
 {
     return kif.AddClause(std::move(c_t));
 }
-
-void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<DGraphNode*>& scc,
-                           const location_type& loc)
-{
-//    const Clause& c = kif.Clauses()[c_index];
-//
-//    const std::vector<Argument*>& premisses = c.premisses;
-//
-//    // find the index of the given argument in the clause
-//    size_t arg_index = 0;
-//    for(size_t i = 0;i < premisses.size();i++)
-//        if(premisses[i]->OrEquate(arg))
-//        {
-//            arg_index = i;
-//            break;
-//        }
-//
-//    // check for each argument in given argument
-//    bool isValid = true;
-//    size_t invalid_index = 0;
-//    for(size_t i = 0;i < arg.args.size();i++)
-//    {
-//        // check if the argument is ground
-//        if(arg.args[i]->IsGround()) continue;
-//        // check if this argument is also argument to head
-//        if(c.head->HasAsArgument(*(arg.args[i]))) continue;
-//
-//        bool isFound = false;
-//
-//        for(size_t j = 0;j < premisses.size();j++)
-//        {
-//            // avoid checking in itself
-//            if(j == arg_index) continue;
-//
-//            // if another premiss has same same argument and is not in the same SCC
-//            if(premisses[j]->HasAsArgument(*(arg.args[i])) && scc.find(dgraph[premisses[j]->val]) == scc.end())
-//            {
-//                isFound = true;
-//                break;
-//            }
-//        }
-//
-//        if(!isFound)
-//        {
-//            isValid = false;
-//            invalid_index = i;
-//            break;
-//        }
-//    }
-//
-//    if(!isValid)
-//    {
-//        std::stringstream stream;
-//        stream << *arg.args[invalid_index];
-//        Error(loc, "Unstratified Recursion: Relation involved in the cycle is " + arg.val +
-//                       ". Restriction violated for variable " + stream.str());
-//    }
-
-}
-
-

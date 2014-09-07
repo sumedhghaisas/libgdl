@@ -12,20 +12,8 @@
 using namespace std;
 using namespace libgdl;
 
-Clause::Clause(const TokenValue& tok, const size_t id)
-  : id(id), isLocation(false)
-{
-  const std::vector<TokenValue>& args = tok.Arguments();
-
-  std::map<std::string, Argument*> v_map;
-
-  head = Argument::ConstructArgument(args[0], v_map);
-
-  for(size_t i = 1;i < args.size();i++)
-    premisses.push_back(Argument::ConstructArgument(args[i], v_map));
-}
-
-Clause::Clause(const std::string& str) : isLocation(false)
+Clause::Clause(const std::string& str)
+  : isLocation(false)
 {
   std::map<std::string, Argument*> v_map;
 

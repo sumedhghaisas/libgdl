@@ -42,9 +42,6 @@ struct Fact
     swap(*this, f);
   }
 
-  //! constructs a fact with given command name and text
-  Fact(const TokenValue& tok)
-    : arg(new Argument(tok)) {}
   //! construct a fact fro argument
   //! does not check if argument has variables or not
   Fact(const Argument& arg) : arg(new Argument(arg)) {}
@@ -68,9 +65,6 @@ struct Fact
     swap(f1.isLocation, f2.isLocation);
     swap(f1.loc, f2.loc);
   }
-
-  //! Adds argument to this fact
-  void AddArgument(const TokenValue& tok) { arg->AddArgument(tok); }
 
   //! Assign location to this fact
   void AddLocation(const location_type& l)

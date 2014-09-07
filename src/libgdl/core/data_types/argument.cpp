@@ -13,23 +13,6 @@ using namespace std;
 using namespace boost;
 using namespace libgdl;
 
-Argument::Argument(const TokenValue& tok)
-{
-  // copy information from token
-  if(tok.Type() == TokenValue::Relation) t = Relation;
-  else if(tok.Type() == TokenValue::Function) t = Function;
-  else t = Var;
-
-  // assign argument command
-  val = tok.Command();
-
-  // get arguments from the token
-  const std::vector<TokenValue>& args = tok.Arguments();
-
-  // add them as arguments
-  for(size_t i = 0;i < args.size();i++) AddArgument(args[i]);
-}
-
 Argument::Argument(const Argument& arg) noexcept
 {
   if(arg.IsVariable())
@@ -212,38 +195,6 @@ Argument* Argument::ConstructArgument(const Argument& arg,
   return out;
 }
 
-Argument* Argument::ConstructArgument(const TokenValue& tok,
-                                      std::map<std::string,
-                                      Argument*>& v_map)
-{
-  std::map<std::string, Argument*>::iterator it;
-  if(tok.Type() == TokenValue::Var &&
-          (it = v_map.find(tok.Command())) != v_map.end())
-  {
-      return it->second;
-  }
-  else if(tok.Type() == TokenValue::Var)
-  {
-    Argument *out = new Argument(tok);
-    v_map[tok.Command()] = out;
-    return out;
-  }
-
-  Argument *out = new Argument();
-
-  if(tok.Type() == TokenValue::Relation) out->t = Argument::Relation;
-  else if(tok.Type() == TokenValue::Function) out->t = Argument::Function;
-  else out->t = Argument::Var;
-
-  out->val = tok.Command();
-
-  const std::vector<TokenValue>& args = tok.Arguments();
-
-  for(size_t i = 0;i < args.size();i++) out->args.push_back(ConstructArgument(args[i], v_map));
-
-  return out;
-}
-
 Argument* Argument::ConstructArgument(const std::string& str,
                                       std::map<std::string,
                                       Argument*>& v_map)
@@ -348,13 +299,7 @@ bool Argument::OrEquate(const Argument& arg)
     return false;
   }
 
-  if(val != arg.val) return false;
-  if(args.size() != arg.args.size()) return false;
-
-  for(size_t i = 0;i < args.size();i++)
-    if(!args[i]->OrEquate(*arg.args[i])) return false;
-
-  return true;
+  return (*this == arg);
 }
 
 bool Argument::HasAsArgument(const Argument& arg) const

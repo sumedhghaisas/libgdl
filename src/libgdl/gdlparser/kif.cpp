@@ -55,7 +55,7 @@ bool KIF::Parse(bool ignoreErrors)
 
   if(res)
   {
-    list<ErrorType> e = dgraph->CheckCyclesWithNegation(*symbol_table);
+    list<ErrorType> e = dgraph->CheckCycles(*symbol_table);
     for(list<ErrorType>::iterator it = e.begin();it != e.end();it++)
       errors.push_back(*it);
     e = dgraph->CheckRecursiveDependencies();

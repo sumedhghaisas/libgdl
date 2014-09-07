@@ -102,7 +102,7 @@ void DGraph::StrongConnect(DGraphNode* v,
   }
 }
 
-list<ErrorType> DGraph::CheckCyclesWithNegation(const SymbolTable& symbol_table)
+list<ErrorType> DGraph::CheckCycles(const SymbolTable& symbol_table)
 {
   list<ErrorType> errors;
 
@@ -150,32 +150,34 @@ list<ErrorType> DGraph::CheckCyclesWithNegation(const SymbolTable& symbol_table)
     }
   }
 
-  return errors;
+  //! check that clause for any edge between DGraphNodes of same SCC
+  //! definition 15(GDL_spec) is satisfied, else unstratified recursion
+  for(size_t i = 0; i < scc.size(); i++)
+  {
+    const std::set<DGraphNode*>& sc = scc[i];
 
-//  //! check that clause for any edge between DGraphNodes of same SCC
-//  //! definition 15(GDL_spec) is satisfied, else unstratified recursion
-//  for(size_t i = 0; i < scc.size(); i++)
-//  {
-//    const std::set<DGraphNode*>& sc = scc[i];
-//
-//    for(std::set<DGraphNode*>::const_iterator it = sc.begin(); it != sc.end(); it++)
-//    {
-//      const std::vector<DGraphNode*>& out = (*it)->out;
-//      const std::vector<bool>& isNot = (*it)->isNot;
-//      const std::vector<size_t>& c_index = (*it)->c_index;
-//      const std::vector<location_type>& locs = (*it)->out_loc;
-//      const std::vector<Argument>& arg = (*it)->arg;
-//
-//      // for every out edge
-//      for(size_t i = 0; i < out.size(); i++)
-//      {
-//        // find non negative edges as negative edges are already considered for unstratified negation
-//        // also check if the other DGraphNode is also in same scc
-//        // if it is then check if the clause corresponding to this edge satisfies Definition 15(GDL_spec)
-//        if(!isNot[i] && sc.find(out[i]) != sc.end()) CheckDef15(c_index[i], arg[i], sc, locs[i]);
-//      }
-//    }
-//  }
+    for(set<DGraphNode*>::const_iterator it = sc.begin(); it != sc.end();it++)
+    {
+      const std::vector<DGraphNode*>& out = (*it)->out;
+      const std::vector<bool>& isNot = (*it)->isNot;
+      const std::vector<const Clause*>& clauses = (*it)->clauses;
+      const std::vector<const Argument*>& args = (*it)->args;
+
+      // for every out edge
+      for(size_t i = 0; i < out.size(); i++)
+      {
+        // find non negative edges as negative edges are already considered for
+        // unstratified negation
+        // also check if the other DGraphNode is also in same scc
+        // if it is then check if the clause corresponding to this edge satisfies
+        // Definition 15(GDL_spec)
+        if(!isNot[i] && sc.find(out[i]) != sc.end())
+          CheckDef15(clauses[i], args[i], sc, symbol_table, errors);
+      }
+    }
+  }
+
+  return errors;
 }
 
 list<ErrorType> DGraph::CheckRecursiveDependencies()
@@ -296,6 +298,72 @@ list<ErrorType> DGraph::CheckRecursiveDependencies()
   }
 
   return errors;
+}
+
+void DGraph::CheckDef15(const Clause* clause,
+                        const Argument* arg,
+                        const set<DGraphNode*>& scc,
+                        const SymbolTable& symbol_table,
+                        list<ErrorType>& errors)
+{
+  const Clause& c = *clause;
+
+  const vector<Argument*>& premisses = c.premisses;
+
+  // find the index of the given argument in the clause
+  size_t arg_index = 0;
+  for(size_t i = 0;i < premisses.size();i++)
+    if(premisses[i]->OrEquate(*arg))
+    {
+      arg_index = i;
+      break;
+    }
+
+  // check for each argument in given argument
+  bool isValid = true;
+  size_t invalid_index = 0;
+  for(size_t i = 0;i < arg->args.size();i++)
+  {
+    // check if the argument is ground
+    if(arg->args[i]->IsGround()) continue;
+    // check if this argument is also argument to head
+    if(c.head->HasAsArgument(*(arg->args[i]))) continue;
+
+    bool isFound = false;
+
+    for(size_t j = 0;j < premisses.size();j++)
+    {
+      // avoid checking in itself
+      if(j == arg_index) continue;
+
+      // if another premiss has same same argument and is not in the same SCC
+      if(premisses[j]->HasAsArgument(*(arg->args[i])) &&
+         scc.find(graph[premisses[j]->value]) == scc.end())
+      {
+        isFound = true;
+        break;
+      }
+    }
+
+    if(!isFound)
+    {
+      isValid = false;
+      invalid_index = i;
+      break;
+    }
+  }
+
+  if(!isValid)
+  {
+    std::stringstream stream;
+    stream << *arg->args[invalid_index];
+    ErrorType error;
+    error.AddEntry("Recursion restriction violated for argument " + stream.str(),
+                   c.loc);
+    error.AddEntry("Relation involved in the cycle is '" +
+                   symbol_table.GetCommandName(arg->value) + "'", c.loc);
+    errors.push_back(error);
+  }
 }
 
 std::string DGraph::DecodeToString(const SymbolTable& symbol_table) const

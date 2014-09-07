@@ -16,8 +16,6 @@
 #include <sstream>
 #include <fstream>
 
-#include "token_value.hpp"
-
 #ifndef YY_DECL
 
 #define	YY_DECL						\

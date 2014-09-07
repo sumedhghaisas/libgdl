@@ -38,8 +38,6 @@ struct Clause
   Clause(Clause&& c) noexcept
     : head(NULL) { swap(*this, c); }
 
-  //! constructs clause from scanner token
-  Clause(const TokenValue& tok, const size_t id);
   //! construct clause from string
   Clause(const std::string& str);
 

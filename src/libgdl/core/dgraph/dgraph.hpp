@@ -36,7 +36,7 @@ class DGraph
                      const Argument* arg,
                      bool isNot = false);
 
-  std::list<ErrorType> CheckCyclesWithNegation(const SymbolTable& symbol_table);
+  std::list<ErrorType> CheckCycles(const SymbolTable& symbol_table);
   std::list<ErrorType> CheckRecursiveDependencies();
 
   const std::map<size_t, DGraphNode*>& GetGraph() const
@@ -51,6 +51,12 @@ class DGraph
                      std::stack<DGraphNode*>& nstack,
                      std::set<DGraphNode*>& nset,
                      std::vector<std::set<DGraphNode*> >& scc);
+
+  void CheckDef15(const Clause* clause,
+                  const Argument* arg,
+                  const std::set<DGraphNode*>& scc,
+                  const SymbolTable& symbol_table,
+                  std::list<ErrorType>& errors);
 
   std::map<size_t, DGraphNode*> graph;
 

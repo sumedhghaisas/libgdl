@@ -36,8 +36,6 @@ struct Argument
 
   //! empty constructor
   Argument() : t(Relation) {}
-  //! constucts argument from given token
-  Argument(const TokenValue& tok);
   //! copy constructor
   Argument(const Argument& arg) noexcept;
   //! construct argument from string
@@ -109,9 +107,6 @@ struct Argument
   //! equivalent to comparison operator but 'or' conditions is removed in this
   bool IsEqualTo(const Argument& arg) const;
 
-  //! adds argument to this command
-  void AddArgument(const TokenValue& tok) { args.push_back(new Argument(tok)); }
-
   //! compute hash value
   size_t Hash(const boost::unordered_map<std::string, size_t>& id_map);
 
@@ -129,11 +124,7 @@ struct Argument
   static Argument* ConstructArgument(const Argument& arg,
                                      std::map<std::string,
                                      Argument*>& v_map);
-  static Argument* ConstructArgument(const TokenValue& tok,
-                                     std::map<std::string,
-                                     Argument*>& v_map);
   static Argument* ConstructArgument(const std::string& str,
-
                                      std::map<std::string,
                                      Argument*>& v_map);
 
