@@ -26,7 +26,7 @@ class SymbolTable
   typedef boost::unordered_map<std::string, size_t> IDMap;
   typedef boost::unordered_map<size_t, Symbol*> SymbolMap;
  public:
-  SymbolTable() : index(0) {}
+  SymbolTable();
 
   ~SymbolTable();
 

@@ -9,7 +9,7 @@
 
 #include <libgdl/core/data_types/argument.hpp>
 #include <libgdl/core/data_types/clause.hpp>
-#include <libgdl/core/data_types/dgraph_node.hpp>
+#include <libgdl/core/dgraph/dgraph_node.hpp>
 #include <libgdl/core/data_types/fact.hpp>
 #include <libgdl/core/data_types/state.hpp>
 #include <libgdl/core/data_types/location.hpp>

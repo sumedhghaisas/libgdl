@@ -7,7 +7,6 @@ set(SOURCES
   fact.cpp
   clause.hpp
   clause.cpp
-  dgraph_node.hpp
   location.hpp
   state.hpp
   state.cpp

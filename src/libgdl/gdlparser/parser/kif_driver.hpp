@@ -18,6 +18,7 @@
 #include <libgdl/core.hpp>
 #include <libgdl/core/util/gdl_stream.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
+#include <libgdl/core/dgraph/dgraph.hpp>
 
 #include "kif_scanner.hpp"
 #include "kif_parser.tab.hh"
@@ -87,12 +88,15 @@ public:
     const SymbolTable* GetSymbolTable() const;
     SymbolTable* GetSymbolTable();
 
+    const DGraph* GetDGraph() const;
+    DGraph* GetDGraph();
+
     void Error(const ErrorType& error);
 
     void Warning(const ErrorType& warn);
 
-    void AddFact(Fact&& f_t);
-    void AddClause(Clause&& c_t);
+    const Fact& AddFact(Fact&& f_t);
+    const Clause& AddClause(Clause&& c_t);
 
 private:
     friend yy::KIFParser;
@@ -118,6 +122,7 @@ private:
     void Error(const std::string& msg) const;
 
     //! marks dependency of head to given token
+
     void AddDependency(DGraphNode* head, const Argument& arg, size_t c_index, const location_type& loc, bool isNot);
 
     //! check for stratified negation and stratified recursion
@@ -141,9 +146,6 @@ private:
 
     //! symbol table
     std::map<std::string, Symbol> symbol_table;
-
-    //! dependency graph
-    std::map<std::string, DGraphNode*>& dgraph;
 
     //! keep track of used ids
     size_t current_id;

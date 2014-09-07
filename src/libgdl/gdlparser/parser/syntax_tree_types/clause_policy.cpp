@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/util/setop.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
 #include <libgdl/core/data_types/variable_map.hpp>
 
@@ -73,13 +74,74 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
     args.push_back(temp);
   }
 
+  set<const Argument*> head_vars = head->GetVariables();
+
+  set<const Argument*> neg_vars;
+  set<const Argument*> pos_vars;
+
+  for(size_t i = 0;i < args.size();i++)
+  {
+    if(args[i]->IsNegation())
+      neg_vars = util::setop::setUnion(neg_vars, args[i]->GetVariables());
+    else pos_vars = util::setop::setUnion(pos_vars, args[i]->GetVariables());
+  }
+
+  head_vars = util::setop::setDifference(head_vars, pos_vars);
+  neg_vars = util::setop::setDifference(neg_vars, pos_vars);
+
+  for(set<const Argument*>::iterator it = head_vars.begin();it != head_vars.end();
+                                                                        it++)
+  {
+    ErrorType error;
+    error.AddEntry("Variable " + (*it)->val + " appearing in the head does not \
+                    appear in any positive body.", command_loc);
+    driver.Error(error);
+  }
+
+  for(set<const Argument*>::iterator it = neg_vars.begin();it != neg_vars.end();
+                                                                        it++)
+  {
+    ErrorType error;
+    error.AddEntry("Variable " + (*it)->val + " appearing in the negative body \
+                   does not appear in any positive body.", command_loc);
+    driver.Error(error);
+  }
+
   Clause c;
   c.head = head;
   c.premisses = args;
   c.loc = command_loc;
   c.isLocation = true;
 
-  driver.AddClause(std::move(c));
+  const Clause& cl = driver.AddClause(std::move(c));
+
+  DGraph& graph = *driver.GetDGraph();
+  graph.AddNode(head->value);
+
+  for(size_t i = 0;i < cl.premisses.size();i++)
+  {
+    if(cl.premisses[i]->IsNegation())
+    {
+      graph.AddNode(cl.premisses[i]->args[0]->value);
+      graph.AddDependency(head->value, cl.premisses[i]->args[0]->value,
+                          &cl, cl.premisses[i]->args[0], true);
+    }
+    else if(cl.premisses[i]->IsOr())
+    {
+      for(size_t j = 0;j < cl.premisses[i]->args.size();j++)
+      {
+        graph.AddNode(cl.premisses[i]->args[j]->value);
+        graph.AddDependency(head->value, cl.premisses[i]->args[j]->value,
+                            &cl, cl.premisses[i]->args[0]);
+      }
+    }
+    else
+    {
+      graph.AddNode(cl.premisses[i]->value);
+      graph.AddDependency(head->value, cl.premisses[i]->value,
+                          &cl, cl.premisses[i]);
+    }
+  }
 
   return true;
 }

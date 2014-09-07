@@ -14,6 +14,7 @@
 #include <list>
 
 #include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
+#include <libgdl/core/util/prefixedoutstream.hpp>
 
 using namespace std;
 using namespace libgdl;
@@ -28,7 +29,8 @@ KIF::KIF(bool isWarn,
     isDebuggingSymbols(isDebuggingSymbols),
     o_level(o_level),
     driver(*this),
-    symbol_table(new SymbolTable())
+    symbol_table(new SymbolTable()),
+    dgraph(new DGraph())
 {
   f_last_index_with_linemark = 0;
   c_last_index_with_linemark = 0;
@@ -80,12 +82,10 @@ bool KIF::Parse(bool ignoreErrors)
 
 KIF::~KIF()
 {
-  for(map<std::string, DGraphNode*>::iterator it = dgraph.begin();
-                                                      it != dgraph.end();it++)
-  delete it->second;
   delete id_map;
 
   delete symbol_table;
+  delete dgraph;
 }
 
 bool KIF::PrintDependencyGraph(const string& filename) const
@@ -98,35 +98,8 @@ bool KIF::PrintDependencyGraph(const string& filename) const
     return false;
   }
 
-  graph << "digraph dependency_graph {" << endl;
-
-  for(map<string, DGraphNode*>::const_iterator it = dgraph.begin();
-                                                    it != dgraph.end(); it++)
-  {
-    graph << it->first << " [label = \"" << it->first << "\"];" << endl;
-  }
-
-  for(map<string, DGraphNode*>::const_iterator it = dgraph.begin();
-                                                  it != dgraph.end(); it++)
-  {
-    const vector<DGraphNode*>& out = (it->second)->out;
-    const vector<bool>& isNot = (it->second)->isNot;
-
-    set<string> str_set;
-    set<string>::iterator sit;
-    for(size_t i = 0; i < out.size(); i++)
-    {
-      if((sit = str_set.find(out[i]->name)) == str_set.end())
-      {
-        if(isNot[i] == true) graph << it->first << " -> " << out[i]->name <<
-                                                      " [color = red];" << endl;
-        else graph << it->first << " -> " << out[i]->name << ";" << endl;
-        str_set.insert(out[i]->name);
-      }
-    }
-  }
-
-  graph << "}";
+  SymbolDecodeStream stream(symbol_table, util::PrefixedOutStream(graph));
+  stream << *dgraph << endl;
 
   graph.close();
 

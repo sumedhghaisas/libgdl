@@ -12,8 +12,8 @@ endforeach()
 set(SOURCES
   knowledgebase.cpp
   knowledgebase.hpp
-  kif_flattener.cpp
-  kif_flattener.hpp
+  #kif_flattener.cpp
+  #kif_flattener.hpp
 )
 
 # add directory name to sources
@@ -25,15 +25,15 @@ endforeach()
 # the parent scope).
 set(GDL_SRCS ${GDL_SRCS} ${DIR_SRCS} PARENT_SCOPE)
 
-add_executable(flatten
-  kif_flattener_main.cpp
-)
+#add_executable(flatten
+#  kif_flattener_main.cpp
+#)
 
-target_link_libraries(flatten
-  gdl
-  boost_program_options
-)
+#target_link_libraries(flatten
+#  gdl
+#  boost_program_options
+#)
 
-set_target_properties(flatten PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+#set_target_properties(flatten PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-install(TARGETS flatten RUNTIME DESTINATION bin)
+#install(TARGETS flatten RUNTIME DESTINATION bin)

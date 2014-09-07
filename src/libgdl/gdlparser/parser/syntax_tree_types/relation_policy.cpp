@@ -85,7 +85,7 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
             command_loc);
     driver.Error(error);
   }
-  else if(*command == "role" || terms.size() != 1)
+  else if(*command == "role" && terms.size() != 1)
   {
     PR_ARITY_ERROR(error, *command, 1, terms.size(), command_loc);
     driver.Error(error);
@@ -148,6 +148,8 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
   f.loc = command_loc;
   f.arg = arg;
   driver.AddFact(std::move(f));
+
+  driver.GetDGraph()->AddNode(id);
 
   return true;
 }

@@ -25,8 +25,7 @@ using namespace libgdl::gdlparser;
 using namespace libgdl::gdlparser::parser;
 
 KIFDriver::KIFDriver(KIF& kif)
-    : dgraph(kif.dgraph),
-    kif(kif),
+    : kif(kif),
     streams(kif.streams)
 {
     scanner = new KIFScanner(*this);
@@ -56,6 +55,16 @@ const SymbolTable* KIFDriver::GetSymbolTable() const
 SymbolTable* KIFDriver::GetSymbolTable()
 {
   return kif.symbol_table;
+}
+
+const DGraph* KIFDriver::GetDGraph() const
+{
+  return kif.dgraph;
+}
+
+DGraph* KIFDriver::GetDGraph()
+{
+  return kif.dgraph;
 }
 
 void KIFDriver::Error(const ErrorType& error)
@@ -262,15 +271,6 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
     std::stringstream temp;
     temp << c;
 
-    // check if each variable appearing in head appears in bounded variables of body
-    if(diff.size() != 0)
-    {
-        for(std::set<std::string>::const_iterator it = diff.begin(); it != diff.end(); it++)
-        {
-            parser->error(loc, "Unsafe Rule: " + temp.str() + " :Variable " + *it + " appearing in head must appear in a positive relation in the rule's body.");
-        }
-    }
-
     diff = setop::setDifference(unbounded_vars, bounded_vars);
 
     // check if each variable appearing in negation or distinct appears in positive body
@@ -282,18 +282,18 @@ void KIFDriver::AddClause(const TokenValue& tok, const location_type& loc)
         }
     }
 
-    // modify dependency graph
-    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(hcommand);
-    DGraphNode* head;
-    if(it == dgraph.end())
-    {
-        head = new DGraphNode(hcommand, h_arity);
-        dgraph[hcommand] = head;
-    }
-    else head = it->second;
-
-    // add dependency to head of the clause against all arguments
-    for(size_t i = 0; i < args.size(); i++) AddDependency(head, *args[i], kif.Clauses().size() - 1, loc, false);
+//    // modify dependency graph
+//    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(hcommand);
+//    DGraphNode* head;
+//    if(it == dgraph.end())
+//    {
+//        head = new DGraphNode(hcommand, h_arity);
+//        dgraph[hcommand] = head;
+//    }
+//    else head = it->second;
+//
+//    // add dependency to head of the clause against all arguments
+//    for(size_t i = 0; i < args.size(); i++) AddDependency(head, *args[i], kif.Clauses().size() - 1, loc, false);
 }
 
 void KIFDriver::AddLineMark(const TokenValue& tok)
@@ -341,192 +341,183 @@ void KIFDriver::AddLineMark(const TokenValue& tok)
 void KIFDriver::AddDependency(DGraphNode* head, const Argument& arg, size_t c_index,
                               const location_type& loc, bool isNot)
 {
-    const std::string& command = arg.val;
-    const size_t arity = arg.args.size();
-
-    // ignore arguments(relations) 'distinct'
-    if(command == "distinct") return;
-
-    // if not incountered add negative dependency to it lone argument
-    if(command == "not")
-    {
-        AddDependency(head, *(arg.args[0]), c_index, loc, !isNot);
-        return;
-    }
-    // if 'or' encountered add dependency recursively to its arguments
-    else if(command  == "or")
-    {
-        const std::vector<Argument*>& args = arg.args;
-        for(size_t i = 0; i < args.size(); i++) AddDependency(head, *(args[i]), c_index, loc, isNot);
-        return;
-    }
-
-    // else drectly add dependency to command of the argument
-    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(command);
-    DGraphNode* rel;
-    if(it == dgraph.end())
-    {
-        rel = new DGraphNode(command, arity);
-        dgraph[command] = rel;
-    }
-    else rel = it->second;
-
-    // add head to its out edges
-    (rel->out).push_back(head);
-    // add location at which this dependency is found
-    (rel->out_loc).push_back(loc);
-    // add if its a negative edge
-    (rel->isNot).push_back(isNot);
-    // add the unique clause number to identify the clause
-    (rel->c_index).push_back(c_index);
-    // add the argument causing this dependency
-    (rel->arg).push_back(arg);
-
-    // add in edge in head
-    (head->in).push_back(rel);
+//    const std::string& command = arg.val;
+//    const size_t arity = arg.args.size();
+//
+//    // ignore arguments(relations) 'distinct'
+//    if(command == "distinct") return;
+//
+//    // if not incountered add negative dependency to it lone argument
+//    if(command == "not")
+//    {
+//        AddDependency(head, *(arg.args[0]), c_index, loc, !isNot);
+//        return;
+//    }
+//    // if 'or' encountered add dependency recursively to its arguments
+//    else if(command  == "or")
+//    {
+//        const std::vector<Argument*>& args = arg.args;
+//        for(size_t i = 0; i < args.size(); i++) AddDependency(head, *(args[i]), c_index, loc, isNot);
+//        return;
+//    }
+//
+//    // else drectly add dependency to command of the argument
+//    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(command);
+//    DGraphNode* rel;
+//    if(it == dgraph.end())
+//    {
+//        rel = new DGraphNode(command, arity);
+//        dgraph[command] = rel;
+//    }
+//    else rel = it->second;
+//
+//    // add head to its out edges
+//    (rel->out).push_back(head);
+//    // add location at which this dependency is found
+//    (rel->out_loc).push_back(loc);
+//    // add if its a negative edge
+//    (rel->isNot).push_back(isNot);
+//    // add the unique clause number to identify the clause
+//    (rel->c_index).push_back(c_index);
+//    // add the argument causing this dependency
+//    (rel->arg).push_back(arg);
+//
+//    // add in edge in head
+//    (head->in).push_back(rel);
 }
 
-void KIFDriver::AddFact(Fact&& f_t)
+const Fact& KIFDriver::AddFact(Fact&& f_t)
 {
-    const Fact& f = kif.AddFact(std::move(f_t));
-
-    std::string command = f.arg->val;
-    size_t arity = f.arg->args.size();
-    std::map<std::string, DGraphNode*>::iterator it = dgraph.find(command);
-    if(it == dgraph.end())
-    {
-        DGraphNode* rel = new DGraphNode(command, arity);
-        dgraph[command] = rel;
-    }
+    return kif.AddFact(std::move(f_t));
 }
 
-void KIFDriver::AddClause(Clause&& c_t)
+const Clause& KIFDriver::AddClause(Clause&& c_t)
 {
-    kif.AddClause(std::move(c_t));
+    return kif.AddClause(std::move(c_t));
 }
 
 void KIFDriver::CheckCycles()
 {
-    // stores set of strongly connected components
-    std::vector<std::set<DGraphNode*> > scc;
-    // stack of processed DGraphNodes
-    std::stack<DGraphNode*> nstack;
-    // set of processed DGraphNodes(for faster lookup)
-    std::set<DGraphNode*> nset;
-
-    //! Tarjan's strongly connected component algorithm
-    // current(unique) id to be given as index to every DGraphNode
-    current_id = 0;
-    // run until all DGraphNodes in the graph are visited
-    for(std::map<std::string, DGraphNode*>::iterator it = dgraph.begin(); it != dgraph.end(); it++)
-    {
-        DGraphNode* v = it->second;
-        // get strongly connected component of each unvisited DGraphNode
-        if(v->index == -1) StrongConnect(v, nstack, nset, scc);
-    }
-
-    //! check if there is any edge between DGraphNodes of same SCC marked negative
-    //! if yes then it can be proved easily using SCC properties that a cycle
-    //! exists with negative edge in it. Hence unstratified negation.
-    for(size_t i = 0; i < scc.size(); i++)
-    {
-        const std::set<DGraphNode*>& sc = scc[i];
-
-        for(std::set<DGraphNode*>::const_iterator it = sc.begin(); it != sc.end(); it++)
-        {
-            const std::vector<DGraphNode*>& out = (*it)->out;
-            const std::vector<bool>& isNot = (*it)->isNot;
-            const std::vector<location_type>& locs = (*it)->out_loc;
-
-            for(size_t i = 0; i < out.size(); i++)
-            {
-                if(isNot[i] && sc.find(out[i]) != sc.end()) parser->error(locs[i], "Unstratified Negation : Check relation " + (*it)->name);
-            }
-        }
-    }
-
-    //! check that clause for any edge between DGraphNodes of same SCC
-    //! definition 15(GDL_spec) is satisfied, else unstratified recursion
-    for(size_t i = 0; i < scc.size(); i++)
-    {
-        const std::set<DGraphNode*>& sc = scc[i];
-
-        for(std::set<DGraphNode*>::const_iterator it = sc.begin(); it != sc.end(); it++)
-        {
-            const std::vector<DGraphNode*>& out = (*it)->out;
-            const std::vector<bool>& isNot = (*it)->isNot;
-            const std::vector<size_t>& c_index = (*it)->c_index;
-            const std::vector<location_type>& locs = (*it)->out_loc;
-            const std::vector<Argument>& arg = (*it)->arg;
-
-            // for every out edge
-            for(size_t i = 0; i < out.size(); i++)
-            {
-                // find non negative edges as negative edges are already considered for unstratified negation
-                // also check if the other DGraphNode is also in same scc
-                // if it is then check if the clause corresponding to this edge satisfies Definition 15(GDL_spec)
-                if(!isNot[i] && sc.find(out[i]) != sc.end()) CheckDef15(c_index[i], arg[i], sc, locs[i]);
-            }
-        }
-    }
+//    // stores set of strongly connected components
+//    std::vector<std::set<DGraphNode*> > scc;
+//    // stack of processed DGraphNodes
+//    std::stack<DGraphNode*> nstack;
+//    // set of processed DGraphNodes(for faster lookup)
+//    std::set<DGraphNode*> nset;
+//
+//    //! Tarjan's strongly connected component algorithm
+//    // current(unique) id to be given as index to every DGraphNode
+//    current_id = 0;
+//    // run until all DGraphNodes in the graph are visited
+//    for(std::map<std::string, DGraphNode*>::iterator it = dgraph.begin(); it != dgraph.end(); it++)
+//    {
+//        DGraphNode* v = it->second;
+//        // get strongly connected component of each unvisited DGraphNode
+//        if(v->index == -1) StrongConnect(v, nstack, nset, scc);
+//    }
+//
+//    //! check if there is any edge between DGraphNodes of same SCC marked negative
+//    //! if yes then it can be proved easily using SCC properties that a cycle
+//    //! exists with negative edge in it. Hence unstratified negation.
+//    for(size_t i = 0; i < scc.size(); i++)
+//    {
+//        const std::set<DGraphNode*>& sc = scc[i];
+//
+//        for(std::set<DGraphNode*>::const_iterator it = sc.begin(); it != sc.end(); it++)
+//        {
+//            const std::vector<DGraphNode*>& out = (*it)->out;
+//            const std::vector<bool>& isNot = (*it)->isNot;
+//            const std::vector<location_type>& locs = (*it)->out_loc;
+//
+//            for(size_t i = 0; i < out.size(); i++)
+//            {
+//                if(isNot[i] && sc.find(out[i]) != sc.end()) parser->error(locs[i], "Unstratified Negation : Check relation " + (*it)->name);
+//            }
+//        }
+//    }
+//
+//    //! check that clause for any edge between DGraphNodes of same SCC
+//    //! definition 15(GDL_spec) is satisfied, else unstratified recursion
+//    for(size_t i = 0; i < scc.size(); i++)
+//    {
+//        const std::set<DGraphNode*>& sc = scc[i];
+//
+//        for(std::set<DGraphNode*>::const_iterator it = sc.begin(); it != sc.end(); it++)
+//        {
+//            const std::vector<DGraphNode*>& out = (*it)->out;
+//            const std::vector<bool>& isNot = (*it)->isNot;
+//            const std::vector<size_t>& c_index = (*it)->c_index;
+//            const std::vector<location_type>& locs = (*it)->out_loc;
+//            const std::vector<Argument>& arg = (*it)->arg;
+//
+//            // for every out edge
+//            for(size_t i = 0; i < out.size(); i++)
+//            {
+//                // find non negative edges as negative edges are already considered for unstratified negation
+//                // also check if the other DGraphNode is also in same scc
+//                // if it is then check if the clause corresponding to this edge satisfies Definition 15(GDL_spec)
+//                if(!isNot[i] && sc.find(out[i]) != sc.end()) CheckDef15(c_index[i], arg[i], sc, locs[i]);
+//            }
+//        }
+//    }
 }
 
 void KIFDriver::CheckDef15(size_t c_index, const Argument& arg, const std::set<DGraphNode*>& scc,
                            const location_type& loc)
 {
-    const Clause& c = kif.Clauses()[c_index];
-
-    const std::vector<Argument*>& premisses = c.premisses;
-
-    // find the index of the given argument in the clause
-    size_t arg_index = 0;
-    for(size_t i = 0;i < premisses.size();i++)
-        if(premisses[i]->OrEquate(arg))
-        {
-            arg_index = i;
-            break;
-        }
-
-    // check for each argument in given argument
-    bool isValid = true;
-    size_t invalid_index = 0;
-    for(size_t i = 0;i < arg.args.size();i++)
-    {
-        // check if the argument is ground
-        if(arg.args[i]->IsGround()) continue;
-        // check if this argument is also argument to head
-        if(c.head->HasAsArgument(*(arg.args[i]))) continue;
-
-        bool isFound = false;
-
-        for(size_t j = 0;j < premisses.size();j++)
-        {
-            // avoid checking in itself
-            if(j == arg_index) continue;
-
-            // if another premiss has same same argument and is not in the same SCC
-            if(premisses[j]->HasAsArgument(*(arg.args[i])) && scc.find(dgraph[premisses[j]->val]) == scc.end())
-            {
-                isFound = true;
-                break;
-            }
-        }
-
-        if(!isFound)
-        {
-            isValid = false;
-            invalid_index = i;
-            break;
-        }
-    }
-
-    if(!isValid)
-    {
-        std::stringstream stream;
-        stream << *arg.args[invalid_index];
-        Error(loc, "Unstratified Recursion: Relation involved in the cycle is " + arg.val +
-                       ". Restriction violated for variable " + stream.str());
-    }
+//    const Clause& c = kif.Clauses()[c_index];
+//
+//    const std::vector<Argument*>& premisses = c.premisses;
+//
+//    // find the index of the given argument in the clause
+//    size_t arg_index = 0;
+//    for(size_t i = 0;i < premisses.size();i++)
+//        if(premisses[i]->OrEquate(arg))
+//        {
+//            arg_index = i;
+//            break;
+//        }
+//
+//    // check for each argument in given argument
+//    bool isValid = true;
+//    size_t invalid_index = 0;
+//    for(size_t i = 0;i < arg.args.size();i++)
+//    {
+//        // check if the argument is ground
+//        if(arg.args[i]->IsGround()) continue;
+//        // check if this argument is also argument to head
+//        if(c.head->HasAsArgument(*(arg.args[i]))) continue;
+//
+//        bool isFound = false;
+//
+//        for(size_t j = 0;j < premisses.size();j++)
+//        {
+//            // avoid checking in itself
+//            if(j == arg_index) continue;
+//
+//            // if another premiss has same same argument and is not in the same SCC
+//            if(premisses[j]->HasAsArgument(*(arg.args[i])) && scc.find(dgraph[premisses[j]->val]) == scc.end())
+//            {
+//                isFound = true;
+//                break;
+//            }
+//        }
+//
+//        if(!isFound)
+//        {
+//            isValid = false;
+//            invalid_index = i;
+//            break;
+//        }
+//    }
+//
+//    if(!isValid)
+//    {
+//        std::stringstream stream;
+//        stream << *arg.args[invalid_index];
+//        Error(loc, "Unstratified Recursion: Relation involved in the cycle is " + arg.val +
+//                       ". Restriction violated for variable " + stream.str());
+//    }
 
 }
 
@@ -573,87 +564,87 @@ void KIFDriver::StrongConnect(DGraphNode* v, std::stack<DGraphNode*>& nstack, st
 
 void KIFDriver::CheckRecursiveDependencies()
 {
-    std::map<std::string, DGraphNode*>::const_iterator it = dgraph.find("does");
-
-    const DGraphNode* does = NULL;
-    const DGraphNode* ttrue = NULL;
-
-    const DGraphNode* base = NULL;
-    const DGraphNode* init = NULL;
-    const DGraphNode* input = NULL;
-    const DGraphNode* legal = NULL;
-
-    if((it = dgraph.find("base")) != dgraph.end()) base = it->second;
-    if((it = dgraph.find("init")) != dgraph.end()) init = it->second;
-    if((it = dgraph.find("input")) != dgraph.end()) input = it->second;
-    if((it = dgraph.find("legal")) != dgraph.end()) legal = it->second;
-
-    if((it = dgraph.find("does")) != dgraph.end())
-    {
-        does = it->second;
-
-        // perform DFS from does to detect legal, init, input, base
-        // DGraphNode stack (used for DFS)
-        std::stack<const DGraphNode*> st;
-        std::set<const DGraphNode*> n_set;
-
-        st.push(does);
-        n_set.insert(does);
-
-        while(!st.empty())
-        {
-            const DGraphNode* temp = st.top();
-            st.pop();
-
-            // if destination is found return true
-            if(temp == base) Error("Invalid dependency. Relation 'base' is dependent on relation 'does'.");
-            else if(temp == init) Error("Invalid dependency. Relation 'init' is dependent on relation 'does'.");
-            else if(temp == legal) Error("Invalid dependency. Relation 'legal' is dependent on relation 'does'.");
-            else if(temp == input) Error("Invalid dependency. Relation 'input' is dependent on relation 'does'.");
-
-            // push all the children in the stack
-            for(size_t i = 0; i < (temp->out).size(); i++)
-            {
-                if(n_set.find((temp->out)[i]) == n_set.end())
-                {
-                    st.push((temp->out)[i]);
-                    n_set.insert((temp->out)[i]);
-                }
-            }
-        }
-    }
-
-    if((it = dgraph.find("true")) != dgraph.end())
-    {
-        ttrue = it->second;
-
-        // perform DFS from does to detect legal, init, input, base
-        // DGraphNode stack (used for DFS)
-        std::stack<const DGraphNode*> st;
-        std::set<const DGraphNode*> n_set;
-
-        st.push(ttrue);
-        n_set.insert(ttrue);
-
-        while(!st.empty())
-        {
-            const DGraphNode* temp = st.top();
-            st.pop();
-
-            // if destination is found return true
-            if(temp == base) Error("Invalid dependency. Relation 'base' is dependent on relation 'true'.");
-            else if(temp == init) Error("Invalid dependency. Relation 'init' is dependent on relation 'true'.");
-            else if(temp == input) Error("Invalid dependency. Relation 'input' is dependent on relation 'true'.");
-
-            // push all the children in the stack
-            for(size_t i = 0; i < (temp->out).size(); i++)
-            {
-                if(n_set.find((temp->out)[i]) == n_set.end())
-                {
-                    st.push((temp->out)[i]);
-                    n_set.insert((temp->out)[i]);
-                }
-            }
-        }
-    }
+//    std::map<std::string, DGraphNode*>::const_iterator it = dgraph.find("does");
+//
+//    const DGraphNode* does = NULL;
+//    const DGraphNode* ttrue = NULL;
+//
+//    const DGraphNode* base = NULL;
+//    const DGraphNode* init = NULL;
+//    const DGraphNode* input = NULL;
+//    const DGraphNode* legal = NULL;
+//
+//    if((it = dgraph.find("base")) != dgraph.end()) base = it->second;
+//    if((it = dgraph.find("init")) != dgraph.end()) init = it->second;
+//    if((it = dgraph.find("input")) != dgraph.end()) input = it->second;
+//    if((it = dgraph.find("legal")) != dgraph.end()) legal = it->second;
+//
+//    if((it = dgraph.find("does")) != dgraph.end())
+//    {
+//        does = it->second;
+//
+//        // perform DFS from does to detect legal, init, input, base
+//        // DGraphNode stack (used for DFS)
+//        std::stack<const DGraphNode*> st;
+//        std::set<const DGraphNode*> n_set;
+//
+//        st.push(does);
+//        n_set.insert(does);
+//
+//        while(!st.empty())
+//        {
+//            const DGraphNode* temp = st.top();
+//            st.pop();
+//
+//            // if destination is found return true
+//            if(temp == base) Error("Invalid dependency. Relation 'base' is dependent on relation 'does'.");
+//            else if(temp == init) Error("Invalid dependency. Relation 'init' is dependent on relation 'does'.");
+//            else if(temp == legal) Error("Invalid dependency. Relation 'legal' is dependent on relation 'does'.");
+//            else if(temp == input) Error("Invalid dependency. Relation 'input' is dependent on relation 'does'.");
+//
+//            // push all the children in the stack
+//            for(size_t i = 0; i < (temp->out).size(); i++)
+//            {
+//                if(n_set.find((temp->out)[i]) == n_set.end())
+//                {
+//                    st.push((temp->out)[i]);
+//                    n_set.insert((temp->out)[i]);
+//                }
+//            }
+//        }
+//    }
+//
+//    if((it = dgraph.find("true")) != dgraph.end())
+//    {
+//        ttrue = it->second;
+//
+//        // perform DFS from does to detect legal, init, input, base
+//        // DGraphNode stack (used for DFS)
+//        std::stack<const DGraphNode*> st;
+//        std::set<const DGraphNode*> n_set;
+//
+//        st.push(ttrue);
+//        n_set.insert(ttrue);
+//
+//        while(!st.empty())
+//        {
+//            const DGraphNode* temp = st.top();
+//            st.pop();
+//
+//            // if destination is found return true
+//            if(temp == base) Error("Invalid dependency. Relation 'base' is dependent on relation 'true'.");
+//            else if(temp == init) Error("Invalid dependency. Relation 'init' is dependent on relation 'true'.");
+//            else if(temp == input) Error("Invalid dependency. Relation 'input' is dependent on relation 'true'.");
+//
+//            // push all the children in the stack
+//            for(size_t i = 0; i < (temp->out).size(); i++)
+//            {
+//                if(n_set.find((temp->out)[i]) == n_set.end())
+//                {
+//                    st.push((temp->out)[i]);
+//                    n_set.insert((temp->out)[i]);
+//                }
+//            }
+//        }
+//    }
 }

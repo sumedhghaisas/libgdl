@@ -1,8 +1,9 @@
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL
 set(SOURCES
-  lru_cache.hpp
-  lru_cache_impl.hpp
+  dgraph_node.hpp
+  dgraph.hpp
+  dgraph.cpp
 )
 
 # add directory name to sources

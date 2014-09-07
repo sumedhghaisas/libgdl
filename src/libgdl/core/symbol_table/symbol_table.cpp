@@ -4,6 +4,15 @@ using namespace std;
 using namespace libgdl;
 using namespace libgdl::gdlparser::parser;
 
+SymbolTable::SymbolTable()
+{
+  index = 0;
+
+  AddEntry("not", Location(), 0, true);
+  AddEntry("or", Location(), 0, true);
+  AddEntry("distinct", Location(), 2, true);
+}
+
 SymbolTable::~SymbolTable()
 {
   for(SymbolMap::iterator it = symbol_table.begin();it != symbol_table.end();it++)

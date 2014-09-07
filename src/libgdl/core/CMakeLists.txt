@@ -4,6 +4,7 @@ set(DIRS
   util
   cache
   symbol_table
+  dgraph
 )
 
 foreach(dir ${DIRS})

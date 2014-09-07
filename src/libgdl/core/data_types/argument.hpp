@@ -85,6 +85,20 @@ struct Argument
   //! returns if current argument is ground
   bool IsGround() const;
 
+  //! returns true if the argument is a negation
+  bool IsNegation()
+  {
+    if(value == 0) return true;
+    else return false;
+  }
+
+  //! returns true if the argument is 'or'
+  bool IsOr()
+  {
+    if(value == 1) return true;
+    else return false;
+  }
+
   //! returns if current argument is a variable
   bool IsVariable() const { if(t == Var) return true; else return false; }
 

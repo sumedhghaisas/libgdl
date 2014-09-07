@@ -15,6 +15,7 @@
 #include <libgdl/core.hpp>
 #include <libgdl/core/util/gdl_stream.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
+#include <libgdl/core/dgraph/dgraph.hpp>
 
 #include <libgdl/gdlparser/parser/kif_driver.hpp>
 #include <libgdl/gdlparser/parser/kif_parser.tab.hh>
@@ -117,7 +118,7 @@ class KIF
   const std::vector<Clause> Clauses() const { return clauses; }
 
   //! get the dependency graph
-  const std::map<std::string, DGraphNode*>& DependencyGraph() const
+  const DGraph* DependencyGraph() const
   {
     return dgraph;
   }
@@ -179,9 +180,6 @@ class KIF
   //! All the clauses
   std::vector<Clause> clauses;
 
-  //! dependency graph
-  std::map<std::string, DGraphNode*> dgraph;
-
   std::vector<util::GDLStream> streams;
 
   //! driver to drive parsing
@@ -199,6 +197,8 @@ class KIF
   std::list<parser::ErrorType> warnings;
 
   SymbolTable* symbol_table;
+
+  DGraph* dgraph;
 }; // class KIF
 
 }; // namespace gdlparser
