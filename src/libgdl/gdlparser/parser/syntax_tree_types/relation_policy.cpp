@@ -7,11 +7,11 @@
 #include "relation_policy.hpp"
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/error_type.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
 #include <libgdl/core/data_types/variable_map.hpp>
 
 #include <libgdl/gdlparser/parser/kif_driver.hpp>
-#include <libgdl/gdlparser/parser/error_type.hpp>
 
 using namespace std;
 using namespace libgdl;

@@ -13,13 +13,13 @@
 #include <boost/unordered_map.hpp>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/error_type.hpp>
 #include <libgdl/core/util/gdl_stream.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
 #include <libgdl/core/dgraph/dgraph.hpp>
 
 #include <libgdl/gdlparser/parser/kif_driver.hpp>
 #include <libgdl/gdlparser/parser/kif_parser.tab.hh>
-#include <libgdl/gdlparser/parser/error_type.hpp>
 
 namespace libgdl
 {
@@ -193,8 +193,8 @@ class KIF
   size_t id_index;
   boost::unordered_map<std::string, size_t>* id_map;
 
-  std::list<parser::ErrorType> errors;
-  std::list<parser::ErrorType> warnings;
+  std::list<ErrorType> errors;
+  std::list<ErrorType> warnings;
 
   SymbolTable* symbol_table;
 

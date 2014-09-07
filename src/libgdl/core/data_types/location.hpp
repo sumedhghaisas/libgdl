@@ -28,7 +28,7 @@ struct Location
   typedef gdlparser::parser::yy::position position;
 
   //! empty constructor
-  Location() {}
+  Location() : begin(&filename), end(&filename) {}
   //! copy constructor
   Location(const Location& loc)
     : filename(loc.filename),
@@ -46,24 +46,33 @@ struct Location
     // empty constructor
   }
 
-  //! constructs location from line number and filename
-  Location(size_t lineNo, const std::string& filename)
-    : filename(filename), lineNo(lineNo) {}
+  friend void swap(Location& loc1, Location& loc2)
+  {
+    using std::swap;
+
+    swap(loc1.filename, loc2.filename);
+    swap(loc1.begin, loc2.end);
+    swap(loc1.end, loc2.end);
+  }
+
+  Location& operator=(Location loc)
+  {
+    swap(*this, loc);
+    return *this;
+  }
 
   //! Comparison operators
   bool operator==(const Location& loc) const
   {
-    if(lineNo != loc.lineNo) return false;
     if(filename != loc.filename) return false;
+    if(begin != loc.begin) return false;
+    if(end != loc.end) return false;
     return true;
   }
   bool operator!=(const Location& loc) const { return !(*this == loc); }
 
-
   //! holds filename
   std::string filename;
-  //! holds line number
-  size_t lineNo;
 
   position begin;
   position end;

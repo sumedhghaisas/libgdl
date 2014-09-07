@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(GoalUndefinedTest)
 
 /**
  * Check whether line number and filename are created properly
- */
+ *
 BOOST_AUTO_TEST_CASE(CreateDSTest)
 {
   MARK_START;
@@ -228,10 +228,9 @@ BOOST_AUTO_TEST_CASE(CreateDSTest)
 
   MARK_END;
 }
-
-/**
+**
  * Check whether line number and filename are loaded properly
- */
+ *
 BOOST_AUTO_TEST_CASE(LoadDSTest)
 {
   MARK_START;
@@ -251,5 +250,6 @@ BOOST_AUTO_TEST_CASE(LoadDSTest)
 
   MARK_END;
 }
+*/
 
 BOOST_AUTO_TEST_SUITE_END();

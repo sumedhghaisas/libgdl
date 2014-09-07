@@ -66,6 +66,19 @@ class SymbolTable
     return id_table;
   }
 
+  enum IDS {NotID,
+            OrID,
+            DistinctID,
+            RoleID,
+            BaseID,
+            InputID,
+            InitID,
+            LegalID,
+            NextID,
+            DoesID,
+            TrueID,
+            GoalID,
+            TerminalID};
 
  private:
   SymbolMap symbol_table;

@@ -56,14 +56,14 @@
 #include <iterator>
 #include <sstream>
 
-// driver class declaration.
-#include "kif_driver.hpp"
-#include "error_type.hpp"
-
 #include "syntax_tree_types_includes.hpp"
 #include <libgdl/core/util/to_string.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
 #include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/data_types/error_type.hpp>
+
+// driver class declaration.
+#include "kif_driver.hpp"
 
 // use yylex function in scanner class instead of predefiend yylex
 #undef yylex
@@ -1267,7 +1267,7 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 // Mandatory error function
 void KIFParser::error (const KIFParser::location_type& loc, const std::string& msg)
 {
-  libgdl::gdlparser::parser::ErrorType error;
+  libgdl::ErrorType error;
   error.AddEntry(msg, loc);
   driver.Error(error);
 }

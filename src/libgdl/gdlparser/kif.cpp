@@ -53,12 +53,23 @@ bool KIF::Parse(bool ignoreErrors)
   errors.clear();
   bool res = driver.Parse();
 
-  for(std::list<ErrorType>::const_iterator it = errors.begin();it != errors.end();it++)
+  if(res)
+  {
+    list<ErrorType> e = dgraph->CheckCyclesWithNegation(*symbol_table);
+    for(list<ErrorType>::iterator it = e.begin();it != e.end();it++)
+      errors.push_back(*it);
+    e = dgraph->CheckRecursiveDependencies();
+    for(list<ErrorType>::iterator it = e.begin();it != e.end();it++)
+      errors.push_back(*it);
+  }
+
+  for(list<ErrorType>::const_iterator it = errors.begin();it != errors.end();it++)
     log.Fatal << *it << std::endl;
 
   if(isWarn)
   {
-    for(std::list<ErrorType>::const_iterator it = warnings.begin();it != warnings.end();it++)
+    for(list<ErrorType>::const_iterator it = warnings.begin();it != warnings.end();
+        it++)
       log.Warn << *it << std::endl;
   }
 

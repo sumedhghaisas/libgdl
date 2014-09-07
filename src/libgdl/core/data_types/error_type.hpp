@@ -15,10 +15,6 @@
 
 namespace libgdl
 {
-namespace gdlparser
-{
-namespace parser
-{
 
 struct ErrorType
 {
@@ -29,7 +25,9 @@ struct ErrorType
 
     std::string GetString(size_t tabs) const
     {
-      std::string out = ToString(loc) + ": ";
+      std::string out;
+      if(loc != Location())
+        out += ToString(loc) + ": ";
       for(size_t i = 0;i < tabs;i++)
         out += "\t";
       out += text;
@@ -49,14 +47,12 @@ struct ErrorType
 };
 
 }
-}
-}
 
 inline std::ostream& operator<<(std::ostream& s,
-                                const libgdl::gdlparser::parser::ErrorType& error)
+                                const libgdl::ErrorType& error)
 {
   bool isFirst = true;
-  for(std::list<libgdl::gdlparser::parser::ErrorType::Entry>::const_iterator
+  for(std::list<libgdl::ErrorType::Entry>::const_iterator
       it = error.entries.begin(); it!= error.entries.end();it++)
   {
     if(isFirst)
@@ -70,7 +66,7 @@ inline std::ostream& operator<<(std::ostream& s,
 }
 
 #define ARITY_ERROR(NAME, VAR, UARITY, DARITY, ULOC, DLOC)                    \
-libgdl::gdlparser::parser::ErrorType NAME;                                    \
+libgdl::ErrorType NAME;                                                       \
 error.AddEntry("Trying to use " + VAR + " with arity " +                      \
                libgdl::ToString(UARITY) +                                     \
                " which is previously defined with arity " +                   \
@@ -78,19 +74,29 @@ error.AddEntry("Trying to use " + VAR + " with arity " +                      \
 error.AddEntry(VAR + " previously used here.", DLOC);
 
 #define RF_ERROR(NAME, VAR, USED, DEF, ULOC, DLOC)                            \
-libgdl::gdlparser::parser::ErrorType NAME;                                    \
+libgdl::ErrorType NAME;                                                       \
 error.AddEntry("Trying to use " + VAR + " as " + USED +                       \
                " which is previously used as " + DEF, ULOC);                  \
 error.AddEntry(VAR + " previously used here.", DLOC);
 
 #define Q_ERROR(NAME, TEXT, LOC)                                              \
-libgdl::gdlparser::parser::ErrorType NAME;                                    \
+libgdl::ErrorType NAME;                                                       \
 error.AddEntry(TEXT, LOC);
 
 #define PR_ARITY_ERROR(NAME, VAR, EXP, PROV, LOC)                             \
-libgdl::gdlparser::parser::ErrorType NAME;                                    \
+libgdl::ErrorType NAME;                                                       \
 error.AddEntry("Relation " + VAR + " expects " + libgdl::ToString(EXP)        \
                + " arguments.", LOC);                                         \
 error.AddEntry(libgdl::ToString(PROV) + " provided.", LOC);
+
+#define SIMPLE_ERROR(NAME, TEXT)                                              \
+libgdl::ErrorType NAME;                                                       \
+error.AddEntry(TEXT, libgdl::Location());
+
+#define INVALID_DEP_ERROR(NAME, VAR1, VAR2)                                   \
+libgdl::ErrorType NAME;                                                       \
+error.AddEntry("Invalid dependency", Location());                             \
+error.AddEntry("Relation " + libgdl::ToString(VAR1) +                         \
+               " is dependent on " + libgdl::ToString(VAR2), Location());
 
 #endif // _LIBGDL_GDLPARSER_PARSER_ERROR_TYPE_HPP_INCLUDED

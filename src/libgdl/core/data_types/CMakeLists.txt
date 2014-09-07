@@ -14,6 +14,7 @@ set(SOURCES
   move.cpp
   intrusive_list.hpp
   variable_map.hpp
+  error_type.hpp
 )
 
 # add directory name to sources

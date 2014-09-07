@@ -59,7 +59,7 @@ public:
 
     //! Constructor
     //! Reference to the calling parser class is stored for error and warning logging
-    KIFScanner(const KIFDriver& driver);
+    KIFScanner(KIFDriver& driver);
 
     ~KIFScanner() { delete yyin; }
 
@@ -85,7 +85,7 @@ private:
     std::stringstream empty_stringstream;
 
     //! reference of the calling driver object
-    const KIFDriver& driver;
+    KIFDriver& driver;
 
     //! files to be scanned
     std::vector<util::GDLStream>& streams;

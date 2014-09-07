@@ -125,26 +125,30 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 #undef yylex
 #endif
 
+#include <libgdl/core/data_types/error_type.hpp>
+
 int libgdl::gdlparser::parser::KIFScanner::yywrap()
 {
-    // if no stream to scan
-    if(streams.size() == 0)
-    {
-        driver.Warn("No streams provided...");
-        return 1;
-    }
-    // choose file file to scan
-    else if(stream_index < streams.size())
-    {
-        yyin = streams[stream_index].Stream();
-    }
-    else return 1;
-    // increment file index
-    stream_index++;
-    return 0;
+  // if no stream to scan
+  if(streams.size() == 0)
+  {
+    ErrorType error;
+    error.AddEntry("o streams provided for parsing", Location());
+    driver.Warn(error);
+    return 1;
+  }
+  // choose file file to scan
+  else if(stream_index < streams.size())
+  {
+    yyin = streams[stream_index].Stream();
+  }
+  else return 1;
+  // increment file index
+  stream_index++;
+  return 0;
 }
 
-libgdl::gdlparser::parser::KIFScanner::KIFScanner(const KIFDriver& driver)
+libgdl::gdlparser::parser::KIFScanner::KIFScanner(KIFDriver& driver)
         : yyFlexLexer(&empty_stringstream, NULL),
         driver(driver), streams(driver.streams),
         stream_index(0)
@@ -153,12 +157,12 @@ libgdl::gdlparser::parser::KIFScanner::KIFScanner(const KIFDriver& driver)
 
 int yyFlexLexer::yylex()
 {
-    std::cerr << "in ExampleFlexLexer::yylex() !" << std::endl;
-    return 0;
+  std::cerr << "in ExampleFlexLexer::yylex() !" << std::endl;
+  return 0;
 }
 
 int yyFlexLexer::yywrap()
 {
-    std::cout << "in yywrap2" << std::endl;
-    return 1;
+  std::cout << "in yywrap2" << std::endl;
+  return 1;
 }
