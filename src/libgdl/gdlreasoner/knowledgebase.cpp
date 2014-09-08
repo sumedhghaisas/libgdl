@@ -13,27 +13,27 @@ using namespace libgdl::gdlreasoner::logicbase;
 using namespace libgdl::gdlparser;
 
 KnowledgeBase::KnowledgeBase(gdlparser::KIF& kif)
-  : c_id(0), isDebuggingSymbols(kif.DebuggingSymbolSupport())
+  : c_id(0)
 {
-  std::vector<Fact>& facts = kif.Facts();
-  std::vector<Clause>& clauses = kif.Clauses();
+  std::list<Fact>& facts = kif.Facts();
+  std::list<Clause>& clauses = kif.Clauses();
 
   // import facts from KIF object
-  for(size_t i = 0; i < facts.size(); i++)
+  for(list<Fact>::const_iterator it = facts.begin();it != facts.end();it++)
   {
     std::stringstream stream;
-    stream << facts[i].arg->args.size();
-    std::string command = facts[i].Command() + "/" + stream.str();
-    m_facts[command].push_back(std::move(facts[i]));
+    stream << it->arg->args.size();
+    std::string command = it->Command() + "/" + stream.str();
+    m_facts[command].push_back(std::move(*it));
   }
 
   // import clauses from KIF object
-  for(size_t i = 0; i < clauses.size(); i++)
+  for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
   {
     std::stringstream stream;
-    stream << clauses[i].head->args.size();
-    std::string command = clauses[i].head->val + "/" + stream.str();
-    m_clauses[command].push_back(std::move(clauses[i]));
+    stream << it->head->args.size();
+    std::string command = it->head->val + "/" + stream.str();
+    m_clauses[command].push_back(std::move(*it));
   }
 
   kif.Clear();

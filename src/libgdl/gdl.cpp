@@ -33,7 +33,6 @@ GDL::GDL(const string& filename,
     exit(1);
   }
 
-  id_map = kif.IDMap();
   base_rules = KnowledgeBase(kif);
   kif.Clear();
 
@@ -60,8 +59,7 @@ GDL::GDL(const string& filename,
 GDL::GDL(KIF& kif,
          size_t state_cache_capacity,
          const Log& l)
-  : id_map(kif.IDMap()),
-    base_rules(kif),
+  : base_rules(kif),
     next_state_cache_capacity(state_cache_capacity),
     next_state_cache(next_state_cache_capacity),
     isTerminal_cache_capacity(state_cache_capacity),

@@ -119,9 +119,6 @@ class KnowledgeBase
   //! clause id to assign to new clauses
   size_t c_id;
 
-  //! is debugging sysbols supported
-  bool isDebuggingSymbols;
-
   //! logging stream
   mutable Log log;
 }; // CLASS KNOWLEDGEBASE

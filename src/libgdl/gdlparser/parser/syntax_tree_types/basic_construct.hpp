@@ -13,6 +13,8 @@
 #include <libgdl/core/data_types/variable_map.hpp>
 #include <libgdl/core/util/to_string.hpp>
 
+#include <libgdl/core/data_types/location.hpp>
+
 #include "node.hpp"
 
 namespace libgdl
@@ -32,7 +34,8 @@ class BasicConstruct : public Node
 
  public:
   BasicConstruct(Head* command, const yy::location& loc)
-    : Node(loc), command(command) {}
+    : Node(loc), command(command)
+  {}
 
   ~BasicConstruct()
   {

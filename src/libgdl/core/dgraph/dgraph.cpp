@@ -10,6 +10,8 @@
 
 #include <libgdl/core/data_types/clause.hpp>
 
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
+
 using namespace std;
 using namespace libgdl;
 

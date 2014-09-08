@@ -54,16 +54,6 @@ class KIF
 {
   //! Some useful typedefs
   typedef parser::KIFDriver KIFDriver;
-  typedef parser::yy::KIFParser::location_type location_type;
-
-  struct Symbol
-  {
-    Symbol(size_t id, const std::string& name)
-      : id(id), name(name) {}
-
-    size_t id;
-    std::string name;
-  };
 
  public:
   //! Constructor
@@ -71,7 +61,6 @@ class KIF
   //! @param isWarn bool : enable or disable warnings
   //! @param stream std::ostream& : stream to print errors and warnings
   KIF(bool isWarn = true,
-      bool isDebuggingSymbols = true,
       char o_level = 0,
       const Log& log = std::cout);
 
@@ -86,7 +75,7 @@ class KIF
   bool AddFile(const std::string& filename);
 
   //! clears all the files added and knowledge
-  void Clear() { streams.clear(); facts.clear(); clauses.clear(); id_map = NULL;}
+  void Clear() { streams.clear(); facts.clear(); clauses.clear(); }
 
   //! Parse the inputs
   //!
@@ -99,7 +88,8 @@ class KIF
   //! @param filename const std::string& : output filename
   //! @return bool : success or failure
   //!
-  bool PrintToFile(const std::string& filename) const;
+  bool PrintToFile(const std::string& filename,
+                   bool isDebuggingSymbols = false) const;
 
   //! Print dependency graph generated to file(DOT format).
   //!
@@ -110,29 +100,17 @@ class KIF
   bool PrintDependencyGraph(const std::string& filename) const;
 
   //! Access facts
-  std::vector<Fact>& Facts() { return facts; }
-  const std::vector<Fact>& Facts() const { return facts; }
+  std::list<Fact>& Facts() { return facts; }
+  const std::list<Fact>& Facts() const { return facts; }
 
   //! Access Clauses
-  std::vector<Clause>& Clauses() { return clauses; }
-  const std::vector<Clause> Clauses() const { return clauses; }
+  std::list<Clause>& Clauses() { return clauses; }
+  const std::list<Clause> Clauses() const { return clauses; }
 
   //! get the dependency graph
   const DGraph* DependencyGraph() const
   {
     return dgraph;
-  }
-
-  //! set or reset debugging symbol generation
-  bool DebuggingSymbolSupport() const { return isDebuggingSymbols; }
-
-  const boost::unordered_map<std::string,size_t>* IDMap() const
-  {
-    return id_map;
-  }
-  boost::unordered_map<std::string, size_t>* IDMap()
-  {
-    return id_map;
   }
 
   //! get this object's logging stream
@@ -142,22 +120,32 @@ class KIF
   //! make KIFDriver class friend
   friend KIFDriver;
 
-  void AddLineMark(const location_type& loc);
+  //void AddLineMark(const location_type& loc);
 
   //! add fact and clause to this kif -- used by KIFDriver
-  const Fact& AddFact(const Fact& f, const location_type& loc);
-  const Fact& AddFact(Fact&& f, const location_type& loc);
   const Fact& AddFact(Fact&& f)
   {
-    facts.push_back(std::move(f));
-    return facts.back();
+    if(f.arg->value == SymbolTable::RoleID)
+      isRole = true;
+    else if(f.arg->value == SymbolTable::GoalID)
+      isGoal = true;
+    else if(f.arg->value == SymbolTable::TerminalID)
+      isTerminal = true;
+    else if(f.arg->value == SymbolTable::LegalID)
+      isLegal = true;
+    facts.push_front(std::move(f));
+    return facts.front();
   }
-  const Clause& AddClause(const Clause& c, const location_type& loc);
-  const Clause& AddClause(Clause&& c, const location_type& loc);
   const Clause& AddClause(Clause&& c)
   {
-    clauses.push_back(std::move(c));
-    return clauses.back();
+    if(c.head->value == SymbolTable::GoalID)
+      isGoal = true;
+    else if(c.head->value == SymbolTable::TerminalID)
+      isTerminal = true;
+    else if(c.head->value == SymbolTable::LegalID)
+      isLegal = true;
+    clauses.push_front(std::move(c));
+    return clauses.front();
   }
 
   void UpdateSymbolTable(const Argument& arg, const Location& loc);
@@ -168,30 +156,19 @@ class KIF
   //! enable/disable warnings
   bool isWarn;
 
-  //! to generate debugging symbols in output file
-  const bool isDebuggingSymbols;
-
   //! yet not implemented
   const char o_level;
 
   //! All the facts
-  std::vector<Fact> facts;
+  std::list<Fact> facts;
 
   //! All the clauses
-  std::vector<Clause> clauses;
+  std::list<Clause> clauses;
 
   std::vector<util::GDLStream> streams;
 
   //! driver to drive parsing
   KIFDriver driver;
-
-  //! index of the last fact tagged with "#line" location
-  size_t f_last_index_with_linemark;
-  //! index of the last clause tagged with "#line" location
-  size_t c_last_index_with_linemark;
-
-  size_t id_index;
-  boost::unordered_map<std::string, size_t>* id_map;
 
   std::list<ErrorType> errors;
   std::list<ErrorType> warnings;
@@ -199,6 +176,11 @@ class KIF
   SymbolTable* symbol_table;
 
   DGraph* dgraph;
+
+  bool isRole;
+  bool isLegal;
+  bool isTerminal;
+  bool isGoal;
 }; // class KIF
 
 }; // namespace gdlparser

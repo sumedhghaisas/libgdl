@@ -51,7 +51,7 @@ struct Location
     using std::swap;
 
     swap(loc1.filename, loc2.filename);
-    swap(loc1.begin, loc2.end);
+    swap(loc1.begin, loc2.begin);
     swap(loc1.end, loc2.end);
   }
 

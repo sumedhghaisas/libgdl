@@ -16,6 +16,7 @@ using namespace boost;
 using namespace libgdl;
 
 Argument::Argument(const Argument& arg) noexcept
+  : val("")
 {
   if(arg.IsVariable())
   {
@@ -472,7 +473,7 @@ Argument& Argument::operator=(const Argument& arg)
   return *this;
 }
 
-bool Argument::OrEquate(const Argument& arg)
+bool Argument::OrEquate(const Argument& arg) const
 {
   // for 'or', if arg matches any argument return true
   if(val == "or")

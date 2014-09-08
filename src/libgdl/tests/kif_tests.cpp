@@ -18,13 +18,30 @@ using namespace libgdl;
 using namespace libgdl::gdlparser;
 
 /**
- * Check normal parsing.
+ * Variable parsing test
  */
-BOOST_AUTO_TEST_CASE(NormalKIFParsingTest)
+BOOST_AUTO_TEST_CASE(VariableParsingTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
+  kif.AddFile("data/parser_tests/variable_parsing.kif");
+  if(!kif.Parse(true)) MARK_FAIL;
+  
+  const Clause& c = kif.Clauses().front();
+  if(c.head->args[0] != c.premisses[0]->args[0]) MARK_FAIL;
+  if(c.head->args[1] != c.premisses[0]->args[1]->args[0]) MARK_FAIL;
+  MARK_END;
+}
+
+/**
+ * game parsing test.
+ */
+BOOST_AUTO_TEST_CASE(GameParsingTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/8puzzle.kif");
   if(!kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -37,7 +54,7 @@ BOOST_AUTO_TEST_CASE(MultipleArityErrorTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/mularity.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -50,7 +67,7 @@ BOOST_AUTO_TEST_CASE(StratifiedNegationTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/notunstrat.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -63,7 +80,7 @@ BOOST_AUTO_TEST_CASE(StratifiedRecursionTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/recurseunstrat.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -76,7 +93,7 @@ BOOST_AUTO_TEST_CASE(HeadSafetyTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/headsafe.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -89,7 +106,7 @@ BOOST_AUTO_TEST_CASE(NotSafetyTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/notsafe.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -102,7 +119,7 @@ BOOST_AUTO_TEST_CASE(OrBoundTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/orsafe.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -115,7 +132,7 @@ BOOST_AUTO_TEST_CASE(BaseDependencyTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/base_depen.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -128,7 +145,7 @@ BOOST_AUTO_TEST_CASE(InputDependencyTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/input_depen.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -141,7 +158,7 @@ BOOST_AUTO_TEST_CASE(InitDependencyTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/init_depen.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -154,7 +171,7 @@ BOOST_AUTO_TEST_CASE(LeaglDependencyTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/legal_depen.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -167,7 +184,7 @@ BOOST_AUTO_TEST_CASE(RoleUndefinedTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/ndef_role.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -180,7 +197,7 @@ BOOST_AUTO_TEST_CASE(LegalUndefinedTest)
 {
   MARK_START;
   OPEN_LOG;
-	KIF kif(false, false, 0, TEST_LOG);
+	KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/ndef_legal.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -193,7 +210,7 @@ BOOST_AUTO_TEST_CASE(TerminalUndefinedTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/ndef_terminal.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;
@@ -206,7 +223,7 @@ BOOST_AUTO_TEST_CASE(GoalUndefinedTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
+  KIF kif(false, 0, TEST_LOG);
   kif.AddFile("data/parser_tests/ndef_goal.kif");
   if(kif.Parse()) MARK_FAIL;
   MARK_END;

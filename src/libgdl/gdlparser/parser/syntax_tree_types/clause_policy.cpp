@@ -51,7 +51,7 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
 
   const std::string& hcmd = symbol_table->GetCommandName(head->value);
 
-  if(hcmd == "does")
+  if(hcmd == "does" || hcmd == "true" || hcmd == "distinct" || hcmd == "role")
   {
     ErrorType error;
     error.AddEntry("Relation " + hcmd + " cannot appear as head in the clause.",
@@ -83,6 +83,22 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
   {
     if(args[i]->IsNegation())
       neg_vars = util::setop::setUnion(neg_vars, args[i]->GetVariables());
+    else if(args[i]->IsOr())
+    {
+      set<const Argument*> temp;
+      bool isFirst = true;
+      for(size_t j = 0;j < args[i]->args.size();j++)
+      {
+        if(isFirst)
+        {
+          temp = args[i]->args[j]->GetVariables();
+          isFirst = false;
+        }
+        else temp = util::setop::setIntersection(temp,
+                                                 args[i]->args[j]->GetVariables());
+      }
+      pos_vars = util::setop::setUnion(pos_vars, temp);
+    }
     else pos_vars = util::setop::setUnion(pos_vars, args[i]->GetVariables());
   }
 
@@ -94,7 +110,7 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
   {
     ErrorType error;
     error.AddEntry("Variable " + (*it)->val + " appearing in the head does not \
-                    appear in any positive body.", command_loc);
+appear in any positive body.", command_loc);
     driver.Error(error);
   }
 
@@ -103,7 +119,7 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
   {
     ErrorType error;
     error.AddEntry("Variable " + (*it)->val + " appearing in the negative body \
-                   does not appear in any positive body.", command_loc);
+does not appear in any positive body.", command_loc);
     driver.Error(error);
   }
 

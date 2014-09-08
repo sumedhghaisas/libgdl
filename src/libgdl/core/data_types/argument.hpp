@@ -34,7 +34,7 @@ struct Argument
   enum Type { Relation, Function, Var };
 
   //! empty constructor
-  Argument() : t(Relation) {}
+  Argument() : t(Relation), val("") {}
   //! copy constructor
   Argument(const Argument& arg) noexcept;
   //! construct argument from string
@@ -79,7 +79,7 @@ struct Argument
   //! special comparison operator
   //! checks value and arguments(recursively check)
   //! for 'or' if given argument matches any argument to 'or' true is returned
-  bool OrEquate(const Argument& arg);
+  bool OrEquate(const Argument& arg) const;
 
   //! return true if given argument is there in arguments
   bool HasAsArgument(const Argument& arg) const;
