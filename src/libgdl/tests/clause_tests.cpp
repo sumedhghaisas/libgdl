@@ -24,10 +24,19 @@ using namespace libgdl;
 BOOST_AUTO_TEST_CASE(ClauseStringConstructionTest)
 {
   MARK_START;
-  Clause c("(<= terminal (test x))");
+  OPEN_LOG;
+  SymbolTable symbol_table;
+  Clause c("(<= terminal (test x))", symbol_table, TEST_LOG);
+  
   stringstream stream;
-  stream << c;
+  SymbolDecodeStream sds(&symbol_table, stream);
+  sds << c;
+  
   if(stream.str() != "(<= terminal ( test x ) )") MARK_FAIL;
+  
+  c = Clause("(<= (test ?x) (test2 ?x ?y))", symbol_table, TEST_LOG);
+  
+  if(c.head->args[0] != c.premisses[0]->args[0]) MARK_FAIL; 
   MARK_END;
 }
 

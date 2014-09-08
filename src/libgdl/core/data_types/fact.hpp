@@ -29,7 +29,6 @@ struct Fact
 {
   //! some useful typedefs
   typedef gdlparser::parser::yy::location location_type;
-  typedef gdlparser::parser::TokenValue TokenValue;
 
   //! empty constructor
   Fact() : arg(NULL), isLocation(false) {}
@@ -46,7 +45,9 @@ struct Fact
   //! does not check if argument has variables or not
   Fact(const Argument& arg) : arg(new Argument(arg)) {}
   //! construct fact from string
-  Fact(const std::string& str);
+  Fact(const std::string& str,
+       SymbolTable& symbol_table,
+       Log log = std::cerr);
 
   //! desctructor
   ~Fact() { delete arg; }

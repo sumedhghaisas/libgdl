@@ -14,6 +14,7 @@ set(SOURCES
   move.cpp
   intrusive_list.hpp
   variable_map.hpp
+  variable_map.cpp
   error_type.hpp
 )
 

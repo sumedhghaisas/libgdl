@@ -141,7 +141,7 @@ size_t KnowledgeBase::Tell(Fact&& f)
 
 size_t KnowledgeBase::Tell(const std::string& str)
 {
-  if(str[0] != '(') return Tell(Fact(str));
+  //if(str[0] != '(') return Tell(Fact(str));
 
   std::string cmd;
   std::vector<std::string> args;
@@ -156,9 +156,9 @@ size_t KnowledgeBase::Tell(const std::string& str)
     log.Fatal << "Unable to construct argument from " << str << std::endl;
     return 0;
   }
-  else if(cmd != "<=") return Tell(Fact(str));
+  //else if(cmd != "<=") return Tell(Fact(str));
 
-  return Tell(Clause(str));
+  //return Tell(Clause(str));
 }
 
 bool KnowledgeBase::Erase(const Clause& c, size_t index)

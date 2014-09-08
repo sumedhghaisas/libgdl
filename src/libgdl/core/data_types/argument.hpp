@@ -15,7 +15,7 @@
 
 #include <libgdl/core/symbol_table/symbol_table.hpp>
 
-#include <libgdl/gdlparser/parser/token_value.hpp>
+#include "variable_map.hpp"
 
 namespace libgdl
 {
@@ -29,7 +29,6 @@ namespace libgdl
 struct Argument
 {
   typedef std::vector<std::string> StringVec;
-  typedef gdlparser::parser::TokenValue TokenValue;
 
   //! enum type
   enum Type { Relation, Function, Var };
@@ -39,10 +38,14 @@ struct Argument
   //! copy constructor
   Argument(const Argument& arg) noexcept;
   //! construct argument from string
-  Argument(const std::string& str);
+  Argument(const std::string& str,
+           SymbolTable& symbol_table,
+           bool isRel = true,
+           Log log = std::cerr);
   //! move constructor
   Argument(Argument&& arg) noexcept
-    : t(arg.t), val(std::move(arg.val)), args(std::move(arg.args)) {}
+    : t(arg.t), val(std::move(arg.val)), value(std::move(arg.value)),
+    args(std::move(arg.args)) {}
 
   //! Destructor
   ~Argument();
@@ -54,6 +57,7 @@ struct Argument
 
     swap(arg1.t, arg2.t);
     swap(arg1.val, arg2.val);
+    swap(arg1.value, arg2.value);
     swap(arg1.args, arg2.args);
   }
 
@@ -104,9 +108,6 @@ struct Argument
 
   std::set<const Argument*> GetVariables() const;
 
-  //! equivalent to comparison operator but 'or' conditions is removed in this
-  bool IsEqualTo(const Argument& arg) const;
-
   //! compute hash value
   size_t Hash(const boost::unordered_map<std::string, size_t>& id_map);
 
@@ -122,16 +123,18 @@ struct Argument
 
   //! used by copy constructors
   static Argument* ConstructArgument(const Argument& arg,
-                                     std::map<std::string,
-                                     Argument*>& v_map);
+                                     VariableMap& v_map);
   static Argument* ConstructArgument(const std::string& str,
-                                     std::map<std::string,
-                                     Argument*>& v_map);
+                                     VariableMap& v_map,
+                                     SymbolTable& symbol_table,
+                                     bool isRel = true,
+                                     Log log = std::cerr);
 
   //! separates a string input into command and arguments
-  static bool SeparateCommand (const std::string & input,
-                               std::string & cmd,
-                               std::vector <std::string> & args);
+  static bool SeparateCommand (const std::string& input,
+                               std::string& cmd,
+                               std::vector<std::string>& args,
+                               Log log = std::cerr);
 
 }; // struct Argument
 

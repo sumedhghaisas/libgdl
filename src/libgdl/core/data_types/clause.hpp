@@ -28,7 +28,6 @@ namespace libgdl
 struct Clause
 {
   typedef gdlparser::parser::yy::location location_type;
-  typedef gdlparser::parser::TokenValue TokenValue;
 
   //! empty constructor
   Clause() : head(NULL), isLocation(false) {}
@@ -39,7 +38,9 @@ struct Clause
     : head(NULL) { swap(*this, c); }
 
   //! construct clause from string
-  Clause(const std::string& str);
+  Clause(const std::string& str,
+         SymbolTable& symbol_table,
+         Log log = std::cerr);
 
   //! destructor
   ~Clause();

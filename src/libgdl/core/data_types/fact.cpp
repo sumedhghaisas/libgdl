@@ -8,15 +8,18 @@
 
 using namespace libgdl;
 
-Fact::Fact(const std::string& str) : isLocation(false)
+Fact::Fact(const std::string& str,
+           SymbolTable& symbol_table,
+           Log log)
+  : isLocation(false)
 {
   if(str.find("?") != std::string::npos)
   {
-    std::cerr << "Unable to construct argument from " << str << std::endl;
+    log.Fatal << "Unable to construct argument from " << str << std::endl;
     return;
   }
 
-  arg = new Argument(str);
+  arg = new Argument(str, symbol_table, true, log);
 }
 
 Fact& Fact::operator=(const Fact& f)

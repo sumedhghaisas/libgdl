@@ -11,6 +11,7 @@
 #include <list>
 
 #include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/util/to_string.hpp>
 
 #include "node.hpp"
 

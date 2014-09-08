@@ -12,7 +12,9 @@
 using namespace std;
 using namespace libgdl;
 
-Clause::Clause(const std::string& str)
+Clause::Clause(const std::string& str,
+               SymbolTable& symbol_table,
+               Log log)
   : isLocation(false)
 {
   std::map<std::string, Argument*> v_map;
@@ -21,14 +23,15 @@ Clause::Clause(const std::string& str)
   std::vector<std::string> args;
   if(!Argument::SeparateCommand(str, cmd, args) || cmd != "<=" || args.size() < 2)
   {
-    std::cerr << "Unable to construct clause from " << str << std::endl;
+    log.Fatal << "Unable to construct clause from " << str << std::endl;
     return;
   }
 
-  head = Argument::ConstructArgument(args[0], v_map);
+  head = Argument::ConstructArgument(args[0], v_map, symbol_table, true, log);
 
   for(size_t i = 1;i < args.size();i++)
-    premisses.push_back(Argument::ConstructArgument(args[i], v_map));
+    premisses.push_back
+      (Argument::ConstructArgument(args[i], v_map, symbol_table, true, log));
 }
 
 Clause::Clause(const Clause& c)

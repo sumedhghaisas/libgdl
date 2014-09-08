@@ -37,7 +37,7 @@ GDL::GDL(const string& filename,
   base_rules = KnowledgeBase(kif);
   kif.Clear();
 
-  list<Argument*> result = base_rules.Ask(Argument("(role ?x)"));
+  list<Argument*> result;// = base_rules.Ask(Argument("(role ?x)"));
   for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
   {
     roles.push_back((*it)->args[0]);
@@ -46,7 +46,7 @@ GDL::GDL(const string& filename,
   }
   result.clear();
 
-  result = base_rules.Ask(Argument("(init ?x)"));
+  result;// = base_rules.Ask(Argument("(init ?x)"));
   list<Argument*> temp;
   for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
   {
@@ -75,7 +75,7 @@ GDL::GDL(KIF& kif,
 {
   kif.Clear();
 
-  list<Argument*> result = base_rules.Ask(Argument("(role ?x)"));
+  list<Argument*> result;// = base_rules.Ask(Argument("(role ?x)"));
   for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
   {
     roles.push_back((*it)->args[0]);
@@ -84,7 +84,7 @@ GDL::GDL(KIF& kif,
   }
   result.clear();
 
-  result = base_rules.Ask(Argument("(init ?x)"));
+  result;// = base_rules.Ask(Argument("(init ?x)"));
   list<Argument*> temp;
   for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
   {
@@ -109,7 +109,7 @@ bool* GDL::cached_IsTerminal(const State& state)
   ApplyState(state);
 
   // check if terminal is satisfiable with current knowledge
-  bool* result = new bool(base_rules.IsSatisfiable(Argument("terminal")));
+  bool* result;// = new bool(base_rules.IsSatisfiable(Argument("terminal")));
 
   RemoveState();
 
@@ -140,7 +140,7 @@ MoveList* GDL::cached_getLegalMoves(const State& state)
   size_t i = 0;
   for(list<Argument*>::const_iterator it = roles.begin();it != roles.end();it++)
   {
-    result[i] = base_rules.Ask(Argument("(legal " + (*it)->val + " ?x)"));
+    result[i];// = base_rules.Ask(Argument("(legal " + (*it)->val + " ?x)"));
     i++;
   }
 
@@ -229,7 +229,7 @@ State* GDL::cached_GetNextState(const State& state,
   ApplyActions(moves);
 
   // get base propositions true in the next state
-  list<Argument*> result = base_rules.Ask(Argument("(next ?x)"));
+  list<Argument*> result;// = base_rules.Ask(Argument("(next ?x)"));
 
   RemoveState();
   RemoveActions();
@@ -277,8 +277,8 @@ size_t* GDL::cached_getGoal(const State& state, const size_t rid)
   for(size_t i = 0;i < rid;i++) it++;
 
   // get goal value for the given role
-  list<Argument*> result =
-              base_rules.Ask(Argument("(goal " + (*it)->val + " ?x)"));
+  list<Argument*> result;// =
+              //base_rules.Ask(Argument("(goal " + (*it)->val + " ?x)"));
 
   RemoveState();
 

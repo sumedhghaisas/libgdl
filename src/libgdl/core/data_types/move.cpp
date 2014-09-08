@@ -2,12 +2,12 @@
 
 using namespace libgdl;
 
-Move::Move(const std::string& str)
-{
-  moves.push_back(new Argument(str));
-  hash = 0;
-  boost::hash_combine(hash, str);
-}
+//Move::Move(const std::string& str)
+//{
+//  moves.push_back(new Argument(str));
+//  hash = 0;
+//  boost::hash_combine(hash, str);
+//}
 
 Move::Move(const std::vector<Argument*>& m,
        const boost::unordered_map<std::string, size_t>& id_map)
