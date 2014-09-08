@@ -28,7 +28,7 @@ Argument::Argument(const Argument& arg) noexcept
   // map to hold variable name versus assigned location mapping
   // this is important as all the occurrences of a variable in a clause
   // are assigned same object
-  VariableMap v_map;
+  StrVarMap v_map;
 
   t = arg.t;
   value = arg.value;
@@ -43,7 +43,7 @@ Argument::Argument(const std::string& str,
                    bool isRel,
                    Log log)
 {
-  VariableMap v_map;
+  StrVarMap v_map;
 
   if(str[0] != '(')
   {
@@ -263,9 +263,9 @@ void Argument::Destroy(std::set<Argument*>& v_set)
 }
 
 Argument* Argument::ConstructArgument(const Argument& arg,
-                                      VariableMap& v_map)
+                                      StrVarMap& v_map)
 {
-  VariableMap::iterator it;
+  StrVarMap::iterator it;
 
   if(arg.IsVariable() && (it = v_map.find(arg.val)) != v_map.end())
     return it->second;
@@ -288,7 +288,7 @@ Argument* Argument::ConstructArgument(const Argument& arg,
 }
 
 Argument* Argument::ConstructArgument(const std::string& str,
-                                      VariableMap& v_map,
+                                      StrVarMap& v_map,
                                       SymbolTable& symbol_table,
                                       bool isRel,
                                       Log log)
@@ -297,7 +297,7 @@ Argument* Argument::ConstructArgument(const std::string& str,
   {
     if(str[0] == '?')
     {
-      VariableMap::iterator it;
+      StrVarMap::iterator it;
       if((it = v_map.find(str)) != v_map.end())
         return it->second;
       else

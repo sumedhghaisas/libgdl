@@ -13,8 +13,8 @@ set(SOURCES
   move.hpp
   move.cpp
   intrusive_list.hpp
-  variable_map.hpp
-  variable_map.cpp
+  str_var_map.hpp
+  str_var_map.cpp
   error_type.hpp
 )
 

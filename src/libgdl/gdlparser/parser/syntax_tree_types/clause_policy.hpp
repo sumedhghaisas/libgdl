@@ -8,7 +8,7 @@
 #define _LIBGDL_GDLPARSER_PARSER_CLAUSE_POLICY_HPP_INCLUDED
 
 #include <libgdl/core.hpp>
-#include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/data_types/str_var_map.hpp>
 #include <libgdl/core/data_types/location.hpp>
 
 #include "basic_construct.hpp"
@@ -31,13 +31,13 @@ struct ClausePolicy
                       KIFDriver& driver,
                       Sentence* command,
                       std::list<Premiss*>& terms,
-                      VariableMap& v_map,
+                      StrVarMap& v_map,
                       const Location& command_loc);
 
   static bool CodeGen(KIFDriver& driver,
                       Sentence* command,
                       std::list<Premiss*>& terms,
-                      VariableMap& v_map,
+                      StrVarMap& v_map,
                       const Location& command_loc);
 };
 

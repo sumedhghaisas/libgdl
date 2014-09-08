@@ -7,7 +7,7 @@
 #ifndef _LIBGDL_GDLPARSER_PARSER_RELATION_POLICY_HPP_INCLUDED
 #define _LIBGDL_GDLPARSER_PARSER_RELATION_POLICY_HPP_INCLUDED
 
-#include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/data_types/str_var_map.hpp>
 #include <libgdl/core/data_types/location.hpp>
 
 #include "basic_construct.hpp"
@@ -29,26 +29,26 @@ struct RelationPolicy
                       KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
-                      VariableMap& v_map,
+                      StrVarMap& v_map,
                       const Location& loc);
 
   static bool CodeGen(KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
-                      VariableMap& v_map,
+                      StrVarMap& v_map,
                       const Location& command_loc);
 
   static bool CodeGen(Argument*& out,
                       KIFDriver& driver,
                       std::string* command,
                       std::list<Sentence*>& sentences,
-                      VariableMap& v_map,
+                      StrVarMap& v_map,
                       const Location& loc);
 
   static bool CodeGen(KIFDriver& driver,
                       std::string* command,
                       std::list<Sentence*>& sentences,
-                      VariableMap& v_map,
+                      StrVarMap& v_map,
                       const Location& command_loc);
 };
 

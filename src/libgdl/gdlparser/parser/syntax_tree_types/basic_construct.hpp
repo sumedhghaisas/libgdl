@@ -10,7 +10,7 @@
 #include <string>
 #include <list>
 
-#include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/data_types/str_var_map.hpp>
 #include <libgdl/core/util/to_string.hpp>
 
 #include <libgdl/core/data_types/location.hpp>
@@ -57,7 +57,7 @@ class BasicConstruct : public Node
   operator std::string() const;
 
   void CodeGen(KIFDriver& driver,
-               VariableMap& v_map = VariableMap())
+               StrVarMap& v_map = StrVarMap())
   {
     Policy::CodeGen(driver, command, args, v_map, loc);
   }
@@ -65,7 +65,7 @@ class BasicConstruct : public Node
   template<class T>
   bool CodeGen(T*& out,
                KIFDriver& driver,
-               VariableMap& v_map = VariableMap())
+               StrVarMap& v_map = StrVarMap())
   {
     return Policy::CodeGen(out, driver, command, args, v_map, loc);
   }
@@ -104,7 +104,7 @@ class BasicConstruct<Policy, Head, TerminalHold> : public Node
   operator std::string() const;
 
   void CodeGen(KIFDriver& driver,
-               VariableMap& v_map = VariableMap())
+               StrVarMap& v_map = StrVarMap())
   {
     Policy::CodeGen(driver, command, args, v_map, loc);
   }
@@ -112,7 +112,7 @@ class BasicConstruct<Policy, Head, TerminalHold> : public Node
   template<class T>
   bool CodeGen(T*& out,
                KIFDriver& driver,
-               VariableMap& v_map = VariableMap())
+               StrVarMap& v_map = StrVarMap())
   {
     return Policy::CodeGen(out, driver, command, args, v_map, loc);
   }

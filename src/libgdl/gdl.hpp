@@ -205,7 +205,7 @@ inline void GDL::ApplyState(const State& state)
 
     Fact f;
     f.arg = temp;
-    base_rules.m_facts["true/1"].push_back(std::move(f));
+    base_rules.m_facts[SymbolTable::TrueID].push_back(std::move(f));
   }
 }
 
@@ -223,16 +223,16 @@ inline void GDL::ApplyActions(const Move& moves)
 
     Fact f;
     f.arg = temp;
-    base_rules.m_facts["does/2"].push_back(std::move(f));
+    base_rules.m_facts[SymbolTable::DoesID].push_back(std::move(f));
   }
 }
 
 inline void GDL::RemoveState()
 {
   gdlreasoner::KnowledgeBase::FactMap::iterator
-                                      m_it = base_rules.m_facts.find("true/1");
-  gdlreasoner::KnowledgeBase::FactVec& fvec = m_it->second;
-  for(gdlreasoner::KnowledgeBase::FactVec::iterator it = fvec.begin();
+                            m_it = base_rules.m_facts.find(SymbolTable::TrueID);
+  gdlreasoner::KnowledgeBase::FactList& fvec = m_it->second;
+  for(gdlreasoner::KnowledgeBase::FactList::iterator it = fvec.begin();
                                                         it != fvec.end();it++)
   {
     Fact& f = *it;
@@ -244,9 +244,9 @@ inline void GDL::RemoveState()
 inline void GDL::RemoveActions()
 {
   gdlreasoner::KnowledgeBase::FactMap::iterator
-                                      m_it = base_rules.m_facts.find("does/2");
-  gdlreasoner::KnowledgeBase::FactVec& fvec2 = m_it->second;
-  for(gdlreasoner::KnowledgeBase::FactVec::iterator it = fvec2.begin();
+                            m_it = base_rules.m_facts.find(SymbolTable::DoesID);
+  gdlreasoner::KnowledgeBase::FactList& fvec2 = m_it->second;
+  for(gdlreasoner::KnowledgeBase::FactList::iterator it = fvec2.begin();
                                                         it != fvec2.end();it++)
   {
     Fact& f = *it;

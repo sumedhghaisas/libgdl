@@ -6,6 +6,7 @@ add_executable(libgdl_test
   clause_tests.cpp 
   cache_tests.cpp
   kif_tests.cpp
+  unify_tests.cpp
   #knowledgebase_tests.cpp
   #state_tests.cpp
   #gdl_tests.cpp

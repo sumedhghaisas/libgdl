@@ -13,7 +13,7 @@
 #include <list>
 #include <map>
 
-#include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/data_types/str_var_map.hpp>
 #include <libgdl/gdlparser/parser/location.hh>
 
 namespace libgdl
@@ -42,7 +42,7 @@ class Node
   }
 
   virtual void CodeGen(KIFDriver& driver,
-                       VariableMap& v_map) = 0;
+                       StrVarMap& v_map) = 0;
 
   const location& GetLocation() { return loc; }
 

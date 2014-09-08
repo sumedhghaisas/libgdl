@@ -15,7 +15,7 @@
 
 #include <libgdl/core/symbol_table/symbol_table.hpp>
 
-#include "variable_map.hpp"
+#include "str_var_map.hpp"
 
 namespace libgdl
 {
@@ -123,9 +123,9 @@ struct Argument
 
   //! used by copy constructors
   static Argument* ConstructArgument(const Argument& arg,
-                                     VariableMap& v_map);
+                                     StrVarMap& v_map);
   static Argument* ConstructArgument(const std::string& str,
-                                     VariableMap& v_map,
+                                     StrVarMap& v_map,
                                      SymbolTable& symbol_table,
                                      bool isRel = true,
                                      Log log = std::cerr);

@@ -16,10 +16,10 @@ namespace libgdl
 
 class Argument;
 
-typedef std::map<std::string, Argument*> VariableMap;
+typedef std::map<std::string, Argument*> StrVarMap;
 
 }
 
-std::ostream& operator<<(std::ostream& s, const libgdl::VariableMap& vmap);
+std::ostream& operator<<(std::ostream& s, const libgdl::StrVarMap& vmap);
 
 #endif // _LIBGDL_CORE_DATATYPES_VARIABLE_MAP_HPP_INCLUDED

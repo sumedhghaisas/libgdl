@@ -45,6 +45,11 @@ class SymbolDecodeStream
   //! Write an ios_base manipulator function to the stream.
   SymbolDecodeStream& operator<<(std::ios_base& (*pf)(std::ios_base&));
   SymbolDecodeStream& operator<<(const char[]);
+  SymbolDecodeStream& operator<<(const size_t& num)
+  {
+    stream << num;
+    return *this;
+  }
 
   template<typename T>
   SymbolDecodeStream& operator<<(const T& t)

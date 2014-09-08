@@ -20,12 +20,12 @@ bool FunctionPolicy::CodeGen(Argument*& out,
                              KIFDriver& driver,
                              std::string* command,
                              std::list<Term*>& terms,
-                             VariableMap& v_map,
+                             StrVarMap& v_map,
                              const Location& command_loc)
 {
   if((*command)[0] == '?')
   {
-    VariableMap::const_iterator it = v_map.find(*command);
+    StrVarMap::const_iterator it = v_map.find(*command);
     if(it == v_map.end())
     {
       out = new Argument;
@@ -95,7 +95,7 @@ bool FunctionPolicy::CodeGen(Argument*& out,
 bool FunctionPolicy::CodeGen(KIFDriver& driver,
                              std::string* command,
                              std::list<Term*>& terms,
-                             VariableMap& v_map,
+                             StrVarMap& v_map,
                              const Location& command_loc)
 {
   MARK_USED(driver);

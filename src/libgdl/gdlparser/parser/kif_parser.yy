@@ -85,7 +85,7 @@ namespace gdlparser {
 #include "syntax_tree_types_includes.hpp"
 #include <libgdl/core/util/to_string.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
-#include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/data_types/str_var_map.hpp>
 #include <libgdl/core/data_types/error_type.hpp>
 
 // driver class declaration.
@@ -137,7 +137,7 @@ namespace gdlparser {
 /* Grammer */
 
 start     : S   start {
-                        VariableMap v_map;
+                        StrVarMap v_map;
                         $1->CodeGen(driver, v_map);
                         delete $1;
                       }

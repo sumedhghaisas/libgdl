@@ -47,16 +47,16 @@ class KnowledgeBase
   typedef logicbase::Answer Answer;
 
  public:
-  typedef std::list<Fact> FactVec;
-  typedef std::list<Clause> ClauseVec;
+  typedef std::list<Fact> FactList;
+  typedef std::list<Clause> ClauseList;
 
   //! data types to store knowledge
   //! improves access time
-  typedef std::map<std::string, FactVec> FactMap;
-  typedef std::map<std::string, ClauseVec> ClauseMap;
+  typedef std::map<size_t, FactList> FactMap;
+  typedef std::map<size_t, ClauseList> ClauseMap;
 
   //! constructs empty knowledge base
-  KnowledgeBase() : c_id(0) {}
+  KnowledgeBase() : c_id(0), symbol_table(new SymbolTable()) {}
   //! construct knowledge base with knowledge from KIF object
   KnowledgeBase(gdlparser::KIF& kif);
 
@@ -99,13 +99,22 @@ class KnowledgeBase
   //! returns NULL if no clauses are found
   //! signature is represented by head relation name followed by its arity
   //! separated by '/'
-  const FactVec* GetFacts(const std::string& sig) const;
-  const ClauseVec* GetClauses(const std::string& sig) const;
+  const FactList* GetFacts(size_t sig) const;
+  const ClauseList* GetClauses(size_t sig) const;
 
   //! returns all the facts in this knowledgebase in stored form
   const FactMap& GetAllFacts() const { return m_facts; }
   //! returns all the clauses in the knowledgebase in stored form
   const ClauseMap& GetAllClauses() const { return m_clauses; }
+
+  const SymbolTable* GetSymbolTable() const
+  {
+    return symbol_table;
+  }
+  SymbolTable*& GetSymbolTable()
+  {
+    return symbol_table;
+  }
 
   Log& GetLog() { return log; }
 
@@ -118,6 +127,8 @@ class KnowledgeBase
 
   //! clause id to assign to new clauses
   size_t c_id;
+
+  SymbolTable* symbol_table;
 
   //! logging stream
   mutable Log log;

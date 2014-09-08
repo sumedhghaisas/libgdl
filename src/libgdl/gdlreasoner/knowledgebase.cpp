@@ -13,27 +13,23 @@ using namespace libgdl::gdlreasoner::logicbase;
 using namespace libgdl::gdlparser;
 
 KnowledgeBase::KnowledgeBase(gdlparser::KIF& kif)
-  : c_id(0)
+  : c_id(0),
+    symbol_table(kif.GetSymbolTable())
 {
-  std::list<Fact>& facts = kif.Facts();
-  std::list<Clause>& clauses = kif.Clauses();
+  kif.GetSymbolTable() = NULL;
+
+  FactList& facts = kif.Facts();
+  ClauseList& clauses = kif.Clauses();
 
   // import facts from KIF object
-  for(list<Fact>::const_iterator it = facts.begin();it != facts.end();it++)
-  {
-    std::stringstream stream;
-    stream << it->arg->args.size();
-    std::string command = it->Command() + "/" + stream.str();
-    m_facts[command].push_back(std::move(*it));
-  }
+  for(FactList::const_iterator it = facts.begin();it != facts.end();it++)
+    m_facts[it->arg->value].push_back(std::move(*it));
 
   // import clauses from KIF object
-  for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
+  for(ClauseList::iterator it = clauses.begin();it != clauses.end();it++)
   {
-    std::stringstream stream;
-    stream << it->head->args.size();
-    std::string command = it->head->val + "/" + stream.str();
-    m_clauses[command].push_back(std::move(*it));
+    it->id = c_id++;
+    m_clauses[it->head->value].push_back(std::move(*it));
   }
 
   kif.Clear();
@@ -91,10 +87,7 @@ bool KnowledgeBase::IsSatisfiable(const Argument& arg) const
 size_t KnowledgeBase::Tell(const Clause& c)
 {
   // add the given clause to correct ClauseVec
-  std::stringstream stream;
-  stream << c.head->args.size();
-  std::string command = c.head->val + "/" + stream.str();
-  ClauseVec& cvec = m_clauses[command];
+  ClauseList& cvec = m_clauses[c.head->value];
   cvec.push_back(c);
   cvec.back().id = c_id++;
   // return the index where the clause is added
@@ -104,10 +97,7 @@ size_t KnowledgeBase::Tell(const Clause& c)
 size_t KnowledgeBase::Tell(Clause&& c)
 {
   // add the given clause to correct ClauseVec
-  std::stringstream stream;
-  stream << c.head->args.size();
-  std::string command = c.head->val + "/" + stream.str();
-  ClauseVec& cvec = m_clauses[command];
+  ClauseList& cvec = m_clauses[c.head->value];
   cvec.push_back(std::move(c));
   cvec.back().id = c_id++;
   // return the index where the clause is added
@@ -117,21 +107,16 @@ size_t KnowledgeBase::Tell(Clause&& c)
 size_t KnowledgeBase::Tell(const Fact& f)
 {
   // compute signature and add to appropriate FactVec
-  std::stringstream stream;
-  stream << f.arg->args.size();
-  std::string command = f.arg->val + "/" + stream.str();
-  m_facts[command].push_back(f);
+  m_facts[f.arg->value].push_back(f);
 
   // return the index of this fact in the FactVec
-  return m_facts[command].size() - 1;
+  return m_facts[f.arg->value].size() - 1;
 }
 
 size_t KnowledgeBase::Tell(Fact&& f)
 {
   // compute signature and add to appropriate FactVec
-  std::stringstream stream;
-  stream << f.arg->args.size();
-  std::string command = f.arg->val + "/" + stream.str();
+  size_t command = f.arg->value;
   m_facts[command].push_back(std::move(f));
 
   // return the index of this fact in the FactVec
@@ -163,60 +148,54 @@ size_t KnowledgeBase::Tell(const std::string& str)
 
 bool KnowledgeBase::Erase(const Clause& c, size_t index)
 {
-  std::map<std::string, ClauseVec>::iterator it;
+  ClauseMap::iterator it;
 
   // get appropriate ClauseVec to delete from
-  std::stringstream stream;
-  stream << c.head->args.size();
-  std::string command = c.head->val + "/" + stream.str();
-  it = m_clauses.find(command);
+  it = m_clauses.find(c.head->value);
   if(it == m_clauses.end()) return false;
 
-  ClauseVec& cvec = it->second;
+  ClauseList& cvec = it->second;
 
   // if index is out of bound then return false
   if(cvec.size() - 1 < index) return false;
 
-  std::list<Clause>::iterator cvec_it = cvec.begin();
+  ClauseList::iterator cvec_it = cvec.begin();
   for(size_t i = 0;i < index;i++) cvec_it++;
   cvec.erase(cvec_it);
-  if(cvec.size() == 0) m_clauses.erase(m_clauses.find(command));
+  if(cvec.size() == 0) m_clauses.erase(m_clauses.find(c.head->value));
   return true;
 }
 
 bool KnowledgeBase::Erase(const Fact& f, size_t index)
 {
-  std::map<std::string, FactVec>::iterator it;
+  FactMap::iterator it;
 
-  std::stringstream stream;
-  stream << f.arg->args.size();
-  std::string command = f.arg->val + "/" + stream.str();
-  it = m_facts.find(command);
+  it = m_facts.find(f.arg->value);
   if(it == m_facts.end()) return false;
 
-  FactVec& fvec = it->second;
+  FactList& fvec = it->second;
 
   if(fvec.size() - 1 < index) return false;
 
-  std::list<Fact>::iterator fvec_it = fvec.begin();
+  FactList::iterator fvec_it = fvec.begin();
   for(size_t i = 0;i < index;i++) fvec_it++;
   fvec.erase(fvec_it);
-  if(fvec.size() == 0) m_facts.erase(m_facts.find(command));
+  if(fvec.size() == 0) m_facts.erase(m_facts.find(f.arg->value));
   return true;
 }
 
-const KnowledgeBase::FactVec*
-                        KnowledgeBase::GetFacts(const std::string& sig) const
+const KnowledgeBase::FactList*
+                        KnowledgeBase::GetFacts(size_t sig) const
 {
-  std::map<std::string, FactVec>::const_iterator it = m_facts.find(sig);
+  FactMap::const_iterator it = m_facts.find(sig);
   if(it == m_facts.end()) return NULL;
   else return &(it->second);
 }
 
-const KnowledgeBase::ClauseVec*
-                      KnowledgeBase::GetClauses(const std::string& sig) const
+const KnowledgeBase::ClauseList*
+                      KnowledgeBase::GetClauses(size_t sig) const
 {
-  std::map<std::string, ClauseVec>::const_iterator it = m_clauses.find(sig);
+  ClauseMap::const_iterator it = m_clauses.find(sig);
   if(it == m_clauses.end()) return NULL;
     else return &(it->second);
 }
@@ -259,8 +238,12 @@ Answer* KnowledgeBase::GetAnswer(const Argument& question,
   return new AnswerDecoder(ans, question, v_map, *this);
 }
 
-std::ostream& operator<<(std::ostream& o, const KnowledgeBase& kb)
+std::ostream& operator<<(std::ostream& stream, const KnowledgeBase& kb)
 {
+  cout << *kb.GetSymbolTable() << endl;
+
+  SymbolDecodeStream o(kb.GetSymbolTable(), stream);
+
   const KnowledgeBase::FactMap& all_facts = kb.GetAllFacts();
   const KnowledgeBase::ClauseMap& all_clauses = kb.GetAllClauses();
 
@@ -269,7 +252,7 @@ std::ostream& operator<<(std::ostream& o, const KnowledgeBase& kb)
                                                 it != all_facts.end();it++)
   {
     o << it->first << " {" << std::endl;
-    const KnowledgeBase::FactVec& facts = it->second;
+    const KnowledgeBase::FactList& facts = it->second;
     for(list<Fact>::const_iterator it = facts.begin();it != facts.end();it++)
       o << *it << std::endl;
     o << "}" << std::endl;
@@ -282,11 +265,11 @@ std::ostream& operator<<(std::ostream& o, const KnowledgeBase& kb)
                                                 it != all_clauses.end();it++)
   {
     o << it->first << " {" << std::endl;
-    const KnowledgeBase::ClauseVec& clauses = it->second;
-    for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
-      o << *it << std::endl;
+    const KnowledgeBase::ClauseList& clauses = it->second;
+    for(list<Clause>::const_iterator it2 = clauses.begin();it2 != clauses.end();it2++)
+      o << *it2 << std::endl;
     o << "}" << std::endl;
   }
 
-  return o;
+  return stream;
 }

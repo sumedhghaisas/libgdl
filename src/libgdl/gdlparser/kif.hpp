@@ -75,7 +75,18 @@ class KIF
   bool AddFile(const std::string& filename);
 
   //! clears all the files added and knowledge
-  void Clear() { streams.clear(); facts.clear(); clauses.clear(); }
+  void Clear()
+  {
+    streams.clear();
+    facts.clear();
+    clauses.clear();
+
+    delete symbol_table;
+    delete dgraph;
+
+    symbol_table = new SymbolTable();
+    dgraph = new DGraph();
+  }
 
   //! Parse the inputs
   //!
@@ -111,6 +122,19 @@ class KIF
   const DGraph* DependencyGraph() const
   {
     return dgraph;
+  }
+  DGraph*& DependencyGraph()
+  {
+    return dgraph;
+  }
+
+  const SymbolTable* GetSymbolTable() const
+  {
+    return symbol_table;
+  }
+  SymbolTable*& GetSymbolTable()
+  {
+    return symbol_table;
   }
 
   //! get this object's logging stream

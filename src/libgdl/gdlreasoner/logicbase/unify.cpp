@@ -78,7 +78,7 @@ bool Unify::mgu(const Argument& arg1, const Argument& arg2, VariableMap& theta)
     {
       theta[t] = s;
     }
-    else if(s->val == t->val)
+    else if(s->value == t->value)
     {
       if(s->args.size() != t->args.size()) return false;
       for(size_t i = 0; i < s->args.size(); i++)

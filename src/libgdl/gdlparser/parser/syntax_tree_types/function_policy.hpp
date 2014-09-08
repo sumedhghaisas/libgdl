@@ -8,7 +8,7 @@
 #define _LIBGDL_GDLPARSER_PARSER_FUNCTION_POLICY_HPP_INCLUDED
 
 #include <libgdl/core.hpp>
-#include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/data_types/str_var_map.hpp>
 #include <libgdl/core/data_types/location.hpp>
 
 #include "basic_construct.hpp"
@@ -28,13 +28,13 @@ struct FunctionPolicy
                       KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
-                      VariableMap& v_map,
+                      StrVarMap& v_map,
                       const Location& command_loc);
 
   static bool CodeGen(KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
-                      VariableMap& v_map,
+                      StrVarMap& v_map,
                       const Location& command_loc);
 };
 

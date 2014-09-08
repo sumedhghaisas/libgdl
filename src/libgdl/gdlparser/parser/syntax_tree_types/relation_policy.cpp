@@ -9,7 +9,7 @@
 #include <libgdl/core.hpp>
 #include <libgdl/core/data_types/error_type.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
-#include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/data_types/str_var_map.hpp>
 
 #include <libgdl/gdlparser/parser/kif_driver.hpp>
 
@@ -21,7 +21,7 @@ bool RelationPolicy::CodeGen(Argument*& out,
                              KIFDriver& driver,
                              std::string* command,
                              std::list<Term*>& terms,
-                             VariableMap& v_map,
+                             StrVarMap& v_map,
                              const Location& command_loc)
 {
   SymbolTable* symbol_table = driver.GetSymbolTable();
@@ -75,7 +75,7 @@ bool RelationPolicy::CodeGen(Argument*& out,
 bool RelationPolicy::CodeGen(KIFDriver& driver,
                              std::string* command,
                              std::list<Term*>& terms,
-                             VariableMap& v_map,
+                             StrVarMap& v_map,
                              const Location& command_loc)
 {
   if(*command == "does" || *command == "true")
@@ -158,7 +158,7 @@ bool RelationPolicy::CodeGen(Argument*& out,
                              KIFDriver& driver,
                              std::string* command,
                              std::list<Sentence*>& sentences,
-                             VariableMap& v_map,
+                             StrVarMap& v_map,
                              const Location& command_loc)
 {
   MARK_USED(command_loc);
@@ -199,7 +199,7 @@ bool RelationPolicy::CodeGen(Argument*& out,
 bool RelationPolicy::CodeGen(KIFDriver& driver,
                              std::string* command,
                              std::list<Sentence*>& sentences,
-                             VariableMap& v_map,
+                             StrVarMap& v_map,
                              const Location& command_loc)
 {
   MARK_USED(driver);

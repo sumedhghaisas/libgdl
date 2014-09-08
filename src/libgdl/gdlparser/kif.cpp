@@ -50,6 +50,12 @@ bool KIF::Parse(bool ignoreErrors)
   errors.clear();
   warnings.clear();
 
+  delete symbol_table;
+  delete dgraph;
+
+  symbol_table = new SymbolTable();
+  dgraph = new DGraph();
+
   bool res = driver.Parse();
 
   if(res)

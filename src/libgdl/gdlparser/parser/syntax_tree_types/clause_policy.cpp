@@ -12,7 +12,7 @@
 #include <libgdl/core/data_types/error_type.hpp>
 #include <libgdl/core/util/setop.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
-#include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/data_types/str_var_map.hpp>
 
 #include <libgdl/gdlparser/parser/kif_driver.hpp>
 
@@ -23,7 +23,7 @@ bool ClausePolicy::CodeGen(Argument*& out,
                            KIFDriver& driver,
                            Sentence* command,
                            std::list<Premiss*>& terms,
-                           VariableMap& v_map,
+                           StrVarMap& v_map,
                            const Location& command_loc)
 {
   MARK_USED(out);
@@ -40,7 +40,7 @@ bool ClausePolicy::CodeGen(Argument*& out,
 bool ClausePolicy::CodeGen(KIFDriver& driver,
                            Sentence* command,
                            std::list<Premiss*>& terms,
-                           VariableMap& v_map,
+                           StrVarMap& v_map,
                            const Location& command_loc)
 {
   SymbolTable* symbol_table = driver.GetSymbolTable();
