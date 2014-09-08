@@ -16,6 +16,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 struct Symbol
 {
@@ -88,11 +90,13 @@ struct RelationSymbol : public Symbol
     }
 }; // RelationSymbol
 
+}; // namespace core
 }; // namespace libgdl
 
-inline std::ostream& operator<<(std::ostream& s, const libgdl::Symbol& sym)
+inline std::ostream& operator<<(std::ostream& s,
+                                const libgdl::core::Symbol& sym)
 {
-  if(sym.SymbolType() == libgdl::Symbol::RELATION)
+  if(sym.SymbolType() == libgdl::core::Symbol::RELATION)
     s << "Relation: ";
   else
     s << "Function: ";

@@ -45,6 +45,10 @@ class KnowledgeBase
   //! Some useful typedefs
   typedef logicbase::Unify::VariableMap VariableMap;
   typedef logicbase::Answer Answer;
+  typedef core::Argument Argument;
+  typedef core::Clause Clause;
+  typedef core::Fact Fact;
+  typedef core::SymbolTable SymbolTable;
 
  public:
   typedef std::list<Fact> FactList;

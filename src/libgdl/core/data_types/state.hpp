@@ -17,6 +17,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 /**
  * Represents a state of the game. This representation of the state stores the
@@ -73,37 +75,40 @@ struct RawState
   std::atomic_size_t count;
 }; // struct State
 
-struct State : public boost::intrusive_ptr<RawState>
-{
-  State(RawState* s)
-    : boost::intrusive_ptr<RawState>(s) {}
-
-  const size_t& GetHash() const { return get()->GetHash(); }
-
-  const std::list<Argument*>& Facts() const { return get()->facts; }
-  std::list<Argument*>& Facts() { return get()->facts; }
-
-  bool operator==(const State& s) { return *get() == *s.get(); }
-  bool operator!=(const State& s) { return *get() != *s.get(); }
-};
-
-inline void intrusive_ptr_release(RawState* p)
+inline void intrusive_ptr_release(core::RawState* p)
 {
    if (--p->count == 0u)
         delete p;
 }
 
-inline void intrusive_ptr_add_ref(RawState* p)
+inline void intrusive_ptr_add_ref(core::RawState* p)
 {
   ++p->count;
 }
 
+}; // namespace core
+
+struct State : public boost::intrusive_ptr<core::RawState>
+{
+  State(core::RawState* s)
+    : boost::intrusive_ptr<core::RawState>(s) {}
+
+  const size_t& GetHash() const { return get()->GetHash(); }
+
+  const std::list<core::Argument*>& Facts() const { return get()->facts; }
+  std::list<core::Argument*>& Facts() { return get()->facts; }
+
+  bool operator==(const State& s) { return *get() == *s.get(); }
+  bool operator!=(const State& s) { return *get() != *s.get(); }
+};
+
 }; // namespace libgdl
 
-inline std::ostream& operator<<(std::ostream & ss, const libgdl::RawState& s)
+inline std::ostream& operator<<(std::ostream & ss,
+                                const libgdl::core::RawState& s)
 {
   ss << "State: ";
-  for(std::list<libgdl::Argument*>::const_iterator it = s.facts.begin();
+  for(std::list<libgdl::core::Argument*>::const_iterator it = s.facts.begin();
                                                     it != s.facts.end();it++)
   {
     ss << "\t" << **it << std::endl;

@@ -48,6 +48,10 @@ class KIFDriver
   typedef gdlparser::parser::yy::KIFParser::location_type location_type;
   typedef core::DGraph DGraph;
   typedef core::ErrorType ErrorType;
+  typedef core::SymbolTable SymbolTable;
+  typedef core::Fact Fact;
+  typedef core::Clause Clause;
+  typedef core::Argument Argument;
 
  public:
   //! constructs KIFDriver object

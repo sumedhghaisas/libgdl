@@ -17,6 +17,7 @@
 #include <libgdl/gdlparser/parser/kif_driver.hpp>
 
 using namespace std;
+using namespace libgdl::core;
 using namespace libgdl::gdlparser::parser;
 
 bool ClausePolicy::CodeGen(Argument*& out,

@@ -2,15 +2,19 @@
  * @file str_var_map.cpp
  * @author Sumedh Ghaisas
  *
- * Implementation of VariableMap.
+ * Implementation of StrVarMap.
  */
 #include "str_var_map.hpp"
 
 #include "argument.hpp"
 
-std::ostream& operator<<(std::ostream& s, const libgdl::StrVarMap& vmap)
+using namespace std;
+using namespace libgdl;
+using namespace libgdl::core;
+
+std::ostream& operator<<(std::ostream& s, const StrVarMap& vmap)
 {
-  for(libgdl::StrVarMap::const_iterator it = vmap.begin();it != vmap.end();it++)
+  for(StrVarMap::const_iterator it = vmap.begin();it != vmap.end();it++)
     s << it->first << " -> " << *it->second << std::endl;
   return s;
 }

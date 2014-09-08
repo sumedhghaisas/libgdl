@@ -26,8 +26,8 @@ namespace logicbase
 class Unify
 {
     //! some useful typedefs
-    typedef libgdl::Argument Argument;
-    typedef libgdl::Clause Clause;
+    typedef libgdl::core::Argument Argument;
+    typedef libgdl::core::Clause Clause;
 
 public:
     typedef std::map<const Argument*, const Argument*> VariableMap;

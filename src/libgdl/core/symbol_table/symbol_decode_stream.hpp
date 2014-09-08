@@ -24,6 +24,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 class SymbolDecodeStream
 {
@@ -75,9 +77,9 @@ class SymbolDecodeStream
 
   const SymbolTable* symbol_table;
   util::PrefixedOutStream stream;
-};
+}; // class SymbolDecodeStream
 
-}
-
+}; // namespace core
+}; // namespace libgdl
 
 #endif // _LIBGDL_GDLPARSER_PARSER_SYMBOL_DECODE_STREAM_HPP_INCLUDED

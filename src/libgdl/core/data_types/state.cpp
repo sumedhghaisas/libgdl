@@ -10,6 +10,7 @@
 using namespace std;
 using namespace boost;
 using namespace libgdl;
+using namespace libgdl::core;
 
 RawState::RawState (const list<Argument*>& facts,
                     const unordered_map<string, size_t>& id_map)

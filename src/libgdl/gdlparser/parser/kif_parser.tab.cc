@@ -615,7 +615,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   case 2:
 #line 139 "kif_parser.yy" // lalr1.cc:846
     {
-                        StrVarMap v_map;
+                        core::StrVarMap v_map;
                         (yystack_[1].value.node)->CodeGen(driver, v_map);
                         delete (yystack_[1].value.node);
                       }

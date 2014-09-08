@@ -14,6 +14,7 @@
 using namespace std;
 using namespace boost;
 using namespace libgdl;
+using namespace libgdl::core;
 
 Argument::Argument(const Argument& arg) noexcept
   : val("")

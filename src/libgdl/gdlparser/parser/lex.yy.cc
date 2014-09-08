@@ -1990,7 +1990,7 @@ int libgdl::gdlparser::parser::KIFScanner::yywrap()
   if(streams.size() == 0)
   {
     core::ErrorType error;
-    error.AddEntry("o streams provided for parsing", Location());
+    error.AddEntry("o streams provided for parsing", core::Location());
     driver.Warn(error);
     return 1;
   }

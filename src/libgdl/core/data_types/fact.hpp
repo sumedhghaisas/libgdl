@@ -17,6 +17,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 /**
  * Represents a fact.
@@ -98,9 +100,11 @@ struct Fact
   Location loc;
 }; // class Fact
 
+}; // namespace core
 }; // namespace libgdl
 
-inline std::ostream& operator<<(std::ostream& o, const libgdl::Fact& f)
+inline std::ostream& operator<<(std::ostream& o,
+                                const libgdl::core::Fact& f)
 {
   o << *f.arg;
   return o;

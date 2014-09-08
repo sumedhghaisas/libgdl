@@ -19,6 +19,7 @@ BOOST_AUTO_TEST_SUITE(ArgumentTests);
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 
 /**
  * Test Argument for construction from string

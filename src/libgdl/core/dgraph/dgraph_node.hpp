@@ -15,6 +15,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 /**
  * Represents dependency graph node.
@@ -51,6 +53,7 @@ struct DGraphNode
   int low_link;
 }; // struct DGraphNode
 
+}; // namespace core
 }; // namespace libgdl
 
 

@@ -17,6 +17,7 @@ BOOST_AUTO_TEST_SUITE(FactTests);
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 
 /**
  * Test Fact for construction from string.

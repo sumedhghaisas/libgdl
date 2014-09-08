@@ -6,7 +6,10 @@
  */
 #include "fact.hpp"
 
+using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
+
 
 Fact::Fact(const std::string& str,
            SymbolTable& symbol_table,

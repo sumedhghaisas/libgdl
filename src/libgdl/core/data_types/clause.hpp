@@ -17,6 +17,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 /**
  * Represents a Clause.
@@ -83,9 +85,11 @@ struct Clause
   Location loc;
 }; // class Clause
 
+}; // namespace core
 }; // namespace libgdl
 
-inline std::ostream& operator<<(std::ostream& o, const libgdl::Clause& clause)
+inline std::ostream& operator<<(std::ostream& o,
+                                const libgdl::core::Clause& clause)
 {
   o << "(<= ";
   o << *clause.head << " ";

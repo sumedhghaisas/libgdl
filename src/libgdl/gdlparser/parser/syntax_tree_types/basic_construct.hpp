@@ -30,8 +30,7 @@ class TerminalHold
 template <class Policy, class Head, class Hold>
 class BasicConstruct : public Node
 {
-  typedef libgdl::Argument Argument;
-
+  typedef libgdl::core::Argument Argument;
  public:
   BasicConstruct(Head* command, const yy::location& loc)
     : Node(loc), command(command)

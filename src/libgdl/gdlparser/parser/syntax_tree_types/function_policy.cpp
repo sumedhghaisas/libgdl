@@ -14,6 +14,7 @@
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 using namespace libgdl::gdlparser::parser;
 
 bool FunctionPolicy::CodeGen(Argument*& out,

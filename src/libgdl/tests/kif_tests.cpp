@@ -15,6 +15,7 @@ BOOST_AUTO_TEST_SUITE(KIFTests);
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 using namespace libgdl::gdlparser;
 
 /**

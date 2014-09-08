@@ -19,6 +19,9 @@
 
 namespace libgdl
 {
+namespace core
+{
+
 /**
  * Represents argument of fact or clause.
  * Can be relation, function or variable depending on type.
@@ -138,10 +141,12 @@ struct Argument
 
 }; // struct Argument
 
+}; // namespace core
 }; //namespace libgdl
 
 
-inline std::ostream& operator<<(std::ostream& o, const libgdl::Argument& arg)
+inline std::ostream& operator<<(std::ostream& o,
+                                const libgdl::core::Argument& arg)
 {
   if(arg.args.size() == 0)
   {
@@ -155,12 +160,11 @@ inline std::ostream& operator<<(std::ostream& o, const libgdl::Argument& arg)
   return o;
 }
 
-inline std::ostream& operator<<(std::ostream& o, const libgdl::Argument::Type& t)
+inline std::ostream& operator<<(std::ostream& o,
+                                const libgdl::core::Argument::Type& t)
 {
-  typedef libgdl::Argument Argument;
-
-  if(t == Argument::Relation) o << "Relation";
-  else if(t == Argument::Function) o << "Function";
+  if(t == libgdl::core::Argument::Relation) o << "Relation";
+  else if(t == libgdl::core::Argument::Function) o << "Function";
   else o << "Variable";
   return o;
 }

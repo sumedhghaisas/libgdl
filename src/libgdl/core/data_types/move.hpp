@@ -25,7 +25,7 @@ struct Move
 {
   Move(const std::string& str);
 
-  Move(const std::vector<Argument*>& m,
+  Move(const std::vector<core::Argument*>& m,
        const boost::unordered_map<std::string, size_t>& id_map);
 
   Move(const Move& m);
@@ -54,12 +54,14 @@ struct Move
 
   size_t Hash() const { return hash; }
 
-  std::vector<Argument*> moves;
+  std::vector<core::Argument*> moves;
   size_t hash;
 }; // struct Move
 
-class MoveList : public boost::intrusive_ptr<IntrusiveList<Move> >
+class MoveList : public boost::intrusive_ptr<core::IntrusiveList<Move> >
 {
+  template<typename T>
+  using IntrusiveList = core::IntrusiveList<T>;
  public:
   MoveList(IntrusiveList<Move>* m)
     : boost::intrusive_ptr<IntrusiveList<Move> >(m) {}
@@ -89,7 +91,7 @@ inline std::ostream& operator<<(std::ostream& s, const libgdl::Move& m)
 
 inline std::ostream& operator<<(std::ostream& s, const libgdl::MoveList& m)
 {
-  for(libgdl::IntrusiveList<libgdl::Move>::const_iterator it = m->begin();
+  for(libgdl::core::IntrusiveList<libgdl::Move>::const_iterator it = m->begin();
                                                           it != m->end();it++)
   {
     s << *it << std::endl;

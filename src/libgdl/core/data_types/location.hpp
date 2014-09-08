@@ -13,6 +13,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 /**
  * This structure represents location of the identifier. It stores the filename
@@ -78,10 +80,12 @@ struct Location
   position end;
 }; // struct Location
 
+}; // namespace core
 }; // namespace libgdl
 
 
-inline std::ostream& operator<<(std::ostream& ostr, const libgdl::Location& loc)
+inline std::ostream& operator<<(std::ostream& ostr,
+                                const libgdl::core::Location& loc)
 {
   unsigned int end_col = 0 < loc.end.column ? loc.end.column - 1 : 0;
 

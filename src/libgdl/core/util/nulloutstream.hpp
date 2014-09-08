@@ -12,8 +12,10 @@
 #include <iostream>
 #include <streambuf>
 
-namespace libgdl {
-namespace util {
+namespace libgdl
+{
+namespace util
+{
 
 /**
  * Used for Log::Debug when not compiled with debugging symbols.  This class

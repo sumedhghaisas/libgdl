@@ -17,6 +17,7 @@ BOOST_AUTO_TEST_SUITE(ClauseTests);
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 
 /**
  * Test Clause for construction from string.

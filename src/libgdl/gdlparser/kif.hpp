@@ -56,6 +56,11 @@ class KIF
   typedef parser::KIFDriver KIFDriver;
   typedef core::DGraph DGraph;
   typedef core::ErrorType ErrorType;
+  typedef core::SymbolTable SymbolTable;
+  typedef core::Argument Argument;
+  typedef core::Fact Fact;
+  typedef core::Clause Clause;
+  typedef core::Location Location;
 
  public:
   //! Constructor

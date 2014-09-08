@@ -137,7 +137,7 @@ namespace gdlparser {
 /* Grammer */
 
 start     : S   start {
-                        StrVarMap v_map;
+                        core::StrVarMap v_map;
                         $1->CodeGen(driver, v_map);
                         delete $1;
                       }

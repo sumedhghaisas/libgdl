@@ -6,6 +6,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 template<typename T>
 class IntrusiveList : public std::list<T>
@@ -30,6 +32,7 @@ inline void intrusive_ptr_add_ref(IntrusiveList<T>* p)
   ++p->count;
 }
 
+}; // namespace core
 }; // namespace libgdl
 
 #endif // _LIBGDL_CORE_DATATYPES_INTRUSIVE_LIST_HPP_INCLUDED

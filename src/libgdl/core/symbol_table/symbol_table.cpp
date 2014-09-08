@@ -1,7 +1,14 @@
+/**
+ * @file symbol_table.cpp
+ * @author Sumedh Ghaisas
+ *
+ * Implementation of SymbolTable.
+ */
 #include "symbol_table.hpp"
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 using namespace libgdl::gdlparser::parser;
 
 SymbolTable::SymbolTable()

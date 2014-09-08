@@ -20,6 +20,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 class SymbolTable
 {
@@ -44,14 +46,14 @@ class SymbolTable
   Log& GetLog() { return log; }
 
   friend std::ostream& operator<<(std::ostream& s,
-                                  const libgdl::SymbolTable& symbol_table)
+                                  const SymbolTable& symbol_table)
   {
-    for(libgdl::SymbolTable::IDMap::const_iterator it = symbol_table.id_table.begin();
+    for(SymbolTable::IDMap::const_iterator it = symbol_table.id_table.begin();
                                           it != symbol_table.id_table.end();it++)
     {
       s << it->second << " -> " << it->second;
-      libgdl::SymbolTable::SymbolMap::const_iterator it2 =
-                                        symbol_table.symbol_table.find(it->second);
+      SymbolTable::SymbolMap::const_iterator it2 =
+                                    symbol_table.symbol_table.find(it->second);
       s << " -> " << *it2->second << std::endl;
     }
     return s;
@@ -89,6 +91,7 @@ class SymbolTable
   mutable Log log;
 }; // class SymbolTable
 
+}; // namespace core
 }; // namespace libgdl
 
 #endif // _LIBGDL_CORE_SYMBOL_TABLE_HPP_INCLUDED

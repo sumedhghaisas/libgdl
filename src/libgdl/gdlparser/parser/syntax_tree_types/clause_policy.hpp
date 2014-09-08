@@ -27,23 +27,22 @@ struct ClausePolicy
   typedef RelationPolicy::Sentence Sentence;
   typedef BasicConstruct<RelationPolicy, std::string, Sentence> Premiss;
 
-  static bool CodeGen(Argument*& out,
+  static bool CodeGen(core::Argument*& out,
                       KIFDriver& driver,
                       Sentence* command,
                       std::list<Premiss*>& terms,
-                      StrVarMap& v_map,
-                      const Location& command_loc);
+                      core::StrVarMap& v_map,
+                      const core::Location& command_loc);
 
   static bool CodeGen(KIFDriver& driver,
                       Sentence* command,
                       std::list<Premiss*>& terms,
-                      StrVarMap& v_map,
-                      const Location& command_loc);
-};
+                      core::StrVarMap& v_map,
+                      const core::Location& command_loc);
+}; // struct ClausePolicy
 
-}
-}
-}
-
+}; // namespace parser
+}; // namespace gdlparser
+}; // namespace libgdl
 
 #endif // _LIBGDL_GDLPARSER_PARSER_CLAUSE_POLICY_HPP_INCLUDED

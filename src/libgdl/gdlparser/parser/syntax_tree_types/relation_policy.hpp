@@ -25,35 +25,35 @@ struct RelationPolicy
   typedef FunctionPolicy::Term Term;
   typedef BasicConstruct<RelationPolicy, std::string, Term> Sentence;
 
-  static bool CodeGen(Argument*& out,
+  static bool CodeGen(core::Argument*& out,
                       KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
-                      StrVarMap& v_map,
-                      const Location& loc);
+                      core::StrVarMap& v_map,
+                      const core::Location& loc);
 
   static bool CodeGen(KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
-                      StrVarMap& v_map,
-                      const Location& command_loc);
+                      core::StrVarMap& v_map,
+                      const core::Location& command_loc);
 
-  static bool CodeGen(Argument*& out,
+  static bool CodeGen(core::Argument*& out,
                       KIFDriver& driver,
                       std::string* command,
                       std::list<Sentence*>& sentences,
-                      StrVarMap& v_map,
-                      const Location& loc);
+                      core::StrVarMap& v_map,
+                      const core::Location& loc);
 
   static bool CodeGen(KIFDriver& driver,
                       std::string* command,
                       std::list<Sentence*>& sentences,
-                      StrVarMap& v_map,
-                      const Location& command_loc);
-};
+                      core::StrVarMap& v_map,
+                      const core::Location& command_loc);
+}; // struct RelationPolicy
 
-}
-}
-}
+}; // namespace parser
+}; // namespace gdlparser
+}; // namespace libgdl
 
 #endif // _LIBGDL_GDLPARSER_PARSER_RELATION_POLICY_HPP_INCLUDED

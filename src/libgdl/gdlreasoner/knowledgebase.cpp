@@ -8,6 +8,7 @@
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 using namespace libgdl::gdlreasoner;
 using namespace libgdl::gdlreasoner::logicbase;
 using namespace libgdl::gdlparser;

@@ -28,7 +28,10 @@ class KIFDriver;
 
 class Node
 {
+ protected:
   typedef gdlparser::parser::yy::location location;
+  typedef core::StrVarMap StrVarMap;
+
  public:
   Node(const yy::location& loc)
     : loc(loc) {};

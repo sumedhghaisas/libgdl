@@ -9,8 +9,10 @@
 #include <sstream>
 #include <iostream>
 
-namespace libgdl {
-namespace util {
+namespace libgdl
+{
+namespace util
+{
 
 template<typename T>
 PrefixedOutStream& PrefixedOutStream::operator<<(const T& s)

@@ -15,6 +15,7 @@ BOOST_AUTO_TEST_SUITE(UnifyTests);
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 using namespace libgdl::gdlreasoner::logicbase;
 
 /**

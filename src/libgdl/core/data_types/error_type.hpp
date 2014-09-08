@@ -94,12 +94,13 @@ error.AddEntry(libgdl::ToString(PROV) + " provided.", LOC);
 
 #define SIMPLE_ERROR(NAME, TEXT)                                              \
 libgdl::core::ErrorType NAME;                                                 \
-error.AddEntry(TEXT, libgdl::Location());
+error.AddEntry(TEXT, libgdl::core::Location());
 
 #define INVALID_DEP_ERROR(NAME, VAR1, VAR2)                                   \
 libgdl::core::ErrorType NAME;                                                 \
-error.AddEntry("Invalid dependency", Location());                             \
+error.AddEntry("Invalid dependency", libgdl::core::Location());               \
 error.AddEntry("Relation " + libgdl::ToString(VAR1) +                         \
-               " is dependent on " + libgdl::ToString(VAR2), Location());
+               " is dependent on " + libgdl::ToString(VAR2),                  \
+               libgdl::core::Location());
 
 #endif // _LIBGDL_GDLPARSER_PARSER_ERROR_TYPE_HPP_INCLUDED

@@ -11,6 +11,7 @@
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 
 Clause::Clause(const std::string& str,
                SymbolTable& symbol_table,

@@ -24,18 +24,18 @@ struct FunctionPolicy
 {
   typedef BasicConstruct<FunctionPolicy, std::string, TerminalHold> Term;
 
-  static bool CodeGen(Argument*& out,
+  static bool CodeGen(core::Argument*& out,
                       KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
-                      StrVarMap& v_map,
-                      const Location& command_loc);
+                      core::StrVarMap& v_map,
+                      const core::Location& command_loc);
 
   static bool CodeGen(KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
-                      StrVarMap& v_map,
-                      const Location& command_loc);
+                      core::StrVarMap& v_map,
+                      const core::Location& command_loc);
 };
 
 }

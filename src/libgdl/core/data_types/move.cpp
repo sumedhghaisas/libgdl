@@ -1,6 +1,8 @@
 #include "move.hpp"
 
+using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 
 //Move::Move(const std::string& str)
 //{

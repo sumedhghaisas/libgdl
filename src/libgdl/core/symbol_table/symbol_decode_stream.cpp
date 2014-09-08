@@ -1,3 +1,9 @@
+/**
+ * @file symbol_decode_stream.cpp
+ * @author Sumedh Ghaisas
+ *
+ * Implementation of SymbolDecodeStream.
+ */
 #include "symbol_decode_stream.hpp"
 
 #include <string>
@@ -8,6 +14,7 @@
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 
 SymbolDecodeStream& SymbolDecodeStream::operator<<(std::streambuf* sb)
 {
