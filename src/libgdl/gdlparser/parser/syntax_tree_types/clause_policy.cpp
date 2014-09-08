@@ -53,7 +53,7 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
 
   if(hcmd == "does" || hcmd == "true" || hcmd == "distinct" || hcmd == "role")
   {
-    ErrorType error;
+    core::ErrorType error;
     error.AddEntry("Relation " + hcmd + " cannot appear as head in the clause.",
                    command_loc);
     driver.Error(error);
@@ -108,7 +108,7 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
   for(set<const Argument*>::iterator it = head_vars.begin();it != head_vars.end();
                                                                         it++)
   {
-    ErrorType error;
+    core::ErrorType error;
     error.AddEntry("Variable " + (*it)->val + " appearing in the head does not \
 appear in any positive body.", command_loc);
     driver.Error(error);
@@ -117,7 +117,7 @@ appear in any positive body.", command_loc);
   for(set<const Argument*>::iterator it = neg_vars.begin();it != neg_vars.end();
                                                                         it++)
   {
-    ErrorType error;
+    core::ErrorType error;
     error.AddEntry("Variable " + (*it)->val + " appearing in the negative body \
 does not appear in any positive body.", command_loc);
     driver.Error(error);

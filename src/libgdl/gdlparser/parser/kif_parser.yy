@@ -249,7 +249,7 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 // Mandatory error function
 void KIFParser::error (const KIFParser::location_type& loc, const std::string& msg)
 {
-  libgdl::ErrorType error;
+  libgdl::core::ErrorType error;
   error.AddEntry(msg, loc);
   driver.Error(error);
 }

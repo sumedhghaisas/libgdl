@@ -47,6 +47,7 @@ class KIFDriver
   //! some useful typedefs
   typedef gdlparser::parser::yy::KIFParser::location_type location_type;
   typedef core::DGraph DGraph;
+  typedef core::ErrorType ErrorType;
 
  public:
   //! constructs KIFDriver object

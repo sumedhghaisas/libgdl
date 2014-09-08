@@ -136,7 +136,7 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
     }
     else if(temp->HasVariables())
     {
-      ErrorType error;
+      core::ErrorType error;
       error.AddEntry("Variables cannot appear in facts.", command_loc);
       driver.Error(error);
     }

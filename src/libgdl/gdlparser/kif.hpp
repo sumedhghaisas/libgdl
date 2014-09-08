@@ -55,6 +55,7 @@ class KIF
   //! Some useful typedefs
   typedef parser::KIFDriver KIFDriver;
   typedef core::DGraph DGraph;
+  typedef core::ErrorType ErrorType;
 
  public:
   //! Constructor
