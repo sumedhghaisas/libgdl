@@ -14,6 +14,7 @@
 #include <libgdl/core/data_types/location.hpp>
 #include <libgdl/core/data_types/move.hpp>
 #include <libgdl/core/data_types/intrusive_list.hpp>
+#include <libgdl/core/data_types/variable_map.hpp>
 
 #include <libgdl/core/dgraph/dgraph_node.hpp>
 #include <libgdl/core/symbol_table/symbol_decode_stream.hpp>

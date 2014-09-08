@@ -43,8 +43,9 @@ namespace gdlreasoner
 class KnowledgeBase
 {
   //! Some useful typedefs
-  typedef logicbase::Unify::VariableMap VariableMap;
   typedef logicbase::Answer Answer;
+
+  typedef libgdl::core::VariableMap VariableMap;
   typedef core::Argument Argument;
   typedef core::Clause Clause;
   typedef core::Fact Fact;

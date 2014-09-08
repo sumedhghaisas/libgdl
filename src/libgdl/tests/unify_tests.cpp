@@ -30,10 +30,10 @@ BOOST_AUTO_TEST_CASE(MGUTest)
   Argument arg1("(test ?x)", symbol_table, true, TEST_LOG);
   Argument arg2("(test x)", symbol_table, true, TEST_LOG);
   
-  Unify::VariableMap v_map;
+  VariableMap v_map;
   if(!Unify::mgu(arg1, arg2, v_map)) MARK_FAIL;
   
-  Unify::VariableMap::iterator it = v_map.begin();
+  VariableMap::iterator it = v_map.begin();
   if(it->first != arg1.args[0]) MARK_FAIL;
   if(it->second != arg2.args[0]) MARK_FAIL;
   MARK_END;

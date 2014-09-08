@@ -42,7 +42,7 @@ std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,
   std::list<Argument*> out;
 
   // get answer
-  Answer *ans = GetAnswer(arg, Unify::VariableMap(), std::set<size_t>());
+  Answer *ans = GetAnswer(arg, VariableMap(), std::set<size_t>());
   // get all the valid substitution and add them to list
 
   if(!checkForDoubles)
@@ -78,7 +78,7 @@ std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,
 bool KnowledgeBase::IsSatisfiable(const Argument& arg) const
 {
   // get answer
-  Answer *ans = GetAnswer(arg, Unify::VariableMap(), std::set<size_t>());
+  Answer *ans = GetAnswer(arg, VariableMap(), std::set<size_t>());
   // return if any valid substitution exists
   bool res = ans->next();
   delete ans;
