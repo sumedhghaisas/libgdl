@@ -131,7 +131,7 @@ does not appear in any positive body.", command_loc);
 
   const Clause& cl = driver.AddClause(std::move(c));
 
-  DGraph& graph = *driver.GetDGraph();
+  core::DGraph& graph = *driver.GetDGraph();
   graph.AddNode(head->value);
 
   for(size_t i = 0;i < cl.premisses.size();i++)

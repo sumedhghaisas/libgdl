@@ -20,6 +20,8 @@
 
 namespace libgdl
 {
+namespace core
+{
 
 class DGraph
 {
@@ -63,6 +65,7 @@ class DGraph
   size_t current_id;
 };
 
-};
+}; // namespace core
+}; // namespace libgdl
 
 #endif // _LIBGDL_CORE_DGRAPH_HPP_INCLUDED

@@ -15,7 +15,6 @@
 
 namespace libgdl
 {
-
 struct ErrorType
 {
   struct Entry

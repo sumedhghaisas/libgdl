@@ -20,6 +20,7 @@
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 using namespace libgdl::util;
 using namespace libgdl::gdlparser;
 using namespace libgdl::gdlparser::parser;
