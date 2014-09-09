@@ -96,71 +96,71 @@ bool Unify::EquateWithSubstitution(const Argument& arg1,
                                    const Argument& arg2,
                                    const VariableMap& v_map)
 {
-    typedef std::pair<const Argument*, const Argument*> ArgPair;
+  typedef std::pair<const Argument*, const Argument*> ArgPair;
 
-    std::stack<ArgPair> S;
-    S.push(ArgPair(&arg1, &arg2));
+  std::stack<ArgPair> S;
+  S.push(ArgPair(&arg1, &arg2));
 
-    while(!S.empty())
+  while(!S.empty())
+  {
+    ArgPair& p = S.top();
+    S.pop();
+
+    const Argument* s = p.first;
+    const Argument* t = p.second;
+
+    if(s->IsVariable() && t->IsVariable())
     {
-        ArgPair& p = S.top();
-        S.pop();
-
-        const Argument* s = p.first;
-        const Argument* t = p.second;
-
-        if(s->IsVariable() && t->IsVariable())
-        {
-            S.push(ArgPair(v_map.find(s)->second, v_map.find(t)->second));
-        }
-        else if(s->IsVariable())
-        {
-            S.push(ArgPair(v_map.find(s)->second, t));
-        }
-        else if(t->IsVariable())
-        {
-            S.push(ArgPair(s, v_map.find(t)->second));
-        }
-        else if(s->val == t->val && s->args.size() == t->args.size())
-        {
-            for(size_t i = 0; i < s->args.size(); i++)
-            {
-                S.push(ArgPair(s->args[i], t->args[i]));
-            }
-        }
-        else return false;
+      S.push(ArgPair(v_map.find(s)->second, v_map.find(t)->second));
     }
+    else if(s->IsVariable())
+    {
+      S.push(ArgPair(v_map.find(s)->second, t));
+    }
+    else if(t->IsVariable())
+    {
+      S.push(ArgPair(s, v_map.find(t)->second));
+    }
+    else if(s->value == t->value && s->args.size() == t->args.size())
+    {
+      for(size_t i = 0; i < s->args.size(); i++)
+      {
+        S.push(ArgPair(s->args[i], t->args[i]));
+      }
+    }
+    else return false;
+  }
 
-    return true;
+  return true;
 }
 
 Argument* Unify::GetSubstitutedArgument(const Argument* arg,
                                         const VariableMap& v_map)
 {
-    if(arg->IsVariable())
-      return GetSubstitutedArgument(v_map.find(arg)->second, v_map);
+  if(arg->IsVariable())
+    return GetSubstitutedArgument(v_map.find(arg)->second, v_map);
 
-    Argument* out = new Argument();
-    out->t = arg->t;
-    out->val = arg->val;
+  Argument* out = new Argument();
+  out->t = arg->t;
+  out->value = arg->value;
 
-    for(size_t i = 0; i < arg->args.size(); i++)
-        out->args.push_back(GetSubstitutedArgument(arg->args[i], v_map));
+  for(size_t i = 0; i < arg->args.size(); i++)
+    out->args.push_back(GetSubstitutedArgument(arg->args[i], v_map));
 
-    return out;
+  return out;
 }
 
 
 Clause* Unify::GetSubstitutedClause(const Clause* c, const VariableMap& v_map)
 {
-    Clause* out = new Clause();
+  Clause* out = new Clause();
 
-    out->head = GetSubstitutedArgument(c->head, v_map);
+  out->head = GetSubstitutedArgument(c->head, v_map);
 
-    for(size_t i = 0; i < c->premisses.size(); i++)
-        out->premisses.push_back(GetSubstitutedArgument(c->premisses[i], v_map));
+  for(size_t i = 0; i < c->premisses.size(); i++)
+    out->premisses.push_back(GetSubstitutedArgument(c->premisses[i], v_map));
 
-    return out;
+  return out;
 }
 
 
@@ -207,27 +207,27 @@ Unify::VariableMap Unify::DecodeSubstitutions(const VariableMap& v_map,
 
 bool Unify::IsGroundQuestion(const Argument* arg, const VariableMap& v_map)
 {
-    std::stack<const Argument*> S;
-    S.push(arg);
+  std::stack<const Argument*> S;
+  S.push(arg);
 
-    while(!S.empty())
+  while(!S.empty())
+  {
+    const Argument* temp = S.top();
+    S.pop();
+
+    if(temp->IsVariable())
     {
-        const Argument* temp = S.top();
-        S.pop();
-
-        if(temp->IsVariable())
-        {
-          VariableMap::const_iterator it;
-          while(temp->IsVariable() && (it = v_map.find(temp)) != v_map.end())
-          {
-            temp = it->second;
-          }
-          if(temp->IsVariable()) return false;
-        }
-        else for(size_t i = 0;i < temp->args.size();i++)
-        {
-            S.push(temp->args[i]);
-        }
+      VariableMap::const_iterator it;
+      while(temp->IsVariable() && (it = v_map.find(temp)) != v_map.end())
+      {
+        temp = it->second;
+      }
+      if(temp->IsVariable()) return false;
     }
-    return true;
+    else for(size_t i = 0;i < temp->args.size();i++)
+    {
+      S.push(temp->args[i]);
+    }
+  }
+  return true;
 }
