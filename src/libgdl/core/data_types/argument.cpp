@@ -57,7 +57,7 @@ Argument::Argument(const std::string& str,
 
     Symbol* sym;
     size_t id = symbol_table.CheckEntry(str, sym);
-    if(sym != NULL)
+    if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
     {
       if(sym->Arity() != 0)
       {
@@ -90,7 +90,7 @@ Argument::Argument(const std::string& str,
         return;
       }
     }
-    else id = symbol_table.AddEntry(str, Location(), 0, true);
+    else if(sym == NULL) id = symbol_table.AddEntry(str, Location(), 0, isRel);
 
     if(isRel)
       t = Argument::Relation;
@@ -109,7 +109,7 @@ Argument::Argument(const std::string& str,
 
   Symbol* sym;
   size_t id = symbol_table.CheckEntry(cmd, sym);
-  if(sym != NULL)
+  if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
   {
     if(sym->Arity() != args.size())
     {
@@ -142,7 +142,8 @@ Argument::Argument(const std::string& str,
       return;
     }
   }
-  else id = symbol_table.AddEntry(cmd, Location(), args.size(), isRel);
+  else if(sym == NULL)
+    id = symbol_table.AddEntry(cmd, Location(), args.size(), isRel);
 
   if(isRel)
     t = Argument::Relation;
@@ -151,7 +152,12 @@ Argument::Argument(const std::string& str,
 
   for(size_t i = 0;i < args.size();i++)
   {
-    Argument* arg = ConstructArgument(args[i], v_map, symbol_table, false, log);
+    Argument *arg;
+    if(id == SymbolTable::NotID || id == SymbolTable::OrID)
+      arg = ConstructArgument(args[i], v_map, symbol_table, true, log);
+    else
+      arg = ConstructArgument(args[i], v_map, symbol_table, false, log);
+
     if(arg != NULL) this->args.push_back(arg);
   }
 }
@@ -313,7 +319,7 @@ Argument* Argument::ConstructArgument(const std::string& str,
 
     Symbol* sym;
     size_t id = symbol_table.CheckEntry(str, sym);
-    if(sym != NULL)
+    if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
     {
       if(sym->Arity() != 0)
       {
@@ -346,7 +352,8 @@ Argument* Argument::ConstructArgument(const std::string& str,
         return NULL;
       }
     }
-    else id = symbol_table.AddEntry(str, Location(), 0, isRel);
+    else if(sym == NULL)
+      id = symbol_table.AddEntry(str, Location(), 0, isRel);
 
     Argument* out = new Argument();
     if(isRel)
@@ -366,7 +373,7 @@ Argument* Argument::ConstructArgument(const std::string& str,
 
   Symbol* sym;
   size_t id = symbol_table.CheckEntry(cmd, sym);
-  if(sym != NULL)
+  if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
   {
     if(sym->Arity() != args.size())
     {
@@ -399,7 +406,8 @@ Argument* Argument::ConstructArgument(const std::string& str,
       return NULL;
     }
   }
-  else id = symbol_table.AddEntry(cmd, Location(), args.size(), isRel);
+  else if(sym == NULL)
+    id = symbol_table.AddEntry(cmd, Location(), args.size(), isRel);
 
   Argument* out = new Argument();
 
@@ -410,7 +418,11 @@ Argument* Argument::ConstructArgument(const std::string& str,
 
   for(size_t i = 0;i < args.size();i++)
   {
-    Argument* arg = ConstructArgument(args[i], v_map, symbol_table, false, log);
+    Argument* arg;
+    if(id == SymbolTable::NotID || id == SymbolTable::OrID)
+      arg = ConstructArgument(args[i], v_map, symbol_table, true, log);
+    else
+      arg = ConstructArgument(args[i], v_map, symbol_table, false, log);
     if(arg != NULL) out->args.push_back(arg);
   }
   return out;

@@ -13,9 +13,10 @@ using namespace libgdl::gdlreasoner;
 using namespace libgdl::gdlreasoner::logicbase;
 using namespace libgdl::gdlparser;
 
-KnowledgeBase::KnowledgeBase(gdlparser::KIF& kif)
+KnowledgeBase::KnowledgeBase(gdlparser::KIF& kif, const Log& log)
   : c_id(0),
-    symbol_table(kif.GetSymbolTable())
+    symbol_table(kif.GetSymbolTable()),
+    log(log)
 {
   kif.GetSymbolTable() = NULL;
 
@@ -75,8 +76,60 @@ std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,
   return out;
 }
 
+std::list<Argument*> KnowledgeBase::Ask(const std::string& s_arg,
+                                        bool checkForDoubles) const
+{
+  Argument arg(s_arg, *symbol_table, true, log);
+
+  std::list<Argument*> out;
+
+  // get answer
+  Answer *ans = GetAnswer(arg, VariableMap(), std::set<size_t>());
+  // get all the valid substitution and add them to list
+
+  if(!checkForDoubles)
+  {
+    while(ans->next())
+    {
+      Argument* temp = Unify::GetSubstitutedArgument(&arg, ans->GetVariableMap());
+      out.push_back(temp);
+    }
+  }
+  else
+  {
+    std::set<std::string> str_ans;
+    while(ans->next())
+    {
+      Argument* temp = Unify::GetSubstitutedArgument(&arg, ans->GetVariableMap());
+      std::stringstream stream;
+      stream << *temp;
+      if(str_ans.find(stream.str()) == str_ans.end())
+      {
+        out.push_back(temp);
+        str_ans.insert(stream.str());
+      }
+      else delete temp;
+    }
+  }
+  // delete answer
+  delete ans;
+
+  return out;
+}
+
 bool KnowledgeBase::IsSatisfiable(const Argument& arg) const
 {
+  // get answer
+  Answer *ans = GetAnswer(arg, VariableMap(), std::set<size_t>());
+  // return if any valid substitution exists
+  bool res = ans->next();
+  delete ans;
+  return res;
+}
+
+bool KnowledgeBase::IsSatisfiable(const std::string& s_arg) const
+{
+  Argument arg(s_arg, *symbol_table, true, log);
   // get answer
   Answer *ans = GetAnswer(arg, VariableMap(), std::set<size_t>());
   // return if any valid substitution exists
@@ -127,8 +180,6 @@ size_t KnowledgeBase::Tell(Fact&& f)
 
 size_t KnowledgeBase::Tell(const std::string& str)
 {
-  //if(str[0] != '(') return Tell(Fact(str));
-
   std::string cmd;
   std::vector<std::string> args;
   if(!Argument::SeparateCommand(str, cmd, args))
@@ -142,9 +193,9 @@ size_t KnowledgeBase::Tell(const std::string& str)
     log.Fatal << "Unable to construct argument from " << str << std::endl;
     return 0;
   }
-  //else if(cmd != "<=") return Tell(Fact(str));
+  else if(cmd != "<=") return Tell(Fact(str, *symbol_table, log));
 
-  //return Tell(Clause(str));
+  return Tell(Clause(str, *symbol_table, log));
 }
 
 bool KnowledgeBase::Erase(const Clause& c, size_t index)
@@ -209,15 +260,15 @@ Answer* KnowledgeBase::GetAnswer(const Argument& question,
 
   if(Unify::IsGroundQuestion(&question, v_map))
   {
-    if(question.val == "or")
+    if(question.value == SymbolTable::OrID)
       ans = new GroundQuestionAnswer
                           (new OrClauseAnswer(question, v_map, *this, visited),
                            question, v_map, *this, visited);
-    else if(question.val == "distinct")
+    else if(question.value == SymbolTable::DistinctID)
       ans = new GroundQuestionAnswer
                           (new DistinctAnswer(question, v_map, *this, visited),
                            question, v_map, *this, visited);
-    else if(question.val == "not")
+    else if(question.value == SymbolTable::NotID)
       ans = new GroundQuestionAnswer
                           (new NotAnswer(question, v_map, *this, visited),
                            question, v_map, *this, visited);
@@ -227,11 +278,11 @@ Answer* KnowledgeBase::GetAnswer(const Argument& question,
   }
   else
   {
-    if(question.val == "or")
+    if(question.value == SymbolTable::OrID)
       ans = new OrClauseAnswer(question, v_map, *this, visited);
-    else if(question.val == "distinct")
+    else if(question.value == SymbolTable::DistinctID)
       ans = new DistinctAnswer(question, v_map, *this, visited);
-    else if(question.val == "not")
+    else if(question.value == SymbolTable::NotID)
       ans = new NotAnswer(question, v_map, *this, visited);
     else ans = new ClauseAnswer(question, v_map, *this, visited);
   }
@@ -241,8 +292,6 @@ Answer* KnowledgeBase::GetAnswer(const Argument& question,
 
 std::ostream& operator<<(std::ostream& stream, const KnowledgeBase& kb)
 {
-  cout << *kb.GetSymbolTable() << endl;
-
   SymbolDecodeStream o(kb.GetSymbolTable(), stream);
 
   const KnowledgeBase::FactMap& all_facts = kb.GetAllFacts();
@@ -268,7 +317,7 @@ std::ostream& operator<<(std::ostream& stream, const KnowledgeBase& kb)
     o << it->first << " {" << std::endl;
     const KnowledgeBase::ClauseList& clauses = it->second;
     for(list<Clause>::const_iterator it2 = clauses.begin();it2 != clauses.end();it2++)
-      o << *it2 << std::endl;
+      o << *it2 << " [" << it2->id << "]" << std::endl;
     o << "}" << std::endl;
   }
 

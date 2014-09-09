@@ -61,13 +61,16 @@ class KnowledgeBase
   typedef std::map<size_t, ClauseList> ClauseMap;
 
   //! constructs empty knowledge base
-  KnowledgeBase() : c_id(0), symbol_table(new SymbolTable()) {}
+  KnowledgeBase(const Log& log = std::cout)
+    : c_id(0), symbol_table(new SymbolTable()), log(log) {}
   //! construct knowledge base with knowledge from KIF object
-  KnowledgeBase(gdlparser::KIF& kif);
+  KnowledgeBase(gdlparser::KIF& kif, const Log& log = std::cout);
 
   //! Asks knowledge base given question
   //! returns list of answers
   std::list<Argument*> Ask(const Argument& question,
+                           bool checkForDoubles = true) const;
+  std::list<Argument*> Ask(const std::string&,
                            bool checkForDoubles = true) const;
 
   //! get the answer to the question than substitutions
@@ -77,6 +80,8 @@ class KnowledgeBase
 
   //! returns if the question is satisfiable
   bool IsSatisfiable(const Argument& question) const;
+  //! returns if the question is satisfiable
+  bool IsSatisfiable(const std::string& question) const;
 
   //! adds given knowledge to knowledge base
   //! returns index of this clause in the list

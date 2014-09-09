@@ -148,12 +148,17 @@ struct Argument
 inline std::ostream& operator<<(std::ostream& o,
                                 const libgdl::core::Argument& arg)
 {
-  if(arg.args.size() == 0)
+  if(arg.IsVariable())
   {
     o << arg.val;
     return o;
   }
-  else o << "( " + arg.val;
+  else if(arg.args.size() == 0)
+  {
+    o << arg.value;
+    return o;
+  }
+  else o << "( " + arg.value;
 
   for(size_t i = 0;i < arg.args.size();i++) o << " " << *(arg.args[i]);
   o << " " << ")";
