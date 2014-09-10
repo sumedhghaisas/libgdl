@@ -10,10 +10,14 @@
 #include <string>
 #include <vector>
 
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
 #include "argument.hpp"
 #include "location.hpp"
 
 namespace libgdl
+{
+namespace core
 {
 
 /**
@@ -27,7 +31,6 @@ struct Fact
 {
   //! some useful typedefs
   typedef gdlparser::parser::yy::location location_type;
-  typedef gdlparser::parser::TokenValue TokenValue;
 
   //! empty constructor
   Fact() : arg(NULL), isLocation(false) {}
@@ -40,14 +43,13 @@ struct Fact
     swap(*this, f);
   }
 
-  //! constructs a fact with given command name and text
-  Fact(const TokenValue& tok)
-    : arg(new Argument(tok)) {}
   //! construct a fact fro argument
   //! does not check if argument has variables or not
   Fact(const Argument& arg) : arg(new Argument(arg)) {}
   //! construct fact from string
-  Fact(const std::string& str);
+  Fact(const std::string& str,
+       SymbolTable& symbol_table,
+       Log log = std::cerr);
 
   //! desctructor
   ~Fact() { delete arg; }
@@ -67,9 +69,6 @@ struct Fact
     swap(f1.loc, f2.loc);
   }
 
-  //! Adds argument to this fact
-  void AddArgument(const TokenValue& tok) { arg->AddArgument(tok); }
-
   //! Assign location to this fact
   void AddLocation(const location_type& l)
   {
@@ -87,6 +86,11 @@ struct Fact
   bool operator==(const Fact& fact) const;
   bool operator!=(const Fact& fact) const { return !(*this == fact); }
 
+  std::string DecodeToString(const SymbolTable& symbol_table) const
+  {
+    return arg->DecodeToString(symbol_table);
+  }
+
   //! fact as argument
   Argument* arg;
 
@@ -96,9 +100,11 @@ struct Fact
   Location loc;
 }; // class Fact
 
+}; // namespace core
 }; // namespace libgdl
 
-inline std::ostream& operator<<(std::ostream& o, const libgdl::Fact& f)
+inline std::ostream& operator<<(std::ostream& o,
+                                const libgdl::core::Fact& f)
 {
   o << *f.arg;
   return o;

@@ -17,6 +17,7 @@ BOOST_AUTO_TEST_SUITE(FactTests);
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::core;
 
 /**
  * Test Fact for construction from string.
@@ -24,11 +25,15 @@ using namespace libgdl;
 BOOST_AUTO_TEST_CASE(FactStringConstructionTest)
 {
   MARK_START;
+  OPEN_LOG;
+  SymbolTable symbol_table;
+  Fact f("(test (test2 x))", symbol_table, TEST_LOG);
   
-  Fact f("(test (test x))");
   stringstream stream;
-  stream << f;
-  if(stream.str() != "( test ( test x ) )") MARK_FAIL;
+  SymbolDecodeStream sds(&symbol_table, stream);
+  sds << f;
+  
+  if(stream.str() != "( test ( test2 x ) )") MARK_FAIL;
   MARK_END;
 }
 

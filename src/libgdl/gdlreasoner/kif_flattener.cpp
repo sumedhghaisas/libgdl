@@ -29,7 +29,7 @@ void KIFFlattener::Flatten(KIF& kif)
     KnowledgeBase m_kb;
 
     // dependency graph
-    const std::map<std::string, DGraphNode*>& dgraph = kif.DependencyGraph();
+    const std::map<std::string, DGraphNode*> dgraph;// = kif.DependencyGraph();
 
     // stores marked relations in Dfs
     std::set<std::string> marked;
@@ -52,7 +52,7 @@ void KIFFlattener::Flatten(KIF& kif)
         if((mit = marked.find(it->first)) == marked.end())
         {
             std::stringstream stream;
-            stream << it->second->arity;
+            //stream << it->second->arity;
             std::string sig = it->first + "/" + stream.str();
             if(sig != "base/1" && sig != "input/2" && sig != "init/1" && sig != "role/1" &&
                     sig != "goal/2" && sig != "terminal/0" && sig != "legal/2" && sig != "next/1"

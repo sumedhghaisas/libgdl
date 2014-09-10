@@ -16,8 +16,9 @@
 
 #define MARK_END std::cout << "\033[0;32m" "[PASSED]" "\033[0m" << std::endl
 
-#define OPEN_LOG std::ofstream test_log("test_log.log", std::fstream::app)
+#define OPEN_LOG std::ofstream test_log("test_log.log", std::fstream::app);   \
+                 Log log(test_log);
 
-#define TEST_LOG libgdl::Log(test_log)
+#define TEST_LOG test_log
 
 #endif // _GDLPARSER_TESTS_GDLPARSER_TEST_HPP_INCLUDED

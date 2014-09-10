@@ -10,10 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "argument.hpp"
-#include <libgdl/gdlparser/parser/location.hh>
+#include <libgdl/core/data_types/clause.hpp>
+#include <libgdl/core/data_types/argument.hpp>
 
 namespace libgdl
+{
+namespace core
 {
 
 /**
@@ -28,26 +30,20 @@ namespace libgdl
  */
 struct DGraphNode
 {
-  typedef gdlparser::parser::yy::location location_type;
-
   //! constructor
-  DGraphNode(const std::string& name, size_t arity)
-    : name(name), arity(arity), index(-1), low_link(-1) {}
+  DGraphNode(size_t id)
+    : id(id), index(-1), low_link(-1) {}
 
-  //! represents command name of this node
-  std::string name;
-  //! arity
-  size_t arity;
+  //! symbol table id
+  size_t id;
   //! out edges from this node
   std::vector<DGraphNode*> out;
   //! in edges
   std::vector<DGraphNode*> in;
   //! clause number associated out edge
-  std::vector<size_t> c_index;
+  std::vector<const Clause*> clauses;
   //! argument of out edge
-  std::vector<Argument> arg;
-  //! location of the rule associated with every out edge
-  std::vector<location_type> out_loc;
+  std::vector<const Argument*> args;
   //! edge type associated with every out edge
   //! If true then its a negative dependency
   std::vector<bool> isNot;
@@ -57,6 +53,7 @@ struct DGraphNode
   int low_link;
 }; // struct DGraphNode
 
+}; // namespace core
 }; // namespace libgdl
 
 

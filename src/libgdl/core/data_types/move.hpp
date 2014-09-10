@@ -15,6 +15,8 @@
 #include <boost/functional/hash.hpp>
 #include <boost/intrusive_ptr.hpp>
 
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
 #include "argument.hpp"
 #include "intrusive_list.hpp"
 
@@ -23,10 +25,11 @@ namespace libgdl
 
 struct Move
 {
-  Move(const std::string& str);
+  Move(const std::string& str,
+       core::SymbolTable& symbol_table,
+       Log log = std::cout);
 
-  Move(const std::vector<Argument*>& m,
-       const boost::unordered_map<std::string, size_t>& id_map);
+  Move(const std::vector<core::Argument*>& m);
 
   Move(const Move& m);
 
@@ -54,12 +57,17 @@ struct Move
 
   size_t Hash() const { return hash; }
 
-  std::vector<Argument*> moves;
+  std::string DecodeToString(const core::SymbolTable& symbol_table) const;
+
+  std::vector<core::Argument*> moves;
+
   size_t hash;
 }; // struct Move
 
-class MoveList : public boost::intrusive_ptr<IntrusiveList<Move> >
+class MoveList : public boost::intrusive_ptr<core::IntrusiveList<Move> >
 {
+  template<typename T>
+  using IntrusiveList = core::IntrusiveList<T>;
  public:
   MoveList(IntrusiveList<Move>* m)
     : boost::intrusive_ptr<IntrusiveList<Move> >(m) {}
@@ -74,27 +82,10 @@ class MoveList : public boost::intrusive_ptr<IntrusiveList<Move> >
   iterator end() { return get()->end(); }
 
   size_t size() { return get()->size(); }
+
+  std::string DecodeToString(const core::SymbolTable& symbol_table) const;
 };
 
 }; // namespace libgdl
-
-inline std::ostream& operator<<(std::ostream& s, const libgdl::Move& m)
-{
-  for(size_t i = 0;i < m.moves.size();i++)
-  {
-    s << *m.moves[i] << std::endl;
-  }
-  return s;
-}
-
-inline std::ostream& operator<<(std::ostream& s, const libgdl::MoveList& m)
-{
-  for(libgdl::IntrusiveList<libgdl::Move>::const_iterator it = m->begin();
-                                                          it != m->end();it++)
-  {
-    s << *it << std::endl;
-  }
-  return s;
-}
 
 #endif // MOVE_HPP_INCLUDED
