@@ -20,15 +20,15 @@ namespace cache /** Cache System of libGDL **/
  *                                   compiler)
  *
  * key_type should implement a getHash() function which returns a size_t hash
- * value or overload of Get function can be used which accepts a function
- * pointer of hash calculation function. This hash calculation function should
+ * value or overload of 'Get' function can be used which accepts a boost
+ * function to hash calculation. This hash calculation function should
  * take const key_type as input and should return size_t (hash value).
  *
  * Constructor accepts a boost function as a default function to call when there
- * is a miss. This default miss function can be overridden with appropriate Get
- * function overload. The function should accept a constant Key_type reference
- * and return pointer to the value_type object. Member functions can be passed
- * by binding. (for example see the use of LRUCache in GDL class)
+ * is a miss. This default miss function can be overridden with appropriate
+ * 'Get' function overload. The function should accept a constant Key_type
+ * reference and return pointer to the value_type object. Member functions can
+ * be passed by binding.
  *
  * @code
  * boost::function<B* (const A&)> f(boost::bind(&A::GetVal, this, _1))
@@ -36,6 +36,8 @@ namespace cache /** Cache System of libGDL **/
  * A test;
  * B* temp = cache.Get(test);
  * @endcode
+ *
+ * @see GDL
  */
 template<class key_type, class value_type>
 class LRUCache
