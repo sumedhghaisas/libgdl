@@ -112,7 +112,7 @@ struct Argument
   std::set<const Argument*> GetVariables() const;
 
   //! compute hash value
-  size_t Hash(const boost::unordered_map<std::string, size_t>& id_map);
+  size_t Hash();
 
   std::string DecodeToString(const SymbolTable& symbol_table) const;
 

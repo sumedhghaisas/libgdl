@@ -316,7 +316,8 @@ std::ostream& operator<<(std::ostream& stream, const KnowledgeBase& kb)
   {
     o << it->first << " {" << std::endl;
     const KnowledgeBase::ClauseList& clauses = it->second;
-    for(list<Clause>::const_iterator it2 = clauses.begin();it2 != clauses.end();it2++)
+    for(list<Clause>::const_iterator it2 = clauses.begin();
+                                                    it2 != clauses.end();it2++)
       o << *it2 << " [" << it2->id << "]" << std::endl;
     o << "}" << std::endl;
   }

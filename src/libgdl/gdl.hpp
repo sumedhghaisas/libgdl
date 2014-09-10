@@ -1,3 +1,9 @@
+/**
+ * @file gdl.hpp
+ * @author Sumedh Ghaisas
+ *
+ * Declaration of GDL class.
+ */
 #ifndef _LIBGDL_GDL_HPP_INCLUDED
 #define _LIBGDL_GDL_HPP_INCLUDED
 
@@ -19,6 +25,11 @@ class GDL
 {
   template<typename T>
   using intrusive_ptr = boost::intrusive_ptr<T>;
+
+  typedef core::Argument Argument;
+  typedef core::Fact Fact;
+  typedef core::Clause Clause;
+  typedef core::SymbolTable SymbolTable;
 
  public:
   GDL(const std::string& filename,
@@ -42,7 +53,6 @@ class GDL
     for(std::list<Argument*>::const_iterator it = roles.begin();
                                                         it != roles.end();it++)
       delete *it;
-    delete id_map;
   }
 
   //! Returns the state of the game after performing given moves on the given
@@ -84,70 +94,30 @@ class GDL
   MoveList GetLegalMoves(const State& state, bool useCache = true);
 
 
-    //! Returns goal value associated with the given state for given role
-    //! If useCache is true function returns the answer from cache if it exists
-    //!
-    //! \param state const State&
-    //! \param role const std::string&
-    //! \param true bool useCache
-    //! \return int
-    //!
-    //!
-    size_t GetGoal(const State& state, const size_t role, bool useCache = true);
-//
-//    //! Returns goal value associated with the given state for given role id
-//    //! If useCache is true function returns the answer from cache if it exists
-//    //!
-//    //! \param state const State&
-//    //! \param rid size_t
-//    //! \param true bool useCache=
-//    //! \return int
-//    //!
-//    //!
-//    int GetGoal(const State& state, size_t rid, bool useCache = true) const;
-//
-//    //! Returns a random move combination.
-//    //!
-//    //! \param state const State&
-//    //! \param ran RandomNumberGenerator&
-//    //! \return StringVec
-//    //!
-//    //!
-//    StringVec GetRandomJointMove(const State& state, RandomNumberGenerator& ran, bool useCache = true) const;
-//
-//    //! Returns a random next state.
-//    //!
-//    //! \param state const State&
-//    //! \param ran RandomNumberGenerator&
-//    //! \return State
-//    //!
-//    //!
-//    State GetRandomNextState(const State& state, RandomNumberGenerator& ran, bool useCache = true) const;
-//
-//    //! Returns the terminal state by applying random legal moves to the given state
-//    //! till termination.
-//    //!
-//    //! \param state const State&
-//    //! \param ran RandomNumberGenerator&
-//    //! \param false bool useCache=
-//    //! \return State
-//    //!
-//    //!
-//    State PerformRandomDepthCharge(const State& state, RandomNumberGenerator& ran, bool useCache = true) const;
-//
+  //! Returns goal value associated with the given state for given role
+  //! If useCache is true function returns the answer from cache if it exists
+  //!
+  //! \param state const State&
+  //! \param role const std::string&
+  //! \param true bool useCache
+  //! \return int
+  //!
+  //!
+  size_t GetGoal(const State& state, const size_t role, bool useCache = true);
+
   //! returns the initial state of the GDL
   const State& InitState() const { return *init; }
 
-  const boost::unordered_map<std::string, size_t>& IDMap() { return *id_map; }
+  const SymbolTable* GetSymbolTable() const
+  {
+    return base_rules.GetSymbolTable();
+  }
+  SymbolTable*& GetSymbolTable()
+  {
+    return base_rules.GetSymbolTable();
+  }
 
   Log& GetLog() { return log; }
-//
-//    //! returns roles involved in this GDL
-//    const StringVec& GetRoles() const { return roles; }
-//
-//    static int hitCount;
-//
-//    static int sim_cache_capacity;
 
 private:
   State* cached_GetNextState(const State& state,
@@ -166,8 +136,6 @@ private:
   inline void ApplyActions(const Move& moves);
   inline void RemoveState();
   inline void RemoveActions();
-
-  boost::unordered_map<std::string, size_t>* id_map;
 
   std::list<Argument*> roles;
 
@@ -199,7 +167,7 @@ inline void GDL::ApplyState(const State& state)
                                                                           it++)
   {
     Argument *temp = new Argument;
-    temp->val = "true";
+    temp->value = SymbolTable::TrueID;
     temp->t = Argument::Relation;
     temp->args.push_back(*it);
 
@@ -216,7 +184,7 @@ inline void GDL::ApplyActions(const Move& moves)
                                                         it != roles.end();it++)
   {
     Argument *temp = new Argument;
-    temp->val = "does";
+    temp->value = SymbolTable::DoesID;
     temp->t = Argument::Relation;
     temp->args.push_back(*it);
     temp->args.push_back(moves.moves[r_index]);

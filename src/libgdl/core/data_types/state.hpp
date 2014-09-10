@@ -14,6 +14,7 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include <libgdl/core/data_types/argument.hpp>
+#include <libgdl/core/symbol_table/symbol_table.hpp>
 
 namespace libgdl
 {
@@ -33,8 +34,7 @@ struct RawState
   //! Generates a state out of a existing vector of facts
   //! if isSorted is false facts are sorted before adding
   //! if isSorted is true vector is assumed to be sorted
-  RawState (const std::list<Argument*> & facts,
-         const boost::unordered_map<std::string, size_t>& id_map);
+  RawState(const std::list<Argument*> & facts);
 
   RawState(const RawState& s);
 
@@ -63,7 +63,9 @@ struct RawState
   const std::list<Argument*>& Facts() const { return facts; }
 
   //! computes and stores hash
-  void calcHash(const boost::unordered_map<std::string, size_t>& id_map);
+  void calcHash();
+
+  std::string DecodeToString(const SymbolTable& symbol_table) const;
 
   //! Hash value of the state
   size_t hash;
@@ -100,28 +102,10 @@ struct State : public boost::intrusive_ptr<core::RawState>
 
   bool operator==(const State& s) { return *get() == *s.get(); }
   bool operator!=(const State& s) { return *get() != *s.get(); }
-};
+
+  std::string DecodeToString(const core::SymbolTable& symbol_table) const;
+}; // struct State
 
 }; // namespace libgdl
-
-inline std::ostream& operator<<(std::ostream & ss,
-                                const libgdl::core::RawState& s)
-{
-  ss << "State: ";
-  for(std::list<libgdl::core::Argument*>::const_iterator it = s.facts.begin();
-                                                    it != s.facts.end();it++)
-  {
-    ss << "\t" << **it << std::endl;
-  }
-
-  ss << "\tHash = " << std::hex << s.hash << std::dec;
-  return ss;
-}
-
-inline std::ostream& operator<<(std::ostream& ss, const libgdl::State& s)
-{
-  ss << *s << std::endl;
-  return ss;
-}
 
 #endif // _LIBGDL_GDL_STATES_HPP_INCLUDED

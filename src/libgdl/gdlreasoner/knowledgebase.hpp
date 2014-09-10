@@ -84,7 +84,7 @@ class KnowledgeBase
   bool IsSatisfiable(const std::string& question) const;
 
   //! adds given knowledge to knowledge base
-  //! returns index of this clause in the list
+  //! re                                                                                                                                                turns index of this clause in the list
   //! this added clause can be delete by passing this index along with the clause
   size_t Tell(const Clause& c);
   size_t Tell(Clause&& c);

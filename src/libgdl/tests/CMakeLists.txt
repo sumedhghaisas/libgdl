@@ -8,8 +8,8 @@ add_executable(libgdl_test
   kif_tests.cpp
   unify_tests.cpp
   knowledgebase_tests.cpp
-  #state_tests.cpp
-  #gdl_tests.cpp
+  state_tests.cpp
+  gdl_tests.cpp
 )
 # Link dependencies of test executable.
 target_link_libraries(libgdl_test

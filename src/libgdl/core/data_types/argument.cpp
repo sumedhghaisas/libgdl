@@ -428,16 +428,15 @@ Argument* Argument::ConstructArgument(const std::string& str,
   return out;
 }
 
-size_t Argument::Hash(const unordered_map<string, size_t>& id_map)
+size_t Argument::Hash()
 {
-  size_t out = id_map.find(val)->second;
   size_t total = 0;
   for(size_t i = 0;i < args.size();i++)
   {
-    total += (i + 1) * args[i]->Hash(id_map);
+    total += (i + 1) * args[i]->Hash();
   }
-  if(total != 0) return total * out;
-  else return out;
+  if(total != 0) return total * value;
+  else return value;
 }
 
 bool Argument::operator==(const Argument& arg) const

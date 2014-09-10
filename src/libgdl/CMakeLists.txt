@@ -2,8 +2,8 @@ include_directories(..) # <mlpack/[whatever]>
 
 # Add core.hpp to list of sources.
 set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/core.hpp")
-#set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/gdl.hpp")
-#set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/gdl.cpp")
+set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/gdl.hpp")
+set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/gdl.cpp")
 
 ## Recurse into both gdlparser/ and gdlreasoner/.
 set(DIRS
