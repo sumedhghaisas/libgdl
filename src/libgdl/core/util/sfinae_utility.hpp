@@ -7,6 +7,7 @@
 #ifndef _LIBGDL_CORE_UTIL_SFINAE_UTILITY_HPP_INCLUDED
 #define _LIBGDL_CORE_UTIL_SFINAE_UTILITY_HPP_INCLUDED
 
+#include <array>
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits.hpp>
 
