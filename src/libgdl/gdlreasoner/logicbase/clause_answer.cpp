@@ -25,27 +25,22 @@ ClauseAnswer::ClauseAnswer(const Argument& question,
   toDel_f = true;
   toDel_c = true;
 
-  std::stringstream stream;
-  stream << question.args.size();
-  std::string sig = question.val + "/" + stream.str();
+  FactMap::const_iterator it1 = kb.GetAllFacts().find(question.value);
 
-  map<string, KnowledgeBase::FactVec>::const_iterator it1 =
-                                                    kb.GetAllFacts().find(sig);
   if(it1 != kb.GetAllFacts().end())
   {
     toDel_f = false;
     facts = &(it1->second);
   }
-  else facts = new KnowledgeBase::FactVec();
+  else facts = new KnowledgeBase::FactList();
 
-  map<std::string, KnowledgeBase::ClauseVec>::const_iterator it2 =
-                                                  kb.GetAllClauses().find(sig);
+  ClauseMap::const_iterator it2 = kb.GetAllClauses().find(question.value);
   if(it2 != kb.GetAllClauses().end())
   {
     clauses = &(it2->second);
     toDel_c = false;
   }
-  else clauses = new KnowledgeBase::ClauseVec();
+  else clauses = new KnowledgeBase::ClauseList();
 }
 
 ClauseAnswer::~ClauseAnswer ()

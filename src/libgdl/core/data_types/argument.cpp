@@ -9,28 +9,15 @@
 #include <stack>
 #include <sstream>
 
+#include <libgdl/core/data_types/error_type.hpp>
+
 using namespace std;
 using namespace boost;
 using namespace libgdl;
-
-Argument::Argument(const TokenValue& tok)
-{
-  // copy information from token
-  if(tok.Type() == TokenValue::Relation) t = Relation;
-  else if(tok.Type() == TokenValue::Function) t = Function;
-  else t = Var;
-
-  // assign argument command
-  val = tok.Command();
-
-  // get arguments from the token
-  const std::vector<TokenValue>& args = tok.Arguments();
-
-  // add them as arguments
-  for(size_t i = 0;i < args.size();i++) AddArgument(args[i]);
-}
+using namespace libgdl::core;
 
 Argument::Argument(const Argument& arg) noexcept
+  : val("")
 {
   if(arg.IsVariable())
   {
@@ -42,43 +29,144 @@ Argument::Argument(const Argument& arg) noexcept
   // map to hold variable name versus assigned location mapping
   // this is important as all the occurrences of a variable in a clause
   // are assigned same object
-  std::map<std::string, Argument*> v_map;
+  StrVarMap v_map;
 
   t = arg.t;
-  val = arg.val;
+  value = arg.value;
 
   // call recursively on arguments
   for(size_t i = 0;i < arg.args.size();i++)
     args.push_back(ConstructArgument(*arg.args[i], v_map));
 }
 
-Argument::Argument(const std::string& str)
+Argument::Argument(const std::string& str,
+                   SymbolTable& symbol_table,
+                   bool isRel,
+                   Log log)
 {
-  std::map<std::string, Argument*> v_map;
+  StrVarMap v_map;
 
   if(str[0] != '(')
   {
-    if(str[0] == '?') t = Argument::Var;
+    if(str[0] == '?')
+    {
+      t = Argument::Var;
+      val = str;
+      return;
+    }
+
+    Symbol* sym;
+    size_t id = symbol_table.CheckEntry(str, sym);
+    if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
+    {
+      if(sym->Arity() != 0)
+      {
+        ARITY_ERROR(error,
+                    str, 0,
+                    sym->Arity(),
+                    Location(),
+                    sym->GetLocation());
+        log.Fatal << error << endl;
+        return;
+      }
+      else if(isRel && sym->SymbolType() != Symbol::RELATION)
+      {
+        RF_ERROR(error,
+                str,
+                "Relation", "Function",
+                Location(),
+                sym->GetLocation());
+        log.Fatal << error << endl;
+        return;
+      }
+      else if(!isRel && sym->SymbolType() != Symbol::FUNCTION)
+      {
+        RF_ERROR(error,
+                str,
+                "Function", "Relation",
+                Location(),
+                sym->GetLocation());
+        log.Fatal << error << endl;
+        return;
+      }
+    }
+    else if(sym == NULL) id = symbol_table.AddEntry(str, Location(), 0, isRel);
+
+    if(isRel)
+      t = Argument::Relation;
     else t = Argument::Function;
-    val = str;
+    value = id;
     return;
   }
 
   std::string cmd;
   StringVec args;
-  if(!SeparateCommand(str, cmd, args))
+  if(!SeparateCommand(str, cmd, args, log))
   {
-    std::cerr << "Unable to construct argument from " << str << std::endl;
+    log.Fatal << "Unable to construct argument from " << str << std::endl;
     return;
   }
 
-  val = cmd;
-  t = Argument::Function;
+  Symbol* sym;
+  size_t id = symbol_table.CheckEntry(cmd, sym);
+  if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
+  {
+    if(sym->Arity() != args.size())
+    {
+      ARITY_ERROR(error,
+                  cmd, args.size(),
+                  sym->Arity(),
+                  Location(),
+                  sym->GetLocation());
+      log.Fatal << error << endl;
+      return;
+    }
+    else if(isRel && sym->SymbolType() != Symbol::RELATION)
+    {
+      RF_ERROR(error,
+              cmd,
+              "Relation", "Function",
+              Location(),
+              sym->GetLocation());
+      log.Fatal << error << endl;
+      return;
+    }
+    else if(!isRel && sym->SymbolType() != Symbol::FUNCTION)
+    {
+      RF_ERROR(error,
+              cmd,
+              "Function", "Relation",
+              Location(),
+              sym->GetLocation());
+      log.Fatal << error << endl;
+      return;
+    }
+  }
+  else if(sym == NULL)
+    id = symbol_table.AddEntry(cmd, Location(), args.size(), isRel);
+
+  if(isRel)
+    t = Argument::Relation;
+  else t = Argument::Function;
+  value = id;
 
   for(size_t i = 0;i < args.size();i++)
   {
-    this->args.push_back(ConstructArgument(args[i], v_map));
+    Argument *arg;
+    if(id == SymbolTable::NotID || id == SymbolTable::OrID)
+      arg = ConstructArgument(args[i], v_map, symbol_table, true, log);
+    else
+      arg = ConstructArgument(args[i], v_map, symbol_table, false, log);
+
+    if(arg != NULL) this->args.push_back(arg);
   }
+}
+
+Argument::~Argument()
+{
+  std::set<Argument*> v_set;
+  // destroy arguments and clear arguments vector before deleting the object
+  Destroy(v_set);
 }
 
 bool Argument::HasVariables() const
@@ -99,13 +187,14 @@ bool Argument::HasVariables() const
   return false;
 }
 
-bool Argument::SeparateCommand (const std::string & input,
-                                std::string & cmd,
-                                std::vector <std::string> & args)
+bool Argument::SeparateCommand(const std::string& input,
+                               std::string& cmd,
+                               std::vector<std::string>& args,
+                               Log log)
 {
   if (input.size() < 3 || input[0] != '(' || input[input.length()-1] != ')')
   {
-    std::cerr << "Input "
+    log.Fatal << "Input "
               << input
               << " is not surrounded by braces or not big enough" << std::endl;
     return false;
@@ -148,20 +237,13 @@ bool Argument::SeparateCommand (const std::string & input,
   }
   if (depth != 0)
   {
-    std::cerr << "Braces count mismatch in " << withoutBraces << std::endl;
+    log.Fatal << "Braces count mismatch in " << withoutBraces << std::endl;
     delete o;
     return false;
   }
   if (o->str() != "") args.push_back (o->str());
   delete o;
   return true;
-}
-
-Argument::~Argument()
-{
-  std::set<Argument*> v_set;
-  // destroy arguments and clear arguments vector before deleting the object
-  Destroy(v_set);
 }
 
 void Argument::Destroy(std::set<Argument*>& v_set)
@@ -188,10 +270,10 @@ void Argument::Destroy(std::set<Argument*>& v_set)
 }
 
 Argument* Argument::ConstructArgument(const Argument& arg,
-                                      std::map<std::string,
-                                      Argument*>& v_map)
+                                      StrVarMap& v_map)
 {
-  std::map<std::string, Argument*>::iterator it;
+  StrVarMap::iterator it;
+
   if(arg.IsVariable() && (it = v_map.find(arg.val)) != v_map.end())
     return it->second;
   else if(arg.IsVariable())
@@ -205,96 +287,168 @@ Argument* Argument::ConstructArgument(const Argument& arg,
 
   Argument* out = new Argument();
   out->t = arg.t;
-  out->val = arg.val;
+  out->value = arg.value;
 
   for(size_t i = 0;i < arg.args.size();i++)
     out->args.push_back(ConstructArgument(*arg.args[i], v_map));
   return out;
 }
 
-Argument* Argument::ConstructArgument(const TokenValue& tok,
-                                      std::map<std::string,
-                                      Argument*>& v_map)
-{
-  std::map<std::string, Argument*>::iterator it;
-  if(tok.Type() == TokenValue::Var &&
-          (it = v_map.find(tok.Command())) != v_map.end())
-  {
-      return it->second;
-  }
-  else if(tok.Type() == TokenValue::Var)
-  {
-    Argument *out = new Argument(tok);
-    v_map[tok.Command()] = out;
-    return out;
-  }
-
-  Argument *out = new Argument();
-
-  if(tok.Type() == TokenValue::Relation) out->t = Argument::Relation;
-  else if(tok.Type() == TokenValue::Function) out->t = Argument::Function;
-  else out->t = Argument::Var;
-
-  out->val = tok.Command();
-
-  const std::vector<TokenValue>& args = tok.Arguments();
-
-  for(size_t i = 0;i < args.size();i++) out->args.push_back(ConstructArgument(args[i], v_map));
-
-  return out;
-}
-
 Argument* Argument::ConstructArgument(const std::string& str,
-                                      std::map<std::string,
-                                      Argument*>& v_map)
+                                      StrVarMap& v_map,
+                                      SymbolTable& symbol_table,
+                                      bool isRel,
+                                      Log log)
 {
   if(str[0] != '(')
   {
-    std::map<std::string, Argument*>::iterator it;
-    if(str[0] == '?' && (it = v_map.find(str)) != v_map.end()) return it->second;
-    else
+    if(str[0] == '?')
     {
-      Argument* out = new Argument(str);
-      if(str[0] == '?') v_map[str] = out;
-      return out;
+      StrVarMap::iterator it;
+      if((it = v_map.find(str)) != v_map.end())
+        return it->second;
+      else
+      {
+        Argument* out = new Argument();
+        out->t = Argument::Var;
+        out->val = str;
+        v_map[str] = out;
+        return out;
+      }
     }
-  }
 
-  Argument* out = new Argument();
+    Symbol* sym;
+    size_t id = symbol_table.CheckEntry(str, sym);
+    if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
+    {
+      if(sym->Arity() != 0)
+      {
+        ARITY_ERROR(error,
+                    str, 0,
+                    sym->Arity(),
+                    Location(),
+                    sym->GetLocation());
+        log.Fatal << error << endl;
+        return NULL;
+      }
+      else if(isRel && sym->SymbolType() != Symbol::RELATION)
+      {
+        RF_ERROR(error,
+                str,
+                "Relation", "Function",
+                Location(),
+                sym->GetLocation());
+        log.Fatal << error << endl;
+        return NULL;
+      }
+      else if(!isRel && sym->SymbolType() != Symbol::FUNCTION)
+      {
+        RF_ERROR(error,
+                 str,
+                 "Function", "Relation",
+                 Location(),
+                 sym->GetLocation());
+        log.Fatal << error << endl;
+        return NULL;
+      }
+    }
+    else if(sym == NULL)
+      id = symbol_table.AddEntry(str, Location(), 0, isRel);
+
+    Argument* out = new Argument();
+    if(isRel)
+      out->t = Argument::Relation;
+    else out->t = Argument::Function;
+    out->value = id;
+    return out;
+  }
 
   std::string cmd;
   StringVec args;
-  if(!SeparateCommand(str, cmd, args))
+  if(!SeparateCommand(str, cmd, args, log))
   {
-    std::cerr << "Unable to construct argument from " << str << std::endl;
+    log.Fatal << "Unable to construct argument from " << str << std::endl;
     return NULL;
   }
 
-  out->val = cmd;
-  out->t = Argument::Function;
+  Symbol* sym;
+  size_t id = symbol_table.CheckEntry(cmd, sym);
+  if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
+  {
+    if(sym->Arity() != args.size())
+    {
+      ARITY_ERROR(error,
+                  cmd, args.size(),
+                  sym->Arity(),
+                  Location(),
+                  sym->GetLocation());
+      log.Fatal << error << endl;
+      return NULL;
+    }
+    else if(isRel && sym->SymbolType() != Symbol::RELATION)
+    {
+      RF_ERROR(error,
+               cmd,
+               "Relation", "Function",
+               Location(),
+               sym->GetLocation());
+      log.Fatal << error << endl;
+      return NULL;
+    }
+    else if(!isRel && sym->SymbolType() != Symbol::FUNCTION)
+    {
+      RF_ERROR(error,
+               cmd,
+               "Function", "Relation",
+               Location(),
+               sym->GetLocation());
+      log.Fatal << error << endl;
+      return NULL;
+    }
+  }
+  else if(sym == NULL)
+    id = symbol_table.AddEntry(cmd, Location(), args.size(), isRel);
+
+  Argument* out = new Argument();
+
+  if(isRel)
+    out->t = Argument::Relation;
+  else out->t = Argument::Function;
+  out->value = id;
 
   for(size_t i = 0;i < args.size();i++)
   {
-    out->args.push_back(ConstructArgument(args[i], v_map));
+    Argument* arg;
+    if(id == SymbolTable::NotID || id == SymbolTable::OrID)
+      arg = ConstructArgument(args[i], v_map, symbol_table, true, log);
+    else
+      arg = ConstructArgument(args[i], v_map, symbol_table, false, log);
+    if(arg != NULL) out->args.push_back(arg);
   }
   return out;
 }
 
-size_t Argument::Hash(const unordered_map<string, size_t>& id_map)
+size_t Argument::Hash()
 {
-  size_t out = id_map.find(val)->second;
   size_t total = 0;
   for(size_t i = 0;i < args.size();i++)
   {
-    total += (i + 1) * args[i]->Hash(id_map);
+    total += (i + 1) * args[i]->Hash();
   }
-  if(total != 0) return total * out;
-  else return out;
+  if(total != 0) return total * value;
+  else return value;
 }
 
 bool Argument::operator==(const Argument& arg) const
 {
-  if(val != arg.val) return false;
+  if(t != arg.t) return false;
+  if(t == Var)
+  {
+    if(val != arg.val) return false;
+    else return true;
+  }
+
+  if(value != arg.value) return false;
   if(args.size() != arg.args.size()) return false;
 
   for(size_t i = 0;i < args.size();i++)
@@ -322,7 +476,7 @@ Argument& Argument::operator=(const Argument& arg)
   std::map<std::string, Argument*> v_map;
 
   t = arg.t;
-  val = arg.val;
+  value = arg.value;
 
   // call recursively on arguments
   for(size_t i = 0;i < arg.args.size();i++)
@@ -331,7 +485,7 @@ Argument& Argument::operator=(const Argument& arg)
   return *this;
 }
 
-bool Argument::OrEquate(const Argument& arg)
+bool Argument::OrEquate(const Argument& arg) const
 {
   // for 'or', if arg matches any argument return true
   if(val == "or")
@@ -341,13 +495,7 @@ bool Argument::OrEquate(const Argument& arg)
     return false;
   }
 
-  if(val != arg.val) return false;
-  if(args.size() != arg.args.size()) return false;
-
-  for(size_t i = 0;i < args.size();i++)
-    if(!args[i]->OrEquate(*arg.args[i])) return false;
-
-  return true;
+  return (*this == arg);
 }
 
 bool Argument::HasAsArgument(const Argument& arg) const
@@ -388,12 +536,47 @@ bool Argument::IsGround() const
   return true;
 }
 
-bool Argument::IsEqualTo(const Argument& arg) const
+std::string Argument::DecodeToString(const SymbolTable& symbol_table) const
 {
-  if(val != arg.val) return false;
-  if(args.size() != arg.args.size()) return false;
+  string out = "";
+  if(args.size() == 0 && t != Argument::Var)
+  {
+    return symbol_table.GetCommandName(value);
+  }
+  else if(args.size() == 0)
+  {
+    return val;
+  }
+  else out = "( " + symbol_table.GetCommandName(value);
 
   for(size_t i = 0;i < args.size();i++)
-    if(args[i] != arg.args[i]) return false;
-  return true;
+    out += " " + (args[i])->DecodeToString(symbol_table);
+  out += " )";
+  return out;
+}
+
+set<const Argument*> Argument::GetVariables() const
+{
+  set<const Argument*> variables;
+
+  stack<const Argument*> S;
+  S.push(this);
+
+  while(!S.empty())
+  {
+    const Argument* arg = S.top();
+    S.pop();
+
+    if(arg->IsVariable())
+    {
+      variables.insert(arg);
+      continue;
+    }
+
+    for(size_t i = 0;i < arg->args.size();i++)
+    {
+      S.push(arg->args[i]);
+    }
+  }
+  return variables;
 }

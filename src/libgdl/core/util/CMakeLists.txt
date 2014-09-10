@@ -10,6 +10,8 @@ set(SOURCES
   log.hpp
   logid.hpp
   timer.hpp
+  sfinae_utility.hpp
+  to_string.hpp
 )
 
 # add directory name to sources

@@ -55,8 +55,8 @@ class ClauseAnswer : public Answer
   //! Position of the fact for next answer to check
   size_t m_position;
 
-  std::list<libgdl::Fact>::const_iterator fit;
-  std::list<libgdl::Clause>::const_iterator cit;
+  std::list<Fact>::const_iterator fit;
+  std::list<Clause>::const_iterator cit;
   std::deque<SubAnswer> m_subAnswers;
   //! Length of current clause
   size_t m_clauseLength;
@@ -65,8 +65,8 @@ class ClauseAnswer : public Answer
   //! Answer is based on facts
   bool m_isFactAnswer;
 
-  const std::list<libgdl::Fact>* facts;
-  const std::list<libgdl::Clause>* clauses;
+  const std::list<Fact>* facts;
+  const std::list<Clause>* clauses;
 
   bool toDel_f;
   bool toDel_c;

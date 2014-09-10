@@ -10,10 +10,14 @@
 #include <string>
 #include <vector>
 
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
 #include "argument.hpp"
 #include "location.hpp"
 
 namespace libgdl
+{
+namespace core
 {
 
 /**
@@ -26,7 +30,6 @@ namespace libgdl
 struct Clause
 {
   typedef gdlparser::parser::yy::location location_type;
-  typedef gdlparser::parser::TokenValue TokenValue;
 
   //! empty constructor
   Clause() : head(NULL), isLocation(false) {}
@@ -36,10 +39,10 @@ struct Clause
   Clause(Clause&& c) noexcept
     : head(NULL) { swap(*this, c); }
 
-  //! constructs clause from scanner token
-  Clause(const TokenValue& tok, const size_t id);
   //! construct clause from string
-  Clause(const std::string& str);
+  Clause(const std::string& str,
+         SymbolTable& symbol_table,
+         Log log = std::cerr);
 
   //! destructor
   ~Clause();
@@ -67,6 +70,8 @@ struct Clause
     loc = Location(l);
   }
 
+  std::string DecodeToString(const SymbolTable& symbol_table) const;
+
   bool IsGround();
 
   //! Head of the clause
@@ -80,9 +85,11 @@ struct Clause
   Location loc;
 }; // class Clause
 
+}; // namespace core
 }; // namespace libgdl
 
-inline std::ostream& operator<<(std::ostream& o, const libgdl::Clause& clause)
+inline std::ostream& operator<<(std::ostream& o,
+                                const libgdl::core::Clause& clause)
 {
   o << "(<= ";
   o << *clause.head << " ";
@@ -91,7 +98,5 @@ inline std::ostream& operator<<(std::ostream& o, const libgdl::Clause& clause)
   o << ")";
   return o;
 }
-
-
 
 #endif // _LIBGDL_CORE_DATATYPES_CLAUSE_HPP_INCLUDED

@@ -10,12 +10,18 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 #include <boost/unordered_map.hpp>
 
-#include <libgdl/gdlparser/parser/token_value.hpp>
+#include <libgdl/core/symbol_table/symbol_table.hpp>
+
+#include "str_var_map.hpp"
 
 namespace libgdl
 {
+namespace core
+{
+
 /**
  * Represents argument of fact or clause.
  * Can be relation, function or variable depending on type.
@@ -26,22 +32,23 @@ namespace libgdl
 struct Argument
 {
   typedef std::vector<std::string> StringVec;
-  typedef gdlparser::parser::TokenValue TokenValue;
 
   //! enum type
   enum Type { Relation, Function, Var };
 
   //! empty constructor
-  Argument() : t(Relation) {}
-  //! constucts argument from given token
-  Argument(const TokenValue& tok);
+  Argument() : t(Relation), val("") {}
   //! copy constructor
   Argument(const Argument& arg) noexcept;
   //! construct argument from string
-  Argument(const std::string& str);
+  Argument(const std::string& str,
+           SymbolTable& symbol_table,
+           bool isRel = true,
+           Log log = std::cerr);
   //! move constructor
   Argument(Argument&& arg) noexcept
-    : t(arg.t), val(std::move(arg.val)), args(std::move(arg.args)) {}
+    : t(arg.t), val(std::move(arg.val)), value(std::move(arg.value)),
+    args(std::move(arg.args)) {}
 
   //! Destructor
   ~Argument();
@@ -53,6 +60,7 @@ struct Argument
 
     swap(arg1.t, arg2.t);
     swap(arg1.val, arg2.val);
+    swap(arg1.value, arg2.value);
     swap(arg1.args, arg2.args);
   }
 
@@ -74,7 +82,7 @@ struct Argument
   //! special comparison operator
   //! checks value and arguments(recursively check)
   //! for 'or' if given argument matches any argument to 'or' true is returned
-  bool OrEquate(const Argument& arg);
+  bool OrEquate(const Argument& arg) const;
 
   //! return true if given argument is there in arguments
   bool HasAsArgument(const Argument& arg) const;
@@ -82,67 +90,86 @@ struct Argument
   //! returns if current argument is ground
   bool IsGround() const;
 
+  //! returns true if the argument is a negation
+  bool IsNegation()
+  {
+    if(value == 0) return true;
+    else return false;
+  }
+
+  //! returns true if the argument is 'or'
+  bool IsOr()
+  {
+    if(value == 1) return true;
+    else return false;
+  }
+
   //! returns if current argument is a variable
   bool IsVariable() const { if(t == Var) return true; else return false; }
 
   bool HasVariables() const;
 
-  //! equivalent to comparison operator but 'or' conditions is removed in this
-  bool IsEqualTo(const Argument& arg) const;
-
-  //! adds argument to this command
-  void AddArgument(const TokenValue& tok) { args.push_back(new Argument(tok)); }
+  std::set<const Argument*> GetVariables() const;
 
   //! compute hash value
-  size_t Hash(const boost::unordered_map<std::string, size_t>& id_map);
+  size_t Hash();
+
+  std::string DecodeToString(const SymbolTable& symbol_table) const;
 
   //! type of this argument
   Type t;
   //! command value
   std::string val;
+  size_t value;
   //! vector of arguments
   std::vector<Argument*> args;
 
   //! used by copy constructors
   static Argument* ConstructArgument(const Argument& arg,
-                                     std::map<std::string,
-                                     Argument*>& v_map);
-  static Argument* ConstructArgument(const TokenValue& tok,
-                                     std::map<std::string,
-                                     Argument*>& v_map);
+                                     StrVarMap& v_map);
   static Argument* ConstructArgument(const std::string& str,
-                                     std::map<std::string,
-                                     Argument*>& v_map);
+                                     StrVarMap& v_map,
+                                     SymbolTable& symbol_table,
+                                     bool isRel = true,
+                                     Log log = std::cerr);
 
   //! separates a string input into command and arguments
-  static bool SeparateCommand (const std::string & input,
-                               std::string & cmd,
-                               std::vector <std::string> & args);
+  static bool SeparateCommand (const std::string& input,
+                               std::string& cmd,
+                               std::vector<std::string>& args,
+                               Log log = std::cerr);
 
 }; // struct Argument
 
+}; // namespace core
 }; //namespace libgdl
 
-inline std::ostream& operator<<(std::ostream& o, const libgdl::Argument& arg)
+
+inline std::ostream& operator<<(std::ostream& o,
+                                const libgdl::core::Argument& arg)
 {
-  if(arg.args.size() == 0)
+  if(arg.IsVariable())
   {
     o << arg.val;
     return o;
   }
-  else o << "( " + arg.val;
+  else if(arg.args.size() == 0)
+  {
+    o << arg.value;
+    return o;
+  }
+  else o << "( " + arg.value;
 
   for(size_t i = 0;i < arg.args.size();i++) o << " " << *(arg.args[i]);
   o << " " << ")";
   return o;
 }
 
-inline std::ostream& operator<<(std::ostream& o, const libgdl::Argument::Type& t)
+inline std::ostream& operator<<(std::ostream& o,
+                                const libgdl::core::Argument::Type& t)
 {
-  typedef libgdl::Argument Argument;
-
-  if(t == Argument::Relation) o << "Relation";
-  else if(t == Argument::Function) o << "Function";
+  if(t == libgdl::core::Argument::Relation) o << "Relation";
+  else if(t == libgdl::core::Argument::Function) o << "Function";
   else o << "Variable";
   return o;
 }

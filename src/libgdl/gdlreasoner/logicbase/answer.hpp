@@ -31,11 +31,15 @@ namespace logicbase
  */
 class Answer
 {
- public:
-  //! A map from variables to values
-  typedef libgdl::Argument Argument;
-  typedef Unify::VariableMap VariableMap;
+ protected:
+  typedef libgdl::core::Argument Argument;
+  typedef libgdl::core::Clause Clause;
+  typedef libgdl::core::Fact Fact;
+  typedef libgdl::core::VariableMap VariableMap;
+  typedef std::map<size_t, std::list<Fact> > FactMap;
+  typedef std::map<size_t, std::list<Clause> > ClauseMap;
 
+ public:
   Answer(const Argument& question,
          const VariableMap& o_v_map,
          const KnowledgeBase & kb,

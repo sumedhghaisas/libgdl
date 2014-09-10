@@ -3,6 +3,8 @@ set(DIRS
   data_types
   util
   cache
+  symbol_table
+  dgraph
 )
 
 foreach(dir ${DIRS})
