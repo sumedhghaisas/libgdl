@@ -13,25 +13,23 @@
 
 #include <list>
 
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
+#include <libgdl/core/util/prefixedoutstream.hpp>
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::gdlparser;
+using namespace libgdl::gdlparser::parser;
 
 KIF::KIF(bool isWarn,
-         bool isDebuggingSymbols,
          char o_level,
          const Log& log)
   : log(log), isWarn(isWarn),
-    isDebuggingSymbols(isDebuggingSymbols),
     o_level(o_level),
-    driver(*this)
-{
-  f_last_index_with_linemark = 0;
-  c_last_index_with_linemark = 0;
-
-  id_index = 0;
-  id_map = new boost::unordered_map<string, size_t>();
-}
+    driver(*this),
+    symbol_table(new SymbolTable()),
+    dgraph(new DGraph())
+{}
 
 bool KIF::AddFile(const std::string& filename)
 {
@@ -44,22 +42,77 @@ bool KIF::AddFile(const std::string& filename)
 
 bool KIF::Parse(bool ignoreErrors)
 {
+  isRole = false;
+  isLegal = false;
+  isGoal = false;
+  isTerminal = false;
+
+  errors.clear();
+  warnings.clear();
+
+  delete symbol_table;
+  delete dgraph;
+
+  symbol_table = new SymbolTable();
+  dgraph = new DGraph();
+
   bool res = driver.Parse();
-  if(!res && !ignoreErrors)
+
+  if(res)
+  {
+    list<ErrorType> e = dgraph->CheckCycles(*symbol_table);
+    for(list<ErrorType>::iterator it = e.begin();it != e.end();it++)
+      errors.push_back(*it);
+    e = dgraph->CheckRecursiveDependencies();
+    for(list<ErrorType>::iterator it = e.begin();it != e.end();it++)
+      errors.push_back(*it);
+
+    if(!isRole)
+    {
+      SIMPLE_ERROR(error,"No role defined.");
+      errors.push_back(error);
+    }
+    if(!isLegal)
+    {
+      SIMPLE_ERROR(error,"No legal rules defined.");
+      errors.push_back(error);
+    }
+    if(!isGoal)
+    {
+      SIMPLE_ERROR(error,"No goal rules defined.");
+      errors.push_back(error);
+    }
+    if(!isTerminal)
+    {
+      SIMPLE_ERROR(error,"No terminal rules defined.");
+      errors.push_back(error);
+    }
+  }
+
+  for(list<ErrorType>::const_iterator it = errors.begin();it != errors.end();it++)
+    log.Fatal << *it << std::endl;
+
+  if(isWarn)
+  {
+    for(list<ErrorType>::const_iterator it = warnings.begin();it != warnings.end();
+        it++)
+      log.Warn << *it << std::endl;
+  }
+
+  if((!res || errors.size() != 0) && !ignoreErrors )
   {
     facts.clear();
     clauses.clear();
     return false;
   }
+
   return true;
 }
 
 KIF::~KIF()
 {
-  for(map<std::string, DGraphNode*>::iterator it = dgraph.begin();
-                                                      it != dgraph.end();it++)
-  delete it->second;
-  delete id_map;
+  delete symbol_table;
+  delete dgraph;
 }
 
 bool KIF::PrintDependencyGraph(const string& filename) const
@@ -72,112 +125,87 @@ bool KIF::PrintDependencyGraph(const string& filename) const
     return false;
   }
 
-  graph << "digraph dependency_graph {" << endl;
-
-  for(map<string, DGraphNode*>::const_iterator it = dgraph.begin();
-                                                    it != dgraph.end(); it++)
-  {
-    graph << it->first << " [label = \"" << it->first << "\"];" << endl;
-  }
-
-  for(map<string, DGraphNode*>::const_iterator it = dgraph.begin();
-                                                  it != dgraph.end(); it++)
-  {
-    const vector<DGraphNode*>& out = (it->second)->out;
-    const vector<bool>& isNot = (it->second)->isNot;
-
-    set<string> str_set;
-    set<string>::iterator sit;
-    for(size_t i = 0; i < out.size(); i++)
-    {
-      if((sit = str_set.find(out[i]->name)) == str_set.end())
-      {
-        if(isNot[i] == true) graph << it->first << " -> " << out[i]->name <<
-                                                      " [color = red];" << endl;
-        else graph << it->first << " -> " << out[i]->name << ";" << endl;
-        str_set.insert(out[i]->name);
-      }
-    }
-  }
-
-  graph << "}";
+  core::SymbolDecodeStream stream(symbol_table, util::PrefixedOutStream(graph));
+  stream << *dgraph << endl;
 
   graph.close();
 
   return true;
 }
 
-bool KIF::PrintToFile(const string& filename) const
+bool KIF::PrintToFile(const string& filename, bool isDebuggingSymbols) const
 {
-  ofstream out(filename.c_str());
-  if(!out.is_open())
+  ofstream out_p(filename.c_str());
+  if(!out_p.is_open())
   {
     log.Fatal << LOGID << "Unable to open file " << filename << std::endl;
     return false;
   }
 
-  for(size_t i = 0; i < facts.size(); i++)
+  core::SymbolDecodeStream out(symbol_table, out_p);
+
+  for(list<Fact>::const_iterator it = facts.begin();it != facts.end();it++)
   {
-    if(isDebuggingSymbols) out << ";#line " << facts[i].loc << std::endl;
-    out << facts[i] << std::endl;
+    if(isDebuggingSymbols) out << ";#line " << it->loc << std::endl;
+    out << *it << std::endl;
   }
-  for(size_t i = 0; i < clauses.size(); i++)
+  for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
   {
-    if(isDebuggingSymbols) out << ";#line " << clauses[i].loc  << std::endl;
-    out << clauses[i] << std::endl;
+    if(isDebuggingSymbols) out << ";#line " << it->loc  << std::endl;
+    out << *it << std::endl;
   }
 
-  out.close();
+  out_p.close();
   return true;
 }
 
-void KIF::AddLineMark(const location_type& loc)
-{
-  size_t f_size = facts.size();
-  size_t c_size = clauses.size();
-
-  for(size_t i = f_last_index_with_linemark;i < f_size;i++)
-  {
-    facts[i].AddLocation(loc);
-  }
-
-  for(size_t i = c_last_index_with_linemark;i < c_size;i++)
-  {
-    clauses[i].AddLocation(loc);
-  }
-
-  f_last_index_with_linemark = f_size;
-  c_last_index_with_linemark = c_size;
-}
-
-const Fact& KIF::AddFact(const Fact& f, const location_type& loc)
-{
-  facts.push_back(f);
-  facts[facts.size() - 1].AddLocation(loc);
-
-  return facts.back();
-}
-
-const Fact& KIF::AddFact(Fact&& f, const location_type& loc)
-{
-  facts.push_back(std::move(f));
-  facts[facts.size() - 1].AddLocation(loc);
-
-  return facts.back();
-}
-
-const Clause& KIF::AddClause(const Clause& c, const location_type& loc)
-{
-  clauses.push_back(c);
-  clauses[clauses.size() - 1].AddLocation(loc);
-
-  return clauses.back();
-}
-
-const Clause& KIF::AddClause(Clause&& c, const location_type& loc)
-{
-  clauses.push_back(std::move(c));
-  clauses[clauses.size() - 1].AddLocation(loc);
-
-  return clauses.back();
-}
+//void KIF::AddLineMark(const location_type& loc)
+//{
+//  size_t f_size = facts.size();
+//  size_t c_size = clauses.size();
+//
+//  for(size_t i = f_last_index_with_linemark;i < f_size;i++)
+//  {
+//    facts[i].AddLocation(loc);
+//  }
+//
+//  for(size_t i = c_last_index_with_linemark;i < c_size;i++)
+//  {
+//    clauses[i].AddLocation(loc);
+//  }
+//
+//  f_last_index_with_linemark = f_size;
+//  c_last_index_with_linemark = c_size;
+//}
+//
+//const Fact& KIF::AddFact(const Fact& f, const location_type& loc)
+//{
+//  facts.push_back(f);
+//  facts[facts.size() - 1].AddLocation(loc);
+//
+//  return facts.back();
+//}
+//
+//const Fact& KIF::AddFact(Fact&& f, const location_type& loc)
+//{
+//  facts.push_back(std::move(f));
+//  facts[facts.size() - 1].AddLocation(loc);
+//
+//  return facts.back();
+//}
+//
+//const Clause& KIF::AddClause(const Clause& c, const location_type& loc)
+//{
+//  clauses.push_back(c);
+//  clauses[clauses.size() - 1].AddLocation(loc);
+//
+//  return clauses.back();
+//}
+//
+//const Clause& KIF::AddClause(Clause&& c, const location_type& loc)
+//{
+//  clauses.push_back(std::move(c));
+//  clauses[clauses.size() - 1].AddLocation(loc);
+//
+//  return clauses.back();
+//}

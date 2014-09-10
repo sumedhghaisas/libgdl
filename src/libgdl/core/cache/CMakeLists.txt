@@ -12,4 +12,4 @@ foreach(file ${SOURCES})
 endforeach()
 # Append sources (with directory name) to list of all libGDL sources (used at
 # the parent scope).
-set(LIBGDL_SRCS ${LIBGDL_SRCS} ${DIR_SRCS} PARENT_SCOPE)
+set(GDL_SRCS ${GDL_SRCS} ${DIR_SRCS} PARENT_SCOPE)

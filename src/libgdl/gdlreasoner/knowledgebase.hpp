@@ -43,26 +43,34 @@ namespace gdlreasoner
 class KnowledgeBase
 {
   //! Some useful typedefs
-  typedef logicbase::Unify::VariableMap VariableMap;
   typedef logicbase::Answer Answer;
 
+  typedef libgdl::core::VariableMap VariableMap;
+  typedef core::Argument Argument;
+  typedef core::Clause Clause;
+  typedef core::Fact Fact;
+  typedef core::SymbolTable SymbolTable;
+
  public:
-  typedef std::list<Fact> FactVec;
-  typedef std::list<Clause> ClauseVec;
+  typedef std::list<Fact> FactList;
+  typedef std::list<Clause> ClauseList;
 
   //! data types to store knowledge
   //! improves access time
-  typedef std::map<std::string, FactVec> FactMap;
-  typedef std::map<std::string, ClauseVec> ClauseMap;
+  typedef std::map<size_t, FactList> FactMap;
+  typedef std::map<size_t, ClauseList> ClauseMap;
 
   //! constructs empty knowledge base
-  KnowledgeBase() : c_id(0) {}
+  KnowledgeBase(const Log& log = std::cout)
+    : c_id(0), symbol_table(new SymbolTable()), log(log) {}
   //! construct knowledge base with knowledge from KIF object
-  KnowledgeBase(gdlparser::KIF& kif);
+  KnowledgeBase(gdlparser::KIF& kif, const Log& log = std::cout);
 
   //! Asks knowledge base given question
   //! returns list of answers
   std::list<Argument*> Ask(const Argument& question,
+                           bool checkForDoubles = true) const;
+  std::list<Argument*> Ask(const std::string&,
                            bool checkForDoubles = true) const;
 
   //! get the answer to the question than substitutions
@@ -72,9 +80,11 @@ class KnowledgeBase
 
   //! returns if the question is satisfiable
   bool IsSatisfiable(const Argument& question) const;
+  //! returns if the question is satisfiable
+  bool IsSatisfiable(const std::string& question) const;
 
   //! adds given knowledge to knowledge base
-  //! returns index of this clause in the list
+  //! re                                                                                                                                                turns index of this clause in the list
   //! this added clause can be delete by passing this index along with the clause
   size_t Tell(const Clause& c);
   size_t Tell(Clause&& c);
@@ -99,13 +109,22 @@ class KnowledgeBase
   //! returns NULL if no clauses are found
   //! signature is represented by head relation name followed by its arity
   //! separated by '/'
-  const FactVec* GetFacts(const std::string& sig) const;
-  const ClauseVec* GetClauses(const std::string& sig) const;
+  const FactList* GetFacts(size_t sig) const;
+  const ClauseList* GetClauses(size_t sig) const;
 
   //! returns all the facts in this knowledgebase in stored form
   const FactMap& GetAllFacts() const { return m_facts; }
   //! returns all the clauses in the knowledgebase in stored form
   const ClauseMap& GetAllClauses() const { return m_clauses; }
+
+  const SymbolTable* GetSymbolTable() const
+  {
+    return symbol_table;
+  }
+  SymbolTable*& GetSymbolTable()
+  {
+    return symbol_table;
+  }
 
   Log& GetLog() { return log; }
 
@@ -119,8 +138,7 @@ class KnowledgeBase
   //! clause id to assign to new clauses
   size_t c_id;
 
-  //! is debugging sysbols supported
-  bool isDebuggingSymbols;
+  SymbolTable* symbol_table;
 
   //! logging stream
   mutable Log log;

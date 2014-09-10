@@ -7,13 +7,16 @@ set(SOURCES
   fact.cpp
   clause.hpp
   clause.cpp
-  dgraph_node.hpp
   location.hpp
   state.hpp
   state.cpp
   move.hpp
   move.cpp
   intrusive_list.hpp
+  str_var_map.hpp
+  str_var_map.cpp
+  error_type.hpp
+  variable_map.hpp
 )
 
 # add directory name to sources

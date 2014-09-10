@@ -40,7 +40,7 @@
 
 # include "position.hh"
 
-#line 12 "kif_parser.yy" // location.cc:291
+#line 23 "kif_parser.yy" // location.cc:291
 namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 #line 46 "location.hh" // location.cc:291
   /// Abstract a location.
@@ -181,7 +181,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     return ostr;
   }
 
-#line 12 "kif_parser.yy" // location.cc:291
+#line 23 "kif_parser.yy" // location.cc:291
 } } } } // libgdl::gdlparser::parser::yy
 #line 187 "location.hh" // location.cc:291
 #endif // !YY_YY_LOCATION_HH_INCLUDED

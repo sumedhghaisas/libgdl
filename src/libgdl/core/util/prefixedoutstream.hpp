@@ -54,7 +54,7 @@ class PrefixedOutStream
    * @param prefix The prefix to prepend to each line.
    */
   PrefixedOutStream(std::ostream& destination,
-                    const std::string& prefix,
+                    const std::string& prefix = "",
                     bool ignoreInput = false) :
       destination(&destination),
       ignoreInput(ignoreInput),

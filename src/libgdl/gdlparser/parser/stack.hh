@@ -40,7 +40,7 @@
 
 # include <vector>
 
-#line 12 "kif_parser.yy" // stack.hh:133
+#line 23 "kif_parser.yy" // stack.hh:133
 namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 #line 46 "stack.hh" // stack.hh:133
   template <class T, class S = std::vector<T> >
@@ -151,7 +151,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     unsigned int range_;
   };
 
-#line 12 "kif_parser.yy" // stack.hh:133
+#line 23 "kif_parser.yy" // stack.hh:133
 } } } } // libgdl::gdlparser::parser::yy
 #line 157 "stack.hh" // stack.hh:133
 

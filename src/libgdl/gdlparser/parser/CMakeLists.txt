@@ -1,3 +1,12 @@
+## Recurse parser
+set(DIRS
+ syntax_tree_types
+)
+
+foreach(dir ${DIRS})
+    add_subdirectory(${dir})
+endforeach()
+
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
@@ -11,8 +20,8 @@ set(SOURCES
   location.hh
   position.hh
   stack.hh
-  token_value.cpp
-  token_value.hpp
+  syntax_tree_types_decl.hpp
+  syntax_tree_types_includes.hpp
 )
 
 # add directory name to sources
