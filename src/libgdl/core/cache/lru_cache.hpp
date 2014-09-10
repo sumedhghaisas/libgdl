@@ -4,7 +4,6 @@
  *
  * Declaration of LRUCache.
  */
-
 #ifndef _LIBGDL_CORE_LRU_CACHE_HPP_INCLUDED
 #define _LIBGDL_CORE_LRU_CACHE_HPP_INCLUDED
 
@@ -13,7 +12,7 @@
 
 namespace libgdl
 {
-namespace cache
+namespace cache /** Cache System of libGDL **/
 {
 /**
  * LRU Cache module.
@@ -37,44 +36,41 @@ namespace cache
  * A test;
  * B* temp = cache.Get(test);
  * @endcode
- *
  */
-
 template<class key_type, class value_type>
 class LRUCache
 {
+  typedef boost::function<value_type* (const key_type&)> MissFunction;
+  typedef boost::function<size_t (const key_type&)> HashFunction;
+
  public:
-  //! Constructor
-  //!
-  //! \param default_f const boost::function<value_type* (const key_type&)>&
-  //! : default miss calling function
-  //! \param capacity unsigned short : number of entries to cache
-  //!
-  //!
-  LRUCache(const boost::function<value_type* (const key_type&)> default_f,
-           unsigned short capacity = 1024);
 
   //! Constructor
   //!
-  //! \param unsigned short capacity = 1024d
+  //! \param default_f default miss function
+  //! \param capacity number of entries to cache
+  //!
+  //!
+  LRUCache(const MissFunction& default_f, unsigned short capacity = 1024);
+
+  //! Constructor
+  //!
+  //! \param capacity number of entries to cache
   //!
   //!
   LRUCache(unsigned short capacity = 1024);
 
-  ~LRUCache()
-  {
-    for(size_t i = 0;i < capacity;i++) delete values[i];
-    delete[] values;
-    delete[] hashs;
-    delete[] forward_pointing;
-    delete[] backward_pointing;
-  }
+  //! Destructor
+  //!
+  //!
+  //!
+  ~LRUCache();
 
   //! Returns the value associated with the given key.
   //! The key is identified by its hash value obtained by function getHash()
   //! Default function is called if miss.
   //!
-  //! \param key const key_type&
+  //! \param key input key value
   //! \return value_type*
   //!
   //!
@@ -84,50 +80,60 @@ class LRUCache
   //! The key is identified by its hash value obtained by function getHash()
   //! Given function is called if miss.
   //!
-  //! \param key const key_type&
-  //! \param f_override const boost::function<value_type* (const key_type&)>&
-  //!                                 : override for default miss function
+  //! \param key input key value
+  //! \param f_override override for default miss function
   //! \return value_type*
   //!
   //!
-  value_type* Get(const key_type& key,
-                  const boost::function<value_type* (const key_type&)>& f_override);
+  value_type* Get(const key_type& key, const MissFunction& f_override);
 
   //! Returns the value associated with the given key.
   //! The key is identified by its hash value obtained by boost function
   //! given as the third argument
   //! Given miss function is called if miss is detected.
   //!
-  //! \param key const key_type&
-  //! \param f_override const boost::function<value_type* (const key_type&)>&
-  //!         : override for default miss function
-  //! \param hash_funct_override const boost::function<size_t (const key_type&)>&
-  //!         : function to compute hash
+  //! \param key
+  //! \param f_override override for default miss function
+  //! \param hash_funct_override function to compute hash
   //! \return value_type*
   //!
   //!
   value_type* Get(const key_type& key,
-                  const boost::function<value_type* (const key_type&)>& f_override,
-                  const boost::function<size_t (const key_type&)>& hash_funct_override);
+                  const MissFunction& f_override,
+                  const HashFunction& hash_funct_override);
 
+  //! Query if given key is present in cache
+  //!
+  //! \param key
+  //! \return value_type*
+  //!
+  //!
   value_type* Query(const key_type& key);
 
-  value_type* Query(const key_type& key,
-                    const boost::function<size_t (const key_type&)>& hash_funct_override);
-
-  //! sets cache is with default miss function
+  //! Query if given key is present in cache
   //!
-  //! \param key_type& boost::function<value_type* (const
+  //! \param key
+  //! \param hash_funct_override
+  //! \return value_type*
+  //!
+  //!
+  value_type* Query(const key_type& key,
+                    const HashFunction& hash_funct_override);
+
+  //! Sets cache with default miss function
+  //!
+  //! \param default_f deafult miss function to use
   //! \return void
   //!
   //!
-  void SetDefaultFunction(const boost::function<value_type* (const key_type&)>& default_f);
+  void SetDefaultFunction(const MissFunction& default_f);
 
+  //! Returns logging stream
   Log& GetLog() { return log; }
 
  private:
   //! default function to call when miss detected
-  const boost::function<value_type* (const key_type&)> default_f;
+  const MissFunction default_f;
 
   //! maximum entries to cache
   short capacity;
