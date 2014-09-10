@@ -77,3 +77,31 @@ ENDIF("${isSystemDir}" STREQUAL "-1")
 
 # Recurse into the rest of the project.
 add_subdirectory(src/libgdl)
+
+# Make a target to generate the documentation.  If Doxygen isn't installed, then
+# I guess this option will just be unavailable.
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+  # Preprocess the Doxyfile.  This is done before 'make doc'.
+  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/Doxyfile
+      PRE_BUILD
+      COMMAND ${CMAKE_COMMAND} -D DESTDIR="${CMAKE_BINARY_DIR}" -P
+          "${CMAKE_CURRENT_SOURCE_DIR}/CMake/GenerateDoxyfile.cmake"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+      COMMENT "Creating Doxyfile to generate Doxygen documentation"
+  )
+
+  # Generate documentation.
+  add_custom_target(doc
+      COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_BINARY_DIR}/Doxyfile"
+      DEPENDS "${CMAKE_BINARY_DIR}/Doxyfile"
+      WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+      COMMENT "Generating API documentation with Doxygen"
+  )
+
+  install(DIRECTORY ${CMAKE_BINARY_DIR}/doc/html
+      DESTINATION share/doc/mlpack
+      COMPONENT doc
+      OPTIONAL
+  )
+endif (DOXYGEN_FOUND)
