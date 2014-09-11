@@ -12,8 +12,8 @@ endforeach()
 set(SOURCES
   knowledgebase.cpp
   knowledgebase.hpp
-  #kif_flattener.cpp
-  #kif_flattener.hpp
+  kif_flattener.cpp
+  kif_flattener.hpp
 )
 
 # add directory name to sources
