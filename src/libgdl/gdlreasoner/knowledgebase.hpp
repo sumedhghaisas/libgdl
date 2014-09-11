@@ -66,6 +66,21 @@ class KnowledgeBase
   //! construct knowledge base with knowledge from KIF object
   KnowledgeBase(gdlparser::KIF& kif, const Log& log = std::cout);
 
+  //! copy constructor
+  KnowledgeBase(const KnowledgeBase& kb)
+    : m_facts(kb.GetAllFacts()),
+    m_clauses(kb.GetAllClauses()),
+    c_id(kb.GetCurrentClauseID()),
+    symbol_table(new SymbolTable(*kb.GetSymbolTable()))
+  {
+
+  }
+
+  ~KnowledgeBase()
+  {
+    delete symbol_table;
+  }
+
   //! Asks knowledge base given question
   //! returns list of answers
   std::list<Argument*> Ask(const Argument& question,
@@ -124,6 +139,11 @@ class KnowledgeBase
   SymbolTable*& GetSymbolTable()
   {
     return symbol_table;
+  }
+
+  const size_t& GetCurrentClauseID() const
+  {
+    return c_id;
   }
 
   Log& GetLog() { return log; }

@@ -35,6 +35,8 @@ GDL::GDL(const string& filename,
   }
 
   base_rules = KnowledgeBase(kif);
+
+  kif.GetSymbolTable() = NULL;
   kif.Clear();
 
   list<Argument*> result = base_rules.Ask("(role ?x)");
