@@ -19,41 +19,79 @@
 
 namespace libgdl
 {
-namespace core
+namespace core /** Core functionality of libGDL **/
 {
 
 /**
  * Represents argument of fact or clause.
  * Can be relation, function or variable depending on type.
- * Stored as command and arguments.
+ * Stored as command(SymbolTable id) and arguments.
  *
- * @see KIFDriver
+ * @see SymbolTable, Fact, Clause
  */
 struct Argument
 {
   typedef std::vector<std::string> StringVec;
 
-  //! enum type
+  //! Represents type of the argument (Relation, Function, Var)
+  //!
   enum Type { Relation, Function, Var };
 
-  //! empty constructor
-  Argument() : t(Relation), val("") {}
-  //! copy constructor
+  //! Empty Constructor
+  //!
+  //!
+  //!
+  Argument()
+    : t(Relation), val("") {}
+
+  //! Copy constructor
+  //! Does not throw any exception, can be used by stl wrappers
+  //!
+  //! \param arg Argument to copy
+  //!
+  //!
   Argument(const Argument& arg) noexcept;
-  //! construct argument from string
+
+  //! Constructs an argument from string, SymbolTable is used to encode
+  //!
+  //! \param str string representation
+  //! \param symbol_table SymbolTable to encode
+  //! \param isRel if argument is relation or not
+  //! \param log Logging stream
+  //! \return
+  //!
+  //!
   Argument(const std::string& str,
            SymbolTable& symbol_table,
            bool isRel = true,
            Log log = std::cerr);
-  //! move constructor
+
+  //! Move constructor
+  //! Throws no exception, can be used by stl wrappers
+  //!
+  //! \param arg argument to move from
+  //!
+  //!
   Argument(Argument&& arg) noexcept
-    : t(arg.t), val(std::move(arg.val)), value(std::move(arg.value)),
-    args(std::move(arg.args)) {}
+    : t(arg.t),
+    val(std::move(arg.val)),
+    value(std::move(arg.value)),
+    args(std::move(arg.args))
+  {}
 
   //! Destructor
+  //!
+  //!
+  //!
   ~Argument();
 
-  //! swap function
+  //! Swap function
+  //!
+  //! \param arg1 first argument
+  //! \param arg2 second argument
+  //! \return void
+  //!
+  //!
   friend inline void swap(Argument& arg1, Argument& arg2)
   {
     using std::swap;
@@ -65,79 +103,171 @@ struct Argument
   }
 
   //! copy-assignment operator
+  //!
+  //! \param arg argument to assign
+  //! \return Argument&
+  //!
+  //!
   Argument& operator=(const Argument& arg);
+
   //! move assignment constructor
+  //!
+  //! \param arg argument to move assign
+  //! \return Argument&
+  //!
+  //!
   Argument& operator=(Argument&& arg) { swap(*this, arg); return *this; }
 
   //! Destroys arguments to this argument before deletion
   //! called by destructor
-  //! v_set is the set of variables already deleted
-  //! updates it accordingly
+  //! v_set stores set of variables already deleted
+  //! hence they do not get deleted again
+  //!
+  //! \param v_set set of variables already deleted
+  //! \return void
+  //!
+  //!
   void Destroy(std::set<Argument*>& v_set);
 
-  //! comparison operator
+  //! Comparison operators
   bool operator==(const Argument& arg) const;
+  //! Comparison operators
   bool operator!=(const Argument& arg) const { return !(*this == arg); }
 
-  //! special comparison operator
-  //! checks value and arguments(recursively check)
-  //! for 'or' if given argument matches any argument to 'or' true is returned
+  //! Special comparison operator
+  //! Checks value and arguments(recursively check)
+  //! for 'or' if given argument matches any argument then true is returned
+  //!
+  //! \param arg argument to check with
+  //! \return bool
+  //!
+  //!
   bool OrEquate(const Argument& arg) const;
 
-  //! return true if given argument is there in arguments
+  //! Return true if given argument is there in arguments
+  //!
+  //! \param arg argument to check against
+  //! \return bool
+  //!
+  //!
   bool HasAsArgument(const Argument& arg) const;
 
-  //! returns if current argument is ground
+  //! Returns if current argument is ground (no variables)
+  //!
+  //! \return bool
+  //!
+  //!
   bool IsGround() const;
 
-  //! returns true if the argument is a negation
+  //! Returns true if the argument is a negation
+  //!
+  //! \return bool
+  //!
+  //!
   bool IsNegation()
   {
     if(value == 0) return true;
     else return false;
   }
 
-  //! returns true if the argument is 'or'
+  //! Returns true if the argument is 'or'
+  //!
+  //! \return bool
+  //!
+  //!
   bool IsOr()
   {
     if(value == 1) return true;
     else return false;
   }
 
-  //! returns if current argument is a variable
+  //! Returns true if current argument is a variable
+  //!
+  //! \return bool
+  //!
+  //!
   bool IsVariable() const { if(t == Var) return true; else return false; }
 
+  //! Returns true if this argument has any variables present
+  //!
+  //! \return bool
+  //!
+  //!
   bool HasVariables() const;
 
+  //! Returns variables present in this argument
+  //!
+  //! \return std::set<const Argument*>
+  //!
+  //!
   std::set<const Argument*> GetVariables() const;
 
-  //! compute hash value
+  //! Get hash of this argument
+  //!
+  //! \return size_t
+  //!
+  //!
   size_t Hash();
 
+  //! Returns string representation of this argument using the symbol table
+  //! This function is used by SymbolDecodeStream to print argument
+  //!
+  //! \param symbol_table const SymbolTable&
+  //! \return std::string
+  //!
+  //! @see SymbolDecodeStream
+  //!
   std::string DecodeToString(const SymbolTable& symbol_table) const;
 
   //! type of this argument
   Type t;
-  //! command value
+  //! string representation if variable
   std::string val;
+  //! symbol table id if function or relation
   size_t value;
   //! vector of arguments
   std::vector<Argument*> args;
 
-  //! used by copy constructors
+  //! Constructs argument by copying a given argument and using the
+  //! string to variable map given
+  //!
+  //! \param arg argument to copy
+  //! \param v_map string to variable map
+  //! \return Argument* new argument
+  //!
+  //!
   static Argument* ConstructArgument(const Argument& arg,
                                      StrVarMap& v_map);
+
+  //! Constructs argument from a string
+  //!
+  //! \param str string representation of the argument
+  //! \param v_map string to variable map
+  //! \param symbol_table SymbolTable to encode
+  //! \param isRel if argument is relation or function
+  //! \param log Logging stream
+  //! \return
+  //!
+  //!
   static Argument* ConstructArgument(const std::string& str,
                                      StrVarMap& v_map,
                                      SymbolTable& symbol_table,
                                      bool isRel = true,
                                      Log log = std::cerr);
 
-  //! separates a string input into command and arguments
-  static bool SeparateCommand (const std::string& input,
-                               std::string& cmd,
-                               std::vector<std::string>& args,
-                               Log log = std::cerr);
+  //! Separates a string input into command and arguments
+  //!
+  //! \param input string representation
+  //! \param cmd command of the input given
+  //! \param args arguments in the input
+  //! \param log Logging stream
+  //! \return
+  //!
+  //!
+  static bool SeparateCommand(const std::string& input,
+                              std::string& cmd,
+                              std::vector<std::string>& args,
+                              Log log = std::cerr);
 
 }; // struct Argument
 
