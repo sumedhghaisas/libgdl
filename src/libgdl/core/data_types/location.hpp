@@ -2,7 +2,7 @@
  * @file location.hpp
  * @author Sumedh Ghaisas
  *
- * Data structure to store location of any identifier.
+ * Declaration of Location.
  */
 #ifndef _LIBGDL_CORE_DATATYPES_HPP_INCLUDED
 #define _LIBGDL_CORE_DATATYPES_HPP_INCLUDED
@@ -17,11 +17,14 @@ namespace core
 {
 
 /**
- * This structure represents location of the identifier. It stores the filename
- * and lineNo for tracking. Location is used in debugging KnowledgeBase. Location
- * is used in place of location_type (implicitly defined by gdlparser) so
- * that filename (the string variable) will be destroyed properly. location_type
- * class holds pointer to filename (string) which sometimes create problems.
+ * This structure represents location of the identifier. It stores the filename,
+ * begin and end for tracking. Location is used in debugging KnowledgeBase.
+ * Location is used in place of location_type (implicitly defined by gdlparser)
+ * so that filename (the string variable) will be destroyed properly.
+ * location_type class holds pointer to filename (string) which sometimes
+ * create memory leaks.
+ *
+ * @see location_type, position
  */
 struct Location
 {
@@ -29,9 +32,19 @@ struct Location
   typedef gdlparser::parser::yy::location location_type;
   typedef gdlparser::parser::yy::position position;
 
-  //! empty constructor
-  Location() : begin(&filename), end(&filename) {}
-  //! copy constructor
+  //! Empty constructor
+  //! begin and end holds pointer to member filename of Location
+  //! his way filename is destroyed properly
+  //!
+  //!
+  Location()
+    : begin(&filename), end(&filename) {}
+
+  //! Copy constructor (deep copy)
+  //!
+  //! \param loc const Location&
+  //!
+  //!
   Location(const Location& loc)
     : filename(loc.filename),
       begin(&filename, loc.begin.line, loc.begin.column),
@@ -39,7 +52,13 @@ struct Location
   {
     // empty constructor
   }
-  //! constructs location object from location_type of parser
+
+  //! Constructs location object from location_type of parser
+  //! This constructor is used as implicit conversion
+  //!
+  //! \param loc
+  //!
+  //!
   Location(const location_type& loc)
     : filename(*loc.begin.filename),
       begin(&filename, loc.begin.line, loc.begin.column),
@@ -48,6 +67,13 @@ struct Location
     // empty constructor
   }
 
+  //! Swap function
+  //!
+  //! \param loc1
+  //! \param loc2
+  //! \return void
+  //!
+  //!
   friend void swap(Location& loc1, Location& loc2)
   {
     using std::swap;
@@ -57,6 +83,7 @@ struct Location
     swap(loc1.end, loc2.end);
   }
 
+  //! Copy-assignment operator
   Location& operator=(Location loc)
   {
     swap(*this, loc);
@@ -71,12 +98,14 @@ struct Location
     if(end != loc.end) return false;
     return true;
   }
+  //! Comparison operators
   bool operator!=(const Location& loc) const { return !(*this == loc); }
 
   //! holds filename
   std::string filename;
-
+  //! holds beginning of location
   position begin;
+  //! holds end of location
   position end;
 }; // struct Location
 

@@ -23,23 +23,42 @@ namespace core
 /**
  * Represents a Clause.
  * Clause is stored as Head and its arguments(body).
- * Text representation is also stored for easy printing.
  *
- * @see KIFDriver
+ * @see Argument, Location
  */
 struct Clause
 {
-  typedef gdlparser::parser::yy::location location_type;
+  //! Empty constructor
+  //!
+  //!
+  //!
+  Clause()
+    : head(NULL), isLocation(false) {}
 
-  //! empty constructor
-  Clause() : head(NULL), isLocation(false) {}
-  //! copy constructor
-  Clause(const Clause& c);
-  //! move constructor
-  Clause(Clause&& c) noexcept
-    : head(NULL) { swap(*this, c); }
+  //! Copy constructor (deep copy)
+  //! No exception is thrown, can be used by stl wrappers
+  //!
+  //! \param clause Clause to copy
+  //!
+  //!
+  Clause(const Clause& clause) noexcept;
 
-  //! construct clause from string
+  //! Move constructor
+  //! No exception is thrown, can be used by stl wrappers
+  //!
+  //! \param clause Clause to move from
+  //!
+  //!
+  Clause(Clause&& clause) noexcept
+    : head(NULL) { swap(*this, clause); }
+
+  //! Construct clause from string
+  //!
+  //! \param str string representation of the clause
+  //! \param symbol_table SymbolTable to encode
+  //! \param log Logging stream
+  //!
+  //!
   Clause(const std::string& str,
          SymbolTable& symbol_table,
          Log log = std::cerr);
@@ -47,7 +66,13 @@ struct Clause
   //! destructor
   ~Clause();
 
-  //! swap function
+  //! Swap function
+  //!
+  //! \param c1
+  //! \param c2
+  //! \return void
+  //!
+  //!
   friend void swap(Clause& c1, Clause& c2)
   {
     using std::swap;
@@ -59,29 +84,61 @@ struct Clause
     swap(c1.loc, c2.loc);
   }
 
-  //! copy-assignment operator
-  Clause& operator=(const Clause& c);
-  //! move-assignment operator
-  Clause& operator=(Clause&& c) { swap(*this, c); return *this; }
+  //! Copy-assignment operator (deep copy)
+  //!
+  //! \param clause Clause to copy from
+  //! \return Clause&
+  //!
+  //!
+  Clause& operator=(const Clause& clause);
 
-  void AddLocation(const location_type& l)
+  //! Move-assignment operator
+  //!
+  //! \param clause Clause to move from
+  //! \return Clause&
+  //!
+  //!
+  Clause& operator=(Clause&& clause) { swap(*this, clause); return *this; }
+
+  //! Add Location to this clause
+  //!
+  //! \param l Location object to add
+  //! \return void
+  //!
+  //!
+  void AddLocation(const Location& l)
   {
     isLocation = true;
-    loc = Location(l);
+    loc = l;
   }
 
-  std::string DecodeToString(const SymbolTable& symbol_table) const;
-
+  //! Returns true if clause is ground (contains no variables)
+  //!
+  //! \return bool
+  //!
+  //!
   bool IsGround();
+
+
+  //! Returns string representation of this clause using the symbol table
+  //! This function is used by SymbolDecodeStream to print clause
+  //!
+  //! \param symbol_table const SymbolTable&
+  //! \return std::string
+  //!
+  //! @see SymbolDecodeStream
+  //!
+  std::string DecodeToString(const SymbolTable& symbol_table) const;
 
   //! Head of the clause
   Argument* head;
-  //! body
+  //! Body of the clause
   std::vector<Argument*> premisses;
-  //! to assign unique id
+  //! Used to assign unique ID
   size_t id;
-
+  //! is location info present for this clause
   bool isLocation;
+  //! represents location info for this clause
   Location loc;
 }; // class Clause
 

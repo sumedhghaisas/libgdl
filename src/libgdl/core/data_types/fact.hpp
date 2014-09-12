@@ -23,35 +23,60 @@ namespace core
 /**
  * Represents a fact.
  * Fact is stored as command and its arguments.
- * Text representation is also stored for easy printing.
  *
- * @see KIFDriver
+ * @see Argument, KIFDriver
  */
 struct Fact
 {
-  //! some useful typedefs
-  typedef gdlparser::parser::yy::location location_type;
+  //! Empty constructor
+  //!
+  //!
+  //!
+  Fact()
+    : arg(NULL), isLocation(false) {}
 
-  //! empty constructor
-  Fact() : arg(NULL), isLocation(false) {}
-  //! copy constructor
-  Fact(const Fact& f)
-    : arg(new Argument(*f.arg)), isLocation(f.isLocation), loc(f.loc) {}
-  Fact(Fact&& f) noexcept
+  //! Copy constructor (deep constructor)
+  //! Throws no exception, can be used by STL wrappers
+  //!
+  //! \param fact Fact to copy from
+  //!
+  //!
+  Fact(const Fact& fact) noexcept
+    : arg(new Argument(*fact.arg)), isLocation(fact.isLocation), loc(fact.loc) {}
+
+  //! Move constructor
+  //!
+  //! \param fact Fact to move from
+  //!
+  //!
+  Fact(Fact&& fact) noexcept
   {
     arg = NULL;
-    swap(*this, f);
+    swap(*this, fact);
   }
 
-  //! construct a fact fro argument
-  //! does not check if argument has variables or not
-  Fact(const Argument& arg) : arg(new Argument(arg)) {}
-  //! construct fact from string
+  //! Construct a fact from argument (deep copy)
+  //! Does not check if argument has variables or not
+  //!
+  //! \param arg Argument to copy
+  //!
+  //!
+  Fact(const Argument& arg)
+    : arg(new Argument(arg)) {}
+
+  //! Construct fact from string
+  //!
+  //! \param str string representation of fact
+  //! \param symbol_table SymbolTable to encode
+  //! \param log Logging stream
+  //! \return
+  //!
+  //!
   Fact(const std::string& str,
        SymbolTable& symbol_table,
        Log log = std::cerr);
 
-  //! desctructor
+  //! destructor
   ~Fact() { delete arg; }
 
   //! copy-assignment operator
@@ -59,7 +84,13 @@ struct Fact
   //! move-assignment operator
   Fact& operator=(Fact&& f) { swap(*this, f); return *this; }
 
-
+  //! Swap function
+  //!
+  //! \param f1
+  //! \param f2
+  //! \return void
+  //!
+  //!
   friend void swap(Fact& f1, Fact& f2)
   {
     using std::swap;
@@ -70,35 +101,49 @@ struct Fact
   }
 
   //! Assign location to this fact
-  void AddLocation(const location_type& l)
+  //!
+  //! \param l Location object to assign
+  //! \return void
+  //!
+  //!
+  void AddLocation(const Location& l)
   {
     isLocation = true;
     loc = Location(l);
   }
 
-  //! get command name of this fact
-  const std::string& Command() const { return arg->val; }
-
-  //! get arguments of this fact
+  //! Get arguments of this fact
+  //!
+  //! \return const std::vector<Argument*>&
+  //!
+  //!
   const std::vector<Argument*>& Arguments() const { return arg->args; }
 
   //! comparison operators
   bool operator==(const Fact& fact) const;
+  //! comparison operators
   bool operator!=(const Fact& fact) const { return !(*this == fact); }
 
+  //! Returns string representation of this fact using the symbol table
+  //! This function is used by SymbolDecodeStream to print Fact
+  //!
+  //! \param symbol_table const SymbolTable&
+  //! \return std::string
+  //!
+  //! @see SymbolDecodeStream
+  //!
   std::string DecodeToString(const SymbolTable& symbol_table) const
   {
     return arg->DecodeToString(symbol_table);
   }
 
-  //! fact as argument
+  //! fact is represented as argument
   Argument* arg;
-
   //! is location assigned
   bool isLocation;
   //! location value
   Location loc;
-}; // class Fact
+}; // struct Fact
 
 }; // namespace core
 }; // namespace libgdl

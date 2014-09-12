@@ -44,7 +44,7 @@ struct Argument
   Argument()
     : t(Relation), val("") {}
 
-  //! Copy constructor
+  //! Copy constructor(deep copy)
   //! Does not throw any exception, can be used by stl wrappers
   //!
   //! \param arg Argument to copy

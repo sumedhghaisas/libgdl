@@ -35,7 +35,7 @@ Clause::Clause(const std::string& str,
       (Argument::ConstructArgument(args[i], v_map, symbol_table, true, log));
 }
 
-Clause::Clause(const Clause& c)
+Clause::Clause(const Clause& c) noexcept
 {
   std::map<std::string, Argument*> v_map;
 
