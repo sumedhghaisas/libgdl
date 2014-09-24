@@ -28,7 +28,8 @@ namespace core
 class RawDGraph
 {
  public:
-  RawDGraph() : current_id(0) {}
+  RawDGraph()
+    : count(0u), current_id(0) {}
 
   ~RawDGraph();
 

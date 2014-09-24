@@ -12,6 +12,7 @@ using namespace libgdl::core;
 using namespace libgdl::gdlparser::parser;
 
 RawSymbolTable::RawSymbolTable()
+  : count(0u)
 {
   index = 0;
 

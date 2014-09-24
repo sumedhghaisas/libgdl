@@ -497,8 +497,8 @@ static yyconst flex_int16_t yy_chk[53] =
 
 static yyconst flex_int16_t yy_rule_linenum[12] =
     {   0,
-       66,   70,   74,   78,   82,   86,   92,   97,  102,  108,
-      113
+       66,   70,   74,   78,   82,   86,   93,   98,  103,  109,
+      114
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -872,11 +872,12 @@ YY_RULE_SETUP
   yylval->stringVal = new std::string(yytext, yyleng);
   std::string comment(yytext);
   if(comment.find("#line")!= std::string::npos) return token::HLINE;
+  else delete yylval->stringVal;
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 92 "kif_scanner.ll"
+#line 93 "kif_scanner.ll"
 {
   yylval->num = atoi(yytext);
   return token::NUMBER;
@@ -884,7 +885,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 97 "kif_scanner.ll"
+#line 98 "kif_scanner.ll"
 {
   yylval->stringVal = new std::string(yytext, yyleng);
   return token::VARIABLE;
@@ -892,7 +893,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 102 "kif_scanner.ll"
+#line 103 "kif_scanner.ll"
 {
   yylval->stringVal = new std::string(yytext, yyleng);
   return token::ID;
@@ -901,7 +902,7 @@ YY_RULE_SETUP
 /* gobble up white-spaces */
 case 10:
 YY_RULE_SETUP
-#line 108 "kif_scanner.ll"
+#line 109 "kif_scanner.ll"
 {
   yylloc->step();
 }
@@ -910,17 +911,17 @@ YY_RULE_SETUP
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 113 "kif_scanner.ll"
+#line 114 "kif_scanner.ll"
 {
   yylloc->lines(yyleng); yylloc->step();
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 117 "kif_scanner.ll"
+#line 118 "kif_scanner.ll"
 ECHO;
 	YY_BREAK
-#line 924 "lex.yy.cc"
+#line 925 "lex.yy.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1969,7 +1970,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 117 "kif_scanner.ll"
+#line 118 "kif_scanner.ll"
 
 
 

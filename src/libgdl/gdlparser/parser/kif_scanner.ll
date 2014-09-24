@@ -87,6 +87,7 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
   yylval->stringVal = new std::string(yytext, yyleng);
   std::string comment(yytext);
   if(comment.find("#line")!= std::string::npos) return token::HLINE;
+  else delete yylval->stringVal;
 }
 
 [0-9]+ {

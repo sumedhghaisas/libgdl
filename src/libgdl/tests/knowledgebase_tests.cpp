@@ -139,6 +139,8 @@ BOOST_AUTO_TEST_CASE(KBFunctionTest)
   
   list<Argument*> result = kb.Ask("(test ?x)");
   if(result.size() != 1) MARK_FAIL;
+  for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
+    delete *it;
   MARK_END;
 }
 
@@ -176,6 +178,8 @@ BOOST_AUTO_TEST_CASE(Question1Test)
     if(**result.begin() != Argument("(engineer bajaj)", 
                                     test.GetSymbolTable(), 
                                     true, TEST_LOG)) MARK_FAIL;
+    for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
+      delete *it;
     MARK_END;
 }
 
@@ -195,6 +199,8 @@ BOOST_AUTO_TEST_CASE(Question2Test)
     if(**result.begin() != Argument("(married cam carrie)",
                                     test.GetSymbolTable(),
                                     true, TEST_LOG)) MARK_FAIL;
+    for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
+      delete *it;
     MARK_END;
 }
 
