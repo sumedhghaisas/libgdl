@@ -2,7 +2,7 @@
  * @file log.hpp
  * @author Sumedh Ghaisas
  *
- * Definition of the Log class.
+ * Declaration of Log.
  */
 #ifndef __LIBGDL_CORE_UTIL_LOG_HPP
 #define __LIBGDL_CORE_UTIL_LOG_HPP
@@ -15,7 +15,7 @@
 #include "prefixedoutstream.hpp"
 #include "nulloutstream.hpp"
 
-// Color code escape sequences
+//! Color code escape sequences
 #define BASH_RED "\033[0;31m"
 #define BASH_GREEN "\033[0;32m"
 #define BASH_YELLOW "\033[0;33m"
@@ -24,6 +24,7 @@
 
 namespace libgdl
 {
+
 /**
  * Provides a convenient way to give formatted output.
  *
@@ -61,6 +62,11 @@ namespace libgdl
 class Log
 {
  public:
+  //! Constructs Logging stream from output stream
+  //!
+  //! \param std::cout std::ostream& stream=
+  //!
+  //!
   Log(std::ostream& stream = std::cout)
     :
 #ifdef DEBUG
@@ -81,13 +87,34 @@ class Log
   {
   }
 
-  /**
-   * Checks if the specified condition is true.
-   * If not, halts program execution and prints a custom error message.
-   * Does nothing in non-debug mode.
-   */
+  //! Checks if the specified condition is true.
+  //! If not, halts program execution and prints a custom error message.
+  //! Does nothing in non-debug mode.
+  //!
+  //!
+  //! \param condition Condition to check
+  //! \param message Message to be shown if the condition fails
+  //! \return
+  //!
+  //!
   static void Assert(bool condition,
                      const std::string& message = "Assert Failed.");
+
+  //! Set output stream
+  //!
+  //! \param stream Output stream to be used by the logging stream
+  //! \return void
+  //!
+  //!
+  void SetStream(std::ostream& stream)
+  {
+#ifdef DEBUG
+    Debug.SetStream(stream);
+#endif
+    Info.SetStream(stream);
+    Warn.SetStream(stream);
+    Fatal.SetStream(stream);
+  }
 
   // We only use PrefixedOutStream if the program is compiled with debug
   // symbols.
@@ -108,18 +135,8 @@ class Log
 
   //! Prints fatal messages prefixed with [FATAL], then terminates the program.
   util::PrefixedOutStream Fatal;
-
-  void SetStream(std::ostream& stream)
-  {
-#ifdef DEBUG
-    Debug.SetStream(stream);
-#endif
-    Info.SetStream(stream);
-    Warn.SetStream(stream);
-    Fatal.SetStream(stream);
-  }
-};
+}; // class Log
 
 }; //namespace libgdl
 
-#endif
+#endif // __LIBGDL_CORE_UTIL_LOG_HPP

@@ -26,14 +26,10 @@ namespace util
 class NullOutStream
 {
  public:
-  /**
-   * Does nothing.
-   */
+  //! Empty constructor
   NullOutStream() { }
 
-  /**
-   * Does nothing.
-   */
+  //! Does nothing
   NullOutStream(const NullOutStream& /* other */) { }
 
   //! Does nothing.
@@ -49,7 +45,7 @@ class NullOutStream
   //! Does nothing.
   template<typename T>
   NullOutStream& operator<<(const T&) { return *this; }
-};
+}; // class NullOutStream
 
 } // namespace util
 } // namespace libgdl

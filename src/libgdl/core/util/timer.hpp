@@ -2,7 +2,7 @@
  * @file timer.hpp
  * @author Sumedh Ghaisas
  *
- * Declaration of timer function.
+ * Declaration and implementation of timer function.
  */
 
 #ifndef LIBGDL_CORE_UTIL_TIMER_HPP_INCLUDED
@@ -15,11 +15,11 @@
 namespace libgdl
 {
 
-/** Returns the time in microseconds
- *
- * \return time in microseconds
- *
- */
+//! Returns the time in microseconds
+//!
+//! \return uint64_t Time in microseconds
+//!
+//!
 inline uint64_t microtimer()
 {
   timeval t;

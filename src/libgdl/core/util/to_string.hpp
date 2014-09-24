@@ -15,7 +15,14 @@
 namespace libgdl
 {
 
-//! Call std::string() if implemented
+//! This version of ToString is activated only when the class of the value(which
+//! is deduced through template substitution) implements std::string() operator.
+//!
+//! \tparam T Type of the value to be printed
+//! \param s Value to be printed
+//! \return
+//!
+//!
 template<typename T> std::string
 ToString(const T& s,
          typename boost::enable_if<sfinae::SupportsStringOperator<T> >::type* = 0)
@@ -23,6 +30,15 @@ ToString(const T& s,
   return std::string(s);
 }
 
+//! This version of ToString is activated only when the class of the value(which
+//! is deduced through template substitution) DOES NOT implements
+//! std::string() operator.
+//!
+//! \tparam T Type of the value to be printed
+//! \param s Value to be printed
+//! \return
+//!
+//!
 template<typename T> std::string
 ToString(const T& s,
          typename boost::disable_if<sfinae::SupportsStringOperator<T> >::type* = 0)
@@ -32,7 +48,6 @@ ToString(const T& s,
   return stream.str();
 }
 
-}
-
+}; // namespace libgdl
 
 #endif // _LIBGDL_CORE_UTIL_TO_STRING_HPP_INCLUDED

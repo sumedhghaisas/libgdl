@@ -8,7 +8,6 @@
 #define _LIBGDL_CORE_UTIL_SETOP_HPP_INCLUDED
 
 #include <set>
-#include <string>
 #include <algorithm>
 
 namespace libgdl
@@ -24,6 +23,7 @@ class setop
  public:
   //! Returns the intersection of set a and b
   //!
+  //! \tparam T Type used in the set
   //! \param a const set&
   //! \param b const set&
   //! \return intersection of a and b
@@ -40,6 +40,7 @@ class setop
 
   //! Returns the union of set a and b
   //!
+  //! \tparam T Type used in the set
   //! \param a const set&
   //! \param b const set&
   //! \return set union
@@ -56,6 +57,7 @@ class setop
 
   //! checks whether a is a subset of b
   //!
+  //! \tparam T Type used in the set
   //! \param a const set&
   //! \param b const set&
   //! \return bool
@@ -69,6 +71,7 @@ class setop
 
   //! Returns set difference
   //!
+  //! \tparam T Type used in the set
   //! \param a const set&
   //! \param b const set&
   //! \return set difference
@@ -82,7 +85,7 @@ class setop
                         std::inserter(difference,difference.begin()));
     return difference;
   }
-}; // class SetOp
+}; // class setop
 
 }; // namespace util
 }; // namespace libgdl

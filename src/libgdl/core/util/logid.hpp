@@ -7,12 +7,15 @@
 #ifndef __LIBGDL_CORE_UTIL_LOGID_HPP_INCLUDED
 #define __LIBGDL_CORE_UTIL_LOGID_HPP_INCLUDED
 
+#include <string>
 #include <sstream>
 
-/// Caller for format_long
-#define LOGIDXL libgdl::util::Logid::format_long (__FILE__, __LINE__, __PRETTY_FUNCTION__)
-/// Caller for format_short
-#define LOGID libgdl::util::Logid::format_short  (__FILE__, __LINE__, __PRETTY_FUNCTION__)
+//! Caller for format_long
+#define LOGIDXL                                                               \
+    libgdl::util::Logid::format_long(__FILE__, __LINE__, __PRETTY_FUNCTION__)
+//! Caller for format_short
+#define LOGID                                                                 \
+    libgdl::util::Logid::format_short(__FILE__, __LINE__, __PRETTY_FUNCTION__)
 
 namespace libgdl
 {
@@ -30,32 +33,43 @@ namespace util
  */
 class Logid
 {
-public:
-    /// Does a format like
-    /// /home/nos/coding/cg_beleg/TetraViewer2/bindebug/build_dir/fine_drawer.cpp:47
-    /// virtual void fine_drawer::render()
-    static std::string format_long (const char * filename,
-                                    int line,
-                                    const char * function)
-    {
-        std::ostringstream os;
-        os << filename << ":" << line << " " << function << " ";
-        return os.str ();
-    }
+ public:
+  //! retruns a format like
+  //! /path/test.cpp:47 TestFun
+  //!
+  //! \param filename Pointer to the filename
+  //! \param line Line number
+  //! \return std::string
+  //!
+  //!
+  static std::string format_long(const char * filename,
+                                 int line,
+                                 const char * function)
+  {
+    std::ostringstream os;
+    os << filename << ":" << line << " " << function << " ";
+    return os.str ();
+  }
 
-    /// Throws away filename/line number
-    /// Looks like virtual void fine_drawer::render()
-    static std::string format_short (const char * filename,
-                                     int line,
-                                     const char * function)
-    {
-        (void)function; // to remove unused warning
-        std::ostringstream os;
-        os << filename << "(" << line << "): ";
-        return os.str ();
-    }
-
-};
+  //! Throws away filename/line number
+  //! Returns format like
+  //! TestFun
+  //!
+  //! \param filename Pointer to the filename
+  //! \param line Line number
+  //! \return std::string
+  //!
+  //!
+  static std::string format_short(const char * filename,
+                                  int line,
+                                  const char * function)
+  {
+    (void)function; // to remove unused warning
+    std::ostringstream os;
+    os << filename << "(" << line << "): ";
+    return os.str ();
+  }
+}; // class Logid
 
 }; // namespace util
 }; // namespace libgdl

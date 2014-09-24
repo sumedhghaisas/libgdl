@@ -47,12 +47,12 @@ namespace util
 class PrefixedOutStream
 {
  public:
-  /**
-   * Set up the PrefixedOutStream.
-   *
-   * @param destination ostream which receives output from this object.
-   * @param prefix The prefix to prepend to each line.
-   */
+  //!
+  //! Set up the PrefixedOutStream.
+  //!
+  //! @param destination Output stream which receives output from this object.
+  //! @param prefix The prefix to prepend to each line.
+  //!
   PrefixedOutStream(std::ostream& destination,
                     const std::string& prefix = "",
                     bool ignoreInput = false) :
@@ -77,8 +77,11 @@ class PrefixedOutStream
   template<typename T>
   PrefixedOutStream& operator<<(const T& s);
 
+  //! Get output stream
   const std::ostream& Stream() { return *destination; }
+  //! Set output stream
   std::ostream& Stream() const { return *destination; }
+  //! Set output stream
   void SetStream(std::ostream& stream) { destination = &stream; }
 
  private:
@@ -88,19 +91,16 @@ class PrefixedOutStream
   //! Discards input, prints nothing if true.
   bool ignoreInput;
 
-  /**
-   * @brief Conducts the base logic required in all the operator << overloads.
-   *   Mostly just a good idea to reduce copy-pasta.
-   *
-   * @tparam T The type of the data to output.
-   * @param val The The data to be output.
-   */
+  //! Conducts the base logic required in all the operator << overloads.
+  //! Mostly just a good idea to reduce copy-pasta.
+  //!
+  //! @tparam T The type of the data to output.
+  //! @param val The data to be output.
+  //!
   template<typename T>
   void BaseLogic(const T& val);
 
-  /**
-   * Output the prefix, but only if we need to and if we are allowed to.
-   */
+  //! Output the prefix, but only if we need to and if we are allowed to.
   inline void PrefixIfNeeded();
 
   //! Contains the prefix we must prepend to each line.
@@ -109,7 +109,7 @@ class PrefixedOutStream
   //! If true, the previous call to operator<< encountered a CR, and a prefix
   //! will be necessary.
   bool carriageReturned;
-};
+}; // class PrefixedOutStream
 
 }; // namespace util
 }; // namespace libgdl
