@@ -100,7 +100,7 @@ if (DOXYGEN_FOUND)
   )
 
   install(DIRECTORY ${CMAKE_BINARY_DIR}/doc/html
-      DESTINATION share/doc/mlpack
+      DESTINATION share/doc/libgdl
       COMPONENT doc
       OPTIONAL
   )

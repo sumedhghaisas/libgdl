@@ -17,6 +17,13 @@ namespace libgdl
 namespace core
 {
 
+/**
+ * VariableMap represents variable(Argument*, as each variable is given an
+ * unique memory location) to variable(Argument*) mapping. VariableMap is used
+ * extensively in the process of unification and backchaining.
+ *
+ * @see Unify, KnowledgeBase
+ */
 typedef std::map<const Argument*, const Argument*> VariableMap;
 
 }; // namespace core

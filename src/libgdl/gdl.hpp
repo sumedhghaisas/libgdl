@@ -162,7 +162,7 @@ private:
 
 inline void GDL::ApplyState(const State& state)
 {
-  const std::list<Argument*>& facts = state.Facts();
+  const std::list<Argument*>& facts = state.GetProps();
   for(std::list<Argument*>::const_iterator it = facts.begin();it != facts.end();
                                                                           it++)
   {

@@ -20,36 +20,35 @@ namespace core
 
 /**
  * Represents dependency graph node.
- * Graph is stored as adjecency list. Each Node stores out degree.
- * Edge also carries extra information like edge type, location and index
- * of the rule where this dependency is observed.
- * Carries extra variables for Targan's algorithm for obtaining
- * strongly connected components.
+ * Graph is stored as adjacency list. Each Node stores out edges and in edges.
+ * Each edge also carries extra information like edge type(negative or positive),
+ * location where the dependency is observed(pointer to the clause).
  *
- * @see KIFDriver
+ * @see DGraph, KIF
  */
 struct DGraphNode
 {
-  //! constructor
+  //! Empty constructor
   DGraphNode(size_t id)
     : id(id), index(-1), low_link(-1) {}
 
-  //! symbol table id
+  //! SymbolTable ID
   size_t id;
-  //! out edges from this node
+  //! Out edges from this node
   std::vector<DGraphNode*> out;
-  //! in edges
+  //! In edges
   std::vector<DGraphNode*> in;
-  //! clause number associated out edge
+  //! Pointer to clauses associated with out edges
   std::vector<const Clause*> clauses;
-  //! argument of out edge
+  //! Pointer to argument associated with out edge
   std::vector<const Argument*> args;
   //! edge type associated with every out edge
   //! If true then its a negative dependency
   std::vector<bool> isNot;
 
-  //! extra variables for Tarjan's algorithm
+  //! Extra variable for Tarjan's algorithm
   int index;
+  //! Extra variable for Tarjan's algorithm
   int low_link;
 }; // struct DGraphNode
 

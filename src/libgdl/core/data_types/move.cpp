@@ -30,14 +30,14 @@ Move::Move(const std::vector<Argument*>& m)
   }
 }
 
-Move::Move(const Move& m)
+Move::Move(const Move& m) noexcept
 {
   for(size_t i = 0;i < m.moves.size();i++)
     moves.push_back(new Argument(*m.moves[i]));
   hash = m.hash;
 }
 
-Move::Move(Move&& m)
+Move::Move(Move&& m) noexcept
 {
   moves = m.moves;
   hash = m.hash;

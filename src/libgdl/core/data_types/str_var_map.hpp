@@ -1,8 +1,8 @@
 /**
- * @file variable_map.hpp
+ * @file str_var_map.hpp
  * @author Sumedh Ghaisas
  *
- * Declaration of VariableMap.
+ * Declaration of StrVarMap.
  */
 #ifndef _LIBGDL_CORE_DATATYPES_VARIABLE_MAP_HPP_INCLUDED
 #define _LIBGDL_CORE_DATATYPES_VARIABLE_MAP_HPP_INCLUDED
@@ -18,6 +18,13 @@ namespace core
 
 class Argument;
 
+/**
+ * StrVarMap represents string to variable (Argument*) map which is used in
+ * creating clauses where a each variable is assigned a unique Argument* or
+ * in other words unique memory location.
+ *
+ * @see Argument, Clause, VariableMap
+ */
 typedef std::map<std::string, Argument*> StrVarMap;
 
 }; // namespace core

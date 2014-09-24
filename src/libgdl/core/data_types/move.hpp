@@ -55,14 +55,14 @@ struct Move
   //! \param m Move to copy from
   //!
   //!
-  Move(const Move& m);
+  Move(const Move& m) noexcept;
 
   //! Move-constructor
   //!
   //! \param m Move to move from
   //!
   //!
-  Move(Move&& m);
+  Move(Move&& m) noexcept;
 
   //! Destructor
   ~Move();
