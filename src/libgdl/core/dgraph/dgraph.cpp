@@ -16,7 +16,7 @@ using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
 
-DGraph::~DGraph()
+RawDGraph::~RawDGraph()
 {
   for(map<size_t, DGraphNode*>::iterator it = graph.begin();it != graph.end();
                                                                           it++)
@@ -25,7 +25,7 @@ DGraph::~DGraph()
   }
 }
 
-bool DGraph::AddNode(size_t id)
+bool RawDGraph::AddNode(size_t id)
 {
   map<size_t, DGraphNode*>::const_iterator it = graph.find(id);
 
@@ -34,11 +34,11 @@ bool DGraph::AddNode(size_t id)
   return true;
 }
 
-bool DGraph::AddDependency(size_t h,
-                           size_t r,
-                           const Clause* c,
-                           const Argument* arg,
-                           bool isNot)
+bool RawDGraph::AddDependency(size_t h,
+                              size_t r,
+                              const Clause* c,
+                              const Argument* arg,
+                              bool isNot)
 {
   map<size_t, DGraphNode*>::iterator it = graph.find(h);
 
@@ -63,10 +63,10 @@ bool DGraph::AddDependency(size_t h,
   return true;
 }
 
-void DGraph::StrongConnect(DGraphNode* v,
-                           stack<DGraphNode*>& nstack,
-                           set<DGraphNode*>& nset,
-                           vector<set<DGraphNode*> >& scc)
+void RawDGraph::StrongConnect(DGraphNode* v,
+                              stack<DGraphNode*>& nstack,
+                              set<DGraphNode*>& nset,
+                              vector<set<DGraphNode*> >& scc)
 {
   //! Tarjan's Strongly Connected Component Algorithm
   v->index = current_id;
@@ -105,7 +105,7 @@ void DGraph::StrongConnect(DGraphNode* v,
   }
 }
 
-list<ErrorType> DGraph::CheckCycles(const SymbolTable& symbol_table)
+list<ErrorType> RawDGraph::CheckCycles(const SymbolTable& symbol_table)
 {
   list<ErrorType> errors;
 
@@ -183,7 +183,7 @@ list<ErrorType> DGraph::CheckCycles(const SymbolTable& symbol_table)
   return errors;
 }
 
-list<ErrorType> DGraph::CheckRecursiveDependencies()
+list<ErrorType> RawDGraph::CheckRecursiveDependencies()
 {
   list<ErrorType> errors;
 
@@ -303,11 +303,11 @@ list<ErrorType> DGraph::CheckRecursiveDependencies()
   return errors;
 }
 
-void DGraph::CheckDef15(const Clause* clause,
-                        const Argument* arg,
-                        const set<DGraphNode*>& scc,
-                        const SymbolTable& symbol_table,
-                        list<ErrorType>& errors)
+void RawDGraph::CheckDef15(const Clause* clause,
+                            const Argument* arg,
+                            const set<DGraphNode*>& scc,
+                            const SymbolTable& symbol_table,
+                            list<ErrorType>& errors)
 {
   const Clause& c = *clause;
 
@@ -358,10 +358,11 @@ void DGraph::CheckDef15(const Clause* clause,
 
   if(!isValid)
   {
-    std::stringstream stream;
+    std::stringstream s;
+    SymbolDecodeStream stream(&symbol_table, s);
     stream << *arg->args[invalid_index];
     ErrorType error;
-    error.AddEntry("Recursion restriction violated for argument " + stream.str(),
+    error.AddEntry("Recursion restriction violated for argument " + s.str(),
                    c.loc);
     error.AddEntry("Relation involved in the cycle is '" +
                    symbol_table.GetCommandName(arg->value) + "'", c.loc);
@@ -369,7 +370,7 @@ void DGraph::CheckDef15(const Clause* clause,
   }
 }
 
-std::string DGraph::DecodeToString(const SymbolTable& symbol_table) const
+std::string RawDGraph::DecodeToString(const SymbolTable& symbol_table) const
 {
   stringstream s;
   s << "digraph dependency_graph {" << endl;

@@ -38,7 +38,7 @@ KnowledgeBase::KnowledgeBase(gdlparser::KIF& kif, const Log& log)
 }
 
 std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,
-                                        bool checkForDoubles) const
+                                        bool checkForDoubles)
 {
   std::list<Argument*> out;
 
@@ -77,9 +77,9 @@ std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,
 }
 
 std::list<Argument*> KnowledgeBase::Ask(const std::string& s_arg,
-                                        bool checkForDoubles) const
+                                        bool checkForDoubles)
 {
-  Argument arg(s_arg, *symbol_table, true, log);
+  Argument arg(s_arg, symbol_table, true, log);
 
   std::list<Argument*> out;
 
@@ -117,7 +117,7 @@ std::list<Argument*> KnowledgeBase::Ask(const std::string& s_arg,
   return out;
 }
 
-bool KnowledgeBase::IsSatisfiable(const Argument& arg) const
+bool KnowledgeBase::IsSatisfiable(const Argument& arg)
 {
   // get answer
   Answer *ans = GetAnswer(arg, VariableMap(), std::set<size_t>());
@@ -127,9 +127,9 @@ bool KnowledgeBase::IsSatisfiable(const Argument& arg) const
   return res;
 }
 
-bool KnowledgeBase::IsSatisfiable(const std::string& s_arg) const
+bool KnowledgeBase::IsSatisfiable(const std::string& s_arg)
 {
-  Argument arg(s_arg, *symbol_table, true, log);
+  Argument arg(s_arg, symbol_table, true, log);
   // get answer
   Answer *ans = GetAnswer(arg, VariableMap(), std::set<size_t>());
   // return if any valid substitution exists
@@ -193,9 +193,9 @@ size_t KnowledgeBase::Tell(const std::string& str)
     log.Fatal << "Unable to construct argument from " << str << std::endl;
     return 0;
   }
-  else if(cmd != "<=") return Tell(Fact(str, *symbol_table, log));
+  else if(cmd != "<=") return Tell(Fact(str, symbol_table, log));
 
-  return Tell(Clause(str, *symbol_table, log));
+  return Tell(Clause(str, symbol_table, log));
 }
 
 bool KnowledgeBase::Erase(const Clause& c, size_t index)
@@ -292,7 +292,7 @@ Answer* KnowledgeBase::GetAnswer(const Argument& question,
 
 std::ostream& operator<<(std::ostream& stream, const KnowledgeBase& kb)
 {
-  SymbolDecodeStream o(kb.GetSymbolTable(), stream);
+  SymbolDecodeStream o(&kb.GetSymbolTable(), stream);
 
   const KnowledgeBase::FactMap& all_facts = kb.GetAllFacts();
   const KnowledgeBase::ClauseMap& all_clauses = kb.GetAllClauses();

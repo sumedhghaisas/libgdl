@@ -88,11 +88,8 @@ class KIF
     facts.clear();
     clauses.clear();
 
-    delete symbol_table;
-    delete dgraph;
-
-    symbol_table = new SymbolTable();
-    dgraph = new DGraph();
+    symbol_table = SymbolTable();
+    dgraph = DGraph();
   }
 
   //! Parse the inputs
@@ -126,20 +123,20 @@ class KIF
   const std::list<Clause> Clauses() const { return clauses; }
 
   //! get the dependency graph
-  const DGraph* DependencyGraph() const
+  const DGraph& DependencyGraph() const
   {
     return dgraph;
   }
-  DGraph*& DependencyGraph()
+  DGraph& DependencyGraph()
   {
     return dgraph;
   }
 
-  const SymbolTable* GetSymbolTable() const
+  const SymbolTable& GetSymbolTable() const
   {
     return symbol_table;
   }
-  SymbolTable*& GetSymbolTable()
+  SymbolTable& GetSymbolTable()
   {
     return symbol_table;
   }
@@ -204,9 +201,9 @@ class KIF
   std::list<ErrorType> errors;
   std::list<ErrorType> warnings;
 
-  SymbolTable* symbol_table;
+  SymbolTable symbol_table;
 
-  DGraph* dgraph;
+  DGraph dgraph;
 
   bool isRole;
   bool isLegal;

@@ -46,22 +46,22 @@ KIFDriver::~KIFDriver()
     delete *it;
 }
 
-const SymbolTable* KIFDriver::GetSymbolTable() const
+const SymbolTable& KIFDriver::GetSymbolTable() const
 {
   return kif.symbol_table;
 }
 
-SymbolTable* KIFDriver::GetSymbolTable()
+SymbolTable& KIFDriver::GetSymbolTable()
 {
   return kif.symbol_table;
 }
 
-const DGraph* KIFDriver::GetDGraph() const
+const DGraph& KIFDriver::GetDGraph() const
 {
   return kif.dgraph;
 }
 
-DGraph* KIFDriver::GetDGraph()
+DGraph& KIFDriver::GetDGraph()
 {
   return kif.dgraph;
 }

@@ -62,16 +62,16 @@ class KnowledgeBase
 
   //! constructs empty knowledge base
   KnowledgeBase(const Log& log = std::cout)
-    : c_id(0), symbol_table(new SymbolTable()), log(log) {}
+    : c_id(0), log(log) {}
   //! construct knowledge base with knowledge from KIF object
   KnowledgeBase(gdlparser::KIF& kif, const Log& log = std::cout);
 
   //! Asks knowledge base given question
   //! returns list of answers
   std::list<Argument*> Ask(const Argument& question,
-                           bool checkForDoubles = true) const;
+                           bool checkForDoubles = true);
   std::list<Argument*> Ask(const std::string&,
-                           bool checkForDoubles = true) const;
+                           bool checkForDoubles = true);
 
   //! get the answer to the question than substitutions
   Answer* GetAnswer(const Argument& question,
@@ -79,9 +79,9 @@ class KnowledgeBase
                     const std::set<size_t>& visited) const;
 
   //! returns if the question is satisfiable
-  bool IsSatisfiable(const Argument& question) const;
+  bool IsSatisfiable(const Argument& question);
   //! returns if the question is satisfiable
-  bool IsSatisfiable(const std::string& question) const;
+  bool IsSatisfiable(const std::string& question);
 
   //! adds given knowledge to knowledge base
   //! re                                                                                                                                                turns index of this clause in the list
@@ -117,11 +117,11 @@ class KnowledgeBase
   //! returns all the clauses in the knowledgebase in stored form
   const ClauseMap& GetAllClauses() const { return m_clauses; }
 
-  const SymbolTable* GetSymbolTable() const
+  const SymbolTable& GetSymbolTable() const
   {
     return symbol_table;
   }
-  SymbolTable*& GetSymbolTable()
+  SymbolTable& GetSymbolTable()
   {
     return symbol_table;
   }
@@ -138,7 +138,7 @@ class KnowledgeBase
   //! clause id to assign to new clauses
   size_t c_id;
 
-  SymbolTable* symbol_table;
+  SymbolTable symbol_table;
 
   //! logging stream
   mutable Log log;

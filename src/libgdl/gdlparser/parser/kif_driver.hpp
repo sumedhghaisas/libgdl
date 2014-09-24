@@ -63,11 +63,11 @@ class KIFDriver
   //! method to start the parsing
   bool Parse();
 
-  const SymbolTable* GetSymbolTable() const;
-  SymbolTable* GetSymbolTable();
+  const SymbolTable& GetSymbolTable() const;
+  SymbolTable& GetSymbolTable();
 
-  const DGraph* GetDGraph() const;
-  DGraph* GetDGraph();
+  const DGraph& GetDGraph() const;
+  DGraph& GetDGraph();
 
   void Error(const ErrorType& error);
 

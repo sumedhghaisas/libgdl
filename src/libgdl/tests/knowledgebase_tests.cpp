@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(EraseTest)
 	KnowledgeBase kb(TEST_LOG);
 	kb.Tell("(<= (test ?x) (test2 ?x))");
 	size_t f_i = kb.Tell("(test2 1)");
-	kb.Erase(Fact("(test2 1)", *kb.GetSymbolTable(), TEST_LOG), f_i);
+	kb.Erase(Fact("(test2 1)", kb.GetSymbolTable(), TEST_LOG), f_i);
 	std::list<Argument*> result;
 	if((result = kb.Ask("(test ?x)")).size() != 0) MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(Question1Test)
     list<Argument*> result = test.Ask("(engineer ?x)");
     if(result.size() != 1) MARK_FAIL;
     if(**result.begin() != Argument("(engineer bajaj)", 
-                                    *test.GetSymbolTable(), 
+                                    test.GetSymbolTable(), 
                                     true, TEST_LOG)) MARK_FAIL;
     MARK_END;
 }
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(Question2Test)
     list<Argument*> result = test.Ask("(married cam ?x)");
     if(result.size() != 1) MARK_FAIL;
     if(**result.begin() != Argument("(married cam carrie)",
-                                    *test.GetSymbolTable(),
+                                    test.GetSymbolTable(),
                                     true, TEST_LOG)) MARK_FAIL;
     MARK_END;
 }

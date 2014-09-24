@@ -44,7 +44,7 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
                            StrVarMap& v_map,
                            const Location& command_loc)
 {
-  SymbolTable* symbol_table = driver.GetSymbolTable();
+  SymbolTable symbol_table = driver.GetSymbolTable();
 
   Argument* head;
   if(!command->CodeGen(head, driver, v_map))
@@ -132,7 +132,7 @@ does not appear in any positive body.", command_loc);
 
   const Clause& cl = driver.AddClause(std::move(c));
 
-  core::DGraph& graph = *driver.GetDGraph();
+  core::DGraph& graph = driver.GetDGraph();
   graph.AddNode(head->value);
 
   for(size_t i = 0;i < cl.premisses.size();i++)

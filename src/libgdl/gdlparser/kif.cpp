@@ -26,9 +26,7 @@ KIF::KIF(bool isWarn,
          const Log& log)
   : log(log), isWarn(isWarn),
     o_level(o_level),
-    driver(*this),
-    symbol_table(new SymbolTable()),
-    dgraph(new DGraph())
+    driver(*this)
 {}
 
 bool KIF::AddFile(const std::string& filename)
@@ -50,17 +48,14 @@ bool KIF::Parse(bool ignoreErrors)
   errors.clear();
   warnings.clear();
 
-  delete symbol_table;
-  delete dgraph;
-
-  symbol_table = new SymbolTable();
-  dgraph = new DGraph();
+  symbol_table = SymbolTable();
+  dgraph = DGraph();
 
   bool res = driver.Parse();
 
   if(res)
   {
-    list<ErrorType> e = dgraph->CheckCycles(*symbol_table);
+    list<ErrorType> e = dgraph.CheckCycles(symbol_table);
     for(list<ErrorType>::iterator it = e.begin();it != e.end();it++)
       errors.push_back(*it);
     e = dgraph->CheckRecursiveDependencies();
@@ -111,8 +106,6 @@ bool KIF::Parse(bool ignoreErrors)
 
 KIF::~KIF()
 {
-  delete symbol_table;
-  delete dgraph;
 }
 
 bool KIF::PrintDependencyGraph(const string& filename) const
@@ -125,7 +118,7 @@ bool KIF::PrintDependencyGraph(const string& filename) const
     return false;
   }
 
-  core::SymbolDecodeStream stream(symbol_table, util::PrefixedOutStream(graph));
+  core::SymbolDecodeStream stream(&symbol_table, util::PrefixedOutStream(graph));
   stream << *dgraph << endl;
 
   graph.close();
@@ -142,7 +135,7 @@ bool KIF::PrintToFile(const string& filename, bool isDebuggingSymbols) const
     return false;
   }
 
-  core::SymbolDecodeStream out(symbol_table, out_p);
+  core::SymbolDecodeStream out(&symbol_table, out_p);
 
   for(list<Fact>::const_iterator it = facts.begin();it != facts.end();it++)
   {

@@ -55,7 +55,7 @@ bool FunctionPolicy::CodeGen(Argument*& out,
     return false;
   }
 
-  SymbolTable* symbol_table = driver.GetSymbolTable();
+  SymbolTable symbol_table = driver.GetSymbolTable();
   Symbol* sym;
   size_t id = symbol_table->CheckEntry(*command, sym);
   if(sym != NULL)
