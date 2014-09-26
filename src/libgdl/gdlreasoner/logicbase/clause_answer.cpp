@@ -18,7 +18,9 @@ ClauseAnswer::ClauseAnswer(const Argument& question,
                            const VariableMap& m,
                            const KnowledgeBase & kb,
                            const std::set<size_t>& v)
-    : Answer(question, m, kb, v)
+    : Answer(question, m, kb, v),
+      extra(NULL),
+      isExtra(false)
 {
   m_position = 0;
   m_onAnAnswer = false;
@@ -54,6 +56,8 @@ ClauseAnswer::~ClauseAnswer ()
 
   if(toDel_f) delete facts;
   if(toDel_c) delete clauses;
+
+  delete extra;
 }
 
 bool ClauseAnswer::next ()
@@ -95,19 +99,25 @@ bool ClauseAnswer::next ()
     // the clause against we find solutions
     const Clause& clause = *cit;
 
-    // check for infinite recursion
-    if(visited.find(clause.id) != visited.end())
-    {
-      m_position++; cit++; continue;
-    }
-
     if (m_subAnswers.empty())
     {
-      // checking the head of the clause
-      v_map = o_v_map;
-      if (Unify::mgu(question, *(clause.head), v_map))
+      const Argument* e_question = &question;
+      // check for infinite recursion
+      if(visited.find(clause.id) != visited.end())
       {
-        if (clause.premisses.empty())
+        if(extra == NULL)
+          extra = Unify::GetPartiallySubstitutedArgument(&question, o_v_map, e_map);
+        e_question = extra;
+        isExtra = true;
+        v_map = VariableMap();
+
+        std::cout << e_map << std::endl;
+      }
+      else v_map = o_v_map;
+
+      if(Unify::mgu(*e_question, *(clause.head), v_map))
+      {
+        if(clause.premisses.empty())
         {
           // clauses having no tail
           // This is very seldom; but possible, that there is no tail in the clause
@@ -121,7 +131,10 @@ bool ClauseAnswer::next ()
         sanswer.nextPremiss = clause.premisses.begin();
         sanswer.headMap = v_map;
         std::vector<Argument*>::const_iterator& current = sanswer.nextPremiss;
-        std::set<size_t>* t_visited = new std::set<size_t>(visited);
+        std::set<size_t>* t_visited;
+        if(!isExtra)
+           t_visited = new std::set<size_t>(visited);
+        else t_visited = new std::set<size_t>();
         t_visited->insert(clause.id);
         sanswer.partAnswer = kb.GetAnswer(**current, sanswer.headMap, *t_visited);
         delete t_visited;
@@ -151,17 +164,23 @@ bool ClauseAnswer::next ()
         {
           // final solution
           v_map = tail.partAnswer->GetVariableMap();
+          if(isExtra)
+          {
+            Unify::SpecialMapCompression(e_map, v_map);
+            v_map = e_map;
+          }
           return true;
         }
       }
       else
       {
         delete tail.partAnswer;
-        m_subAnswers.pop_back ();
+        m_subAnswers.pop_back();
       }
     }
     m_position++;
     cit++;
+    isExtra = false;
   }
 
   m_onAnAnswer = false;

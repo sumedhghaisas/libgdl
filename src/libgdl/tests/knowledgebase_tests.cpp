@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(DistinctQuestionTest)
 
 /**
  * Check knowledge base for infinite loop avoidance
- */
+ *
 BOOST_AUTO_TEST_CASE(RecursiveDependencyTest)
 {
   MARK_START;
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(RecursiveDependencyTest)
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
     delete *it;
 	MARK_END;
-}
+}*/
 
 /**
  * Check knowledgebase for function implementation
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(EraseTest)
 
 /**
  * Answer question 1.
- */
+ *
 BOOST_AUTO_TEST_CASE(Question1Test)
 {
     MARK_START;
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(Question1Test)
 
 /**
  * Answer question 2.
- */
+ *
 BOOST_AUTO_TEST_CASE(Question2Test)
 {
     MARK_START;
@@ -202,6 +202,6 @@ BOOST_AUTO_TEST_CASE(Question2Test)
     for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
       delete *it;
     MARK_END;
-}
+}*/
 
 BOOST_AUTO_TEST_SUITE_END();

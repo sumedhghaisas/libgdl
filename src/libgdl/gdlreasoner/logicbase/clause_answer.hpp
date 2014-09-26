@@ -70,6 +70,10 @@ class ClauseAnswer : public Answer
 
   bool toDel_f;
   bool toDel_c;
+
+  Argument* extra;
+  VariableMap e_map;
+  bool isExtra;
 }; // class ClauseAnswer
 
 }; // namespace logicbase

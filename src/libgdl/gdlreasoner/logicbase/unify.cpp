@@ -231,3 +231,59 @@ bool Unify::IsGroundQuestion(const Argument* arg, const VariableMap& v_map)
   }
   return true;
 }
+
+Argument* Unify::GetPartiallySubstitutedArgument(const Argument* arg,
+                                                 const VariableMap& o_v_map,
+                                                 VariableMap& v_map)
+{
+  Argument* out = new Argument();
+  out->t = arg->t;
+  if(arg->IsVariable())
+  {
+    const Argument* temp = arg;
+    while(o_v_map.find(temp) != o_v_map.end())
+    {
+      temp = o_v_map.find(temp)->second;
+    }
+
+    if(temp->IsVariable())
+    {
+      out->t = Argument::Var;
+      out->val = temp->val;
+      v_map[arg] = temp;
+    }
+    else
+    {
+      out->t = temp->t;
+      out->value = temp->value;
+    }
+    return out;
+  }
+
+  out->t = arg->t;
+  out->value = arg->value;
+
+  for(size_t i = 0;i < arg->args.size();i++)
+  {
+    out->args.push_back(GetPartiallySubstitutedArgument(arg->args[i],
+                                                        o_v_map,
+                                                        v_map));
+  }
+  return out;
+}
+
+void Unify::SpecialMapCompression(VariableMap& e_map,
+                                  VariableMap& v_map)
+{
+  for(VariableMap::iterator it = e_map.begin();it != e_map.end();it++)
+  {
+    const Argument* temp = it->second;
+
+    while(temp->IsVariable())
+    {
+      temp = v_map.find(temp)->second;
+    }
+
+    it->second = temp;
+  }
+}

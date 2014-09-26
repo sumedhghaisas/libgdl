@@ -69,6 +69,13 @@ public:
     static bool IsGroundQuestion(const Argument* question,
                                  const VariableMap& v_map);
 
+    static Argument* GetPartiallySubstitutedArgument(const Argument* arg,
+                                                     const VariableMap& o_v_map,
+                                                     VariableMap& v_map);
+
+    static void SpecialMapCompression(VariableMap& e_map,
+                                      VariableMap& v_map);
+
     //! perform occur check or not
     static bool doOccurCheck;
 
