@@ -238,6 +238,7 @@ Argument* Unify::GetPartiallySubstitutedArgument(const Argument* arg,
 {
   Argument* out = new Argument();
   out->t = arg->t;
+
   if(arg->IsVariable())
   {
     const Argument* temp = arg;
@@ -250,7 +251,8 @@ Argument* Unify::GetPartiallySubstitutedArgument(const Argument* arg,
     {
       out->t = Argument::Var;
       out->val = temp->val;
-      v_map[arg] = temp;
+      out->value = arg->value;
+      v_map[temp] = out;
     }
     else
     {
@@ -272,10 +274,13 @@ Argument* Unify::GetPartiallySubstitutedArgument(const Argument* arg,
   return out;
 }
 
-void Unify::SpecialMapCompression(VariableMap& e_map,
-                                  VariableMap& v_map)
+void Unify::SpecialMapCompression(VariableMap& v_map,
+                                  const VariableMap& e_map,
+                                  const VariableMap& o_v_map)
 {
-  for(VariableMap::iterator it = e_map.begin();it != e_map.end();it++)
+  v_map.clear();
+
+  for(VariableMap::const_iterator it = e_map.begin();it != e_map.end();it++)
   {
     const Argument* temp = it->second;
 
@@ -284,6 +289,11 @@ void Unify::SpecialMapCompression(VariableMap& e_map,
       temp = v_map.find(temp)->second;
     }
 
-    it->second = temp;
+    v_map[it->first] = temp;
+  }
+
+  for(VariableMap::const_iterator it = o_v_map.begin();it != o_v_map.end();it++)
+  {
+    v_map[it->first] = it->second;
   }
 }

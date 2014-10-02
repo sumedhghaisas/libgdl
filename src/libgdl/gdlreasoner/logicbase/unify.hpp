@@ -73,8 +73,9 @@ public:
                                                      const VariableMap& o_v_map,
                                                      VariableMap& v_map);
 
-    static void SpecialMapCompression(VariableMap& e_map,
-                                      VariableMap& v_map);
+    static void SpecialMapCompression(VariableMap& v_map,
+                                      const VariableMap& e_map,
+                                      const VariableMap& o_v_map);
 
     //! perform occur check or not
     static bool doOccurCheck;

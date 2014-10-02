@@ -89,7 +89,7 @@ bool ClauseAnswer::next ()
       m_isFactAnswer = true;
       return true;
     }
-    fit++;
+      fit++;
   }
 
   // after facts, search in clauses
@@ -110,8 +110,6 @@ bool ClauseAnswer::next ()
         e_question = extra;
         isExtra = true;
         v_map = VariableMap();
-
-        std::cout << e_map << std::endl;
       }
       else v_map = o_v_map;
 
@@ -166,8 +164,7 @@ bool ClauseAnswer::next ()
           v_map = tail.partAnswer->GetVariableMap();
           if(isExtra)
           {
-            Unify::SpecialMapCompression(e_map, v_map);
-            v_map = e_map;
+            Unify::SpecialMapCompression(e_map, v_map, o_v_map);
           }
           return true;
         }

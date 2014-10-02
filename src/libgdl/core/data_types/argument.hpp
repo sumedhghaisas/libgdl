@@ -288,8 +288,8 @@ inline std::ostream& operator<<(std::ostream& o,
     o << arg.value;
     return o;
   }
-  else o << "( " + arg.value;
 
+  o << "( " << arg.value << " ";
   for(size_t i = 0;i < arg.args.size();i++) o << " " << *(arg.args[i]);
   o << " " << ")";
   return o;

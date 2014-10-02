@@ -109,22 +109,25 @@ BOOST_AUTO_TEST_CASE(DistinctQuestionTest)
 }
 
 /**
- * Check knowledge base for infinite loop avoidance
- *
+ * Check knowledge base for Recursive queries
+ */
 BOOST_AUTO_TEST_CASE(RecursiveDependencyTest)
 {
   MARK_START;
   OPEN_LOG;
 	KnowledgeBase kb(TEST_LOG);
-	kb.Tell("(<= (knows ?x ?z) (knows ?x ?y) (knows ?y ?z))");
-	kb.Tell("(knows p q)");
-	kb.Tell("(knows q r)");
+	kb.Tell("(<= (ancestor ?x ?z) (parent ?x ?y) (ancestor ?y ?z))");
+	kb.Tell("(<= (ancestor ?x ?y) (parent ?x ?y))");
+	kb.Tell("(parent a b)");
+	kb.Tell("(parent b c)");
+	kb.Tell("(parent c d)");
+	kb.Tell("(parent d e)");
 	std::list<Argument*> result;
-	if((result = kb.Ask("(knows p r)")).size() != 1) MARK_FAIL;
+	if((result = kb.Ask("(ancestor ?x ?y)")).size() != 10) MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
     delete *it;
 	MARK_END;
-}*/
+}
 
 /**
  * Check knowledgebase for function implementation
@@ -164,44 +167,44 @@ BOOST_AUTO_TEST_CASE(EraseTest)
 
 /**
  * Answer question 1.
- *
+ */
 BOOST_AUTO_TEST_CASE(Question1Test)
 {
-    MARK_START;
-    OPEN_LOG;
-    KIF kif(false, 0, TEST_LOG);
-    kif.AddFile("data/questions/question1.kif");
-    if(!kif.Parse(true)) MARK_FAIL;
-    KnowledgeBase test(kif);
-    list<Argument*> result = test.Ask("(engineer ?x)");
-    if(result.size() != 1) MARK_FAIL;
-    if(**result.begin() != Argument("(engineer bajaj)", 
-                                    test.GetSymbolTable(), 
-                                    true, TEST_LOG)) MARK_FAIL;
-    for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
-      delete *it;
-    MARK_END;
+  MARK_START;
+  OPEN_LOG;
+  KIF kif(false, 0, TEST_LOG);
+  kif.AddFile("data/questions/question1.kif");
+  if(!kif.Parse(true)) MARK_FAIL;
+  KnowledgeBase test(kif);
+  list<Argument*> result = test.Ask("(engineer ?x)");
+  if(result.size() != 1) MARK_FAIL;
+  if(**result.begin() != Argument("(engineer bajaj)", 
+                                  test.GetSymbolTable(), 
+                                  true, TEST_LOG)) MARK_FAIL;
+  for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
+    delete *it;
+  MARK_END;
 }
 
 /**
  * Answer question 2.
- *
+ */
 BOOST_AUTO_TEST_CASE(Question2Test)
 {
-    MARK_START;
-    OPEN_LOG;
-    KIF kif(false, 0, TEST_LOG);
-    kif.AddFile("data/questions/question2.kif");
-    if(!kif.Parse(true)) MARK_FAIL;
-    KnowledgeBase test(kif);
-    list<Argument*> result = test.Ask("(married cam ?x)");
-    if(result.size() != 1) MARK_FAIL;
+  MARK_START;
+  OPEN_LOG;
+  KIF kif(false, 0, TEST_LOG);
+  kif.AddFile("data/questions/question2.kif");
+  if(!kif.Parse(true)) MARK_FAIL;
+  KnowledgeBase test(kif);
+  list<Argument*> result = test.Ask("(married cam ?x)");
+  if(result.size() != 1) MARK_FAIL;
     if(**result.begin() != Argument("(married cam carrie)",
                                     test.GetSymbolTable(),
                                     true, TEST_LOG)) MARK_FAIL;
-    for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
-      delete *it;
-    MARK_END;
-}*/
+  for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
+    delete *it;
+  MARK_END;
+}
 
 BOOST_AUTO_TEST_SUITE_END();
