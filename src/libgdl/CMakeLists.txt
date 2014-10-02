@@ -75,6 +75,7 @@ add_dependencies(gdl libgdl_headers)
 # For 'make test'.
 add_custom_target(test
   ${CMAKE_BINARY_DIR}/bin/libgdl_test
+  COMMAND valgrind --leak-check=full --track-origins=yes ${CMAKE_BINARY_DIR}/bin/libgdl_test --run_test=*/*Test 3>&1 2>&3 >output | tee grindout
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ # This is where test files are put.
   COMMENT "Running libgdl tests"
   DEPENDS libgdl_test)

@@ -38,7 +38,7 @@ size_t GetHash(const size_t& a)
 /**
  * Check LRUCache for cache hit.
  */
-BOOST_AUTO_TEST_CASE(LRUCacheHitTest)
+BOOST_AUTO_TEST_CASE(LRUCacheHitTest_Time)
 {
   MARK_START;
   OPEN_LOG;
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(LRUCacheHitTest)
 /**
  * Check LRUCache for cache least recently used replacement policy.
  */
-BOOST_AUTO_TEST_CASE(LRUCacheReplacementPolicyTest)
+BOOST_AUTO_TEST_CASE(LRUCacheReplacementPolicyTest_Time)
 {
   MARK_START;
   OPEN_LOG;

@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateTest)
 /**
  * Test GDL abstraction for GetNextState cache
  */
-BOOST_AUTO_TEST_CASE(GDLGetNextStateCacheTest)
+BOOST_AUTO_TEST_CASE(GDLGetNextStateCacheTest_Time)
 {
   MARK_START;
   OPEN_LOG;
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(GDLIsTerminalTest)
 /**
  * Test GDL abstraction for IsTerminal cache
  */
-BOOST_AUTO_TEST_CASE(GDLIsTerminalCacheTest)
+BOOST_AUTO_TEST_CASE(GDLIsTerminalCacheTest_Time)
 {
   MARK_START;
   OPEN_LOG;
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(GDLGetLegalMovesTest)
 /**
  * Test GDL abstraction for GetLegalMoves cache
  */
-BOOST_AUTO_TEST_CASE(GDLGetLegalMovesCacheTest)
+BOOST_AUTO_TEST_CASE(GDLGetLegalMovesCacheTest_Time)
 {
   MARK_START;
   OPEN_LOG;
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(GDLGetGoalTest)
 /**
  * Test GDL abstraction for GetGoal cache
  */
-BOOST_AUTO_TEST_CASE(GDLGetGoalCacheTest)
+BOOST_AUTO_TEST_CASE(GDLGetGoalCacheTest_Time)
 {
   MARK_START;
   OPEN_LOG;

@@ -44,6 +44,7 @@ BOOST_AUTO_TEST_CASE(MGUTest)
   
   v_map = VariableMap();
   if(!Unify::mgu(arg1, arg2, v_map)) MARK_FAIL;
+  it = v_map.begin();
   if(*it->first != *arg1.args[0]) MARK_FAIL;
   if(*it->second != *arg2.args[0]) MARK_FAIL;
   MARK_END;
@@ -93,6 +94,7 @@ BOOST_AUTO_TEST_CASE(GetSubArgTest)
   sds << *result;
   
   if(stream.str() != "( test ( test2 x ) )") MARK_FAIL;
+  delete result;
   MARK_END; 
 }
 
@@ -138,6 +140,10 @@ BOOST_AUTO_TEST_CASE(DecodeSubstitutionsTest)
   
   if(v_map.begin()->second == &arg2) MARK_FAIL;
   if(to_del.empty()) MARK_FAIL;
+  for(list<Argument*>::iterator it = to_del.begin();it != to_del.end();it++)
+  {
+    delete *it;
+  }
   MARK_END;
 }
 
