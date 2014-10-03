@@ -112,7 +112,7 @@ bool KIFDriver::Parse()
 //    // if none provided assume it to be ""
 //    i = val.find("\"");
 //    std::string filename = "";
-//    if(i != std::string::npos)
+//    if(i != std::string::npos)DGraph
 //    {
 //        j = val.find("\"", i + 1);
 //        if(j == std::string::npos) return;

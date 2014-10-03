@@ -47,9 +47,9 @@ struct DGraphNode
   std::vector<bool> isNot;
 
   //! Extra variable for Tarjan's algorithm
-  int index;
+  mutable int index;
   //! Extra variable for Tarjan's algorithm
-  int low_link;
+  mutable int low_link;
 }; // struct DGraphNode
 
 }; // namespace core

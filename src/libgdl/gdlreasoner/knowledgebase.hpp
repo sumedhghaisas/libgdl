@@ -144,7 +144,7 @@ class KnowledgeBase
   mutable Log log;
 }; // CLASS KNOWLEDGEBASE
 
-}; // namespace gdlreasoner
+}; // namespace gdlreasonerDGraph
 }; // namespace libgdl
 
 std::ostream& operator<<(std::ostream& stream,

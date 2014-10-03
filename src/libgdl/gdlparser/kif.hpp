@@ -122,12 +122,7 @@ class KIF
   std::list<Clause>& Clauses() { return clauses; }
   const std::list<Clause> Clauses() const { return clauses; }
 
-  //! get the dependency graph
-  const DGraph& DependencyGraph() const
-  {
-    return dgraph;
-  }
-  DGraph& DependencyGraph()
+  DGraph DependencyGraph()
   {
     return dgraph;
   }

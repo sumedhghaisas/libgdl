@@ -119,7 +119,7 @@ bool KIF::PrintDependencyGraph(const string& filename) const
   }
 
   core::SymbolDecodeStream stream(&symbol_table, util::PrefixedOutStream(graph));
-  stream << *dgraph << endl;
+  stream << dgraph << endl;
 
   graph.close();
 

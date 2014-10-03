@@ -84,7 +84,7 @@ class RawDGraph
   //! \return std::list<ErrorType>
   //!
   //!
-  std::list<ErrorType> CheckCycles(const SymbolTable& symbol_table);
+  std::list<ErrorType> CheckCycles(const SymbolTable& symbol_table) const;
 
   //! Checks for invalid recursive dependency
   //! For further information check GDL specs
@@ -93,7 +93,7 @@ class RawDGraph
   //! \return std::list<ErrorType>
   //!
   //!
-  std::list<ErrorType> CheckRecursiveDependencies();
+  std::list<ErrorType> CheckRecursiveDependencies() const;
 
   //! Get dependency graph
   //!
@@ -134,7 +134,7 @@ class RawDGraph
   void StrongConnect(DGraphNode* v,
                      std::stack<DGraphNode*>& nstack,
                      std::set<DGraphNode*>& nset,
-                     std::vector<std::set<DGraphNode*> >& scc);
+                     std::vector<std::set<DGraphNode*> >& scc) const;
 
   //! Check if given clause satisfies definition 15 of GDL specs.
   //!
@@ -149,13 +149,13 @@ class RawDGraph
                   const Argument* arg,
                   const std::set<DGraphNode*>& scc,
                   const SymbolTable& symbol_table,
-                  std::list<ErrorType>& errors);
+                  std::list<ErrorType>& errors) const;
 
   //! graph represented as map
   std::map<size_t, DGraphNode*> graph;
 
   //! the id to be assigned to new node
-  size_t current_id;
+  mutable size_t current_id;
 }; // class RawDGraph
 
 //! Intrusive pointer release function for RawDGraph

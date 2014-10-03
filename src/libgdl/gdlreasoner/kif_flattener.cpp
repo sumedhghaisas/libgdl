@@ -18,11 +18,19 @@ using namespace libgdl::gdlreasoner;
 using namespace libgdl::gdlparser;
 using namespace libgdl::gdlreasoner::logicbase;
 
-void KIFFlattener::Flatten(KIF& kif)
+void KIFFlattener::Flatten(KIF& kif,
+                           bool removeStateIndependent)
 {
+  symbol_table = kif.GetSymbolTable();
+
   // clear all the lists
   flattened_facts.clear();
   flattened_clauses.clear();
+
+  DGraph graph = kif.DependencyGraph();
+
+  // dependency graph
+  const map<size_t, DGraphNode*>& dgraph = graph.GetGraph();
 
   // construct a knowledge base consisting of entire knowledge
   KnowledgeBase all_kb(kif);
@@ -30,55 +38,56 @@ void KIFFlattener::Flatten(KIF& kif)
   // the temporary knowledge base
   KnowledgeBase m_kb;
 
-  // dependency graph
-  const map<size_t, DGraphNode*>& dgraph = kif.DependencyGraph()->GetGraph();
-
   // stores marked relations in Dfs
   set<size_t> marked;
 
   // stores data relations(which are also state independent)
   set<size_t> state_independent;
 
-  // mark all the relation dependent on 'does'
   map<size_t, DGraphNode*>::const_iterator it;
-  if((it = dgraph.find(SymbolTable::DoesID)) != dgraph.end())
-    DFSMarking(it->second, marked);
-  //mark all the relations dependent on 'true'
-  if((it = dgraph.find(SymbolTable::TrueID)) != dgraph.end())
-    DFSMarking(it->second, marked);
+  set<size_t>::iterator mit;
 
-  // compute data knowledge and add it to temporary knowledge base
-  std::set<size_t>::iterator mit;
-  for(it = dgraph.begin(); it != dgraph.end(); it++)
+  if(removeStateIndependent)
   {
-    if((mit = marked.find(it->first)) == marked.end())
+    // mark all the relation dependent on 'does'
+    if((it = dgraph.find(SymbolTable::DoesID)) != dgraph.end())
+      DFSMarking(it->second, marked);
+    //mark all the relations dependent on 'true'
+    if((it = dgraph.find(SymbolTable::TrueID)) != dgraph.end())
+      DFSMarking(it->second, marked);
+
+    // compute state independent knowledge and add it to temporary knowledge base
+    for(it = dgraph.begin(); it != dgraph.end(); it++)
     {
-      const size_t& sig = it->first;
-      if(sig != SymbolTable::BaseID &&
-         sig != SymbolTable::InputID &&
-         sig != SymbolTable::InitID &&
-         sig != SymbolTable::RoleID &&
-         sig != SymbolTable::GoalID &&
-         sig != SymbolTable::TerminalID &&
-         sig != SymbolTable::LegalID &&
-         sig != SymbolTable::NextID)
+      if((mit = marked.find(it->first)) == marked.end())
       {
-        state_independent.insert(sig);
-
-        const KnowledgeBase::FactList* data_facts = all_kb.GetFacts(sig);
-        if(data_facts != NULL)
+        const size_t& sig = it->first;
+        if(sig != SymbolTable::BaseID &&
+           sig != SymbolTable::InputID &&
+           sig != SymbolTable::InitID &&
+           sig != SymbolTable::RoleID &&
+           sig != SymbolTable::GoalID &&
+           sig != SymbolTable::TerminalID &&
+           sig != SymbolTable::LegalID &&
+           sig != SymbolTable::NextID)
         {
-          for(list<Fact>::const_iterator it = data_facts->begin();
-                                                  it != data_facts->end();it++)
-           m_kb.Tell(*it);
-        }
+          state_independent.insert(sig);
 
-        const KnowledgeBase::ClauseList* data_clauses = all_kb.GetClauses(sig);
-        if(data_clauses != NULL)
-        {
-          for(list<Clause>::const_iterator it = data_clauses->begin();
-                                                it != data_clauses->end();it++)
-           m_kb.Tell(*it);
+          const KnowledgeBase::FactList* data_facts = all_kb.GetFacts(sig);
+          if(data_facts != NULL)
+          {
+            for(list<Fact>::const_iterator it = data_facts->begin();
+                                                    it != data_facts->end();it++)
+             m_kb.Tell(*it);
+          }
+
+          const KnowledgeBase::ClauseList* data_clauses = all_kb.GetClauses(sig);
+          if(data_clauses != NULL)
+          {
+            for(list<Clause>::const_iterator it = data_clauses->begin();
+                                                  it != data_clauses->end();it++)
+             m_kb.Tell(*it);
+          }
         }
       }
     }
@@ -98,6 +107,8 @@ void KIFFlattener::Flatten(KIF& kif)
       S_n.push(it->second);
       S_i.push(0);
 
+      relations_done.insert(it->second->id);
+
       while(!S_n.empty())
       {
         const DGraphNode* temp = S_n.top();
@@ -105,38 +116,25 @@ void KIFFlattener::Flatten(KIF& kif)
         size_t index = S_i.top();
         S_i.pop();
 
-        if((mit = relations_done.find(temp->id)) != relations_done.end())
-          continue;
-
         const vector<DGraphNode*>& in = temp->in;
-        if(in.size() == 0)
+        if(index == in.size())
         {
           if((mit = state_independent.find(temp->id)) == state_independent.end())
           {
             FlattenRelation(temp, all_kb, state_independent,
                             m_kb, flattened_clauses, flattened_facts);
           }
-          relations_done.insert(temp->id);
+          continue;
         }
-        else
-        {
-          if(index == in.size())
-          {
-            if((mit = state_independent.find(temp->id)) == state_independent.end())
-            {
-              FlattenRelation(temp, all_kb, state_independent, m_kb,
-                              flattened_clauses, flattened_facts);
-            }
-            relations_done.insert(temp->id);
-          }
-          else
-          {
-            S_n.push(temp);
-            S_i.push(index + 1);
 
-            S_n.push(in[index]);
-            S_i.push(0);
-          }
+        S_n.push(temp);
+        S_i.push(index + 1);
+
+        if(relations_done.find(in[index]->id) == relations_done.end())
+        {
+          S_n.push(in[index]);
+          S_i.push(0);
+          relations_done.insert(in[index]->id);
         }
       }
     }
@@ -150,6 +148,9 @@ void KIFFlattener::DFSMarking(const DGraphNode* n, set<size_t>& marked)
 
   S_n.push(n);
   S_i.push(0);
+
+  set<size_t> visited;
+  visited.insert(n->id);
 
   while(!S_n.empty())
   {
@@ -166,8 +167,12 @@ void KIFFlattener::DFSMarking(const DGraphNode* n, set<size_t>& marked)
     S_n.push(n);
     S_i.push(index + 1);
 
-    S_n.push(n->out[index]);
-    S_i.push(0);
+    if(visited.find(n->out[index]->id) == visited.end())
+    {
+      S_n.push(n->out[index]);
+      S_i.push(0);
+      visited.insert(n->out[index]->id);
+    }
   }
 }
 
@@ -496,26 +501,23 @@ Argument* KIFFlattener::ProcessPremiss(Argument* p,
 
 bool KIFFlattener::PrintToFile(const std::string& filename)
 {
-  std::ofstream myfile(filename.c_str());
+  std::ofstream f(filename.c_str());
 
-  if(!myfile.is_open()) return false;
+  if(!f.is_open()) return false;
 
+  SymbolDecodeStream myfile(&symbol_table, f);
   for(list<Fact>::iterator it = flattened_facts.begin();
                                               it != flattened_facts.end();it++)
   {
-    if((*it).isLocation)
-      myfile << ";#line " << (*it).loc << std::endl;
     myfile << *it << std::endl;
   }
 
   for(list<Clause>::iterator it = flattened_clauses.begin();
                                             it != flattened_clauses.end();it++)
   {
-    if((*it).isLocation)
-      myfile << ";#line " << (*it).loc << std::endl;
     myfile << *it << std::endl;
   }
 
-  myfile.close();
+  f.close();
   return true;
 }

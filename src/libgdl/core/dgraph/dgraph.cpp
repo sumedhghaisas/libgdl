@@ -66,7 +66,7 @@ bool RawDGraph::AddDependency(size_t h,
 void RawDGraph::StrongConnect(DGraphNode* v,
                               stack<DGraphNode*>& nstack,
                               set<DGraphNode*>& nset,
-                              vector<set<DGraphNode*> >& scc)
+                              vector<set<DGraphNode*> >& scc) const
 {
   //! Tarjan's Strongly Connected Component Algorithm
   v->index = current_id;
@@ -105,7 +105,7 @@ void RawDGraph::StrongConnect(DGraphNode* v,
   }
 }
 
-list<ErrorType> RawDGraph::CheckCycles(const SymbolTable& symbol_table)
+list<ErrorType> RawDGraph::CheckCycles(const SymbolTable& symbol_table) const
 {
   list<ErrorType> errors;
 
@@ -120,7 +120,7 @@ list<ErrorType> RawDGraph::CheckCycles(const SymbolTable& symbol_table)
   // current(unique) id to be given as index to every DGraphNode
   current_id = 0;
   // run until all DGraphNodes in the graph are visited
-  for(std::map<size_t, DGraphNode*>::iterator it = graph.begin();
+  for(std::map<size_t, DGraphNode*>::const_iterator it = graph.begin();
       it != graph.end(); it++)
   {
     DGraphNode* v = it->second;
@@ -183,7 +183,7 @@ list<ErrorType> RawDGraph::CheckCycles(const SymbolTable& symbol_table)
   return errors;
 }
 
-list<ErrorType> RawDGraph::CheckRecursiveDependencies()
+list<ErrorType> RawDGraph::CheckRecursiveDependencies() const
 {
   list<ErrorType> errors;
 
@@ -307,7 +307,7 @@ void RawDGraph::CheckDef15(const Clause* clause,
                             const Argument* arg,
                             const set<DGraphNode*>& scc,
                             const SymbolTable& symbol_table,
-                            list<ErrorType>& errors)
+                            list<ErrorType>& errors) const
 {
   const Clause& c = *clause;
 
@@ -341,7 +341,7 @@ void RawDGraph::CheckDef15(const Clause* clause,
 
       // if another premiss has same same argument and is not in the same SCC
       if(premisses[j]->HasAsArgument(*(arg->args[i])) &&
-         scc.find(graph[premisses[j]->value]) == scc.end())
+         scc.find(graph.find(premisses[j]->value)->second) == scc.end())
       {
         isFound = true;
         break;

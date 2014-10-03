@@ -61,7 +61,8 @@ class KIFFlattener
   KIFFlattener() {}
 
   //! flattened the knowledge in given KIF object and stores the flattened knowledge
-  void Flatten(gdlparser::KIF& kif);
+  void Flatten(gdlparser::KIF& kif,
+               bool removeStateIndependent = true);
 
   //! print the current flattened knowledge
   bool PrintToFile(const std::string& filename);
@@ -116,7 +117,7 @@ class KIFFlattener
   //! stores flattened clauses
   std::list<Clause> flattened_clauses;
 
-  SymbolTable* symbol_table;
+  SymbolTable symbol_table;
 }; // class KIFFlattener
 
 }; // namespace gdlreasoner
