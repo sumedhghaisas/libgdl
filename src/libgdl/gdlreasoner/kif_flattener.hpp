@@ -61,16 +61,42 @@ class KIFFlattener
   KIFFlattener() {}
 
   //! flattened the knowledge in given KIF object and stores the flattened knowledge
-  void Flatten(gdlparser::KIF& kif,
-               bool removeStateIndependent = true);
+  void Flatten(gdlparser::KIF& kif);
 
   //! print the current flattened knowledge
   bool PrintToFile(const std::string& filename);
 
+  void Clear()
+  {
+    flattened_clauses.clear();
+    flattened_clauses.clear();
+
+    symbol_table = NULL;
+  }
+
   //! get all facts
-  const std::list<Fact>& GetFlattenedFacts() const { return flattened_facts; }
+  const std::list<Fact>& Facts() const
+  {
+    return flattened_facts;
+  }
+  std::list<Fact>& Facts()
+  {
+    return flattened_facts;
+  }
   //! get all clauses
-  const std::list<Clause>& GetFlattenedClauses() const { return flattened_clauses; }
+  const std::list<Clause>& Clauses() const
+  {
+    return flattened_clauses;
+  }
+  std::list<Clause>& Clauses()
+  {
+    return flattened_clauses;
+  }
+
+  SymbolTable GetSymbolTable() const
+  {
+    return symbol_table;
+  }
 
  private:
   //! performs simple DFS and returns all the relations traversed

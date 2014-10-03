@@ -6,6 +6,8 @@
  */
 #include "knowledgebase.hpp"
 
+#include "kif_flattener.hpp"
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
@@ -18,8 +20,6 @@ KnowledgeBase::KnowledgeBase(gdlparser::KIF& kif, const Log& log)
     symbol_table(kif.GetSymbolTable()),
     log(log)
 {
-  kif.GetSymbolTable() = NULL;
-
   FactList& facts = kif.Facts();
   ClauseList& clauses = kif.Clauses();
 
@@ -35,6 +35,28 @@ KnowledgeBase::KnowledgeBase(gdlparser::KIF& kif, const Log& log)
   }
 
   kif.Clear();
+}
+
+KnowledgeBase::KnowledgeBase(KIFFlattener& kiff, const Log& log)
+  : c_id(0),
+    symbol_table(kiff.GetSymbolTable()),
+    log(log)
+{
+  FactList& facts = kiff.Facts();
+  ClauseList& clauses = kiff.Clauses();
+
+  // import facts from KIF object
+  for(FactList::const_iterator it = facts.begin();it != facts.end();it++)
+    m_facts[it->arg->value].push_back(std::move(*it));
+
+  // import clauses from KIF object
+  for(ClauseList::iterator it = clauses.begin();it != clauses.end();it++)
+  {
+    it->id = c_id++;
+    m_clauses[it->head->value].push_back(std::move(*it));
+  }
+
+  kiff.Clear();
 }
 
 std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,

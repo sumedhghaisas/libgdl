@@ -88,8 +88,8 @@ class KIF
     facts.clear();
     clauses.clear();
 
-    symbol_table = SymbolTable();
-    dgraph = DGraph();
+    symbol_table = NULL;
+    dgraph = NULL;
   }
 
   //! Parse the inputs
@@ -127,11 +127,7 @@ class KIF
     return dgraph;
   }
 
-  const SymbolTable& GetSymbolTable() const
-  {
-    return symbol_table;
-  }
-  SymbolTable& GetSymbolTable()
+  SymbolTable GetSymbolTable()
   {
     return symbol_table;
   }

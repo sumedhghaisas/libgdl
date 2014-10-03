@@ -4,10 +4,11 @@ add_executable(libgdl_test
   argument_tests.cpp
   fact_tests.cpp
   clause_tests.cpp 
+  knowledgebase_tests.cpp
   cache_tests.cpp
   kif_tests.cpp
+  flattener_tests.cpp
   unify_tests.cpp
-  knowledgebase_tests.cpp
   state_tests.cpp
   gdl_tests.cpp
 )

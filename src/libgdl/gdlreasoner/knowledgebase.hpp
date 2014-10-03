@@ -24,6 +24,9 @@ class GDL;
 
 namespace gdlreasoner
 {
+
+class KIFFlattener;
+
 /**
  * This class represents knowledge base which stores information and performs
  * reasoning. Knowledge base performs back chaining for answer extraction.
@@ -65,6 +68,8 @@ class KnowledgeBase
     : c_id(0), log(log) {}
   //! construct knowledge base with knowledge from KIF object
   KnowledgeBase(gdlparser::KIF& kif, const Log& log = std::cout);
+  //! Constructs knowledge base from flattened knowledge
+  KnowledgeBase(KIFFlattener& kiff, const Log& log = std::cout);
 
   //! Asks knowledge base given question
   //! returns list of answers

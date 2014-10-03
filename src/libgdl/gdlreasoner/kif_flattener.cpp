@@ -18,8 +18,7 @@ using namespace libgdl::gdlreasoner;
 using namespace libgdl::gdlparser;
 using namespace libgdl::gdlreasoner::logicbase;
 
-void KIFFlattener::Flatten(KIF& kif,
-                           bool removeStateIndependent)
+void KIFFlattener::Flatten(KIF& kif)
 {
   symbol_table = kif.GetSymbolTable();
 
@@ -47,47 +46,44 @@ void KIFFlattener::Flatten(KIF& kif,
   map<size_t, DGraphNode*>::const_iterator it;
   set<size_t>::iterator mit;
 
-  if(removeStateIndependent)
+  // mark all the relation dependent on 'does'
+  if((it = dgraph.find(SymbolTable::DoesID)) != dgraph.end())
+    DFSMarking(it->second, marked);
+  //mark all the relations dependent on 'true'
+  if((it = dgraph.find(SymbolTable::TrueID)) != dgraph.end())
+    DFSMarking(it->second, marked);
+
+  //compute state independent knowledge and add it to temporary knowledge base
+  for(it = dgraph.begin(); it != dgraph.end(); it++)
   {
-    // mark all the relation dependent on 'does'
-    if((it = dgraph.find(SymbolTable::DoesID)) != dgraph.end())
-      DFSMarking(it->second, marked);
-    //mark all the relations dependent on 'true'
-    if((it = dgraph.find(SymbolTable::TrueID)) != dgraph.end())
-      DFSMarking(it->second, marked);
-
-    // compute state independent knowledge and add it to temporary knowledge base
-    for(it = dgraph.begin(); it != dgraph.end(); it++)
+    if((mit = marked.find(it->first)) == marked.end())
     {
-      if((mit = marked.find(it->first)) == marked.end())
+      const size_t& sig = it->first;
+      if(sig != SymbolTable::BaseID &&
+         sig != SymbolTable::InputID &&
+         sig != SymbolTable::InitID &&
+         sig != SymbolTable::RoleID &&
+         sig != SymbolTable::GoalID &&
+         sig != SymbolTable::TerminalID &&
+         sig != SymbolTable::LegalID &&
+         sig != SymbolTable::NextID)
       {
-        const size_t& sig = it->first;
-        if(sig != SymbolTable::BaseID &&
-           sig != SymbolTable::InputID &&
-           sig != SymbolTable::InitID &&
-           sig != SymbolTable::RoleID &&
-           sig != SymbolTable::GoalID &&
-           sig != SymbolTable::TerminalID &&
-           sig != SymbolTable::LegalID &&
-           sig != SymbolTable::NextID)
+        state_independent.insert(sig);
+
+        const KnowledgeBase::FactList* data_facts = all_kb.GetFacts(sig);
+        if(data_facts != NULL)
         {
-          state_independent.insert(sig);
+          for(list<Fact>::const_iterator it = data_facts->begin();
+                                                  it != data_facts->end();it++)
+          m_kb.Tell(*it);
+        }
 
-          const KnowledgeBase::FactList* data_facts = all_kb.GetFacts(sig);
-          if(data_facts != NULL)
-          {
-            for(list<Fact>::const_iterator it = data_facts->begin();
-                                                    it != data_facts->end();it++)
-             m_kb.Tell(*it);
-          }
-
-          const KnowledgeBase::ClauseList* data_clauses = all_kb.GetClauses(sig);
-          if(data_clauses != NULL)
-          {
-            for(list<Clause>::const_iterator it = data_clauses->begin();
-                                                  it != data_clauses->end();it++)
-             m_kb.Tell(*it);
-          }
+        const KnowledgeBase::ClauseList* data_clauses = all_kb.GetClauses(sig);
+        if(data_clauses != NULL)
+        {
+          for(list<Clause>::const_iterator it = data_clauses->begin();
+                                                it != data_clauses->end();it++)
+          m_kb.Tell(*it);
         }
       }
     }
