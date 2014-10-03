@@ -16,7 +16,7 @@ namespace util
 {
 
 /**
- * This class implements the useful set operations.
+ * This class implements useful set operations.
  */
 class setop
 {
