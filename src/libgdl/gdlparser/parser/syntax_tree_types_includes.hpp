@@ -2,7 +2,7 @@
  * @file syntax_tree_types_includes.hpp
  * @author Sumedh Ghaisas
  *
- * Implementation Syntax Tree Types.
+ * Declaration of Syntax Tree Types.
  */
 #ifndef _LIBGDL_GDLPARSER_SYNTAX_TREE_TYPES_INCLUDES_HPP_INCLUDED
 #define _LIBGDL_GDLPARSER_SYNTAX_TREE_TYPES_INCLUDES_HPP_INCLUDED

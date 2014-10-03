@@ -38,48 +38,58 @@ namespace parser
 class KIFDriver;
 
 /**
- * This class implements tokenizer for Game Description Language. Implements yylex
- * method used by KIFParser which returns next token. Scanner can handle multiple
- * files and returns location along with token for errors and warnings.
- *
+ * This class implements scanner for GDL. The implementation of the scanner
+ * (yylex) is done by flex. For more information about the scanner check out the
+ * file kif_scanner.ll.
  */
 class KIFScanner : public yyFlexLexer
 {
-    //! some useful typedefs
+    //! some useful imports
     typedef gdlparser::parser::yy::KIFParser::semantic_type semantic_type;
     typedef gdlparser::parser::yy::KIFParser::token_type token_type;
     typedef gdlparser::parser::yy::KIFParser::location_type location_type;
 
-    //! to store state of the scanner
-    enum State { NoState, InCommentFromToken, InComment, InToken, InClauseCommand, HaveNextToken};
-
 public:
 
-    //! Constructor
-    //! Reference to the calling parser class is stored for error and warning logging
+    //! Empty constructor
+    //! Reference to the calling parser class is stored for error and warning
+    //! logging
+    //!
+    //! \param driver Reference to the calling driver
+    //!
+    //!
     KIFScanner(KIFDriver& driver);
 
+    //! Destructor
     ~KIFScanner() { delete yyin; }
 
     //! yylex function needed by parser.
-    //! returns the next token if any along with its location
+    //! Returns the next token if any along with its location
+    //! For implementation check out kif_scanner.ll
+    //!
+    //! \param yyval Value of the token
+    //! \param yyloc Location of the token
+    //! \return token_type
+    //!
+    //!
     token_type lex(semantic_type* yylval,
                    location_type* yylloc);
 
-    //! current location of the scanner
-    int LineNo() { return lineNo + 1; }
-    int CharNo() { return charNo; }
+    //! Get current stream name
     std::string& CurrentFile() { return streams[stream_index].Name(); }
 
+    //! Set debug
     void set_debug(bool b)
     {
         yy_flex_debug = b;
     }
 
+    //! Wrap function used by the scanner
+    //! This function called the current stream ends
     int yywrap();
 
 private:
-    //! empty stringstream
+    //! Empty stringstream
     std::stringstream empty_stringstream;
 
     //! reference of the calling driver object
@@ -88,19 +98,9 @@ private:
     //! files to be scanned
     std::vector<util::GDLStream>& streams;
 
-    //! store next token to be returned
-    std::string nextTokenValue;
-
-    //! current state of the scanner
-    State state;
-
-    //! to track the location of the token
-    int lineNo;
-    int charNo;
-
     //! current file index
     size_t stream_index;
-};
+}; // class KIFScanner
 
 }; // namespace parser
 }; // namespace gdlparser

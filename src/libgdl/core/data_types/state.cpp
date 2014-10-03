@@ -4,7 +4,6 @@
  *
  * Implementation of State.
  */
-
 #include "state.hpp"
 
 #include <sstream>
@@ -23,7 +22,8 @@ RawState::RawState (const list<Argument*>& facts)
 RawState::RawState(const RawState& s) noexcept
   : count(0u)
 {
-  for(list<Argument*>::const_iterator it = s.facts.begin();it != s.facts.end();it++)
+  for(list<Argument*>::const_iterator it = s.facts.begin();it != s.facts.end();
+                                                                          it++)
     facts.push_back(new Argument(**it));
   hash = s.hash;
 }
@@ -34,7 +34,8 @@ RawState& RawState::operator=(const RawState& s)
     delete *it;
   facts.clear();
 
-  for(list<Argument*>::const_iterator it = s.facts.begin();it != s.facts.end();it++)
+  for(list<Argument*>::const_iterator it = s.facts.begin();it != s.facts.end();
+                                                                          it++)
     facts.push_back(new Argument(**it));
   hash = s.hash;
 

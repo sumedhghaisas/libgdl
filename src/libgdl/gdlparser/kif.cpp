@@ -24,9 +24,10 @@ using namespace libgdl::gdlparser::parser;
 KIF::KIF(bool isWarn,
          char o_level,
          const Log& log)
-  : log(log), isWarn(isWarn),
+  : isWarn(isWarn),
     o_level(o_level),
-    driver(*this)
+    driver(*this),
+    log(log)
 {}
 
 bool KIF::AddFile(const std::string& filename)
@@ -151,54 +152,3 @@ bool KIF::PrintToFile(const string& filename, bool isDebuggingSymbols) const
   out_p.close();
   return true;
 }
-
-//void KIF::AddLineMark(const location_type& loc)
-//{
-//  size_t f_size = facts.size();
-//  size_t c_size = clauses.size();
-//
-//  for(size_t i = f_last_index_with_linemark;i < f_size;i++)
-//  {
-//    facts[i].AddLocation(loc);
-//  }
-//
-//  for(size_t i = c_last_index_with_linemark;i < c_size;i++)
-//  {
-//    clauses[i].AddLocation(loc);
-//  }
-//
-//  f_last_index_with_linemark = f_size;
-//  c_last_index_with_linemark = c_size;
-//}
-//
-//const Fact& KIF::AddFact(const Fact& f, const location_type& loc)
-//{
-//  facts.push_back(f);
-//  facts[facts.size() - 1].AddLocation(loc);
-//
-//  return facts.back();
-//}
-//
-//const Fact& KIF::AddFact(Fact&& f, const location_type& loc)
-//{
-//  facts.push_back(std::move(f));
-//  facts[facts.size() - 1].AddLocation(loc);
-//
-//  return facts.back();
-//}
-//
-//const Clause& KIF::AddClause(const Clause& c, const location_type& loc)
-//{
-//  clauses.push_back(c);
-//  clauses[clauses.size() - 1].AddLocation(loc);
-//
-//  return clauses.back();
-//}
-//
-//const Clause& KIF::AddClause(Clause&& c, const location_type& loc)
-//{
-//  clauses.push_back(std::move(c));
-//  clauses[clauses.size() - 1].AddLocation(loc);
-//
-//  return clauses.back();
-//}

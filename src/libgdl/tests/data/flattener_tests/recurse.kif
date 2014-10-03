@@ -1,0 +1,10 @@
+(parent a b)
+(parent b c)
+(parent c d)
+(parent d e)
+(<= (ancestor ?x ?z) (parent ?x ?y) (ancestor ?y ?z))
+(<= (ancestor ?x ?y) (parent ?x ?y))
+
+(role robot)
+
+(<= (base (test ?x ?y)) (ancestor ?x ?y))

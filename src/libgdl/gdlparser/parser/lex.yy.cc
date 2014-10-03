@@ -2010,7 +2010,7 @@ libgdl::gdlparser::parser::KIFScanner::KIFScanner(KIFDriver& driver)
         : yyFlexLexer(&empty_stringstream, NULL),
         driver(driver), streams(driver.streams),
         stream_index(0)
-{ state = NoState; lineNo = 0; charNo = 0;}
+{}
 
 
 int yyFlexLexer::yylex()

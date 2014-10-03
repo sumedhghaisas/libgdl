@@ -29,10 +29,8 @@ KIFDriver::KIFDriver(KIF& kif)
     : kif(kif),
     streams(kif.streams)
 {
-  scanner = new KIFScanner(*this);
+  scanner = NULL;
   parser = NULL;
-
-  current_id = 0;
 }
 
 KIFDriver::~KIFDriver()
@@ -42,7 +40,7 @@ KIFDriver::~KIFDriver()
   delete(parser);
   parser = NULL;
 
-  for(std::list<std::string*>::iterator it = to_free.begin();it != to_free.end();it++)
+  for(list<string*>::iterator it = to_free.begin();it != to_free.end();it++)
     delete *it;
 }
 
@@ -78,55 +76,17 @@ void KIFDriver::Warn(const ErrorType& warn)
 
 bool KIFDriver::Parse()
 {
+  delete scanner;
+  delete parser;
+  scanner = new KIFScanner(*this);
   // create a new parser object
-  parser = new yy::KIFParser( (*scanner), (*this));
+  parser = new yy::KIFParser(*scanner, *this);
 
   // perform syntactical stage of parsing
   if(parser->parse() != 0)
     return false;
   return true;
 }
-
-//void KIFDriver::AddLineMark(const TokenValue& tok)
-//{
-//    // get value from the tken
-//    const std::string& val = tok.Value();
-//
-//    size_t start = val.find("#line");
-//
-//    // get line number
-//    // if invalid return
-//    size_t i = val.find(" ", start + 1);
-//    if(i == std::string::npos) return;
-//    size_t j = val.find(" ", i + 1);
-//    if(j == std::string::npos) return;
-//    std::string str_lineNo = val.substr(i + 1, j - i - 1).c_str();
-//
-//    for (size_t i = 0; i < str_lineNo.length(); i++)
-//    {
-//        if (!isdigit(str_lineNo[i])) return;
-//    }
-//    size_t lineNo = atoi(str_lineNo.c_str());
-//
-//    // get filename
-//    // if none provided assume it to be ""
-//    i = val.find("\"");
-//    std::string filename = "";
-//    if(i != std::string::npos)DGraph
-//    {
-//        j = val.find("\"", i + 1);
-//        if(j == std::string::npos) return;
-//        filename = val.substr(i + 1, j - i - 1);
-//    }
-//
-//    std::string* temp = new std::string(filename);
-//
-//    to_free.push_back(temp);
-//
-//    // process facts and clauses accordingly
-//    kif.AddLineMark(location_type(temp, lineNo, 0));
-//    return;
-//}
 
 const Fact& KIFDriver::AddFact(Fact&& f_t)
 {

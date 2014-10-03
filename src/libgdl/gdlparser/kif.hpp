@@ -28,7 +28,7 @@ namespace gdlparser
 /**
  * This class provides user interface to GDL parsing.
  *
- * example program demonstrates the usgae of KIF class
+ * example program demonstrates the usage of KIF class
  * @code
  * KIF kif;
  * kif.AddFile("arithmatic.kif");
@@ -36,7 +36,7 @@ namespace gdlparser
  * kif.Parse();
  * @endcode
  *
- * To save the generated output in kif file
+ * To save the generated output to kif file
  *
  * @code
  * KIF kif;
@@ -65,8 +65,9 @@ class KIF
  public:
   //! Constructor
   //!
-  //! @param isWarn bool : enable or disable warnings
-  //! @param stream std::ostream& : stream to print errors and warnings
+  //! \param isWarn Enable or disable warnings
+  //! \param stream stream to print errors and warnings
+  //!
   KIF(bool isWarn = true,
       char o_level = 0,
       const Log& log = std::cout);
@@ -76,12 +77,37 @@ class KIF
 
   //! Add given file as input
   //!
-  //! @param filename const std::string& : filename of the file to be added
-  //! @return returns true if file is successfully opened
+  //! \param filename Filename of the file to be added
+  //! \return returns True if file is successfully opened
   //!
   bool AddFile(const std::string& filename);
 
-  //! clears all the files added and knowledge
+  //! Parse the inputs
+  //! Returns true if parsing is successful
+  //!
+  //! \return bool
+  //!
+  bool Parse(bool ignoreErrors = false);
+
+  //! Print the parsed knowledge to file
+  //! Returns true if file is successfully written
+  //!
+  //! \param filename Output filename
+  //! \return bool
+  //!
+  bool PrintToFile(const std::string& filename,
+                   bool isDebuggingSymbols = false) const;
+
+  //! Print dependency graph generated to file(DOT format).
+  //! Returns true if file is successfully written
+  //!
+  //! \param filename Output filename
+  //! \return bool
+  //!
+  //!
+  bool PrintDependencyGraph(const std::string& filename) const;
+
+  //! Clears all the files added and knowledge parsed
   void Clear()
   {
     streams.clear();
@@ -92,56 +118,42 @@ class KIF
     dgraph = NULL;
   }
 
-  //! Parse the inputs
-  //!
-  //! @return bool : success or failure
-  //!
-  bool Parse(bool ignoreErrors = false);
-
-  //! Print the parsed knowledge to file
-  //!
-  //! @param filename const std::string& : output filename
-  //! @return bool : success or failure
-  //!
-  bool PrintToFile(const std::string& filename,
-                   bool isDebuggingSymbols = false) const;
-
-  //! Print dependency graph generated to file(DOT format).
-  //!
-  //! \param filename const std::string& : output filename
-  //! \return bool : success or failure
-  //!
-  //!
-  bool PrintDependencyGraph(const std::string& filename) const;
-
-  //! Access facts
+  //! Access parsed facts(Read-Write)
   std::list<Fact>& Facts() { return facts; }
+  //! Access parsed facts(Read)
   const std::list<Fact>& Facts() const { return facts; }
 
-  //! Access Clauses
+  //! Access parsed clauses(Read-Write)
   std::list<Clause>& Clauses() { return clauses; }
+  //! Access parsed clauses(Read)
   const std::list<Clause> Clauses() const { return clauses; }
 
+  //! Get generated dependency graph
   DGraph DependencyGraph()
   {
     return dgraph;
   }
 
+  //! Get generated SymbolTable
   SymbolTable GetSymbolTable()
   {
     return symbol_table;
   }
 
-  //! get this object's logging stream
+  //! Get-Set logging stream
   Log& GetLog() { return log; }
 
  private:
   //! make KIFDriver class friend
   friend KIFDriver;
 
-  //void AddLineMark(const location_type& loc);
-
-  //! add fact and clause to this kif -- used by KIFDriver
+  //! Adds the given fact to parsed facts
+  //! This function uses move semantics to add given fact to the list
+  //! Returns reference to the added fact
+  //!
+  //! \param f Fact to be added
+  //! \return const Fact&
+  //!
   const Fact& AddFact(Fact&& f)
   {
     if(f.arg->value == SymbolTable::RoleID)
@@ -155,6 +167,14 @@ class KIF
     facts.push_front(std::move(f));
     return facts.front();
   }
+
+  //! Adds the given clause to parsed clauses
+  //! This function uses move semantics to add given clause to the list
+  //! Returns reference to the added clause
+  //!
+  //! \param c Clause to be added
+  //! \return const Clause&
+  //!
   const Clause& AddClause(Clause&& c)
   {
     if(c.head->value == SymbolTable::GoalID)
@@ -167,39 +187,47 @@ class KIF
     return clauses.front();
   }
 
-  void UpdateSymbolTable(const Argument& arg, const Location& loc);
-
-  //! logging stream
-  mutable Log log;
-
-  //! enable/disable warnings
+  //! Enable/disable warnings
   bool isWarn;
 
-  //! yet not implemented
+  //! Error level - yet not implemented
   const char o_level;
 
-  //! All the facts
+  //! Parsed facts
   std::list<Fact> facts;
 
-  //! All the clauses
+  //! Parsed clauses
   std::list<Clause> clauses;
 
+  //! Streams added as input
   std::vector<util::GDLStream> streams;
 
-  //! driver to drive parsing
+  //! Parsing driver
   KIFDriver driver;
 
+  //! Errors
   std::list<ErrorType> errors;
+  //! Warnings
   std::list<ErrorType> warnings;
 
+  //! Generated symbol table
   SymbolTable symbol_table;
 
+  //! Generated dependency raph
   DGraph dgraph;
 
+  //! Stores if role predicate is used in any input
   bool isRole;
+  //! Stores if legal predicate is used in any input
   bool isLegal;
+  //! Stores if terminal predicate is used in any input
   bool isTerminal;
+  //! Stores if goal predicate is used in any input
   bool isGoal;
+
+  //! Logging stream
+  mutable Log log;
+
 }; // class KIF
 
 }; // namespace gdlparser
