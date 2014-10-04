@@ -31,8 +31,9 @@ namespace gdlparser
 //! forward declaration of class KIF
 class KIF;
 
-namespace parser
+namespace parser /** Core parsing **/
 {
+
 /**
  * This class acts as the driver of the class KIFScanner and KIFParser and
  * performs semantical analysis on the parsed data.

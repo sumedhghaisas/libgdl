@@ -23,7 +23,7 @@
 
 namespace libgdl
 {
-namespace gdlparser
+namespace gdlparser /** Parsing functionality of libGDL **/
 {
 /**
  * This class provides user interface to GDL parsing.

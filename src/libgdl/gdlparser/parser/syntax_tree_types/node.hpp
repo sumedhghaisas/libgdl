@@ -18,81 +18,64 @@
 
 namespace libgdl
 {
-
 namespace gdlparser
 {
 namespace parser
 {
-
+//! Forward declaration of KIFDriver class
 class KIFDriver;
 
+/**
+ * This class represents parent class of all the nodes in generated(in parsing)
+ * AST(Abstract Syntax Tree). The common functionality like location tracking
+ * is implemented in this class. The pure virtual function CodeGen is used for
+ * code generation from AST.
+ *
+ * @see KIFDriver, KIF
+ */
 class Node
 {
  protected:
+  //! Some useful imports
   typedef gdlparser::parser::yy::location location;
   typedef core::StrVarMap StrVarMap;
 
  public:
+  //! Empty constructor
+  //!
+  //! \param loc Location of the node
+  //!
+  //!
   Node(const yy::location& loc)
     : loc(loc) {};
 
+  //! Virtual destructor
   virtual ~Node() {}
 
+  //! String operator for debugging purpose
   virtual operator std::string() const
   {
-    std::cout << "testing warning" << std::endl;
+    std::cerr << "testing warning" << std::endl;
     return "testing";
   }
 
+  //! Generate code
+  //!
+  //! \param driver Reference of the driver
+  //! \param v_map String to GDL variable mapping
+  //! \return void
+  //!
+  //!
   virtual void CodeGen(KIFDriver& driver,
                        StrVarMap& v_map) = 0;
 
+  //! Get location of this node
   const location& GetLocation() { return loc; }
 
  protected:
+   //! Location of the node
   location loc;
 }; // class Node
-
-//class NBlock : public Node
-//{
-//public:
-//    NBlock(const yy::location& loc)
-//        : Node(loc) {}
-//
-//    ~NBlock()
-//    {
-//        for(std::list<Node*>::iterator it = n_stack.begin();it != n_stack.end();it++)
-//            delete *it;
-//    }
-//
-//    void AddNode(Node* n)
-//    {
-//        n_stack.push_front(n);
-//    }
-//
-//    virtual operator std::string() const
-//    {
-//        std::string o = "";
-//        for(std::list<Node*>::const_iterator it = n_stack.begin();it != n_stack.end();it++)
-//            o += std::string(**it) + "\n";
-//        return o;
-//    }
-//
-//    std::list<Node*>& Stack() { return n_stack; }
-//
-//    Object* CodeGen(SymbolTable& symbol_table, Driver& driver)
-//    {
-//        ListObjects* out = new ListObjects(yy::location());
-//        for(std::list<Node*>::iterator it = n_stack.begin();it != n_stack.end();it++)
-//        {
-//            Object* temp = (*it)->CodeGen(symbol_table, driver);
-//            if(temp != NULL) out->AddObject(temp);
-//        }
-//        return out;
-//    }
-//private:
-//    std::list<Node*> n_stack;
-//}; // class ode
 
 }; // namespace parser
 }; // namespace gdlparser

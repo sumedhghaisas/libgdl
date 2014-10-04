@@ -20,10 +20,25 @@ namespace gdlparser
 namespace parser
 {
 
+/**
+ * FunctionPolicy handles the semantical analysis part of parsing all the
+ * functions in GDL. This policy takes into consideration validity of name and
+ * arity. SymbolTable of driver is appropriately updated with new information.
+ *
+ * @see BasicConstruct
+ */
 struct FunctionPolicy
 {
+  //! For simplicity
   typedef BasicConstruct<FunctionPolicy, std::string, TerminalHold> Term;
 
+  //! Generate code
+  //!
+  //! \param
+  //! \param
+  //! \return
+  //!
+  //!
   static bool CodeGen(core::Argument*& out,
                       KIFDriver& driver,
                       std::string* command,
