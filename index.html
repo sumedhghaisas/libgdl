@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="libGDL : Game Description Language(GDL) library">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>libGDL</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/sumedhghaisas/libgdl">View on GitHub</a>
+
+          <h1 id="project_title">libGDL</h1>
+          <h2 id="project_tagline">Game Description Language(GDL) library</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/sumedhghaisas/libgdl/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/sumedhghaisas/libgdl/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1></h1>
+
+<pre><code>       libGDL: Game Description Language(GDL) library
+</code></pre>
+
+<p>*** Introduction</p>
+
+<p>Game Description Language(GDL) is designed as a part of General Game Playing
+Poject. GDL describes the state of a game as a series of facts, and the game
+mechanics as logical rules.
+GDL Language specifications -
+<a href="http://logic.stanford.edu/classes/cs227/2013/readings/gdl_spec.pdf">http://logic.stanford.edu/classes/cs227/2013/readings/gdl_spec.pdf</a></p>
+
+<p>This library accommodate GDL parser and flattener.</p>
+
+<h1></h1>
+
+<p>*** HOW TO INSTALL</p>
+
+<p>1) create directory build
+2) cd into build and run command "cmake ../"
+3) for building from source run command "make", this will create executable kif
+   inside bin
+4) to install run command "make install"</p>
+
+<h1></h1>
+
+<p>*** Running tests</p>
+
+<ul>
+<li>Run command 'make test' for testing</li>
+</ul><h1></h1>
+
+<p>*** Dependencies</p>
+
+<p>GDLParser has the following dependencies:</p>
+
+<p>Boost (program_options, unit_test_framework)
+  CMake     &gt;= 2.8.5
+  BISON     &gt;= 3.0.0    (OPTIONAL)</p>
+
+<h1></h1>
+
+<p>*** Using command line PARSER</p>
+
+<p>After installing libGDL. Run command</p>
+
+<p>kif OUTPUT_FILENAME -c SOURCE_FILE_LIST</p>
+
+<p>For example,
+kif test.kif -c 3puzzle.kif arithmatic.kif</p>
+
+<p>Parameters :
+-g FILENAME : To save dependency graph generated in DOT representation
+-w off      : To disable warnings
+-h          : For help</p>
+
+<p>For example,
+kif test.kif -c 3puzzle.kif arithmatic.kif -g test.dot</p>
+
+<p>** NOTE: GraphViz library can be used to visualized the DOT representation.</p>
+
+<h1></h1>
+
+<p>*** Using command line FLATTENER</p>
+
+<p>After installing libGDL. Run command</p>
+
+<p>flatten OUTPUT_FILENAME -c SOURCE_FILE_LIST</p>
+
+<p>For example,
+kif test.kif -c 3puzzle.kif arithmatic.kif</p>
+
+<p>Parameters :
+-w off      : To disable warnings
+-h          : for help</p>
+
+<h1></h1>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">libGDL maintained by <a href="https://github.com/sumedhghaisas">sumedhghaisas</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
