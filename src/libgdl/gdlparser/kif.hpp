@@ -66,10 +66,11 @@ class KIF
   //! Constructor
   //!
   //! \param isWarn Enable or disable warnings
-  //! \param stream stream to print errors and warnings
+  //! \param o_level Optimization level
+  //! \param log Logging stream
   //!
   KIF(bool isWarn = true,
-      char o_level = 0,
+      char o_level = 1,
       const Log& log = std::cout);
 
   //! KIF destructor
@@ -190,7 +191,8 @@ class KIF
   //! Enable/disable warnings
   bool isWarn;
 
-  //! Error level - yet not implemented
+  //! Optimization level
+  //! > 0: 'distinct' and 'not' premisses are reordered
   const char o_level;
 
   //! Parsed facts

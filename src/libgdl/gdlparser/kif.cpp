@@ -84,6 +84,7 @@ bool KIF::Parse(bool ignoreErrors)
       errors.push_back(error);
     }
   }
+  else return false;
 
   for(list<ErrorType>::const_iterator it = errors.begin();it != errors.end();it++)
     log.Fatal << *it << std::endl;
@@ -100,6 +101,14 @@ bool KIF::Parse(bool ignoreErrors)
     facts.clear();
     clauses.clear();
     return false;
+  }
+
+  if(o_level > 0)
+  {
+    for(list<Clause>::iterator it = clauses.begin();it != clauses.end();it++)
+    {
+      it->Reorder();
+    }
   }
 
   return true;

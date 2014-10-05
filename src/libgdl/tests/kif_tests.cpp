@@ -6,6 +6,7 @@
  */
 #include <libgdl/core.hpp>
 #include <libgdl/gdlparser/kif.hpp>
+#include <libgdl/gdlreasoner/knowledgebase.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include "old_boost_test_definitions.hpp"
@@ -17,6 +18,7 @@ using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
 using namespace libgdl::gdlparser;
+using namespace libgdl::gdlreasoner;
 
 /**
  * Variable parsing test
@@ -231,43 +233,23 @@ BOOST_AUTO_TEST_CASE(GoalUndefinedTest)
 }
 
 /**
- * Check whether line number and filename are created properly
- *
-BOOST_AUTO_TEST_CASE(CreateDSTest)
+ * Test whether optmization level 1 of KIF is working fine.
+ */
+BOOST_AUTO_TEST_CASE(KIFOptLevel1Test)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, false, 0, TEST_LOG);
-  kif.AddFile("data/parser_tests/ds_test.kif");
+  KIF kif(false, 1, TEST_LOG);
+  kif.AddFile("data/parser_tests/opt1.kif");
   if(!kif.Parse(true)) MARK_FAIL;
-
-  const vector<Fact>& facts = kif.Facts();
-  if(facts[0].loc != Location(4, "data/parser_tests/ds_test.kif")) MARK_FAIL;
-
+  
+  KnowledgeBase kb(kif);
+  list<Argument*> result = kb.Ask("(test2 ?x ?y)");
+  if(result.size() != 2) MARK_FAIL;
+  
+  for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
+    delete *it;
   MARK_END;
 }
-**
- * Check whether line number and filename are loaded properly
- *
-BOOST_AUTO_TEST_CASE(LoadDSTest)
-{
-  MARK_START;
-  OPEN_LOG;
-  KIF kif(false, true, 0, TEST_LOG);
-  kif.AddFile("data/parser_tests/ds_test.kif");
-  if(!kif.Parse(true)) MARK_FAIL;
-
-  kif.PrintToFile("data/parser_tests/temp.kif");
-
-  KIF kif2(false, true, 0, TEST_LOG);
-  kif2.AddFile("data/parser_tests/temp.kif");
-  if(!kif2.Parse(true)) MARK_FAIL;
-
-  const vector<Fact>& facts = kif2.Facts();
-  if(facts[0].loc != Location(4, "data/parser_tests/ds_test.kif")) MARK_FAIL;
-
-  MARK_END;
-}
-*/
 
 BOOST_AUTO_TEST_SUITE_END();

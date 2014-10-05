@@ -98,7 +98,26 @@ bool Clause::IsGround()
   return true;
 }
 
-std::string Clause::DecodeToString(const SymbolTable& symbol_table) const
+void Clause::Reorder()
+{
+  list<Argument*> l;
+  for(size_t i = 0;i < premisses.size();i++)
+  {
+    if(premisses[i]->value == SymbolTable::DistinctID ||
+       premisses[i]->value == SymbolTable::NotID)
+    {
+      l.push_back(premisses[i]);
+    }
+    else l.push_front(premisses[i]);
+  }
+  premisses.clear();
+  for(list<Argument*>::iterator it = l.begin();it != l.end();it++)
+  {
+    premisses.push_back(*it);
+  }
+}
+
+string Clause::DecodeToString(const SymbolTable& symbol_table) const
 {
   if(head == NULL) return "head is null!!";
 

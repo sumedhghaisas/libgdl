@@ -119,6 +119,8 @@ struct Clause
   //!
   bool IsGround();
 
+  void Reorder();
+
 
   //! Returns string representation of this clause using the symbol table
   //! This function is used by SymbolDecodeStream to print clause
