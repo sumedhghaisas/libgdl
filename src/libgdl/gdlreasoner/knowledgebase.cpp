@@ -1,8 +1,8 @@
 /**
- * @file knowledgebase.hpp
+ * @file knowledgebase.cpp
  * @author Sumedh Ghaisas
  *
- * Declaration of KnowledgeBase class.
+ * Implementation of KnowledgeBase class.
  */
 #include "knowledgebase.hpp"
 

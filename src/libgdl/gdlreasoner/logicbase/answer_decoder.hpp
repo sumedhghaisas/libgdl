@@ -16,13 +16,7 @@ namespace gdlreasoner
 namespace logicbase
 {
 
-/**
- * Renames variables in results from intern back into their real ones. Used
- * As a decorator for answers which are directed to questions with intern
- * variables only.
- *
- * @see KnowledgeBase
- */
+
 class AnswerDecoder : public Answer
 {
 public:
