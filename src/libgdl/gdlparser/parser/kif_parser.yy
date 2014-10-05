@@ -59,8 +59,10 @@
 #include <list>
 #include <string>
 
+//! import all abstract syntax tree node types
 #include "syntax_tree_types_decl.hpp"
 
+//! forward declaration
 namespace libgdl {
 namespace gdlparser {
     namespace parser {
@@ -114,22 +116,15 @@ namespace gdlparser {
 /* Nonterminals */
 
 %type   <node>        start
-
 %type   <node>        S
-
 %type   <sentence>    Fact
-
 %type   <clause>      Clause
-
 %type   <premiss>     Premiss
 %type   <premisses>   Premisses
-
 %type   <sentence>    Sentence;
 %type   <sentences>   Sentences;
-
 %type   <term>        Term
 %type   <terms>       Terms
-
 %type   <stringVal>   Command
 
 %%

@@ -13,19 +13,23 @@
 #include "kif_scanner.hpp"
 #include "kif_driver.hpp"
 
-/* import the parser's token type into a local typedef */
+/* import the parser's types by a local typedef */
 typedef libgdl::gdlparser::parser::yy::KIFParser::semantic_type semantic_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser::token_type token_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser::token token;
 typedef libgdl::gdlparser::parser::yy::KIFParser::location_type location_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 
-/* By default yylex returns int, we use token_type. Unfortunately yyterminate
- * by default returns 0, which is not of token_type. */
+/**
+ * By default yylex returns int, we use token_type. Unfortunately yyterminate
+ * by default returns 0, which is not of token_type.
+ */
 #define yyterminate() return token::END
 
-/* This disables inclusion of unistd.h, which is not available under Visual C++
- * on Win32. The C++ scanner uses STL streams instead. */
+/**
+ * This disables inclusion of unistd.h, which is not available under Visual C++
+ * on Win32. The C++ scanner uses STL streams instead.
+ */
 #define YY_NO_UNISTD_H
 
 %}
@@ -117,10 +121,6 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 
 %% /*** Additional Code ***/
 
-
-/* This implementation of ExampleFlexLexer::yylex() is required to fill the
- * vtable of the class ExampleFlexLexer. We define the scanner's main yylex
- * function via YY_DECL to reside in the Scanner class instead. */
 
 #ifdef yylex
 #undef yylex

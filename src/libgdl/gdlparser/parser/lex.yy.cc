@@ -497,8 +497,8 @@ static yyconst flex_int16_t yy_chk[53] =
 
 static yyconst flex_int16_t yy_rule_linenum[12] =
     {   0,
-       66,   70,   74,   78,   82,   86,   93,   98,  103,  109,
-      114
+       70,   74,   78,   82,   86,   90,   97,  102,  107,  113,
+      118
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -524,19 +524,23 @@ static yyconst flex_int16_t yy_rule_linenum[12] =
 #include "kif_scanner.hpp"
 #include "kif_driver.hpp"
 
-/* import the parser's token type into a local typedef */
+/* import the parser's types by a local typedef */
 typedef libgdl::gdlparser::parser::yy::KIFParser::semantic_type semantic_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser::token_type token_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser::token token;
 typedef libgdl::gdlparser::parser::yy::KIFParser::location_type location_type;
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
 
-/* By default yylex returns int, we use token_type. Unfortunately yyterminate
- * by default returns 0, which is not of token_type. */
+/**
+ * By default yylex returns int, we use token_type. Unfortunately yyterminate
+ * by default returns 0, which is not of token_type.
+ */
 #define yyterminate() return token::END
 
-/* This disables inclusion of unistd.h, which is not available under Visual C++
- * on Win32. The C++ scanner uses STL streams instead. */
+/**
+ * This disables inclusion of unistd.h, which is not available under Visual C++
+ * on Win32. The C++ scanner uses STL streams instead.
+ */
 #define YY_NO_UNISTD_H
 
 /*** Flex Declarations and Options ***/
@@ -547,9 +551,9 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
  * versions. */
 /* no support for include files is planned */
 /* enables the use of start condition stacks */
-#line 55 "kif_scanner.ll"
+#line 59 "kif_scanner.ll"
 #define YY_USER_ACTION  yylloc->columns(yyleng);
-#line 553 "lex.yy.cc"
+#line 557 "lex.yy.cc"
 
 #define INITIAL 0
 
@@ -711,7 +715,7 @@ YY_DECL
 	register int yy_act;
 
 /* %% [7.0] user's declarations go here */
-#line 58 "kif_scanner.ll"
+#line 62 "kif_scanner.ll"
 
 
  /* code to place at the beginning of yylex() */
@@ -720,7 +724,7 @@ YY_DECL
     yylloc->step();
 
 
-#line 724 "lex.yy.cc"
+#line 728 "lex.yy.cc"
 
 	if ( !(yy_init) )
 		{
@@ -831,35 +835,35 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 66 "kif_scanner.ll"
+#line 70 "kif_scanner.ll"
 {
   return token::OBRACKET;
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 70 "kif_scanner.ll"
+#line 74 "kif_scanner.ll"
 {
   return token::CBRACKET;
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 74 "kif_scanner.ll"
+#line 78 "kif_scanner.ll"
 {
   return token::OR;
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 78 "kif_scanner.ll"
+#line 82 "kif_scanner.ll"
 {
   return token::NOT;
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 82 "kif_scanner.ll"
+#line 86 "kif_scanner.ll"
 {
   return token::CCOMMAND;
 }
@@ -867,7 +871,7 @@ YY_RULE_SETUP
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 86 "kif_scanner.ll"
+#line 90 "kif_scanner.ll"
 {
   yylval->stringVal = new std::string(yytext, yyleng);
   std::string comment(yytext);
@@ -877,7 +881,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 93 "kif_scanner.ll"
+#line 97 "kif_scanner.ll"
 {
   yylval->num = atoi(yytext);
   return token::NUMBER;
@@ -885,7 +889,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 98 "kif_scanner.ll"
+#line 102 "kif_scanner.ll"
 {
   yylval->stringVal = new std::string(yytext, yyleng);
   return token::VARIABLE;
@@ -893,7 +897,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 103 "kif_scanner.ll"
+#line 107 "kif_scanner.ll"
 {
   yylval->stringVal = new std::string(yytext, yyleng);
   return token::ID;
@@ -902,7 +906,7 @@ YY_RULE_SETUP
 /* gobble up white-spaces */
 case 10:
 YY_RULE_SETUP
-#line 109 "kif_scanner.ll"
+#line 113 "kif_scanner.ll"
 {
   yylloc->step();
 }
@@ -911,17 +915,17 @@ YY_RULE_SETUP
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 114 "kif_scanner.ll"
+#line 118 "kif_scanner.ll"
 {
   yylloc->lines(yyleng); yylloc->step();
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 118 "kif_scanner.ll"
+#line 122 "kif_scanner.ll"
 ECHO;
 	YY_BREAK
-#line 925 "lex.yy.cc"
+#line 929 "lex.yy.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1970,14 +1974,10 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 118 "kif_scanner.ll"
+#line 122 "kif_scanner.ll"
 
 
 
-
-/* This implementation of ExampleFlexLexer::yylex() is required to fill the
- * vtable of the class ExampleFlexLexer. We define the scanner's main yylex
- * function via YY_DECL to reside in the Scanner class instead. */
 
 #ifdef yylex
 #undef yylex

@@ -62,13 +62,23 @@ bool FunctionPolicy::CodeGen(Argument*& out,
   {
     if(sym->Arity() != terms.size())
     {
-      ARITY_ERROR(error, *command, terms.size(), sym->Arity(), command_loc, sym->GetLocation());
+      ARITY_ERROR(error,
+                  *command,
+                  terms.size(),
+                  sym->Arity(),
+                  command_loc,
+                  sym->GetLocation());
       driver.Error(error);
       return false;
     }
     else if(sym->SymbolType() != Symbol::FUNCTION)
     {
-      RF_ERROR(error, *command, "Function", "Relation", command_loc, sym->GetLocation());
+      RF_ERROR(error,
+               *command,
+               "Function",
+               "Relation",
+               command_loc,
+               sym->GetLocation());
       driver.Error(error);
       return false;
     }
@@ -79,7 +89,7 @@ bool FunctionPolicy::CodeGen(Argument*& out,
   out->t = Argument::Function;
   out->value = id;
 
-  for(std::list<Term*>::const_iterator it = terms.begin();it != terms.end();it++)
+  for(list<Term*>::const_iterator it = terms.begin();it != terms.end();it++)
   {
     Argument* temp;
     if(!(*it)->CodeGen(temp, driver, v_map))

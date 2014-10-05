@@ -1,8 +1,8 @@
 /**
- * @file basic_construct.hpp
+ * @file clause_policy.cpp
  * @author Sumedh Ghaisas
  *
- * Declaration of BasicConstruct class.
+ * Implementation of ClausePolicy.
  */
 #include "clause_policy.hpp"
 

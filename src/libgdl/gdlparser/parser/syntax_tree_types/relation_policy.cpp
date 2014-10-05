@@ -57,7 +57,7 @@ bool RelationPolicy::CodeGen(Argument*& out,
   arg->t = Argument::Relation;
   arg->value = id;
 
-  for(std::list<Term*>::const_iterator it = terms.begin();it != terms.end();it++)
+  for(list<Term*>::const_iterator it = terms.begin();it != terms.end();it++)
   {
     Argument* temp;
     if(!(*it)->CodeGen(temp, driver, v_map))
@@ -127,7 +127,7 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
   arg->t = Argument::Relation;
   arg->value = id;
 
-  for(std::list<Term*>::const_iterator it = terms.begin();it != terms.end();it++)
+  for(list<Term*>::const_iterator it = terms.begin();it != terms.end();it++)
   {
     Argument* temp;
     if(!(*it)->CodeGen(temp, driver, v_map))

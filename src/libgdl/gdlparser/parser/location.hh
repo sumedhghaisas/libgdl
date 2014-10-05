@@ -1,4 +1,4 @@
-// A Bison parser, made by GNU Bison 3.0.
+// A Bison parser, made by GNU Bison 3.0.2.
 
 // Locations for Bison parsers in C++
 
@@ -73,7 +73,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 
 
     /// Initialization.
-    void initialize (std::string* f = YY_NULL,
+    void initialize (std::string* f = YY_NULLPTR,
                      unsigned int l = 1u,
                      unsigned int c = 1u)
     {

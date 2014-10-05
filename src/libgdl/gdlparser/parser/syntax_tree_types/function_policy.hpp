@@ -32,11 +32,16 @@ struct FunctionPolicy
   //! For simplicity
   typedef BasicConstruct<FunctionPolicy, std::string, TerminalHold> Term;
 
-  //! Generate code
+  //! Generate 'Argument' corresponding to given data
+  //! Returns success state
   //!
-  //! \param
-  //! \param
-  //! \return
+  //! \param out Generated 'Argument' is returned with this parameter
+  //! \param driver KIFDriver object
+  //! \param command Name of the gdl function
+  //! \param terms Terms inside GDL function
+  //! \param v_map Mapping from gdl variable to Argument
+  //! \param command_loc Location of this occurrence
+  //! \return bool
   //!
   //!
   static bool CodeGen(core::Argument*& out,
@@ -46,15 +51,25 @@ struct FunctionPolicy
                       core::StrVarMap& v_map,
                       const core::Location& command_loc);
 
+  //! This function is invalid for this policy
+  //!
+  //! \param driver KIFDriver object
+  //! \param command Name of the gdl function
+  //! \param terms Premisses
+  //! \param v_map Mapping from gdl variable to Argument
+  //! \param command_loc Location of this occurrence
+  //! \return bool
+  //!
+  //!
   static bool CodeGen(KIFDriver& driver,
                       std::string* command,
                       std::list<Term*>& terms,
                       core::StrVarMap& v_map,
                       const core::Location& command_loc);
-};
+}; // struct ClausePolicy
 
-}
-}
-}
+}; // namespace parser
+}; // namespace gdlparser
+}; // namespace libgdl
 
 #endif // _LIBGDL_GDLPARSER_PARSER_FUNCTION_POLICY_HPP_INCLUDED
