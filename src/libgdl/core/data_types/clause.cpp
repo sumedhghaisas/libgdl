@@ -88,7 +88,7 @@ Clause::~Clause()
   }
 }
 
-bool Clause::IsGround()
+bool Clause::IsGround() const
 {
   if(!(head->IsGround())) return false;
 

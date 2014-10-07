@@ -53,6 +53,25 @@ BOOST_AUTO_TEST_CASE(QuestionTest)
 }
 
 /**
+ * Check knowledge base for 'distinct' question handling
+ */
+BOOST_AUTO_TEST_CASE(DistinctQuestionTest)
+{
+  MARK_START;
+  OPEN_LOG;
+	KnowledgeBase kb(TEST_LOG);
+	kb.Tell("(<= (test ?x ?y) (test2 ?x) (test3 ?y) (distinct ?x ?y))");
+	kb.Tell("(test2 1)");
+	kb.Tell("(test3 1)");
+	kb.Tell("(test3 2)");
+	std::list<Argument*> result;
+	if((result = kb.Ask("(test ?x ?y)")).size() != 1) MARK_FAIL;
+	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
+    delete *it;
+	MARK_END;
+}
+
+/**
  * Check knowledge base for 'or' question handling
  */
 BOOST_AUTO_TEST_CASE(OrQuestionTest)
@@ -90,25 +109,6 @@ BOOST_AUTO_TEST_CASE(NotQuestionTest)
 }
 
 /**
- * Check knowledge base for 'distinct' question handling
- */
-BOOST_AUTO_TEST_CASE(DistinctQuestionTest)
-{
-  MARK_START;
-  OPEN_LOG;
-	KnowledgeBase kb(TEST_LOG);
-	kb.Tell("(<= (test ?x ?y) (test2 ?x) (test3 ?y) (distinct ?x ?y))");
-	kb.Tell("(test2 1)");
-	kb.Tell("(test3 1)");
-	kb.Tell("(test3 2)");
-	std::list<Argument*> result;
-	if((result = kb.Ask("(test ?x ?y)")).size() != 1) MARK_FAIL;
-	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
-    delete *it;
-	MARK_END;
-}
-
-/**
  * Check knowledge base for Recursive queries
  */
 BOOST_AUTO_TEST_CASE(RecursiveDependencyTest)
@@ -123,7 +123,8 @@ BOOST_AUTO_TEST_CASE(RecursiveDependencyTest)
 	kb.Tell("(parent c d)");
 	kb.Tell("(parent d e)");
 	std::list<Argument*> result;
-	if((result = kb.Ask("(ancestor ?x ?y)")).size() != 10) MARK_FAIL;
+	if((result = kb.Ask("(ancestor ?x ?y)")).size() != 10) 
+	  MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
     delete *it;
 	MARK_END;
@@ -157,7 +158,8 @@ BOOST_AUTO_TEST_CASE(EraseTest)
 	KnowledgeBase kb(TEST_LOG);
 	kb.Tell("(<= (test ?x) (test2 ?x))");
 	size_t f_i = kb.Tell("(test2 1)");
-	kb.Erase(Fact("(test2 1)", kb.GetSymbolTable(), TEST_LOG), f_i);
+	SymbolTable symbol_table = kb.GetSymbolTable();
+	kb.Erase(Fact("(test2 1)", symbol_table, TEST_LOG), f_i);
 	std::list<Argument*> result;
 	if((result = kb.Ask("(test ?x)")).size() != 0) MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
@@ -178,8 +180,9 @@ BOOST_AUTO_TEST_CASE(Question1Test)
   KnowledgeBase test(kif);
   list<Argument*> result = test.Ask("(engineer ?x)");
   if(result.size() != 1) MARK_FAIL;
+  SymbolTable symbol_table = test.GetSymbolTable();
   if(**result.begin() != Argument("(engineer bajaj)", 
-                                  test.GetSymbolTable(), 
+                                  symbol_table, 
                                   true, TEST_LOG)) MARK_FAIL;
   for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
     delete *it;
@@ -198,9 +201,10 @@ BOOST_AUTO_TEST_CASE(Question2Test)
   if(!kif.Parse(true)) MARK_FAIL;
   KnowledgeBase test(kif);
   list<Argument*> result = test.Ask("(married cam ?x)");
+  SymbolTable symbol_table = test.GetSymbolTable();
   if(result.size() != 1) MARK_FAIL;
     if(**result.begin() != Argument("(married cam carrie)",
-                                    test.GetSymbolTable(),
+                                    symbol_table,
                                     true, TEST_LOG)) MARK_FAIL;
   for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
     delete *it;

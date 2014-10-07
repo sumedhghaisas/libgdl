@@ -43,17 +43,19 @@ BOOST_AUTO_TEST_CASE(StateHashTest)
   
   State s1(new RawState(result));
   
+  SymbolTable sym = kb.GetSymbolTable();
+  
   list<Argument*> result2;
   result2.push_back(new Argument("(init (cell 2 2 1))", 
-                                 kb.GetSymbolTable(), true, TEST_LOG));
+                                 sym, true, TEST_LOG));
   result2.push_back(new Argument("(init (cell 1 2 3))",
-                                 kb.GetSymbolTable(), true, TEST_LOG));
+                                 sym, true, TEST_LOG));
   result2.push_back(new Argument("(init (cell 1 1 b))", 
-                                 kb.GetSymbolTable(), true, TEST_LOG));
+                                 sym, true, TEST_LOG));
   result2.push_back(new Argument("(init (cell 2 1 2))", 
-                                 kb.GetSymbolTable(), true, TEST_LOG));
+                                 sym, true, TEST_LOG));
   result2.push_back(new Argument("(init (step 1))", 
-                                 kb.GetSymbolTable(), true, TEST_LOG));
+                                 sym, true, TEST_LOG));
 
   State s2(new RawState(result2));
 

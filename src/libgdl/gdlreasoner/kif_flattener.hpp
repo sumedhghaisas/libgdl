@@ -58,7 +58,8 @@ class KIFFlattener
 
  public:
   //! empty constructor
-  KIFFlattener() {}
+  KIFFlattener(Log log = std::cout)
+    : log(log) {}
 
   //! flattened the knowledge in given KIF object and stores the flattened knowledge
   void Flatten(gdlparser::KIF& kif);
@@ -113,7 +114,8 @@ class KIFFlattener
                        std::list<Fact>& f_facts);
 
   //! pre-processes clause before flattening
-  Clause* ProcessClause(Clause& c, const std::set<size_t>& state_independent);
+  Clause* ProcessClause(const Clause& c,
+                        const std::set<size_t>& state_independent);
   //! pre-processes argument before flattening
   Argument* ProcessPremiss(Argument* arg,
                            const std::set<size_t>& state_independent);
@@ -144,6 +146,8 @@ class KIFFlattener
   std::list<Clause> flattened_clauses;
 
   SymbolTable symbol_table;
+
+  Log log;
 }; // class KIFFlattener
 
 }; // namespace gdlreasoner

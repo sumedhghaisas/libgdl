@@ -31,20 +31,22 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateTest)
   
   const State& s1 = gdl.InitState();
   
-  Move moves("right", gdl.GetSymbolTable(), TEST_LOG);  
+   SymbolTable sym = gdl.GetSymbolTable();
+  
+  Move moves("right", sym, TEST_LOG);  
   State s2 = gdl.GetNextState(s1, moves);
   
   list<Argument*> result2;
   result2.push_back(new Argument("(cell 1 1 3)", 
-                                 gdl.GetSymbolTable(), false, TEST_LOG));
+                                 sym, false, TEST_LOG));
   result2.push_back(new Argument("(cell 1 2 b)", 
-                                 gdl.GetSymbolTable(), false, TEST_LOG));
+                                 sym, false, TEST_LOG));
   result2.push_back(new Argument("(cell 2 1 2)", 
-                                 gdl.GetSymbolTable(), false, TEST_LOG));
+                                 sym, false, TEST_LOG));
   result2.push_back(new Argument("(cell 2 2 1)", 
-                                 gdl.GetSymbolTable(), false, TEST_LOG));
+                                 sym, false, TEST_LOG));
   result2.push_back(new Argument("(step 2)", 
-                                 gdl.GetSymbolTable(), false, TEST_LOG));
+                                 sym, false, TEST_LOG));
 
   State s3(new RawState(result2));
   
@@ -65,7 +67,9 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateCacheTest_Time)
   
   const State& s1 = gdl.InitState();
   
-  Move moves("right", gdl.GetSymbolTable(), TEST_LOG);  
+  SymbolTable sym = gdl.GetSymbolTable();
+  
+  Move moves("right", sym, TEST_LOG);  
   
   gdl.GetNextState(s1, moves);
   
@@ -92,13 +96,15 @@ BOOST_AUTO_TEST_CASE(GDLIsTerminalTest)
   
   if(gdl.IsTerminal(s)) MARK_FAIL;
   
+  SymbolTable sym = gdl.GetSymbolTable();
+  
   vector<Move> moves;
-  moves.push_back(Move("down", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("right", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("up", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("left", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("down", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("right", gdl.GetSymbolTable(), TEST_LOG));
+  moves.push_back(Move("down", sym, TEST_LOG));
+  moves.push_back(Move("right", sym, TEST_LOG));
+  moves.push_back(Move("up", sym, TEST_LOG));
+  moves.push_back(Move("left", sym, TEST_LOG));
+  moves.push_back(Move("down", sym, TEST_LOG));
+  moves.push_back(Move("right", sym, TEST_LOG));
   
   for(size_t i = 0;i < moves.size();i++)
     s = gdl.GetNextState(s, moves[i]);
@@ -190,13 +196,15 @@ BOOST_AUTO_TEST_CASE(GDLGetGoalTest)
   
   State s = init;
   
+  SymbolTable sym = gdl.GetSymbolTable();
+  
   vector<Move> moves;
-  moves.push_back(Move("down", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("right", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("up", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("left", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("down", gdl.GetSymbolTable(), TEST_LOG));
-  moves.push_back(Move("right", gdl.GetSymbolTable(), TEST_LOG));
+  moves.push_back(Move("down", sym, TEST_LOG));
+  moves.push_back(Move("right", sym, TEST_LOG));
+  moves.push_back(Move("up", sym, TEST_LOG));
+  moves.push_back(Move("left", sym, TEST_LOG));
+  moves.push_back(Move("down", sym, TEST_LOG));
+  moves.push_back(Move("right", sym, TEST_LOG));
   
   for(size_t i = 0;i < moves.size();i++)
     s = gdl.GetNextState(s, moves[i]);

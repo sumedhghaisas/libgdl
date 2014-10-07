@@ -1,22 +1,10 @@
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
-  answer_types.hpp
   unify.cpp
   unify.hpp
   answer.hpp
-  answer_decoder.hpp
-  answer_decoder.cpp
-  clause_answer.hpp
-  clause_answer.cpp
-  distinct_answer.hpp
-  distinct_answer.cpp
-  or_clause_answer.hpp
-  or_clause_answer.cpp
-  ground_question_answer.hpp
-  ground_question_answer.cpp
-  not_answer.hpp
-  not_answer.cpp
+  answer.cpp
 )
 
 # add directory name to sources

@@ -32,8 +32,7 @@ namespace logicbase
  */
 class Answer
 {
- protected:
-   //! For simplicity
+  //! For simplicity
   typedef libgdl::core::Argument Argument;
   typedef libgdl::core::Clause Clause;
   typedef libgdl::core::Fact Fact;
@@ -41,7 +40,21 @@ class Answer
   typedef std::map<size_t, std::list<Fact> > FactMap;
   typedef std::map<size_t, std::list<Clause> > ClauseMap;
 
+  //! Represents the sub-answer generated when subset of total premisses are
+  //! considered. Also stores information about the next premiss to be answered.
+  struct SubAnswer
+  {
+    //! points to the next premiss to be answered
+    std::vector<Argument*>::const_iterator nextPremiss;
+    //! Answer* instance at this point
+    Answer * partAnswer;
+    //! Head map until this
+    VariableMap headMap;
+  }; // struct SubAnswer
+
  public:
+  enum Type {CLAUSE, DISTINCT, GROUND, NOT, OR};
+
   //! Constructs empty Answer
   //!
   //! \param question Question to be answered
@@ -51,35 +64,34 @@ class Answer
   //! \return
   //!
   //!
-  Answer(const Argument& question,
+  Answer(const Type& t,
+         const Argument& question,
          const VariableMap& o_v_map,
          const KnowledgeBase & kb,
-         const std::set<size_t>& v)
-      : kb (kb), question (question), visited(v), o_v_map(o_v_map) {}
+         const std::set<size_t>& v,
+         Answer* ans);
 
-  //! virtual destructor
-  virtual ~Answer()
-  {
-    for(std::list<Argument*>::iterator it = to_del.begin();it != to_del.end();
-                                                                          it++)
-      delete *it;
-  }
+
+  //! Destructor
+  ~Answer();
 
   //! Go to the next result
   //! Returns false if no next result is available
-  virtual bool next () = 0;
+  bool next();
 
   /// Returns the variable mapping in which this solution is valid
   /// Returns variable map of last viable solution after next() returns false
-  inline virtual VariableMap GetVariableMap()
+  inline VariableMap GetVariableMap()
   {
     return Unify::DecodeSubstitutions(v_map, &question, o_v_map, to_del);
   }
 
   //! Returns visited clause set
-  virtual inline const std::set<size_t>& Visited() { return visited; }
+  inline const std::set<size_t>& Visited() { return visited; }
 
- protected:
+ private:
+  /* Common */
+
   //! Variable map of the current result
   VariableMap v_map;
   //! KnowledgeBase responsible for providing the answer
@@ -92,6 +104,58 @@ class Answer
   const VariableMap o_v_map;
   //! Arguments which will be deleted at Answer deletion
   std::list<Argument*> to_del;
+  //! Type
+  const Type t;
+
+  /* Clause Answer */
+  //! Position of the fact for next answer to check
+  size_t m_position;
+
+  std::list<Fact>::const_iterator fit;
+  std::list<Clause>::const_iterator cit;
+  std::deque<SubAnswer> m_subAnswers;
+  //! Length of current clause
+  size_t m_clauseLength;
+  //! is currently on an answer
+  bool m_onAnAnswer;
+  //! Answer is based on facts
+  bool m_isFactAnswer;
+
+  const std::list<Fact>* facts;
+  const std::list<Clause>* clauses;
+
+  bool toDel_f;
+  bool toDel_c;
+
+  Argument* extra;
+  VariableMap e_map;
+  bool isExtra;
+
+  /* Distinct Answer */
+  /// is the result returned
+  bool m_returnedResult;
+  /// is the current result distinct
+  bool m_distinct;
+
+  /* Ground Answer */
+  //! answer to given ground question
+  Answer* ans;
+  //! stores if the answer is already returned
+  bool isAnswerReturned;
+
+  /* Not Answer */
+  //! represents sub-answer
+  Answer* m_subAnswer;
+  //! is the result returned
+  //bool m_returnedResult;
+  //! is it valid NOT
+  bool m_not;
+
+  /* Or Answer */
+  //! Current sub Answer
+  Answer * m_currentAnswer;
+  //! current argument in 'or'
+  size_t current_arg;
 }; // class Answer
 
 }; // namespace logicbase

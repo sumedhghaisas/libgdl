@@ -14,7 +14,7 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/gdlparser/kif.hpp>
-#include <libgdl/gdlreasoner/logicbase/answer_types.hpp>
+#include <libgdl/gdlreasoner/logicbase/answer.hpp>
 #include <libgdl/gdlreasoner/logicbase/unify.hpp>
 
 namespace libgdl

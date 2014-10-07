@@ -278,22 +278,23 @@ void Unify::SpecialMapCompression(VariableMap& v_map,
                                   const VariableMap& e_map,
                                   const VariableMap& o_v_map)
 {
-  v_map.clear();
+  VariableMap out;
 
   for(VariableMap::const_iterator it = e_map.begin();it != e_map.end();it++)
   {
     const Argument* temp = it->second;
 
-    while(temp->IsVariable())
+    if(temp->IsVariable())
     {
       temp = v_map.find(temp)->second;
     }
 
-    v_map[it->first] = temp;
+    out[it->first] = temp;
   }
 
   for(VariableMap::const_iterator it = o_v_map.begin();it != o_v_map.end();it++)
   {
-    v_map[it->first] = it->second;
+    out[it->first] = it->second;
   }
+  v_map = out;
 }

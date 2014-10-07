@@ -117,7 +117,7 @@ struct Clause
   //! \return bool
   //!
   //!
-  bool IsGround();
+  bool IsGround() const;
 
   void Reorder();
 

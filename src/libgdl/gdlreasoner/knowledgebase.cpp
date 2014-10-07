@@ -280,36 +280,20 @@ Answer* KnowledgeBase::GetAnswer(const Argument& question,
 {
   Answer *ans = NULL;
 
+  if(question.value == SymbolTable::OrID)
+    ans = new Answer(Answer::OR, question, v_map, *this, visited, NULL);
+  else if(question.value == SymbolTable::DistinctID)
+    ans = new Answer(Answer::DISTINCT, question, v_map, *this, visited, NULL);
+  else if(question.value == SymbolTable::NotID)
+    ans = new Answer(Answer::NOT, question, v_map, *this, visited, NULL);
+  else ans = new Answer(Answer::CLAUSE, question, v_map, *this, visited, NULL);
+
   if(Unify::IsGroundQuestion(&question, v_map))
   {
-    if(question.value == SymbolTable::OrID)
-      ans = new GroundQuestionAnswer
-                          (new OrClauseAnswer(question, v_map, *this, visited),
-                           question, v_map, *this, visited);
-    else if(question.value == SymbolTable::DistinctID)
-      ans = new GroundQuestionAnswer
-                          (new DistinctAnswer(question, v_map, *this, visited),
-                           question, v_map, *this, visited);
-    else if(question.value == SymbolTable::NotID)
-      ans = new GroundQuestionAnswer
-                          (new NotAnswer(question, v_map, *this, visited),
-                           question, v_map, *this, visited);
-    else ans = new GroundQuestionAnswer
-                          (new ClauseAnswer(question, v_map, *this, visited),
-                           question, v_map, *this, visited);
-  }
-  else
-  {
-    if(question.value == SymbolTable::OrID)
-      ans = new OrClauseAnswer(question, v_map, *this, visited);
-    else if(question.value == SymbolTable::DistinctID)
-      ans = new DistinctAnswer(question, v_map, *this, visited);
-    else if(question.value == SymbolTable::NotID)
-      ans = new NotAnswer(question, v_map, *this, visited);
-    else ans = new ClauseAnswer(question, v_map, *this, visited);
+    ans = new Answer(Answer::GROUND, question, v_map, *this, visited, ans);
   }
 
-  return new AnswerDecoder(ans, question, v_map, *this);
+  return ans;
 }
 
 std::ostream& operator<<(std::ostream& stream, const KnowledgeBase& kb)

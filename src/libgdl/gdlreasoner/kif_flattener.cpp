@@ -182,20 +182,29 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   //compute signature of relation
   const size_t& sig = n->id;
 
-  KnowledgeBase::ClauseList clauses;
-
   // get all the facts and clauses associated with this signature
   const KnowledgeBase::FactList* facts = all_kb.GetFacts(sig);
   const KnowledgeBase::ClauseList* p_clauses = all_kb.GetClauses(sig);
-  if(p_clauses != NULL)
-    clauses = *(all_kb.GetClauses(sig));
+
+  if(p_clauses == NULL)
+  {
+    if(facts != NULL)
+      flattened_facts = *facts;
+    else
+    {
+      log.Warn << "No knowledge is provided for flattening!!!" << endl;
+    }
+    return;
+  }
+
+  const KnowledgeBase::ClauseList& clauses = *p_clauses;
 
   // to store the heads of the flattened clauses
   // these will be added later to temporary knowledge base
   list<Argument*> f_heads;
 
   // start flattening clauses
-  for(list<Clause>::iterator it = clauses.begin();it != clauses.end();it++)
+  for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
   {
     // if the clause is already ground add it directly
     // add its head to heads list
@@ -219,6 +228,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
 
     // after adding the head of the clause will be the question to ask
     Answer* ans = m_kb.GetAnswer(*p_clause->head, VariableMap(), set<size_t>());
+
     while(ans->next())
     {
       // compute the answer with substitution
@@ -248,6 +258,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
         delete temp;
       }
     }
+
     // delete answer
     delete ans;
 
@@ -378,7 +389,7 @@ Argument*
   return arg;
 }
 
-Clause* KIFFlattener::ProcessClause(Clause& c,
+Clause* KIFFlattener::ProcessClause(const Clause& c,
                                     const set<size_t>& state_independent)
 {
   std::set<Argument*> head_vars;
