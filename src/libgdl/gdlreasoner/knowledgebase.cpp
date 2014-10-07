@@ -298,7 +298,8 @@ Answer* KnowledgeBase::GetAnswer(const Argument& question,
 
 std::ostream& operator<<(std::ostream& stream, const KnowledgeBase& kb)
 {
-  SymbolDecodeStream o(&kb.GetSymbolTable(), stream);
+  SymbolTable symbol_table = kb.GetSymbolTable();
+  SymbolDecodeStream o(&symbol_table, stream);
 
   const KnowledgeBase::FactMap& all_facts = kb.GetAllFacts();
   const KnowledgeBase::ClauseMap& all_clauses = kb.GetAllClauses();

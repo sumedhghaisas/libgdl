@@ -108,7 +108,7 @@ class GDL
   //! returns the initial state of the GDL
   const State& InitState() const { return *init; }
 
-  SymbolTable GetSymbolTable()
+  SymbolTable GetSymbolTable() const
   {
     return base_rules.GetSymbolTable();
   }

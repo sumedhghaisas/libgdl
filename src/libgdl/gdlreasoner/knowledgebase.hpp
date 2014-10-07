@@ -259,7 +259,7 @@ class KnowledgeBase
   }
 
   //! Get the symbol table associated with knowledge base
-  const SymbolTable& GetSymbolTable() const
+  SymbolTable GetSymbolTable() const
   {
     return symbol_table;
   }
