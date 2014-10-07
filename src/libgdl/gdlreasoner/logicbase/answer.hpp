@@ -8,6 +8,7 @@
 #define _LIBGDL_GDLREASONER_ANSWER_HPP_INCLUDED
 
 #include <set>
+#include <deque>
 
 #include <libgdl/core.hpp>
 #include "unify.hpp"
