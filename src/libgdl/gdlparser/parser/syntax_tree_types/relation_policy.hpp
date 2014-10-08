@@ -45,7 +45,7 @@ struct RelationPolicy
   //! \param command Name of the gdl predicate
   //! \param terms Terms inside GDL predicate
   //! \param v_map Mapping from gdl variable to Argument
-  //! \param command_loc Location of this occurrence
+  //! \param loc Location of this occurrence
   //! \return bool
   //!
   //!
@@ -82,9 +82,9 @@ struct RelationPolicy
   //! \param out Generated 'Argument' is returned with this parameter
   //! \param driver KIFDriver object
   //! \param command Name of the gdl predicate
-  //! \param terms Terms inside GDL predicate
+  //! \param sentences Sentences inside the premiss
   //! \param v_map Mapping from gdl variable to Argument
-  //! \param command_loc Location of this occurrence
+  //! \param loc Location of this occurrence
   //! \return bool
   //!
   //!
@@ -97,10 +97,9 @@ struct RelationPolicy
 
   //! Invalid function, function is present for avoiding substitution failure
   //!
-  //! \param out Generated 'Argument' is returned with this parameter
   //! \param driver KIFDriver object
   //! \param command Name of the gdl predicate
-  //! \param terms Terms inside GDL predicate
+  //! \param sentences Sentences inside the premiss
   //! \param v_map Mapping from gdl variable to Argument
   //! \param command_loc Location of this occurrence
   //! \return bool

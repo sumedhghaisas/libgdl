@@ -136,7 +136,7 @@ bool KIF::PrintDependencyGraph(const string& filename) const
   return true;
 }
 
-bool KIF::PrintToFile(const string& filename, bool isDebuggingSymbols) const
+bool KIF::PrintToFile(const string& filename) const
 {
   ofstream out_p(filename.c_str());
   if(!out_p.is_open())
@@ -148,15 +148,10 @@ bool KIF::PrintToFile(const string& filename, bool isDebuggingSymbols) const
   core::SymbolDecodeStream out(&symbol_table, out_p);
 
   for(list<Fact>::const_iterator it = facts.begin();it != facts.end();it++)
-  {
-    if(isDebuggingSymbols) out << ";#line " << it->loc << std::endl;
     out << *it << std::endl;
-  }
+
   for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
-  {
-    if(isDebuggingSymbols) out << ";#line " << it->loc  << std::endl;
     out << *it << std::endl;
-  }
 
   out_p.close();
   return true;

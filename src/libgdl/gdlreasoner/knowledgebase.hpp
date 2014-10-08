@@ -89,7 +89,7 @@ class KnowledgeBase
   //! Knowledge is transferred hence the KIFFlattener object is cleaned
   //!
   //! \param kiff KIFFlattener object
-  //! \param const Log& log = std::cout
+  //! \param log Logging stream
   //!
   //!
   KnowledgeBase(KIFFlattener& kiff, const Log& log = std::cout);
@@ -117,7 +117,7 @@ class KnowledgeBase
   //! \return
   //!
   //!
-  std::list<Argument*> Ask(const std::string&,
+  std::list<Argument*> Ask(const std::string& question,
                            bool checkForDoubles = true);
 
   //! Ask knowledge base given question and corresponding 'Answer' handler
@@ -125,9 +125,10 @@ class KnowledgeBase
   //! 'Answer' handler returns only one answer at a time. This function can be
   //! used to extract only certain number of answers at a time.
   //!
-  //! \param
-  //! \param
-  //! \return
+  //! \param question Question to answer
+  //! \param v_map VariableMap of previous substitutions
+  //! \param visited Set of visited clauses
+  //! \return Answer*
   //!
   //!
   Answer* GetAnswer(const Argument& question,
@@ -177,7 +178,7 @@ class KnowledgeBase
   //! This added fact can be delete by passing this index along with the
   //! fact to Erase function
   //!
-  //! \param c Clause to be added
+  //! \param f Fact to be added
   //! \return size_t
   //!
   //!

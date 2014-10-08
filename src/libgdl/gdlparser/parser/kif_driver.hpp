@@ -85,7 +85,7 @@ class KIFDriver
   //! This function uses move semantics to add given fact to the list
   //! Returns reference to the added fact
   //!
-  //! \param f Fact to be added
+  //! \param f_t Fact to be added
   //! \return const Fact&
   //!
   const Fact& AddFact(Fact&& f_t);
@@ -94,7 +94,7 @@ class KIFDriver
   //! This function uses move semantics to add given clause to the list
   //! Returns reference to the added clause
   //!
-  //! \param c Clause to be added
+  //! \param c_t Clause to be added
   //! \return const Clause&
   //!
   const Clause& AddClause(Clause&& c_t);

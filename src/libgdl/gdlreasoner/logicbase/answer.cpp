@@ -72,7 +72,9 @@ Answer::Answer(const Type& t,
   else if(t == DISTINCT)
   {
     v_map = o_v_map;
-    m_distinct = !Unify::EquateWithSubstitution(*question.args[0], *question.args[1], v_map);
+    m_distinct = !Unify::EquateWithSubstitution(*question.args[0],
+                                                *question.args[1],
+                                                v_map);
     m_returnedResult = false;
   }
 }
@@ -163,7 +165,9 @@ bool Answer::next()
         if(visited.find(clause.id) != visited.end())
         {
           if(extra == NULL)
-            extra = Unify::GetPartiallySubstitutedArgument(&question, o_v_map, e_map);
+            extra = Unify::GetPartiallySubstitutedArgument(&question,
+                                                           o_v_map,
+                                                           e_map);
           e_question = extra;
           isExtra = true;
           v_map = VariableMap();
@@ -190,7 +194,9 @@ bool Answer::next()
              t_visited = new std::set<size_t>(visited);
           else t_visited = new std::set<size_t>();
           t_visited->insert(clause.id);
-          sanswer.partAnswer = kb.GetAnswer(**current, sanswer.headMap, *t_visited);
+          sanswer.partAnswer = kb.GetAnswer(**current,
+                                            sanswer.headMap,
+                                            *t_visited);
           delete t_visited;
           sanswer.nextPremiss++;
           m_subAnswers.push_back(sanswer);
@@ -257,7 +263,9 @@ bool Answer::next()
       // delete the previous answer
       delete m_currentAnswer;
       // query knowledge base for answer to this token
-      m_currentAnswer = kb.GetAnswer(*question.args[current_arg - 1], o_v_map, visited);
+      m_currentAnswer = kb.GetAnswer(*question.args[current_arg - 1],
+                                     o_v_map,
+                                     visited);
       // if there exists a valid result update the variable map with the same
       if (m_currentAnswer->next())
       {

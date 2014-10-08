@@ -96,8 +96,7 @@ class KIF
   //! \param filename Output filename
   //! \return bool
   //!
-  bool PrintToFile(const std::string& filename,
-                   bool isDebuggingSymbols = false) const;
+  bool PrintToFile(const std::string& filename) const;
 
   //! Print dependency graph generated to file(DOT format).
   //! Returns true if file is successfully written

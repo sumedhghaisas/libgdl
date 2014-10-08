@@ -49,6 +49,7 @@ namespace gdlreasoner
  */
 class KIFFlattener
 {
+  //! For simplicity
   typedef core::Fact Fact;
   typedef core::Clause Clause;
   typedef core::Argument Argument;
@@ -57,16 +58,36 @@ class KIFFlattener
   typedef core::SymbolTable SymbolTable;
 
  public:
-  //! empty constructor
+  //! Empty constructor
+  //!
+  //! \param log Logging stream
+  //!
+  //!
   KIFFlattener(Log log = std::cout)
     : log(log) {}
 
-  //! flattened the knowledge in given KIF object and stores the flattened knowledge
+  //! Flattens the knowledge in given KIF object
+  //!
+  //! \param kif KIF object to flatten
+  //! \return void
+  //!
+  //!
   void Flatten(gdlparser::KIF& kif);
 
-  //! print the current flattened knowledge
+  //! Print the current flattened knowledge to file
+  //! Returns the success state
+  //!
+  //! \param filename Filename
+  //! \return bool
+  //!
+  //!
   bool PrintToFile(const std::string& filename);
 
+  //! Clears the knowledge inside this flattener object
+  //!
+  //! \return void
+  //!
+  //!
   void Clear()
   {
     flattened_clauses.clear();
@@ -75,37 +96,56 @@ class KIFFlattener
     symbol_table = NULL;
   }
 
-  //! get all facts
+  //! Access all the flattened facts(Read)
   const std::list<Fact>& Facts() const
   {
     return flattened_facts;
   }
+  //! Access all te flattened facts(Write)
   std::list<Fact>& Facts()
   {
     return flattened_facts;
   }
-  //! get all clauses
+  //! Access all the flattened clauses(Read)
   const std::list<Clause>& Clauses() const
   {
     return flattened_clauses;
   }
+  //! Access all the flattened clauses(Write)
   std::list<Clause>& Clauses()
   {
     return flattened_clauses;
   }
 
+  //! Get symbol table associated with this flattener
   SymbolTable GetSymbolTable() const
   {
     return symbol_table;
   }
 
  private:
-  //! performs simple DFS and returns all the relations traversed
+  //! Performs simple DFS and returns all the relations traversed
+  //!
+  //! \param node Node to start the DFS from
+  //! \param marked Set of all the relations encountered
+  //! \return void
+  //!
+  //!
   void DFSMarking(const DGraphNode* node, std::set<size_t>& marked);
 
-  //! flattenes the relation represented by given dependency graph node
-  //! all the flattened clauses and facts of given relation are added to
+  //! Flattens the relation represented by given dependency graph node
+  //! All the flattened clauses and facts of given relation are added to
   //! appropriate lists.
+  //!
+  //! \param n DGraphNode to flatten
+  //! \param all_kb KnowledgeBase which stores all the given knowledge
+  //! \param state_independent Set of state independent relations
+  //! \param m_kb The current flattened knowledge
+  //! \param f_clauses List flattened clauses
+  //! \param f_facts List of flattened facts
+  //! \return void
+  //!
+  //!
   void FlattenRelation(const DGraphNode* n,
                        const KnowledgeBase& all_kb,
                        const std::set<size_t>& state_independent,
@@ -113,40 +153,83 @@ class KIFFlattener
                        std::list<Clause>& f_clauses,
                        std::list<Fact>& f_facts);
 
-  //! pre-processes clause before flattening
+  //! Preprocesses clause before flattening
+  //! Returns the clause with special substitution
+  //!
+  //! \param c Cluse to preprocess
+  //! \param state_independent Set of state independent relations
+  //! \return Clause*
+  //!
+  //!
   Clause* ProcessClause(const Clause& c,
                         const std::set<size_t>& state_independent);
-  //! pre-processes argument before flattening
+  //! Preprocesses argument before flattening
+  //!
+  //! \param arg Argument to preprocess
+  //! \param state_independent Set of state independent relations
+  //! \return Clause*
+  //!
+  //!
   Argument* ProcessPremiss(Argument* arg,
                            const std::set<size_t>& state_independent);
 
-  //! returns new argument, copy of the given argument but only shallow copy for variables
+  //! Returns new argument by coping of the given argument
+  //! This functions performs deep copy except for the instances of GDL
+  //! variables, for which shallow copy is performed.
+  //!
+  //! \param arg Argument to copy
+  //! \param vars Set of GDL variables
+  //! \return Argument*
+  //!
+  //!
   Argument* SpecialArgCopy(Argument* arg, std::set<Argument*>& vars);
 
-  //! deletes arguments created by SpecialArgCopy
-  //! does not delete variables
+  //! Deletes arguments created by SpecialArgCopy
+  //! Instances GDL variable are not deleted
+  //!
+  //! \param arg Argument to delete
+  //! \return void
+  //!
+  //!
   void SpecialArgDelete(Argument* arg);
-  //! deletes clauses created with SpecialArgCopy
-  //! does not delete variables
+
+  //! Deletes clauses created with SpecialArgCopy
+  //!
+  //! \param c Clause to delete
+  //! \return void
+  //!
+  //!
   void SpecialClauseDelete(Clause* c);
 
-  //! removes all the data relations from the clause
-  //! also removes distinct, role, input, base from the premisses as they are no longer required
-  //! after flattening
+  //! Removes all the data relations from the clause as they no longer required
+  //! after flattening. Also removes distinct, role, input, base from the
+  //! premisses.
+  //!
+  //! \param c Clause to process
+  //! \param state_independent Set of state independent relations
+  //! \return Clause*
+  //!
+  //!
   Clause* RemoveDataFromClause(Clause* c,
                                const std::set<size_t>& state_independent);
-  //! removes all the data relations from the argument
-  //! used when 'or' is encountered in the premiss
+
+  //! Removes all the data relations from the argument
+  //!
+  //! \param arg Argument to process
+  //! \param state_independent Set of state independent relations
+  //! \return Argument*
+  //!
+  //!
   Argument* RemoveDataFromArgument(Argument* arg,
                                    const std::set<size_t>& state_independent);
 
-  //! stores flattened facts
+  //! Stores flattened facts
   std::list<Fact> flattened_facts;
-  //! stores flattened clauses
+  //! Stores flattened clauses
   std::list<Clause> flattened_clauses;
-
+  //! Symbol table
   SymbolTable symbol_table;
-
+  //! Logging stream
   Log log;
 }; // class KIFFlattener
 

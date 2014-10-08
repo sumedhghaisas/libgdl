@@ -47,11 +47,12 @@ namespace util
 class PrefixedOutStream
 {
  public:
-  //!
   //! Set up the PrefixedOutStream.
+  //! If ignoreInput is true, the input won't be printed to the stream
   //!
-  //! @param destination Output stream which receives output from this object.
-  //! @param prefix The prefix to prepend to each line.
+  //! \param destination Output stream which receives output from this object.
+  //! \param prefix The prefix to prepend to each line.
+  //! \param ignoreInput To ignore the input povided
   //!
   PrefixedOutStream(std::ostream& destination,
                     const std::string& prefix = "",

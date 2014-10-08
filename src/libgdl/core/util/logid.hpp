@@ -39,6 +39,7 @@ class Logid
   //!
   //! \param filename Pointer to the filename
   //! \param line Line number
+  //! \param function Calling function signature
   //! \return std::string
   //!
   //!
@@ -57,6 +58,7 @@ class Logid
   //!
   //! \param filename Pointer to the filename
   //! \param line Line number
+  //! \param function Calling function signature
   //! \return std::string
   //!
   //!

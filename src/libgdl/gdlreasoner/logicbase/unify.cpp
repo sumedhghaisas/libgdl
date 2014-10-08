@@ -19,39 +19,14 @@ using namespace libgdl::gdlparser;
 //! set occur check to false
 bool Unify::doOccurCheck = false;
 
-/*
-bool Unify::OccurCheck(const Argument* var, const Argument* t,const VariableSet& theta)
-{
-    std::stack<const Argument*> S;
-    S.push(t);
-    while(!S.empty())
-    {
-        const Argument* temp = S.top();
-        S.pop();
-
-        for(size_t i = 0; i < temp->args.size(); i++)
-        {
-            if(temp->args[i]->IsVariable())
-            {
-                VariableSet::const_iterator it;
-                if(var->val == temp->args[i]->val) return false;
-                //else if((it = theta.find(temp->args[i])) != theta.end()) S.push(temp->sub);
-            }
-            else S.push(temp->args[i]);
-        }
-    }
-    return true;
-}
-*/
-
 bool Unify::mgu(const Argument& arg1, const Argument& arg2, VariableMap& theta)
 {
-  std::stack<std::pair<const Argument*, const Argument*> > S;
-  S.push(std::pair<const Argument*, const Argument*>(&arg1, &arg2));
+  stack<pair<const Argument*, const Argument*> > S;
+  S.push(pair<const Argument*, const Argument*>(&arg1, &arg2));
 
   while(!S.empty())
   {
-    std::pair<const Argument*, const Argument*>& p = S.top();
+    pair<const Argument*, const Argument*>& p = S.top();
     S.pop();
 
     const Argument* s = p.first;
@@ -84,7 +59,7 @@ bool Unify::mgu(const Argument& arg1, const Argument& arg2, VariableMap& theta)
       if(s->args.size() != t->args.size()) return false;
       for(size_t i = 0; i < s->args.size(); i++)
       {
-        S.push(std::pair<const Argument*, const Argument*>(s->args[i], t->args[i]));
+        S.push(pair<const Argument*, const Argument*>(s->args[i], t->args[i]));
       }
     }
     else return false;
@@ -96,9 +71,9 @@ bool Unify::EquateWithSubstitution(const Argument& arg1,
                                    const Argument& arg2,
                                    const VariableMap& v_map)
 {
-  typedef std::pair<const Argument*, const Argument*> ArgPair;
+  typedef pair<const Argument*, const Argument*> ArgPair;
 
-  std::stack<ArgPair> S;
+  stack<ArgPair> S;
   S.push(ArgPair(&arg1, &arg2));
 
   while(!S.empty())

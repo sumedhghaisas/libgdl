@@ -67,8 +67,8 @@ public:
     //! Returns the next token if any along with its location
     //! For implementation check out kif_scanner.ll
     //!
-    //! \param yyval Value of the token
-    //! \param yyloc Location of the token
+    //! \param yylval Value of the token
+    //! \param yylloc Location of the token
     //! \return token_type
     //!
     //!

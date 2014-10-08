@@ -123,7 +123,7 @@ class RawDGraph
   //! This function uses Tarjan's SCC algorithm.
   //! For further information refer to
   //!
-  //! @href http://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+  //! <a href="http://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm">Tarjan's Algorithm for SSC</a>
   //!
   //! \param v The starting node
   //! \param nstack Stack of nodes visited

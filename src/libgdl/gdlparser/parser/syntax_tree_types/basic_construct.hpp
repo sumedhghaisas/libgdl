@@ -117,6 +117,7 @@ class BasicConstruct : public Node
   //! Returns success state
   //!
   //! \tparam T Class of returning object
+  //! \param out Returns the constructed object
   //! \param driver KIFDriver object
   //! \param v_map String to variable mapping
   //! \return bool
@@ -217,6 +218,7 @@ class BasicConstruct<Policy, Head, TerminalHold> : public Node
   //! Returns success state
   //!
   //! \tparam T Class of returning object
+  //! \param out Returns the constructed object
   //! \param driver KIFDriver object
   //! \param v_map String to variable mapping
   //! \return bool

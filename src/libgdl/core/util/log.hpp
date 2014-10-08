@@ -64,7 +64,7 @@ class Log
  public:
   //! Constructs Logging stream from output stream
   //!
-  //! \param std::cout std::ostream& stream=
+  //! \param stream Stream to output
   //!
   //!
   Log(std::ostream& stream = std::cout)
