@@ -101,7 +101,7 @@ bool Clause::IsGround() const
 void Clause::Reorder()
 {
   list<Argument*> l;
-  for(size_t i = 0;i < premisses.size();i++)
+  for(int i = premisses.size() - 1;i >= 0;i--)
   {
     if(premisses[i]->value == SymbolTable::DistinctID ||
        premisses[i]->value == SymbolTable::NotID)

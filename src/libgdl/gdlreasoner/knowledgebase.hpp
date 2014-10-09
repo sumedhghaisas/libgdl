@@ -83,7 +83,7 @@ class KnowledgeBase
   //! \param log Logging stream
   //!
   //!
-  KnowledgeBase(gdlparser::KIF& kif, const Log& log = std::cout);
+  explicit KnowledgeBase(gdlparser::KIF& kif, const Log& log = std::cout);
 
   //! Constructs knowledge base from flattened knowledge
   //! Knowledge is transferred hence the KIFFlattener object is cleaned
@@ -92,7 +92,7 @@ class KnowledgeBase
   //! \param log Logging stream
   //!
   //!
-  KnowledgeBase(KIFFlattener& kiff, const Log& log = std::cout);
+  explicit KnowledgeBase(KIFFlattener& kiff, const Log& log = std::cout);
 
   //! Asks knowledge base given question and returns the list of answers
   //! The answers are returned as pointer to 'Argument'
@@ -263,6 +263,12 @@ class KnowledgeBase
   SymbolTable GetSymbolTable() const
   {
     return symbol_table;
+  }
+
+  //! Set the symbol table associated with knowledge base
+  void SetSymbolTable(SymbolTable sym)
+  {
+    symbol_table = sym;
   }
 
   //! Get-set logging stream

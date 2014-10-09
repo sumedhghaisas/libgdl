@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(GetSubArgTest)
   Argument* result = Unify::GetSubstitutedArgument(&arg1, v_map);
   
   stringstream stream;
-  SymbolDecodeStream sds(&symbol_table, stream);
+  SymbolDecodeStream sds(symbol_table, stream);
   sds << *result;
   
   if(stream.str() != "( test ( test2 x ) )") MARK_FAIL;

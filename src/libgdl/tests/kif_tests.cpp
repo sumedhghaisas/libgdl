@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(GameParsingTest)
   MARK_START;
   OPEN_LOG;
   KIF kif(false, 0, TEST_LOG);
-  kif.AddFile("data/parser_tests/8puzzle.kif");
+  kif.AddFile("data/games/8puzzle.kif");
   if(!kif.Parse()) MARK_FAIL;
   MARK_END;
 }

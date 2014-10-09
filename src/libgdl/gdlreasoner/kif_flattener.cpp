@@ -28,6 +28,8 @@ void KIFFlattener::Flatten(KIF& kif)
 
   DGraph graph = kif.DependencyGraph();
 
+  kif.PrintDependencyGraph("test.dot");
+
   // dependency graph
   const map<size_t, DGraphNode*>& dgraph = graph.GetGraph();
 
@@ -36,6 +38,7 @@ void KIFFlattener::Flatten(KIF& kif)
 
   // the temporary knowledge base
   KnowledgeBase m_kb;
+  m_kb.SetSymbolTable(symbol_table);
 
   // stores marked relations in Dfs
   set<size_t> marked;
@@ -115,7 +118,7 @@ void KIFFlattener::Flatten(KIF& kif)
         const vector<DGraphNode*>& in = temp->in;
         if(index == in.size())
         {
-          if((mit = state_independent.find(temp->id)) == state_independent.end())
+          if(state_independent.find(temp->id) == state_independent.end())
           {
             FlattenRelation(temp, all_kb, state_independent,
                             m_kb, flattened_clauses, flattened_facts);
@@ -163,6 +166,7 @@ void KIFFlattener::DFSMarking(const DGraphNode* n, set<size_t>& marked)
     S_n.push(n);
     S_i.push(index + 1);
 
+
     if(visited.find(n->out[index]->id) == visited.end())
     {
       S_n.push(n->out[index]);
@@ -189,11 +193,12 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   if(p_clauses == NULL)
   {
     if(facts != NULL)
-      flattened_facts = *facts;
-    else
-    {
-      log.Warn << "No knowledge is provided for flattening!!!" << endl;
-    }
+      for(KnowledgeBase::FactList::const_iterator it = facts->begin();
+                                                      it != facts->end();it++)
+      {
+        f_facts.push_back(*it);
+        m_kb.Tell(*it);
+      }
     return;
   }
 
@@ -217,6 +222,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
       delete to_add;
       continue;
     }
+
 
     // pre-process the clause
     // adjust the extra variables which are present in body but not head
@@ -512,7 +518,7 @@ bool KIFFlattener::PrintToFile(const std::string& filename)
 
   if(!f.is_open()) return false;
 
-  SymbolDecodeStream myfile(&symbol_table, f);
+  SymbolDecodeStream myfile(symbol_table, f);
   for(list<Fact>::iterator it = flattened_facts.begin();
                                               it != flattened_facts.end();it++)
   {

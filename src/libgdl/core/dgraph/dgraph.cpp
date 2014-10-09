@@ -359,7 +359,7 @@ void RawDGraph::CheckDef15(const Clause* clause,
   if(!isValid)
   {
     std::stringstream s;
-    SymbolDecodeStream stream(&symbol_table, s);
+    SymbolDecodeStream stream(symbol_table, s);
     stream << *arg->args[invalid_index];
     ErrorType error;
     error.AddEntry("Recursion restriction violated for argument " + s.str(),

@@ -128,7 +128,7 @@ bool KIF::PrintDependencyGraph(const string& filename) const
     return false;
   }
 
-  core::SymbolDecodeStream stream(&symbol_table, util::PrefixedOutStream(graph));
+  core::SymbolDecodeStream stream(symbol_table, util::PrefixedOutStream(graph));
   stream << dgraph << endl;
 
   graph.close();
@@ -145,7 +145,7 @@ bool KIF::PrintToFile(const string& filename) const
     return false;
   }
 
-  core::SymbolDecodeStream out(&symbol_table, out_p);
+  core::SymbolDecodeStream out(symbol_table, out_p);
 
   for(list<Fact>::const_iterator it = facts.begin();it != facts.end();it++)
     out << *it << std::endl;

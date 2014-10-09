@@ -17,6 +17,7 @@
 #include <libgdl/core/cache/lru_cache.hpp>
 #include <libgdl/gdlparser/kif.hpp>
 #include <libgdl/gdlreasoner/knowledgebase.hpp>
+#include <libgdl/gdlreasoner/kif_flattener.hpp>
 
 namespace libgdl
 {
@@ -43,12 +44,23 @@ class GDL
 
   //! Constructs a GDL object from KIF.
   //!
-  //! \param kif& KIF object
+  //! \param kif KIF object
   //! \param state_cache_capacity cache capacity for all caches
   //! \param log Logging stream
   //!
   //!
   GDL(gdlparser::KIF& kif,
+      size_t state_cache_capacity = 1024,
+      const Log& log = Log());
+
+  //! Constructs a GDL object from flattened knowledge.
+  //!
+  //! \param kf KIFFlattener object
+  //! \param state_cache_capacity cache capacity for all caches
+  //! \param log Logging stream
+  //!
+  //!
+  GDL(gdlreasoner::KIFFlattener& kf,
       size_t state_cache_capacity = 1024,
       const Log& log = Log());
 

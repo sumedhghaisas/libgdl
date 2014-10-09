@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(ArgumentStringConstructionTest)
   Argument arg("(test x)", symbol_table, true, TEST_LOG);
   
   stringstream stream;
-  SymbolDecodeStream sds(&symbol_table, stream);
+  SymbolDecodeStream sds(symbol_table, stream);
   sds << arg;
   
   if(stream.str() != "( test x )") MARK_FAIL;
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(ArgumentStringConstructionTest)
   arg = Argument("(test (test2 x))", symbol_table, true, TEST_LOG);
   
   stringstream stream2;
-  SymbolDecodeStream sds2(&symbol_table, stream2);
+  SymbolDecodeStream sds2(symbol_table, stream2);
   sds2 << arg;
   
   if(stream2.str() != "( test ( test2 x ) )") MARK_FAIL;

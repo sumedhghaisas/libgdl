@@ -83,7 +83,7 @@ struct RawState
   //! Returns string representation of this RawState using the symbol table
   //! This function is used by SymbolDecodeStream to print RawState
   //!
-  //! \param symbol_table const SymbolTable&
+  //! \param symbol_table const SymbolTable&KIF kif(true, 1, TEST_LOG);
   //! \return std::string
   //!
   //! @see SymbolDecodeStream

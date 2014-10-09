@@ -70,7 +70,7 @@ class SymbolDecodeStream
   //! \param stream Output stream
   //!
   //!
-  SymbolDecodeStream(const SymbolTable* symbol_table,
+  SymbolDecodeStream(const SymbolTable symbol_table,
                      const util::PrefixedOutStream& stream = std::cout)
     : symbol_table(symbol_table), stream(stream) {}
 
@@ -91,7 +91,8 @@ class SymbolDecodeStream
     return *this;
   }
 
-  //! Write anything else to the stream
+  //! Write anything else to the streamt("(cell 2 3 4)",
+
   template<typename T>
   SymbolDecodeStream& operator<<(const T& t)
   {
@@ -113,7 +114,7 @@ class SymbolDecodeStream
   BaseLogic(const T& t,
             typename boost::enable_if<Has_sig<T>>::type* = 0)
   {
-    stream << t.DecodeToString(*symbol_table);
+    stream << t.DecodeToString(symbol_table);
   }
 
   //! Basic logic behind forwarding
@@ -132,7 +133,7 @@ class SymbolDecodeStream
   }
 
   //! Pointer to SymbolTable
-  const SymbolTable* symbol_table;
+  const SymbolTable symbol_table;
   //! Stream to output
   util::PrefixedOutStream stream;
 }; // class SymbolDecodeStream

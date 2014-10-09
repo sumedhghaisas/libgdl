@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(ClauseStringConstructionTest)
   Clause c("(<= terminal (test x))", symbol_table, TEST_LOG);
   
   stringstream stream;
-  SymbolDecodeStream sds(&symbol_table, stream);
+  SymbolDecodeStream sds(symbol_table, stream);
   sds << c;
   
   if(stream.str() != "(<= terminal ( test x ) )") MARK_FAIL;

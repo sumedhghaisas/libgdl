@@ -94,6 +94,43 @@ GDL::GDL(KIF& kif,
   init = new State(new core::RawState(temp));
 }
 
+GDL::GDL(KIFFlattener& kf,
+         size_t state_cache_capacity,
+         const Log& l)
+  : base_rules(kf),
+    next_state_cache_capacity(state_cache_capacity),
+    next_state_cache(next_state_cache_capacity),
+    isTerminal_cache_capacity(state_cache_capacity),
+    isTerminal_cache(bind(&GDL::cached_IsTerminal, this, _1),
+                      isTerminal_cache_capacity),
+    getLegalMoves_cache_capacity(state_cache_capacity),
+    getLegalMoves_cache(bind(&GDL::cached_getLegalMoves, this, _1),
+                        getLegalMoves_cache_capacity),
+    log(l)
+
+{
+  kf.Clear();
+
+  list<Argument*> result = base_rules.Ask("(role ?x)");
+  for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
+  {
+    roles.push_back((*it)->args[0]);
+    (*it)->args.clear();
+    delete *it;
+  }
+  result.clear();
+
+  result = base_rules.Ask("(init ?x)");
+  list<Argument*> temp;
+  for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
+  {
+    temp.push_back((*it)->args[0]);
+    (*it)->args.clear();
+    delete *it;
+  }
+  init = new State(new core::RawState(temp));
+}
+
 bool GDL::IsTerminal(const State& state, bool useCache)
 {
   bool* out;
