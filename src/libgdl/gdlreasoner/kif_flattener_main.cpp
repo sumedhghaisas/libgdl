@@ -27,7 +27,7 @@ using namespace libgdl::gdlreasoner;
  * @endcommand
  *
  * Parameters :
- * -w off	    : will disable all the warnings (by default warnings are enabled)
+ * -w off	      : will disable all the warnings (by default warnings are enabled)
  * -h[--help]   : Prints help.
  */
 int main(int argc, char* argv[])
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
         if(temp == "OFF" || temp == "off" || temp == "Off") warn = false;
     }
 
-    KIF kif(warn, std::cerr);
+    KIF kif(warn, 1, std::cout);
     for(size_t i = 0;i < files.size();i++)
       if(!kif.AddFile(files[i]))
       {

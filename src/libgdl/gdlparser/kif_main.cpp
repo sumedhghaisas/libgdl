@@ -29,10 +29,10 @@ using namespace libgdl::gdlreasoner;
  * @endcommand
  *
  * Parameters :
- * -g   	    : To generate DOT representation of dependency graph
- * -w off	    : will disable all the warnings (by default warnings are enabled)
- * -fl        : Flattens the KIF before saving
- * -h         : Prints help.
+ * -g   	        : To generate DOT representation of dependency graph
+ * -w off	        : will disable all the warnings (by default warnings are enabled)
+ * -f[--flatten]  : Flattens the KIF before saving
+ * -h             : Prints help.
  */
 int main(int argc, char* argv[])
 {
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
   ("output-file", value<std::string>(), "Output filename")
   ("source-files,c", value<std::vector<std::string> >()->multitoken(), 
                      "source files")
-  ("flatten,fl", "Flatten the knowledge")
+  ("flatten,f", "Flatten the knowledge")
   ;
 
   positional_options_description p;
@@ -76,11 +76,12 @@ int main(int argc, char* argv[])
     des = des + "\nSample usage" +
                 "\nkif test.kif -c 3puzzle.kif arithmatic.kif ...(more files if required) -g test.dot" +
                 "\nOptional Parameters :" +
-                "\n-g           : To generate DOT representation of dependency graph" +
-                "\n-w off       : will disable all the warnings (by default warnings are enabled" +
-                "\n-h[--help]   : Prints help.";
+                "\n-g             : To generate DOT representation of dependency graph" +
+                "\n-w off         : Will disable all the warnings (by default warnings are enabled" +
+                "\n-f[--flatten]  : To output flattened KIF" +
+                "\n-h[--help]     : Prints help.";
 
-    std::cerr << des << std::endl;
+    std::cout << des << std::endl;
     return 0;
   }
 
