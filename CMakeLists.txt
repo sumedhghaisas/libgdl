@@ -4,6 +4,7 @@ project(libgdl C CXX)
 # First, define all the compilation options.
 # We default to debugging mode for developers.
 option(DEBUG "Compile with debugging information" OFF)
+option(PROFILE "Compile with profiling information" OFF)
 
 # Set the CFLAGS and CXXFLAGS depending on the options the user specified.
 # Only GCC-like compilers support -Wextra, and other compilers give tons of
@@ -12,8 +13,6 @@ if(CMAKE_COMPILER_IS_GNUCC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++11")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
 endif(CMAKE_COMPILER_IS_GNUCC)
-
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Debugging CFLAGS.  Turn optimizations off; turn debugging symbols on.
 if(DEBUG)
@@ -25,6 +24,16 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 endif(DEBUG)
+
+# Profiling CFLAGS.  Turn profiling information on.
+if(PROFILE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
+endif(PROFILE)
+
+# set path right
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake")
 
 find_package(Boost
     COMPONENTS
@@ -74,10 +83,6 @@ IF("${isSystemDir}" STREQUAL "-1")
    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
-
-# Recurse into the rest of the project.
-add_subdirectory(src/libgdl)
-
 # Make a target to generate the documentation.  If Doxygen isn't installed, then
 # I guess this option will just be unavailable.
 find_package(Doxygen)
@@ -105,3 +110,6 @@ if (DOXYGEN_FOUND)
       OPTIONAL
   )
 endif (DOXYGEN_FOUND)
+
+# Recurse into the rest of the project.
+add_subdirectory(src/libgdl)

@@ -1,0 +1,46 @@
+/*! @mainpage libGDL Documentation
+
+@section intro_sec Introduction
+
+libGDL is an C++ General Game Playing library. It aims to implement a base 
+for any General Game Player. libGDL implements fast GDL parser, reasoner
+along with flattener. The API of libGDL is uniform, scalable and intuitive.
+
+
+@section howto How To Use This Documentation
+
+This documentation is API documentation similar to Javadoc.  It isn't
+necessarily a tutorial, but it does provide detailed documentation on every
+namespace, method, and class.
+
+Namespace gdlparser refers to all the components related to parser while
+gdlreasoner refers to all the componenets related reasoner. Namespace core 
+refers to all the core componenets of libGDL. All the code in libGDL is 
+protected by a common namespace 'libgdl'. This namespace only contains GDL 
+abstraction which acts as the State Machine.
+
+To generate this documentation in your own local copy of libGDL, you can
+simply use Doxygen
+
+@code
+$ cd build/
+$ make doc
+@endcode
+
+The documentation can be accesed by -
+build/doc/html/index.html
+
+@section executables Executables
+
+libGDL provides 2 executables, 'kif' and 'flatten'. 'kif' provides GDL parsing.
+KIF flattening can be done with 'flatten' although 'kif' can also be used to
+achieve flattening with '--flatten' flag.
+
+
+@section tutorial Tutorials
+
+A few short tutorials on how to use libGDL are given below.
+
+ - @ref build
+
+*/

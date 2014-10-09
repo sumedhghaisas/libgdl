@@ -30,6 +30,7 @@ libGDL has the following dependencies:
 * Boost (program_options, unit_test_framework)
 * CMake   _>= 2.8.5_
 * BISON		_>= 3.0.0	**(OPTIONAL)**_
+* FLEX              _**(OPTIONAL)**_
 
 ##Command Line Usage
 

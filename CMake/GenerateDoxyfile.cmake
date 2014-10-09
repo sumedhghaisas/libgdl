@@ -10,7 +10,12 @@ file(READ "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile" DOXYFILE_CONTENTS)
 string(REPLACE
     "./src/libgdl"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/libgdl"
-    DOXYFILE_AUXVAR "${DOXYFILE_CONTENTS}"
+    DOXYFILE_CONTENTS "${DOXYFILE_CONTENTS}"
+)
+string(REPLACE
+    "./in_doc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/doc"
+    DOXYFILE_CONTENTS "${DOXYFILE_CONTENTS}"
 )
 
 # Change the STRIP_FROM_PATH so that it works right even in the build directory;
@@ -18,7 +23,7 @@ string(REPLACE
 string(REGEX REPLACE
     "(STRIP_FROM_PATH[ ]*=) ./"
     "\\1 ${CMAKE_CURRENT_SOURCE_DIR}/"
-    DOXYFILE_CONTENTS ${DOXYFILE_AUXVAR})
+    DOXYFILE_CONTENTS ${DOXYFILE_CONTENTS})
 
 # Save the Doxyfile to its new location.
 file(WRITE "${DESTDIR}/Doxyfile" "${DOXYFILE_CONTENTS}")

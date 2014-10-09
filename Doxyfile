@@ -80,10 +80,10 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ./src/libgdl
+INPUT                  = ./src/libgdl ./in_doc
 FILE_PATTERNS          = *.hpp \
                          *.cpp \
-                         *.txt
+                         *.dox
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = YES

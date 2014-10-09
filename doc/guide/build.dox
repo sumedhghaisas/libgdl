@@ -1,0 +1,103 @@
+/*! @page build Building libGDL From Source
+
+@section buildintro Introduction
+
+libGDL uses CMake as a build system and allows several flexible build
+configuration options.  One can consult any of numerous CMake tutorials for
+further documentation, but this tutorial should be enough to get libGDL built
+and installed.
+
+@section Download latest libGDL build
+Download latest libGDL stable release from <"https://github.com/sumedhghaisas/libgdl/releases">GitHub</a>
+
+@section builddir Creating Build Directory
+
+Once the libGDL source is downloaded, you should create a build directory.
+
+@code
+$ cd libgdl-release_version
+$ mkdir build
+@endcode
+
+The directory can have any name, not just 'build', but 'build' is sufficient
+enough.
+
+@section dep Dependencies of libGDL
+
+libGDL depends on the following libraries, which need to be installed on the
+system and have headers present:
+
+
+  - Boost (program_options, unit_test_framework)
+  - CMake >= 2.8.5
+  - BISON >= 3.0.0 (OPTIONAL)
+  - FLEX           (OPTIONAL)
+
+In Ubuntu and Debian, you can get all of these dependencies through apt-get:
+
+@code
+# apt-get install libboost-program-options-dev libboost-test-dev cmake bison flex
+@endcode
+
+On Fedora, Red Hat, or CentOS, these same dependencies can be obtained via yum:
+
+@code
+# yum install boost-test boost-program-options bison flex
+@endcode
+
+@section config Configuring CMake
+
+Running CMake is the equivalent to running `./configure` with autotools.  If you
+run CMake with no options, it will configure the project to build without 
+debugging symbols and profiling information:
+
+@code
+$ cd build
+$ cmake ../
+@endcode
+
+You can specify options to compile with debugging information and profiling
+information (i.e. as fast as possible):
+
+@code
+$ cd build
+$ cmake -D DEBUG=ON -D PROFILE=ON ../
+@endcode
+
+@section build Building libGDL
+
+Once CMake is configured, building the library is as simple as typing 'make'.
+This will build all library components as well as 'libgdl_test'.
+
+@code
+$ make
+Scanning dependencies of target libgdl
+[  1%] Building CXX object
+src/libgdl/CMakeFiles/libgdl.dir/core/optimizers/aug_lagrangian/aug_lagrangian_test_functions.cpp.o
+<...>
+@endcode
+
+You can specify individual components which you want to build, if you do not
+want to build everything in the library:
+
+@code
+$ make kif flatten
+$ make test
+@endcode
+
+If the build fails and you cannot figure out why, report the bug on GitHub.
+
+@section install Installing libGDL
+
+If you wish to install libGDL to /usr/include/libGDL/ and /usr/lib/ and
+/usr/bin/, once it has built, make sure you have root privileges (or write
+permissions to those two directories), and simply type
+
+@code
+# make install
+@endcode
+
+You can now run the executables by name; you can link against libGDL with
+-lgdl, and the libGDL headers are found in /usr/include/libgdl/.
+
+*/

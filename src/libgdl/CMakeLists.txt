@@ -1,4 +1,4 @@
-include_directories(..) # <mlpack/[whatever]>
+include_directories(..) # <libgdl/[whatever]>
 
 # Add core.hpp to list of sources.
 set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/core.hpp")
@@ -17,6 +17,20 @@ foreach(dir ${DIRS})
     add_subdirectory(${dir})
 endforeach()
 
+# use, i.e. don't skip the full RPATH for the build tree
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+# when building, don't use the install RPATH already
+# (but later on when installing)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+
+# the RPATH to be used when installing
+SET(CMAKE_INSTALL_RPATH "")
+
+# don't add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+
 # LIBGDL_SRCS is set in the subdirectories.
 add_library(gdl SHARED ${GDL_SRCS})
 
@@ -28,7 +42,8 @@ target_link_libraries(gdl
 
 set_target_properties(gdl
   PROPERTIES
-  VERSION 1.0
+  VERSION master
+  SOVERSION 1
 )
 
 # Make sure the linker can find the needed library.
