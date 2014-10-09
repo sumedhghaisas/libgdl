@@ -1,5 +1,7 @@
 #libGDL: Game Description Language(GDL) library
 
+![build status](https://travis-ci.org/sumedhghaisas/libgdl.svg?branch=master)
+
 ##Introduction
 
 Game Description Language(GDL) is designed as a part of General Game Playing
