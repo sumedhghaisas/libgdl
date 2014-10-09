@@ -3,3 +3,5 @@
 *.depend
 *.layout
 html/
+bin/
+build/
