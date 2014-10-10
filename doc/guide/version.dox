@@ -1,0 +1,36 @@
+/*! @page verinfo libGDL version information
+
+@section vercode libGDL versions in code
+
+libGDL provides a couple of convenience macros and functions to get the version
+of libGDL.  More information (and straightforward code) can be found in
+src/libgdl/core/util/version.hpp.
+
+The following three macros provide major, minor, and patch versions of libGDL
+(i.e. for libGDL-x.y.z, 'x' is the major version, 'y' is the minor version, and
+'z' is the patch version):
+
+@code
+_LIBGDL_VERSION_MAJOR_
+_LIBGDL_VERSION_MINOR_
+_LIBGDL_VERSION_PATCH_
+@endcode
+
+Along with version number each libgdl release come along with name and famous
+quote by that name. To access this information following macros could be used -
+
+@code
+_LIBGDL_VERSION_NAME_
+_LIBGDL_VERSION_QUOTE_
+@endcode
+
+In addition, the function \c libgdl::util::GetVersion() returns the libgdl
+version and related information as a string.
+
+@section verex libGDL executable versions
+
+Each libGDL executable supports the \c --version option, which will
+print the version of libGDL used.  If the version is not an official release but
+instead from git commit, the version will be "0.0.0" with name "master".
+
+*/

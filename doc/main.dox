@@ -43,6 +43,7 @@ A few short tutorials on how to use libGDL are given below.
 
  - @ref build
  - @ref tut_io
+ - @ref verinfo
  
 Tutorials on some modules are also available
 

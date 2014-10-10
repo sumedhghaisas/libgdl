@@ -37,7 +37,12 @@ bool KIF::AddFile(const std::string& filename)
 {
   std::ifstream* temp = new std::ifstream(filename);
   // if invalid file
-  if(!temp->is_open()) return false;
+  if(!temp->is_open())
+  {
+    delete temp;
+    return false;
+  }
+  to_del_streams.push_back(temp);
   streams.push_back(GDLStream(filename, temp));
   return true;
 }
@@ -124,6 +129,11 @@ bool KIF::Parse(bool ignoreErrors)
 
 KIF::~KIF()
 {
+  for (list<ifstream*>::iterator it = to_del_streams.begin();
+                                                it != to_del_streams.end();it++)
+  {
+    delete *it;
+  }
 }
 
 bool KIF::PrintDependencyGraph(const string& filename) const

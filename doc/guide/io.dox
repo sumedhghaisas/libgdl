@@ -85,4 +85,66 @@ Sat Oct 11 00:28:14 2014 [WARN ] A warning!
 Sat Oct 11 00:28:14 2014 [FATAL] Program has crashed.
 @endcode
 
+@section logid Using LOGID
+
+Sometimes it is useful to print which line of the code printed the following 
+words. Many times this comes handy for debugging the code. For this purpose
+libGDL defines a preprocessor macro names 'LOGID'. 
+
+Example use of LOGID -
+
+@code 
+#include <libgdl/core.hpp>
+
+using namespace std;
+
+int main()
+{
+  cout << LOGID << "testing" << endl;
+  return 0;
+}
+@endcode
+
+This will produce output of -
+
+@code
+/home/sumedh/projects/libgdl/main.cpp(7): testing
+@endcode
+
+LOGID will be replaced by filename along with the line number as shown.
+
+@section gdlstream Using GDLStream as inputs
+
+KIF module is constructed in such a way so as to abstract the way of input from
+it. This let us pass game description in many ways to KIF module. To add a file
+to KIF, one can directly use the function KIF::AddFile(filename). But sometimes
+the decription is given as a string input. In that case the example code is given 
+below -
+
+@code
+#include <libgdl/core.hpp>
+#include <libgdl/gdlparser/kif.hpp>
+
+#include <sstream>
+
+using namespace std;
+using namespace libgdl;
+using namespace libgdl::util;
+using namespace libgdl::gdlparser;
+
+int main()
+{
+  stringstream ss;
+  ss << "(role robot)";
+  GDLStream stream("any name", &ss);
+
+  KIF kif;
+  kif.AddStream(stream);
+  kif.Parse();
+
+  return 0;
+}
+@endcode
+
+For more information refer to documentation on class GDLStream.
 */

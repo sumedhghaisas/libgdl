@@ -234,6 +234,8 @@ class KIF
   //! Stores if goal predicate is used in any input
   bool isGoal;
 
+  std::list<std::ifstream*> to_del_streams;
+
   //! Logging stream
   mutable Log log;
 

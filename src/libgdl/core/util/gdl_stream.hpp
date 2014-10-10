@@ -33,7 +33,7 @@ class GDLStream
    //! \param stream File input stream
    //!
    //!
-   GDLStream(const std::string& name, std::ifstream* stream)
+   GDLStream(const std::string& name, std::istream* stream)
      : name(name), stream(stream) {}
 
    //! Get name of the stream

@@ -61,7 +61,7 @@ public:
     KIFScanner(KIFDriver& driver);
 
     //! Destructor
-    ~KIFScanner() { delete yyin; }
+    ~KIFScanner() { }
 
     //! yylex function needed by parser.
     //! Returns the next token if any along with its location
