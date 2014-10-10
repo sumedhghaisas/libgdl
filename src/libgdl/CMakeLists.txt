@@ -42,8 +42,8 @@ target_link_libraries(gdl
 
 set_target_properties(gdl
   PROPERTIES
-  VERSION master
-  SOVERSION 1
+  VERSION ${LIBGDL_MAJOR_VERSION}
+  SOVERSION ${LIBGDL_MINOR_VERSION}
 )
 
 # Make sure the linker can find the needed library.

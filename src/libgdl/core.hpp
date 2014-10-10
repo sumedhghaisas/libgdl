@@ -25,6 +25,7 @@
 #include <libgdl/core/util/log.hpp>
 #include <libgdl/core/util/timer.hpp>
 #include <libgdl/core/util/to_string.hpp>
+#include <libgdl/core/util/version.hpp>
 
 #define MARK_USED(X) (void)X;
 
