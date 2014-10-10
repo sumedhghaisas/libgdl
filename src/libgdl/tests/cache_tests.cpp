@@ -51,9 +51,9 @@ BOOST_AUTO_TEST_CASE(LRUCacheHitTest_Time)
   
   size_t* t1 = cache.Get(10, def, h);
  
-  size_t start = microtimer();
+  size_t start = Timer::microtimer();
   t1 = cache.Get(10, def, h);
-  size_t end = microtimer();
+  size_t end = Timer::microtimer();
   if(end - start > 3) MARK_FAIL;
   (void)t1;
   MARK_END;
@@ -79,14 +79,14 @@ BOOST_AUTO_TEST_CASE(LRUCacheReplacementPolicyTest_Time)
   t1 = cache.Get(10, def, h);
   t1 = cache.Get(13, def, h);
 
-  size_t start = microtimer();
+  size_t start = Timer::microtimer();
   t1 = cache.Get(10, def, h);
-  size_t end = microtimer();
+  size_t end = Timer::microtimer();
   if(end - start > 3) MARK_FAIL;
   
-  start = microtimer();
+  start = Timer::microtimer();
   t1 = cache.Get(11, def, h);
-  end = microtimer();
+  end = Timer::microtimer();
   if(end - start <= 3) MARK_FAIL;
   (void)t1;
   MARK_END;

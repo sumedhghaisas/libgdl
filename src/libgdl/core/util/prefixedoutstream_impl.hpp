@@ -9,6 +9,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <libgdl/core/util/timer.hpp>
+
 namespace libgdl
 {
 namespace util
@@ -100,7 +102,11 @@ void PrefixedOutStream::PrefixIfNeeded()
   if (carriageReturned)
   {
     if (!ignoreInput) // But only if we are allowed to.
+    {
+      if(timestamp)
+        *destination << Timer::getTimeStamp();
       *destination << prefix;
+    }
 
     carriageReturned = false; // Denote that the prefix has been displayed.
   }

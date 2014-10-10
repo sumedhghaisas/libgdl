@@ -2,7 +2,7 @@
 
 @section intro_sec Introduction
 
-libGDL is an C++ General Game Playing library. It aims to implement a base 
+libGDL is an C++(std11) General Game Playing library. It aims to implement a base 
 for any General Game Player. libGDL implements fast GDL parser, reasoner
 along with flattener. The API of libGDL is uniform, scalable and intuitive.
 
@@ -42,5 +42,9 @@ achieve flattening with '--flatten' flag.
 A few short tutorials on how to use libGDL are given below.
 
  - @ref build
+ - @ref tut_io
+ 
+Tutorials on some modules are also available
 
+  - @ref tut_kif
 */

@@ -44,14 +44,14 @@ class GDLStream
    //!
    const std::string& Name() const { return name; }
 
-   //! Set name of the stream
+   //! Get-Set name of the stream
    //!
    //! \return std::string&
    //!
    //!
    std::string& Name() { return name; }
 
-   //! Set stream
+   //! Get stream
    //!
    //! \return std::istream*
    //!

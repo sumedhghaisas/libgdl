@@ -18,6 +18,7 @@
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::util;
 using namespace libgdl::gdlparser;
 using namespace libgdl::gdlparser::parser;
 
@@ -27,16 +28,23 @@ KIF::KIF(bool isWarn,
   : isWarn(isWarn),
     o_level(o_level),
     driver(*this),
+    symbol_table(log),
     log(log)
-{}
+{
+}
 
 bool KIF::AddFile(const std::string& filename)
 {
   std::ifstream* temp = new std::ifstream(filename);
   // if invalid file
   if(!temp->is_open()) return false;
-  streams.push_back(util::GDLStream(filename, temp));
+  streams.push_back(GDLStream(filename, temp));
   return true;
+}
+
+void KIF::AddStream(const GDLStream& stream)
+{
+  streams.push_back(stream);
 }
 
 bool KIF::Parse(bool ignoreErrors)

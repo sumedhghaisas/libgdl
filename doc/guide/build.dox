@@ -98,6 +98,7 @@ permissions to those two directories), and simply type
 @endcode
 
 You can now run the executables by name; you can link against libGDL with
--lgdl, and the libGDL headers are found in /usr/include/libgdl/.
+-lgdl, and the libGDL headers are found in /usr/include/libgdl/. libGDL uses 
+c++11 standard, compile your code with the same.
 
 */

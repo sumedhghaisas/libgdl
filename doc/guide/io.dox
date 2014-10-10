@@ -1,0 +1,88 @@
+/*! @page tut_io libGDL Input and Output
+
+@section iointro Introduction
+
+libGDL provides the following:
+
+ - libgdl::Log, for debugging / informational / warning / fatal output
+ - LOGID, for verbose logging
+ - libgdl::util::GDLStream, for passing inputs to KIF 
+
+Each of those classes are well-documented, and that documentation should be
+consulted for further reference.
+
+@section simplelog Simple Logging Example
+
+libGDL has four logging levels:
+
+ - Log::Debug
+ - Log::Info
+ - Log::Warn
+ - Log::Fatal
+
+Here is a simple example, and its output:
+
+@code
+#include <libgdl/core.hpp>
+
+using namespace libgdl;
+
+int main(int argc, char** argv)
+{
+  Log log;
+  log.Debug << "Debugging." << std::endl;
+
+  log.Info << "Some test informational output." << std::endl;
+
+  log.Warn << "A warning!" << std::endl;
+
+  log.Fatal << "Program has crashed." << std::endl;
+}
+@endcode
+
+Output of this code is:
+
+@code
+[DEBUG] Compiled with debugging symbols.
+[INFO ] Some test informational output.
+[WARN ] A warning!
+[FATAL] Program has crashed.
+@endcode
+
+Here the '[DEBUG]' and similar prefixes are colored by their severity level. 
+This coloring only works for terminal output. To turn the coloring off 
+
+@code
+Log log(std::cout, false, false);
+@endcode
+
+Log also supports time-stamp addition. For example -
+
+@code
+#include <libgdl/core.hpp>
+
+using namespace libgdl;
+
+int main(int argc, char** argv)
+{
+  Log log(std::cout, true);
+  log.Debug << "Debugging." << std::endl;
+
+  log.Info << "Some test informational output." << std::endl;
+
+  log.Warn << "A warning!" << std::endl;
+
+  log.Fatal << "Program has crashed." << std::endl;
+}
+@endcode
+
+The output of this is:
+
+@code
+Sat Oct 11 00:28:14 2014 [DEBUG] Debugging.
+Sat Oct 11 00:28:14 2014 [INFO ] Some test informational output.
+Sat Oct 11 00:28:14 2014 [WARN ] A warning!
+Sat Oct 11 00:28:14 2014 [FATAL] Program has crashed.
+@endcode
+
+*/

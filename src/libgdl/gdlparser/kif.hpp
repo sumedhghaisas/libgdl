@@ -83,6 +83,14 @@ class KIF
   //!
   bool AddFile(const std::string& filename);
 
+  //! Add given to list of streams
+  //!
+  //! \param stream Stream to add
+  //! \return void
+  //!
+  //!
+  void AddStream(const util::GDLStream& stream);
+
   //! Parse the inputs
   //! Returns true if parsing is successful
   //!

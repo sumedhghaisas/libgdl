@@ -1,0 +1,28 @@
+/*! 
+
+@file kif.dox
+@author Sumedh Ghaisas
+@brief Tutorial on how to use KIF.
+
+@page tut_kif KIF Tutorial
+
+@section intro_tut_kif Introduction
+
+KIF module handles the parsing of GDL. This parser follows the specifications 
+given in <a href="http://logic.stanford.edu/classes/cs227/2013/readings/gdl_spec.pdf">GDL Specifications</a>.
+
+Apart from these specifications this modules also accomodates some other warnings 
+and checks. The parser is implemented in BISON while the scanning is handled by
+FLEX. The parser and scanner files are provided with the every libGDL distribution.
+KIF generates AST(Abstract Syntax Tree) after parsing. This AST is travered for
+sematical analysis of parsed GDL. Every identifier of GDL is assigned a unique 
+symbol ID for faster processing. This process in turn generates a symbol table 
+which is used by many other modules of libGDL. SymbolTable also helps generate
+verbose errors by location tracking. KIF module also generates dependency graph
+of all the predicates which is used heavily by Flattener for fast one pass
+flattening.
+
+\b KIF implements detection of following errors:
+
+*/
+

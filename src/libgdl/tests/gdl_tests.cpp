@@ -73,9 +73,9 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateCacheTest_Time)
   
   gdl.GetNextState(s1, moves);
   
-  size_t start = microtimer();
+  size_t start = Timer::microtimer();
   gdl.GetNextState(s1, moves);
-  size_t end = microtimer();
+  size_t end = Timer::microtimer();
   
   if(end - start > 8) MARK_FAIL;
   
@@ -128,9 +128,9 @@ BOOST_AUTO_TEST_CASE(GDLIsTerminalCacheTest_Time)
   
   gdl.IsTerminal(s);
   
-  size_t start = microtimer();
+  size_t start = Timer::microtimer();
   gdl.IsTerminal(s);
-  size_t end = microtimer();
+  size_t end = Timer::microtimer();
   
   if(end - start > 4) MARK_FAIL;
     
@@ -169,9 +169,9 @@ BOOST_AUTO_TEST_CASE(GDLGetLegalMovesCacheTest_Time)
   const State& init = gdl.InitState();
   
   gdl.GetLegalMoves(init);
-  size_t start = microtimer();
+  size_t start = Timer::microtimer();
   gdl.GetLegalMoves(init);
-  size_t end = microtimer();
+  size_t end = Timer::microtimer();
   
   // for safety its 3, should be 2
   if(end - start > 3) MARK_FAIL;
@@ -228,9 +228,9 @@ BOOST_AUTO_TEST_CASE(GDLGetGoalCacheTest_Time)
   const State& init = gdl.InitState();
   
   gdl.GetGoal(init, 0);
-  size_t start = microtimer();
+  size_t start = Timer::microtimer();
   gdl.GetGoal(init, 0);
-  size_t end = microtimer();
+  size_t end = Timer::microtimer();
   
   if(end - start > 4) MARK_FAIL;
     

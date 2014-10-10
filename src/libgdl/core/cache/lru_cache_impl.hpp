@@ -13,8 +13,13 @@ namespace cache
 
 template<class key_type, class value_type>
 LRUCache<key_type, value_type>::
-  LRUCache(const MissFunction& f, unsigned short capacity)
-    : default_f(f), capacity(capacity), isInitialized(true)
+  LRUCache(const MissFunction& f,
+           unsigned short capacity,
+           const Log& log)
+    : default_f(f),
+    capacity(capacity),
+    isInitialized(true),
+    log(log)
 {
   hashs = new size_t[capacity];
   values = new value_type*[capacity];
@@ -35,8 +40,12 @@ LRUCache<key_type, value_type>::
 }
 
 template<class key_type, class value_type>
-LRUCache<key_type, value_type>::LRUCache(unsigned short capacity)
-        : default_f(), capacity(capacity), isInitialized(false)
+LRUCache<key_type, value_type>::LRUCache(unsigned short capacity,
+                                         const Log& log)
+        : default_f(),
+        capacity(capacity),
+        isInitialized(false),
+        log(log)
 {
   hashs = new size_t[capacity];
 

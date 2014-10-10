@@ -36,9 +36,12 @@ namespace libgdl
  *  - Log::Warn
  *  - Log::Fatal
  *
- * Each of these will prefix a tag to the output (for easy filtering), and the
- * fatal output will terminate the program when a newline is encountered.  An
- * example is given below.
+ * Each of these will prefix a tag to the output (for easy filtering). Log also
+ * supports time-stamp. If enabled the time-stamp will be added before each line
+ * and prefix. If the output is to the terminal some color schema relating to
+ * the severity level can be added.
+ *
+ * An example is given below.
  *
  * @code
  * Log test;
@@ -50,14 +53,22 @@ namespace libgdl
  * {
  *   Log.Fatal << "someImportantCondition() is not satisfied! Terminating.";
  *   Log.Fatal << std::endl;
+ *   exit(0);
  * }
  * @endcode
+ * The coloring is enabled by default.
  *
- * Any messages sent to Log::Debug will not be shown when compiling in non-debug
- * mode.  Messages to Log::Info will only be shown when the --verbose flag is
- * given to the program.
+ * To enable time-stamp addition-
+ * @code
+ * Log test(std::cout, true);
+ * @endcode
  *
- * @see PrefixedOutStream, NullOutStream
+ * To disable the coloring -
+ * @code
+ * Log log(std::cout, true, false);
+ * @endcode
+ *
+ * @see PrefixedOutStream
  */
 class Log
 {
@@ -65,26 +76,53 @@ class Log
   //! Constructs Logging stream from output stream
   //!
   //! \param stream Stream to output
+  //! \param timestamp To enable the time-stamp addition
+  //! \param addColor To enable color coding
   //!
   //!
-  Log(std::ostream& stream = std::cout)
-    :
-#ifdef DEBUG
-      Debug(util::PrefixedOutStream(stream, BASH_CYAN "[DEBUG] " BASH_CLEAR, false)),
-#else
-      Debug(util::NullOutStream()),
-#endif
-      Info(util::PrefixedOutStream(stream,
-                                   BASH_GREEN "[INFO ] " BASH_CLEAR,
-                                   false /* unless --verbose */)),
-      Warn(util::PrefixedOutStream(stream,
-                                   BASH_YELLOW "[WARN ] " BASH_CLEAR,
-                                   false)),
+  Log(std::ostream& stream = std::cout,
+      bool timestamp = false,
+      bool addColor = true)
 
-      Fatal(util::PrefixedOutStream(stream,
-                                   BASH_RED "[FATAL] " BASH_CLEAR,
-                                   false))
   {
+    if(addColor)
+    {
+      Debug = util::PrefixedOutStream(stream,
+                                      BASH_CYAN "[DEBUG] " BASH_CLEAR,
+                                      false,
+                                      timestamp);
+      Info = util::PrefixedOutStream(stream,
+                                     BASH_GREEN "[INFO ] " BASH_CLEAR,
+                                     false /* unless --verbose */,
+                                     timestamp);
+      Warn = util::PrefixedOutStream(stream,
+                                     BASH_YELLOW "[WARN ] " BASH_CLEAR,
+                                     false,
+                                     timestamp);
+      Fatal = util::PrefixedOutStream(stream,
+                                      BASH_RED "[FATAL] " BASH_CLEAR,
+                                      false,
+                                      timestamp);
+    }
+    else
+    {
+      Debug = util::PrefixedOutStream(stream,
+                                      "[DEBUG] ",
+                                      false,
+                                      timestamp);
+      Info = util::PrefixedOutStream(stream,
+                                     "[INFO ] ",
+                                     false /* unless --verbose */,
+                                     timestamp);
+      Warn = util::PrefixedOutStream(stream,
+                                     "[WARN ] ",
+                                     false,
+                                     timestamp);
+      Fatal = util::PrefixedOutStream(stream,
+                                      "[FATAL] ",
+                                      false,
+                                      timestamp);
+    }
   }
 
   //! Checks if the specified condition is true.
@@ -108,23 +146,14 @@ class Log
   //!
   void SetStream(std::ostream& stream)
   {
-#ifdef DEBUG
     Debug.SetStream(stream);
-#endif
     Info.SetStream(stream);
     Warn.SetStream(stream);
     Fatal.SetStream(stream);
   }
 
-  // We only use PrefixedOutStream if the program is compiled with debug
-  // symbols.
-#ifdef DEBUG
   //! Prints debug output with the appropriate tag: [DEBUG].
   util::PrefixedOutStream Debug;
-#else
-  //! Dumps debug output into the bit nether regions.
-  util::NullOutStream Debug;
-#endif
 
   //! Prints informational messages if --verbose is specified, prefixed with
   //! [INFO ].

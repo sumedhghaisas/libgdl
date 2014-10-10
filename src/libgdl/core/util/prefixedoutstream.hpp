@@ -41,8 +41,17 @@ namespace util
  * [TEST]
  * @endcode
  *
- * These objects are used for the mlpack::Log levels (DEBUG, INFO, WARN, and
+ * PrefixedOutStream support addition of time-stamp to every line. Time-stamp
+ * will be prepended to every line including the prefix.
+ * To enable timestamp -
+ * @code
+ * PrefixedOutStream stream(std::cout, "prefix ", false, true);
+ * @endcode
+ *
+ * These objects are used for the libgdl::Log levels (DEBUG, INFO, WARN, and
  * FATAL).
+ *
+ * @see Timer
  */
 class PrefixedOutStream
 {
@@ -53,17 +62,20 @@ class PrefixedOutStream
   //! \param destination Output stream which receives output from this object.
   //! \param prefix The prefix to prepend to each line.
   //! \param ignoreInput To ignore the input povided
+  //! \param timestamp To enable addition of time-stamp
   //!
-  PrefixedOutStream(std::ostream& destination,
+  PrefixedOutStream(std::ostream& destination = std::cout,
                     const std::string& prefix = "",
-                    bool ignoreInput = false) :
-      destination(&destination),
-      ignoreInput(ignoreInput),
-      prefix(prefix),
-      // We want the first call to operator<< to prefix the prefix so we set
-      // carriageReturned to true.
-      carriageReturned(true)
-    { /* nothing to do */ }
+                    bool ignoreInput = false,
+                    bool timestamp = false) :
+    destination(&destination),
+    ignoreInput(ignoreInput),
+    prefix(prefix),
+    // We want the first call to operator<< to prefix the prefix so we set
+    // carriageReturned to true.
+    carriageReturned(true),
+    timestamp(timestamp)
+  {}
 
   //! Write a streambuf to the stream.
   PrefixedOutStream& operator<<(std::streambuf* sb);
@@ -82,8 +94,14 @@ class PrefixedOutStream
   const std::ostream& Stream() { return *destination; }
   //! Set output stream
   std::ostream& Stream() const { return *destination; }
+  //! Get destination
+  std::ostream* Destination() const { return destination; }
   //! Set output stream
   void SetStream(std::ostream& stream) { destination = &stream; }
+  //! Get ignoreInput
+  bool IgnoreInput() const { return ignoreInput; }
+  //! Get prefix
+  std::string Prefix() const { return prefix; }
 
  private:
    //! The output stream that all data is to be sent too; example: std::cout.
@@ -110,6 +128,9 @@ class PrefixedOutStream
   //! If true, the previous call to operator<< encountered a CR, and a prefix
   //! will be necessary.
   bool carriageReturned;
+
+  //! If timestamp needs to be printed before the prefix
+  bool timestamp;
 }; // class PrefixedOutStream
 
 }; // namespace util

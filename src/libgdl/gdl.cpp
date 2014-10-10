@@ -97,15 +97,15 @@ GDL::GDL(KIF& kif,
 GDL::GDL(KIFFlattener& kf,
          size_t state_cache_capacity,
          const Log& l)
-  : base_rules(kf),
+  : base_rules(kf, l),
     next_state_cache_capacity(state_cache_capacity),
-    next_state_cache(next_state_cache_capacity),
+    next_state_cache(next_state_cache_capacity, l),
     isTerminal_cache_capacity(state_cache_capacity),
     isTerminal_cache(bind(&GDL::cached_IsTerminal, this, _1),
-                      isTerminal_cache_capacity),
+                     isTerminal_cache_capacity, l),
     getLegalMoves_cache_capacity(state_cache_capacity),
     getLegalMoves_cache(bind(&GDL::cached_getLegalMoves, this, _1),
-                        getLegalMoves_cache_capacity),
+                        getLegalMoves_cache_capacity, l),
     log(l)
 
 {

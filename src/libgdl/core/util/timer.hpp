@@ -15,17 +15,38 @@
 namespace libgdl
 {
 
-//! Returns the time in microseconds
-//!
-//! \return uint64_t Time in microseconds
-//!
-//!
-inline uint64_t microtimer()
+/**
+ * This class handles all the time related queries of libGDL.
+ */
+class Timer
 {
-  timeval t;
-  gettimeofday (&t, NULL);
-  return t.tv_sec * 1000000 + t.tv_usec;
-}
+ public:
+  //! Returns the time in microseconds
+  //!
+  //! \return uint64_t Time in microseconds
+  //!
+  //!
+  static uint64_t microtimer()
+  {
+    timeval t;
+    gettimeofday (&t, NULL);
+    return t.tv_sec * 1000000 + t.tv_usec;
+  }
+
+  //! Returns current time-stamp as string
+  //!
+  //! \return std::string
+  //!
+  //!
+  static std::string getTimeStamp()
+  {
+    std::time_t tm;
+    std::time(&tm);
+    std::string timestamp = ctime(&tm);
+    timestamp[strlen(timestamp.c_str())-1] = ' ';
+    return timestamp;
+  }
+}; // class Timer
 
 }; // namespace libgdl
 

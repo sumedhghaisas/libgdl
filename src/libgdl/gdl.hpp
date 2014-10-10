@@ -40,7 +40,7 @@ class GDL
   //!
   GDL(const std::string& filename,
       size_t state_cache_capacity = 1024,
-      const Log& log = Log());
+      const Log& log = std::cout);
 
   //! Constructs a GDL object from KIF.
   //!
@@ -51,7 +51,7 @@ class GDL
   //!
   GDL(gdlparser::KIF& kif,
       size_t state_cache_capacity = 1024,
-      const Log& log = Log());
+      const Log& log = std::cout);
 
   //! Constructs a GDL object from flattened knowledge.
   //!
@@ -62,7 +62,7 @@ class GDL
   //!
   GDL(gdlreasoner::KIFFlattener& kf,
       size_t state_cache_capacity = 1024,
-      const Log& log = Log());
+      const Log& log = std::cout);
 
   //! Destructor
   ~GDL()

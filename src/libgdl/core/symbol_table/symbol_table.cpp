@@ -11,8 +11,10 @@ using namespace libgdl;
 using namespace libgdl::core;
 using namespace libgdl::gdlparser::parser;
 
-RawSymbolTable::RawSymbolTable()
-  : count(0u)
+RawSymbolTable::RawSymbolTable(const Log& log)
+  : count(0u),
+  log(log)
+
 {
   index = 0;
 

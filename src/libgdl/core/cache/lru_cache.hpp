@@ -51,16 +51,21 @@ class LRUCache
   //!
   //! \param default_f default miss function
   //! \param capacity number of entries to cache
+  //! \param log Logging stream
   //!
   //!
-  LRUCache(const MissFunction& default_f, unsigned short capacity = 1024);
+  LRUCache(const MissFunction& default_f,
+           unsigned short capacity = 1024,
+           const Log& log = std::cout);
 
   //! Constructor
   //!
   //! \param capacity number of entries to cache
+  //! \param log Logging stream
   //!
   //!
-  LRUCache(unsigned short capacity = 1024);
+  LRUCache(unsigned short capacity = 1024,
+           const Log& log = std::cout);
 
   //! Destructor
   //!
