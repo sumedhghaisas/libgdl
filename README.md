@@ -7,9 +7,8 @@ _invasion, butcher a hog, conn a ship, design a building, write a sonnet,_
 _balance accounts, build a wall, set a bone, comfort the dying, take orders, give_
 _orders, cooperate, act alone, solve equations, analyze a new problem,_ 
 _pitch manure, program a computer, cook a tasty meal, fight efficiently,_ 
-_die gallantly. Specialization is for insects._
->
->                                        **Robert Heinlein**
+_die gallantly. Specialization is for insects._  
+                                        **Robert Heinlein**
 
 ##Introduction
 
