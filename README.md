@@ -8,7 +8,7 @@ _balance accounts, build a wall, set a bone, comfort the dying, take orders, giv
 _orders, cooperate, act alone, solve equations, analyze a new problem,_ 
 _pitch manure, program a computer, cook a tasty meal, fight efficiently,_ 
 _die gallantly. Specialization is for insects._  
-                                        **Robert Heinlein**
+- **Robert Heinlein**
 
 ##Introduction
 
