@@ -12,11 +12,19 @@
 
 // The version of libgdl.  If this is svn trunk, this will be a version with
 // higher number than the most recent release.
-#define _LIBGDL_VERSION_MAJOR_ "CMAKE_LVMA"
-#define _LIBGDL_VERSION_MINOR_ "CMAKE_LVMI"
-#define _LIBGDL_VERSION_PATCH_ "CMAKE_LVP"
-#define _LIBGDL_VERSION_NAME_ "CMAKE_LVN"
-#define _LIBGDL_VERSION_QUOTE_ "CMAKE_LVQ"
+#define _LIBGDL_VERSION_MAJOR_ "0"
+#define _LIBGDL_VERSION_MINOR_ "0"
+#define _LIBGDL_VERSION_PATCH_ "0"
+#define _LIBGDL_VERSION_NAME_ "master"
+#define _LIBGDL_VERSION_QUOTE_ \
+"A human being(or intelligent robot) should be able to change a diaper,\n\
+plan an invasion, butcher a hog, conn a ship, design a building,\n\
+write a sonnet, balance accounts, build a wall, set a bone, \n\
+comfort the dying, take orders, give orders, cooperate, act alone,\n\
+solve equations, analyze a new problem, pitch manure, program a computer,\n\
+cook a tasty meal, fight efficiently, die gallantly.\n\
+Specialization is for insects.\n\
+                          - Robert Heinlein"
 
 // The name of the version (for use by --version).
 namespace libgdl
@@ -33,7 +41,7 @@ inline std::string GetVersion()
   std::stringstream o;
   o << _LIBGDL_VERSION_NAME_ << std::endl;
   o << "libGDL " << _LIBGDL_VERSION_MAJOR_ << "." << _LIBGDL_VERSION_MINOR_
-      << "." << _LIBGDL_VERSION_PATCH_;
+      << "." << _LIBGDL_VERSION_PATCH_ << std::endl;
   o << _LIBGDL_VERSION_QUOTE_ << std::endl;
   return o.str();
 }

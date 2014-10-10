@@ -17,6 +17,11 @@ string(REPLACE
     "${CMAKE_CURRENT_SOURCE_DIR}/doc"
     DOXYFILE_CONTENTS "${DOXYFILE_CONTENTS}"
 )
+string(REPLACE
+    "release_number"
+    "${LIBGDL_MAJOR_VERSION}.${LIBGDL_MINOR_VERSION}.${LIBGDL_PATCH_VERSION}"
+    DOXYFILE_CONTENTS "${DOXYFILE_CONTENTS}"
+)
 
 # Change the STRIP_FROM_PATH so that it works right even in the build directory;
 # otherwise, every file will have the full path in it.

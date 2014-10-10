@@ -33,6 +33,7 @@ using namespace libgdl::gdlreasoner;
  * -w off	        : will disable all the warnings (by default warnings are enabled)
  * -f[--flatten]  : Flattens the KIF before saving
  * -h             : Prints help.
+ * --version      : For version
  */
 int main(int argc, char* argv[])
 {
@@ -47,6 +48,7 @@ int main(int argc, char* argv[])
   ("source-files,c", value<std::vector<std::string> >()->multitoken(), 
                      "source files")
   ("flatten,f", "Flatten the knowledge")
+  ("version", "Print version info.")
   ;
 
   positional_options_description p;
@@ -69,6 +71,12 @@ int main(int argc, char* argv[])
   bool warn = true;
   //! to flatten
   bool isFlatten = false;
+  
+  if(vm.count("version"))
+  {
+    cout << util::GetVersion() << endl;
+    return 0;
+  }
 
   if (vm.count("help"))
   {
@@ -79,7 +87,8 @@ int main(int argc, char* argv[])
                 "\n-g             : To generate DOT representation of dependency graph" +
                 "\n-w off         : Will disable all the warnings (by default warnings are enabled" +
                 "\n-f[--flatten]  : To output flattened KIF" +
-                "\n-h[--help]     : Prints help.";
+                "\n-h[--help]     : Prints help." +
+                "\n--version      : For version information";
 
     std::cout << des << std::endl;
     return 0;

@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(libgdl C CXX)
 
+# set version information
+set(LIBGDL_MAJOR_VERSION "0")
+set(LIBGDL_MINOR_VERSION "0")
+set(LIBGDL_PATCH_VERSION "0")
+set(LIBGDL_VERSION_NAME "master")
+
 # First, define all the compilation options.
 # We default to debugging mode for developers.
 option(DEBUG "Compile with debugging information" OFF)

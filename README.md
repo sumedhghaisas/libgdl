@@ -2,7 +2,7 @@
 
 ![build status](https://travis-ci.org/sumedhghaisas/libgdl.svg?branch=master)
 
->_A human being(intelligent robot) should be able to change a diaper, plan an_
+>_A human being(or an intelligent robot) should be able to change a diaper, plan an_
 _invasion, butcher a hog, conn a ship, design a building, write a sonnet,_ 
 _balance accounts, build a wall, set a bone, comfort the dying, take orders, give_
 _orders, cooperate, act alone, solve equations, analyze a new problem,_ 
