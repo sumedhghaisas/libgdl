@@ -43,7 +43,7 @@ class Timer
     std::time_t tm;
     std::time(&tm);
     std::string timestamp = ctime(&tm);
-    timestamp[strlen(timestamp.c_str())-1] = ' ';
+    timestamp[timestamp.length() - 1] = ' ';
     return timestamp;
   }
 }; // class Timer
