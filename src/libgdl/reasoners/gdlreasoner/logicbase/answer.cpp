@@ -6,7 +6,7 @@
  */
 #include "answer.hpp"
 
-#include <libgdl/gdlreasoner/knowledgebase.hpp>
+#include <libgdl/reasoner/gdlreasoner/knowledgebase.hpp>
 
 using namespace std;
 using namespace libgdl::core;
