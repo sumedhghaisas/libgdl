@@ -1,3 +1,9 @@
+/**
+ * @file gdreasoner_impl.hpp
+ * @author Sumedh Ghaisas
+ *
+ * Implementation of GDL class.
+ */
 #include <sstream>
 
 namespace libgdl

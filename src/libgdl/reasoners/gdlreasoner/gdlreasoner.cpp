@@ -1,3 +1,9 @@
+/**
+ * @file gdlreasoner.cpp
+ * @author Sumedh Ghaisas
+ *
+ * Implementation of GDLReasoner.
+ */
 #include "gdlreasoner.hpp"
 
 using namespace std;

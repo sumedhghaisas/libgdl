@@ -21,6 +21,16 @@
 namespace libgdl
 {
 
+/**
+ * GDL class acts as the state machine for general game player. This class is
+ * templatized so that to supports many reasoners. Current version of libGDL
+ * only implements one reasoner namely GDLReasoner but user can user their own
+ * reasoners with this state machine.
+ *
+ * \tparam Reasoner Reasoner to be used for operations
+ *
+ * @see GDLReasoner
+ */
 template<class Reasoner>
 class GDL
 {
