@@ -1,8 +1,8 @@
 /**
- * @file knowledgebase_tests.cpp
+ * @file gdlreasoner_tests.cpp
  * @author Sumedh Ghaisas
  *
- * Test file for KnowledgeBase.
+ * Test file for GDLReasoner and KnowledgeBase.
  */
 #include <libgdl/core.hpp>
 #include <libgdl/reasoners/gdlreasoner/knowledgebase.hpp>
@@ -14,7 +14,7 @@
 
 #include <list>
 
-BOOST_AUTO_TEST_SUITE(KnowledgeBaseTests);
+BOOST_AUTO_TEST_SUITE(GDlReasonerTests);
 
 using namespace std;
 using namespace libgdl;
