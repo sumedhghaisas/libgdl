@@ -16,12 +16,12 @@
 #include <libgdl/core.hpp>
 #include <libgdl/core/cache/lru_cache.hpp>
 #include <libgdl/gdlparser/kif.hpp>
-#include <libgdl/gdlreasoner/knowledgebase.hpp>
-#include <libgdl/gdlreasoner/kif_flattener.hpp>
+#include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
 
 namespace libgdl
 {
 
+template<class Reasoner>
 class GDL
 {
   //! For simplicity
@@ -63,15 +63,6 @@ class GDL
   GDL(gdlreasoner::KIFFlattener& kf,
       size_t state_cache_capacity = 1024,
       const Log& log = std::cout);
-
-  //! Destructor
-  ~GDL()
-  {
-    delete init;
-    for(std::list<Argument*>::const_iterator it = roles.begin();
-                                                        it != roles.end();it++)
-      delete *it;
-  }
 
   //! Returns the state of the game after performing given moves on the given
   //! state
@@ -124,12 +115,12 @@ class GDL
   size_t GetGoal(const State& state, const size_t role, bool useCache = true);
 
   //! Returns the initial state of the game
-  const State& InitState() const { return *init; }
+  const State& InitState() const { return reasoner.InitState(); }
 
   //! Get the symbol table
   SymbolTable GetSymbolTable() const
   {
-    return base_rules.GetSymbolTable();
+    return reasoner.GetSymbolTable();
   }
 
   //! Get-Set the logging stream
@@ -190,45 +181,8 @@ private:
   //!
   size_t StateRoleHash(const State& state, const size_t role) const;
 
-  //! Apply the given state to knowledge base
-  //!
-  //! \param state State to apply
-  //! \return void
-  //!
-  //!
-  inline void ApplyState(const State& state);
-
-  //! Apply the given actions to knowledge base
-  //!
-  //! \param moves Actions to apply
-  //! \return void
-  //!
-  //!
-  inline void ApplyActions(const Move& moves);
-
-
-  //! Remove the state representation from the knowledge base
-  //!
-  //! \return void
-  //!
-  //!
-  inline void RemoveState();
-
-  //! Remove the knowledge of actions from knowledge base
-  //!
-  //! \return void
-  //!
-  //!
-  inline void RemoveActions();
-
-  //! Roles in the playing game
-  std::list<Argument*> roles;
-
   //! Knowledge base representing the rules of the game
-  mutable gdlreasoner::KnowledgeBase base_rules;
-
-  //! Initial state of the game
-  State* init;
+  Reasoner reasoner;
 
   //! Cache capacity of cache associated with function GetNextState
   size_t next_state_cache_capacity;
@@ -254,69 +208,8 @@ private:
   mutable Log log;
 }; // class GDL
 
-inline void GDL::ApplyState(const State& state)
-{
-  const std::list<Argument*>& facts = state.GetProps();
-  for(std::list<Argument*>::const_iterator it = facts.begin();it != facts.end();
-                                                                          it++)
-  {
-    Argument *temp = new Argument;
-    temp->value = SymbolTable::TrueID;
-    temp->t = Argument::Relation;
-    temp->args.push_back(*it);
-
-    Fact f;
-    f.arg = temp;
-    base_rules.m_facts[SymbolTable::TrueID].push_back(std::move(f));
-  }
-}
-
-inline void GDL::ApplyActions(const Move& moves)
-{
-  size_t r_index = 0;
-  for(std::list<Argument*>::const_iterator it = roles.begin();
-                                                        it != roles.end();it++)
-  {
-    Argument *temp = new Argument;
-    temp->value = SymbolTable::DoesID;
-    temp->t = Argument::Relation;
-    temp->args.push_back(*it);
-    temp->args.push_back(moves.moves[r_index]);
-
-    Fact f;
-    f.arg = temp;
-    base_rules.m_facts[SymbolTable::DoesID].push_back(std::move(f));
-  }
-}
-
-inline void GDL::RemoveState()
-{
-  gdlreasoner::KnowledgeBase::FactMap::iterator
-                            m_it = base_rules.m_facts.find(SymbolTable::TrueID);
-  gdlreasoner::KnowledgeBase::FactList& fvec = m_it->second;
-  for(gdlreasoner::KnowledgeBase::FactList::iterator it = fvec.begin();
-                                                        it != fvec.end();it++)
-  {
-    Fact& f = *it;
-    f.arg->args.clear();
-  }
-  base_rules.m_facts.erase(m_it);
-}
-
-inline void GDL::RemoveActions()
-{
-  gdlreasoner::KnowledgeBase::FactMap::iterator
-                            m_it = base_rules.m_facts.find(SymbolTable::DoesID);
-  gdlreasoner::KnowledgeBase::FactList& fvec2 = m_it->second;
-  for(gdlreasoner::KnowledgeBase::FactList::iterator it = fvec2.begin();
-                                                        it != fvec2.end();it++)
-  {
-    Fact& f = *it;
-    f.arg->args.clear();
-  }
-  base_rules.m_facts.erase(m_it);
-}
-
 }; // namespace libgdl
+
+#include "gdl_impl.hpp"
 
 #endif // _LIBGDL_GDL_HPP_INCLUDED

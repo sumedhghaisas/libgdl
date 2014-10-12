@@ -10,6 +10,9 @@ endforeach()
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
+  gdlreasoner.hpp
+  gdlreasoner_impl.hpp
+  gdlreasoner.cpp
   knowledgebase.cpp
   knowledgebase.hpp
   kif_flattener.cpp

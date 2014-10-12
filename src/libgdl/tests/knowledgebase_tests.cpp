@@ -5,7 +5,7 @@
  * Test file for KnowledgeBase.
  */
 #include <libgdl/core.hpp>
-#include <libgdl/gdlreasoner/knowledgebase.hpp>
+#include <libgdl/reasoners/gdlreasoner/knowledgebase.hpp>
 #include <libgdl/gdlparser/kif.hpp>
 
 #include <boost/test/unit_test.hpp>

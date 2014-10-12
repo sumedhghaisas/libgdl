@@ -14,18 +14,17 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/gdlparser/kif.hpp>
-#include <libgdl/gdlreasoner/logicbase/answer.hpp>
-#include <libgdl/gdlreasoner/logicbase/unify.hpp>
+#include "logicbase/answer.hpp"
+#include "logicbase/unify.hpp"
 
 namespace libgdl
 {
-
-class GDL;
 
 namespace gdlreasoner
 {
 
 class KIFFlattener;
+class GDLReasoner;
 
 /**
  * This class represents knowledge base which stores information and performs
@@ -278,7 +277,7 @@ class KnowledgeBase
   }
 
  private:
-  friend GDL;
+  friend GDLReasoner;
 
   //! all the facts stored in map for faster lookup
   FactMap m_facts;

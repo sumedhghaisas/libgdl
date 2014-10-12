@@ -8,7 +8,7 @@
 #include <list>
 
 #include <libgdl/core.hpp>
-#include <libgdl/gdlreasoner/logicbase/unify.hpp>
+#include <libgdl/reasoners/gdlreasoner/logicbase/unify.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include "old_boost_test_definitions.hpp"

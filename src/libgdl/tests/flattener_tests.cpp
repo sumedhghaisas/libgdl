@@ -6,7 +6,8 @@
  */
 #include <libgdl/core.hpp>
 #include <libgdl/gdlparser/kif.hpp>
-#include <libgdl/gdlreasoner/kif_flattener.hpp>
+#include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
+#include <libgdl/reasoners/gdlreasoner/gdlreasoner.hpp>
 #include <libgdl/gdl.hpp>
 
 #include <list>
@@ -41,7 +42,7 @@ BOOST_AUTO_TEST_CASE(RecursiveFlatteningTest)
   KnowledgeBase kb(kiff);
   list<Argument*> result = kb.Ask("(base ?x)");
   if(result.size() != 10) MARK_FAIL;
-  
+    
   for(list<Argument*>::iterator it = result.begin();it != result.end();it++)
     delete *it; 
   MARK_END;
@@ -62,7 +63,7 @@ BOOST_AUTO_TEST_CASE(Puzzle8FlattenTest)
   KIFFlattener kf;
   kf.Flatten(kif);
 
-  GDL gdl(kf);
+  GDL<GDLReasoner> gdl(kf);
 
   const State& init = gdl.InitState();
 

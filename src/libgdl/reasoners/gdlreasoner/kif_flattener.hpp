@@ -12,7 +12,8 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/gdlparser/kif.hpp>
-#include <libgdl/gdlreasoner/knowledgebase.hpp>
+
+#include "knowledgebase.hpp"
 
 namespace libgdl
 {
