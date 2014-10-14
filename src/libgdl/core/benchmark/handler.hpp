@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <sstream>
+#include <map>
 
 #include <libgdl/core/util/log.hpp>
 
@@ -32,11 +33,18 @@ class Handler
 
   void RunAllTests(bool verbose = false,
                    Log log = GLOBAL_LOG,
-                   bool saveAsXML = false,
+                   bool comapre = false,
+                   const std::string& c_file = "",
+                   bool saveToFile = false,
                    const std::string& filename = "");
 
  private:
+  bool LoadCompareFile(const std::string& filename, Log log);
+
+  bool RetrieveObject(const std::string& name, PMeasure& pm);
+
   std::list<BaseTest*> tests;
+  std::map<std::string, PMeasure> compare_map;
 };
 
 }

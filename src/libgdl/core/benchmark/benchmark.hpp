@@ -35,8 +35,10 @@ Code \
 double time = libgdl::Timer::microtimer() - start; \
 \
 total += time; \
+std::cout << time << std::endl; \
 if(time < min) min = time; \
 if(time > max) max = time; \
+std::cout << min << " " << max << std::endl; \
 \
 std::cout.rdbuf(coutbuf); \
 std::cerr.rdbuf(cerrbuf); \
