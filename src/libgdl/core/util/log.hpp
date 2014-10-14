@@ -41,7 +41,7 @@ namespace libgdl
  * and prefix. If the output is to the terminal some color schema relating to
  * the severity level can be added.
  *
- * An example is given below.
+ * An example is given below.#define BASH_GREEN "\033[0;32m"
  *
  * @code
  * Log test;
@@ -68,6 +68,15 @@ namespace libgdl
  * Log log(std::cout, true, false);
  * @endcode
  *
+ * The Log also provides global logger. The default output stream of this logger
+ * is set to std::cout but it can be changed with appropriate macros.
+ *
+ * Sample usage -
+ * @code
+ * SET_GLOBAL_LOG_STREAM(std::cerr);
+ * GLOBAL_WARN << "Warning!!!" << std::endl;
+ * @endcode
+ *
  * @see PrefixedOutStream
  */
 class Log
@@ -83,7 +92,6 @@ class Log
   Log(std::ostream& stream = std::cout,
       bool timestamp = false,
       bool addColor = true)
-
   {
     if(addColor)
     {
@@ -132,7 +140,7 @@ class Log
   //!
   //! \param condition Condition to check
   //! \param message Message to be shown if the condition fails
-  //! \return
+  //! \returnLog
   //!
   //!
   static void Assert(bool condition,
@@ -152,6 +160,11 @@ class Log
     Fatal.SetStream(stream);
   }
 
+  //! Returns the instance of global logger
+  //!
+  //! \return Log&
+  //!
+  //!
   static Log& GetGlobalLogger()
   {
     static Log singleton;
@@ -174,14 +187,22 @@ class Log
 
 }; //namespace libgdl
 
+//! Get the instance of global logger
 #define GLOBAL_LOG libgdl::Log::GetGlobalLogger()
 
+//! Get the debugging stream of the global logger
 #define GLOBAL_DEBUG libgdl::Log::GetGlobalLogger().Debug
 
+//! Get the info stream of global logger
 #define GLOBAL_INFO libgdl::Log::GetGlobalLogger().Info
 
+//! Get the warn stream of global logger
+#define GLOBAL_INFO libgdl::Log::GetGlobalLogger().Info
+
+//! Get the fatal stream of global logger
 #define GLOBAL_FATAL libgdl::Log::GetGlobalLogger().Fatal
 
+//! Set the output stream of the global logger to given stream
 #define SET_GLOBAL_LOG_STREAM(stream) libgdl::Log::GetGlobalLogger(). \
 SetStream(stream)
 

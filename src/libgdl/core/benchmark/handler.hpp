@@ -31,8 +31,8 @@ class Handler
   }
 
   void RunAllTests(bool verbose = false,
-                   const Log& log = GLOBAL_LOG,
-                   bool saveToFile = false,
+                   Log log = GLOBAL_LOG,
+                   bool saveAsXML = false,
                    const std::string& filename = "");
 
  private:

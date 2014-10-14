@@ -87,6 +87,13 @@ install(TARGETS gdl
   
 add_dependencies(gdl libgdl_headers)
 
+add_custom_target(libgdl_data)
+# Copy test data into right place.
+add_custom_command(TARGET libgdl_data POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/../../data/
+      ${PROJECT_BINARY_DIR}/data/
+)
+
 # For 'make test'.
 add_custom_target(test
   ${CMAKE_BINARY_DIR}/bin/libgdl_test
@@ -94,3 +101,6 @@ add_custom_target(test
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ # This is where test files are put.
   COMMENT "Running libgdl tests"
   DEPENDS libgdl_test)
+  
+add_dependencies(test libgdl_data)
+
