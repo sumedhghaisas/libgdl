@@ -1,7 +1,8 @@
 /**
  * @file libgdl_test.hpp
+ * @author Sumedh Ghaisas
  *
- * Declaring the tests for GDLParser.
+ * Declaring the tests for libGDL.
  */
 #ifndef _LIBGDL_TESTS_LIBGDL_TEST_HPP_INCLUDED
 #define _LIBGDL_TESTS_LIBGDL_TEST_HPP_INCLUDED
@@ -16,8 +17,7 @@
 
 #define MARK_END std::cout << "\033[0;32m" "[PASSED]" "\033[0m" << std::endl
 
-#define OPEN_LOG std::ofstream test_log("test_log.log", std::fstream::app);   \
-                 Log log(test_log);
+#define OPEN_LOG std::ofstream test_log("test_log.log", std::fstream::app); 
 
 #define TEST_LOG test_log
 

@@ -1,3 +1,9 @@
+/**
+ * @file handler.cpp
+ * @author Sumedh Ghaisas
+ *
+ * Implementation of Handler class.
+ */
 #include "handler.hpp"
 
 #include <string>
@@ -33,6 +39,12 @@ void Handler::RunAllTests(bool verbose,
 
   for(list<BaseTest*>::iterator it = tests.begin();it != tests.end();it++)
   {
+    if(runOnlyModule)
+    {
+      if((*it)->ModuleName() != mod_name)
+        continue;
+    }
+
     log.Info << "Running bechmark " << (*it)->Name() << "... ";
     PMeasure pm = (*it)->Run();
 
@@ -48,7 +60,7 @@ void Handler::RunAllTests(bool verbose,
         }
         else
         {
-          int c = PMeasure::Compare(pm, cpm);
+          int c = PMeasure::Compare(pm, cpm, (*it)->Tolerance());
           if(c == -1)
           {
             log.Info  << "Avg. -- " << BASH_GREEN << pm.avg << BASH_CLEAR<<
@@ -84,11 +96,12 @@ void Handler::RunAllTests(bool verbose,
         {
           log.Info << (*it)->Description() << endl;
           log.Info << "\tAvg.\t\tMin.\t\tMax" << endl;
-          log.Info << "\t" << pm.avg << "\t\t" << pm.min << "\t\t" << pm.max << endl;
+          log.Info << "\t" << pm.avg << "\t\t" << pm.min << "\t\t" <<
+          pm.max << endl;
         }
         else
         {
-          int c = PMeasure::Compare(pm, cpm);
+          int c = PMeasure::Compare(pm, cpm, (*it)->Tolerance());
           log.Info << (*it)->Description() << endl;
           log.Info << "\tAvg.\t\tMin.\t\tMax." << endl;
           if(c == -1)
@@ -105,8 +118,8 @@ void Handler::RunAllTests(bool verbose,
           log.Info << "\t" << pm.avg << "\t\t" << pm.min << "\t\t" << pm.max <<
           BASH_CLEAR << endl;
           log.Info << BASH_BLUE;
-          log.Info << "\t[" << cpm.avg << "]\t\t[" << cpm.min << "]\t\t[" << cpm.max <<
-          "]" << BASH_CLEAR << endl;
+          log.Info << "\t[" << cpm.avg << "]\t\t[" << cpm.min << "]\t\t[" <<
+          cpm.max << "]" << BASH_CLEAR << endl;
         }
       }
       else

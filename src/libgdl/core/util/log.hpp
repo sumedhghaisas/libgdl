@@ -41,7 +41,7 @@ namespace libgdl
  * and prefix. If the output is to the terminal some color schema relating to
  * the severity level can be added.
  *
- * An example is given below.#define BASH_GREEN "\033[0;32m"
+ * An example is given below.
  *
  * @code
  * Log test;
@@ -140,7 +140,7 @@ class Log
   //!
   //! \param condition Condition to check
   //! \param message Message to be shown if the condition fails
-  //! \returnLog
+  //! \return void
   //!
   //!
   static void Assert(bool condition,

@@ -1,7 +1,7 @@
-# GDLParser test executable.
+# libGDL test executable.
 add_executable(libgdl_test
-  gdlreasoner_tests.cpp
   libgdl_test.cpp
+  gdlreasoner_tests.cpp
   argument_tests.cpp
   fact_tests.cpp
   clause_tests.cpp 

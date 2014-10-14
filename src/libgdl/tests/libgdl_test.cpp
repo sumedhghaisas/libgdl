@@ -1,7 +1,7 @@
 /**
  * @file libgdl_test.cpp
  *
- * Defining the tests for GDLParser.
+ * Defining the tests for libGDL.
  */
 
 #define BOOST_TEST_MODULE libGDLTest

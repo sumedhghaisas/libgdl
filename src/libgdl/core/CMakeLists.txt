@@ -5,6 +5,7 @@ set(DIRS
   cache
   symbol_table
   dgraph
+  benchmark
 )
 
 foreach(dir ${DIRS})

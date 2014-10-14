@@ -11,6 +11,7 @@ set(DIRS
   tests
   reasoners
   core
+  benchmarks
 )
 
 foreach(dir ${DIRS})
@@ -99,8 +100,17 @@ add_custom_target(test
   ${CMAKE_BINARY_DIR}/bin/libgdl_test
   COMMAND valgrind --leak-check=full --track-origins=yes ${CMAKE_BINARY_DIR}/bin/libgdl_test --run_test=*/*Test 3>&1 2>&3 >output | tee grindout
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ # This is where test files are put.
-  COMMENT "Running libgdl tests"
+  COMMENT "Running libGDL tests"
   DEPENDS libgdl_test)
   
 add_dependencies(test libgdl_data)
+
+# For 'make test'.
+add_custom_target(benchmark
+  ${CMAKE_BINARY_DIR}/bin/libgdl_benchmark
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ # This is where test files are put.
+  COMMENT "Running libGDL benchmarks"
+  DEPENDS libgdl_benchmark)
+  
+add_dependencies(benchmark libgdl_data)
 
