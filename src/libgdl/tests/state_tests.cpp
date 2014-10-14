@@ -9,7 +9,7 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/gdlparser/kif.hpp>
-#include <libgdl/gdlreasoner/knowledgebase.hpp>
+#include <libgdl/reasoners/gdlreasoner/knowledgebase.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include "old_boost_test_definitions.hpp"
