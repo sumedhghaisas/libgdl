@@ -7,7 +7,7 @@
 #include <libgdl/core.hpp>
 
 #define OPEN_LOG std::ofstream benchmark_log("benchmark_log.log", std::fstream::app); \
-                 Log log(benchmark_log);
+                 libgdl::Log log(benchmark_log);
                  
 #define BENCHMARK_LOG benchmark_log
 

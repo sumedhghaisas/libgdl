@@ -11,7 +11,7 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/gdlparser/kif.hpp>
-#include <libgdl/gdlreasoner/kif_flattener.hpp>
+#include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
 
 using namespace std;
 using namespace boost::program_options;

@@ -2,6 +2,7 @@
 add_executable(libgdl_benchmark
   libgdl_benchmark.cpp
   cache_benchmarks.cpp
+  gdlparser_benchmarks.cpp
 )
 # Link dependencies of test executable.
 target_link_libraries(libgdl_benchmark

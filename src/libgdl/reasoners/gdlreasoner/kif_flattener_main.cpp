@@ -9,7 +9,7 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/gdlparser/kif.hpp>
-#include <libgdl/reasoner/gdlreasoner/kif_flattener.hpp>
+#include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
 #include <boost/program_options.hpp>
 
 using namespace std;

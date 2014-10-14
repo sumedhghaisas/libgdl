@@ -33,9 +33,9 @@ size_t GetHash(const size_t& a)
 /**
  * Benchmark LRUCache hit time
  */
-BENCHMARK_T(LRUCacheHitTime, 
+BENCHMARK_T(LRUCacheHitTimeBenchmark, 
             This benchamrks cache hit time of LRUCache implemented in libGDL,
-            100,
+            10,
             1)
 {
   OPEN_LOG;
