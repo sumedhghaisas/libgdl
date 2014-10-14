@@ -50,7 +50,7 @@ class GDL
   //!
   GDL(const std::string& filename,
       size_t state_cache_capacity = 1024,
-      const Log& log = std::cout);
+      const Log& log = GLOBAL_LOG);
 
   //! Constructs a GDL object from KIF.
   //!
@@ -61,7 +61,7 @@ class GDL
   //!
   GDL(gdlparser::KIF& kif,
       size_t state_cache_capacity = 1024,
-      const Log& log = std::cout);
+      const Log& log = GLOBAL_LOG);
 
   //! Constructs a GDL object from flattened knowledge.
   //!
@@ -72,7 +72,7 @@ class GDL
   //!
   GDL(gdlreasoner::KIFFlattener& kf,
       size_t state_cache_capacity = 1024,
-      const Log& log = std::cout);
+      const Log& log = GLOBAL_LOG);
 
   //! Returns the state of the game after performing given moves on the given
   //! state

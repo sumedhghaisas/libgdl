@@ -2,8 +2,13 @@
 #define _LIBGDL_BENCHMARK_HANDLER_HPP_INCLUDED
 
 #include <list>
+#include <string>
+#include <sstream>
+
+#include <libgdl/core/util/log.hpp>
 
 #include "base_test.hpp"
+#include "pmeasure.hpp"
 
 namespace libgdl
 {
@@ -25,13 +30,10 @@ class Handler
     return NULL;
   }
 
-  void RunAllTests()
-  {
-    for(std::list<BaseTest*>::iterator it = tests.begin();it != tests.end();it++)
-    {
-      (*it)->Run();
-    }
-  }
+  void RunAllTests(bool verbose = false,
+                   const Log& log = GLOBAL_LOG,
+                   bool saveToFile = false,
+                   const std::string& filename = "");
 
  private:
   std::list<BaseTest*> tests;

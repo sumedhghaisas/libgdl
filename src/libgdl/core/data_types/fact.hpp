@@ -74,7 +74,7 @@ struct Fact
   //!
   Fact(const std::string& str,
        SymbolTable& symbol_table,
-       Log log = std::cerr);
+       Log log = GLOBAL_LOG);
 
   //! destructor
   ~Fact() { delete arg; }

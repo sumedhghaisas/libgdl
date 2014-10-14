@@ -39,7 +39,7 @@ class RawSymbolTable
   typedef boost::unordered_map<size_t, Symbol*> SymbolMap;
  public:
   //! Empty constructor
-  RawSymbolTable(const Log& log = std::cout);
+  RawSymbolTable(const Log& log = GLOBAL_LOG);
 
   //! Destructor
   ~RawSymbolTable();
@@ -202,7 +202,7 @@ class SymbolTable : public boost::intrusive_ptr<RawSymbolTable>
   //! Creates empty SymbolTable
   //!
   //!
-  SymbolTable(const Log& log = std::cout)
+  SymbolTable(const Log& log = GLOBAL_LOG)
     : boost::intrusive_ptr<RawSymbolTable>(new RawSymbolTable(log)) {}
 
   //! Wraps the given RawSymbolTable

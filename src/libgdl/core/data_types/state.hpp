@@ -52,7 +52,8 @@ struct RawState
   //! Destructor
   ~RawState()
   {
-    for(std::list<Argument*>::const_iterator it = facts.begin();it != facts.end();it++)
+    for(std::list<Argument*>::const_iterator it = facts.begin();
+                                                        it != facts.end();it++)
       delete *it;
   }
 

@@ -72,7 +72,7 @@ class KnowledgeBase
   //! \param log Logging stream
   //!
   //!
-  KnowledgeBase(const Log& log = std::cout)
+  KnowledgeBase(const Log& log = GLOBAL_LOG)
     : c_id(0), log(log) {}
 
   //! Constructs knowledge base with knowledge from KIF object
@@ -82,7 +82,7 @@ class KnowledgeBase
   //! \param log Logging stream
   //!
   //!
-  explicit KnowledgeBase(gdlparser::KIF& kif, const Log& log = std::cout);
+  explicit KnowledgeBase(gdlparser::KIF& kif, const Log& log = GLOBAL_LOG);
 
   //! Constructs knowledge base from flattened knowledge
   //! Knowledge is transferred hence the KIFFlattener object is cleaned
@@ -91,7 +91,7 @@ class KnowledgeBase
   //! \param log Logging stream
   //!
   //!
-  explicit KnowledgeBase(KIFFlattener& kiff, const Log& log = std::cout);
+  explicit KnowledgeBase(KIFFlattener& kiff, const Log& log = GLOBAL_LOG);
 
   //! Asks knowledge base given question and returns the list of answers
   //! The answers are returned as pointer to 'Argument'

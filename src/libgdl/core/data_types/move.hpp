@@ -41,7 +41,7 @@ struct Move
   //!
   Move(const std::string& str,
        core::SymbolTable& symbol_table,
-       Log log = std::cout);
+       Log log = GLOBAL_LOG);
 
   //! Constructs move from vector of arguments (deep copy)
   //!

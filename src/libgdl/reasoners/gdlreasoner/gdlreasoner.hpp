@@ -53,7 +53,7 @@ class GDLReasoner
   //!
   template<class T>
   GDLReasoner(T& obj,
-              const Log& log = std::cout);
+              const Log& log = GLOBAL_LOG);
 
   //! Copy constructor
   //!

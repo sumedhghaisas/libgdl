@@ -56,7 +56,7 @@ class LRUCache
   //!
   LRUCache(const MissFunction& default_f,
            unsigned short capacity = 1024,
-           const Log& log = std::cout);
+           const Log& log = GLOBAL_LOG);
 
   //! Constructor
   //!
@@ -65,7 +65,7 @@ class LRUCache
   //!
   //!
   LRUCache(unsigned short capacity = 1024,
-           const Log& log = std::cout);
+           const Log& log = GLOBAL_LOG);
 
   //! Destructor
   //!

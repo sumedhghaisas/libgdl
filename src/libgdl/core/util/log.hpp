@@ -152,6 +152,12 @@ class Log
     Fatal.SetStream(stream);
   }
 
+  static Log& GetGlobalLogger()
+  {
+    static Log singleton;
+    return singleton;
+  }
+
   //! Prints debug output with the appropriate tag: [DEBUG].
   util::PrefixedOutStream Debug;
 
@@ -167,5 +173,16 @@ class Log
 }; // class Log
 
 }; //namespace libgdl
+
+#define GLOBAL_LOG libgdl::Log::GetGlobalLogger()
+
+#define GLOBAL_DEBUG libgdl::Log::GetGlobalLogger().Debug
+
+#define GLOBAL_INFO libgdl::Log::GetGlobalLogger().Info
+
+#define GLOBAL_FATAL libgdl::Log::GetGlobalLogger().Fatal
+
+#define SET_GLOBAL_LOG_STREAM(stream) libgdl::Log::GetGlobalLogger(). \
+SetStream(stream)
 
 #endif // __LIBGDL_CORE_UTIL_LOG_HPP

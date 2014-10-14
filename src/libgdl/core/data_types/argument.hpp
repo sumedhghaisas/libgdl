@@ -64,7 +64,7 @@ struct Argument
   Argument(const std::string& str,
            SymbolTable& symbol_table,
            bool isRel = true,
-           Log log = std::cerr);
+           Log log = GLOBAL_LOG);
 
   //! Move constructor
   //! Throws no exception, can be used by stl wrappers
@@ -235,7 +235,7 @@ struct Argument
   //! \param v_map string to variable map
   //! \return Argument* new argument
   //!
-  //!
+  //!log
   static Argument* ConstructArgument(const Argument& arg,
                                      StrVarMap& v_map);
 
@@ -253,7 +253,7 @@ struct Argument
                                      StrVarMap& v_map,
                                      SymbolTable& symbol_table,
                                      bool isRel = true,
-                                     Log log = std::cerr);
+                                     Log log = GLOBAL_LOG);
 
   //! Separates a string input into command and arguments
   //!
@@ -267,7 +267,7 @@ struct Argument
   static bool SeparateCommand(const std::string& input,
                               std::string& cmd,
                               std::vector<std::string>& args,
-                              Log log = std::cerr);
+                              Log log = GLOBAL_LOG);
 
 }; // struct Argument
 
