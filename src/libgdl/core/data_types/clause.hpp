@@ -60,7 +60,7 @@ struct Clause
   //!
   //!
   Clause(const std::string& str,
-         SymbolTable& symbol_table,
+         SymbolTable symbol_table,
          Log log = GLOBAL_LOG);
 
   //! destructor

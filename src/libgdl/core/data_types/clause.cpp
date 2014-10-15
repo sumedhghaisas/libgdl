@@ -14,7 +14,7 @@ using namespace libgdl;
 using namespace libgdl::core;
 
 Clause::Clause(const std::string& str,
-               SymbolTable& symbol_table,
+               SymbolTable symbol_table,
                Log log)
   : isLocation(false)
 {

@@ -7,10 +7,25 @@ using namespace libgdl;
 using namespace libgdl::core;
 
 Move::Move(const std::string& str,
-           SymbolTable& symbol_table,
+           SymbolTable symbol_table,
            Log log)
 {
   moves.push_back(new Argument(str, symbol_table, false, log));
+  hash = 0;
+  for(vector<Argument*>::const_iterator it = moves.begin();it != moves.end();it++)
+  {
+    size_t temp = (*it)->Hash();
+    boost::hash_combine(hash, temp);
+  }
+}
+
+Move::Move(const std::string& str1,
+           const std::string& str2,
+           SymbolTable symbol_table,
+           Log log)
+{
+  moves.push_back(new Argument(str1, symbol_table, false, log));
+  moves.push_back(new Argument(str2, symbol_table, false, log));
   hash = 0;
   for(vector<Argument*>::const_iterator it = moves.begin();it != moves.end();it++)
   {

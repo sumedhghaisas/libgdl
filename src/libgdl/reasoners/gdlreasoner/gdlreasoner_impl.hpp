@@ -218,7 +218,7 @@ inline void GDLReasoner::ApplyActions(const Move& moves)
     temp->value = SymbolTable::DoesID;
     temp->t = Argument::Relation;
     temp->args.push_back(*it);
-    temp->args.push_back(moves.moves[r_index]);
+    temp->args.push_back(moves.moves[r_index++]);
 
     Fact f;
     f.arg = temp;

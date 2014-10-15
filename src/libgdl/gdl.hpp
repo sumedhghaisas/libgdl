@@ -17,6 +17,7 @@
 #include <libgdl/core/cache/lru_cache.hpp>
 #include <libgdl/gdlparser/kif.hpp>
 #include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
+#include <libgdl/reasoners/gdlreasoner/gdlreasoner.hpp>
 
 namespace libgdl
 {
@@ -31,7 +32,7 @@ namespace libgdl
  *
  * @see GDLReasoner
  */
-template<class Reasoner>
+template<class Reasoner = gdlreasoner::GDLReasoner>
 class GDL
 {
   //! For simplicity

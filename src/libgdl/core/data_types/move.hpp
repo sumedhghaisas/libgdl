@@ -40,7 +40,21 @@ struct Move
   //!
   //!
   Move(const std::string& str,
-       core::SymbolTable& symbol_table,
+       core::SymbolTable symbol_table,
+       Log log = GLOBAL_LOG);
+
+  //! Constructs move from a strings
+  //! Can be used in 2 player games
+  //!
+  //! \param str1 String representation of player 1 move
+  //! \param str2 String representation of player 2 move
+  //! \param symbol_table SymbolTable to decode
+  //! \param log Logging stream
+  //!
+  //!
+  Move(const std::string& str1,
+       const std::string& str2,
+       core::SymbolTable symbol_table,
        Log log = GLOBAL_LOG);
 
   //! Constructs move from vector of arguments (deep copy)

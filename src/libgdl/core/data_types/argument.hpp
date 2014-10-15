@@ -62,7 +62,7 @@ struct Argument
   //!
   //!
   Argument(const std::string& str,
-           SymbolTable& symbol_table,
+           SymbolTable symbol_table,
            bool isRel = true,
            Log log = GLOBAL_LOG);
 

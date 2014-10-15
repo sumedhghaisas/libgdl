@@ -40,7 +40,7 @@ Argument::Argument(const Argument& arg) noexcept
 }
 
 Argument::Argument(const std::string& str,
-                   SymbolTable& symbol_table,
+                   SymbolTable symbol_table,
                    bool isRel,
                    Log log)
 {
