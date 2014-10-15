@@ -42,15 +42,15 @@ BENCHMARK_T(LRUCacheHitTimeBenchmark,
   boost::function<size_t* (const size_t&)> def(Fun);
   boost::function<size_t (const size_t&)> h(GetHash);
   
-  LRUCache<size_t, size_t> cache(4);
+  LRUCache<size_t, size_t> cache(def, h, 4);
   cache.GetLog() = BENCHMARK_LOG;
-  size_t* t1 = cache.Get(10, def, h);
+  size_t* t1 = cache.Get(10);
   
   SetUp()
   
   Measure
   (
-    t1 = cache.Get(10, def, h);
+    t1 = cache.Get(10);
   )
   
   TearDown()

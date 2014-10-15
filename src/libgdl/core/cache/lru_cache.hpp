@@ -39,11 +39,11 @@ namespace cache /** Cache System of libGDL **/
  *
  * @see GDL
  */
-template<class key_type, class value_type>
+template<class value_type, typename... key_types>
 class LRUCache
 {
-  typedef boost::function<value_type* (const key_type&)> MissFunction;
-  typedef boost::function<size_t (const key_type&)> HashFunction;
+  typedef boost::function<value_type* (const key_types&...)> MissFunction;
+  typedef boost::function<size_t (const key_types&...)> HashFunction;
 
  public:
 
@@ -55,16 +55,8 @@ class LRUCache
   //!
   //!
   LRUCache(const MissFunction& default_f,
+           const HashFunction& default_hf,
            unsigned short capacity = 1024,
-           const Log& log = GLOBAL_LOG);
-
-  //! Constructor
-  //!
-  //! \param capacity number of entries to cache
-  //! \param log Logging stream
-  //!
-  //!
-  LRUCache(unsigned short capacity = 1024,
            const Log& log = GLOBAL_LOG);
 
   //! Destructor
@@ -81,7 +73,7 @@ class LRUCache
   //! \return value_type*
   //!
   //!
-  value_type* Get(const key_type& key);
+  value_type* Get(const key_types&... keys);
 
   //! Returns the value associated with the given key.
   //! The key is identified by its hash value obtained by function getHash()
@@ -92,7 +84,8 @@ class LRUCache
   //! \return value_type*
   //!
   //!
-  value_type* Get(const key_type& key, const MissFunction& f_override);
+  value_type* Get(const MissFunction& f_override,
+                  const key_types&... keys);
 
   //! Returns the value associated with the given key.
   //! The key is identified by its hash value obtained by boost function
@@ -105,9 +98,9 @@ class LRUCache
   //! \return value_type*
   //!
   //!
-  value_type* Get(const key_type& key,
-                  const MissFunction& f_override,
-                  const HashFunction& hash_funct_override);
+  value_type* Get(const MissFunction& f_override,
+                  const HashFunction& hash_funct_override,
+                  const key_types&... keys);
 
   //! Query if given key is present in cache
   //!
@@ -115,7 +108,7 @@ class LRUCache
   //! \return value_type*
   //!
   //!
-  value_type* Query(const key_type& key);
+  value_type* Query(const key_types&... key);
 
   //! Query if given key is present in cache
   //!
@@ -124,8 +117,8 @@ class LRUCache
   //! \return value_type*
   //!
   //!
-  value_type* Query(const key_type& key,
-                    const HashFunction& hash_funct_override);
+  value_type* Query(const HashFunction& hash_funct_override,
+                    const key_types&... keys);
 
   //! Sets cache with default miss function
   //!
@@ -141,6 +134,7 @@ class LRUCache
  private:
   //! default function to call when miss detected
   const MissFunction default_f;
+  const HashFunction default_hf;
 
   //! maximum entries to cache
   short capacity;

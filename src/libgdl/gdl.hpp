@@ -192,28 +192,33 @@ private:
   //!
   size_t StateRoleHash(const State& state, const size_t role) const;
 
+  size_t StateHash(const State& state) const
+  {
+    return state.GetHash();
+  }
+
   //! Knowledge base representing the rules of the game
   Reasoner reasoner;
 
   //! Cache capacity of cache associated with function GetNextState
   size_t next_state_cache_capacity;
   //! Cache associated with function GetNextState
-  cache::LRUCache<State, State> next_state_cache;
+  cache::LRUCache<State, State, Move> next_state_cache;
 
   //! Cache capacity of cache associated with function IsTerminal
   size_t isTerminal_cache_capacity;
   //! Cache associated with function IsTerminal
-  cache::LRUCache<State, bool> isTerminal_cache;
+  cache::LRUCache<bool, State> isTerminal_cache;
 
   //! Cache capacity of cache associated with functions GetLegalMoves
   size_t getLegalMoves_cache_capacity;
   //! Cache associated with function GetLegalMoves
-  cache::LRUCache<State, MoveList> getLegalMoves_cache;
+  cache::LRUCache<MoveList, State> getLegalMoves_cache;
 
   //! Cache capacity of cache associated with function GetGoal
   size_t getGoal_cache_capacity;
   //! Cache associated with function GetGoal
-  cache::LRUCache<State, size_t> getGoal_cache;
+  cache::LRUCache<size_t, State, size_t> getGoal_cache;
 
   //! Logging stream
   mutable Log log;

@@ -11,12 +11,14 @@ namespace libgdl
 namespace cache
 {
 
-template<class key_type, class value_type>
-LRUCache<key_type, value_type>::
+template<class value_type, typename... key_types>
+LRUCache<value_type, key_types...>::
   LRUCache(const MissFunction& f,
+           const HashFunction& hf,
            unsigned short capacity,
            const Log& log)
     : default_f(f),
+    default_hf(hf),
     capacity(capacity),
     isInitialized(true),
     log(log)
@@ -39,36 +41,8 @@ LRUCache<key_type, value_type>::
   }
 }
 
-template<class key_type, class value_type>
-LRUCache<key_type, value_type>::LRUCache(unsigned short capacity,
-                                         const Log& log)
-        : default_f(),
-        capacity(capacity),
-        isInitialized(false),
-        log(log)
-{
-  hashs = new size_t[capacity];
-
-  values = new value_type*[capacity];
-  for(size_t i = 0;i < capacity;i++) values[i] = NULL;
-
-  forward_pointing = new unsigned short[capacity];
-  backward_pointing = new unsigned short[capacity];
-
-  // 0th index is used as the loopback index
-  next_empty = 1;
-  isFull = false;
-
-  // initialize all the slots
-  for(size_t i = 0;i < capacity;i++)
-  {
-    forward_pointing[i] = 0;
-    backward_pointing[i] = 0;
-  }
-}
-
-template<class key_type, class value_type>
-LRUCache<key_type, value_type>::~LRUCache()
+template<class value_type, typename... key_types>
+LRUCache<value_type, key_types...>::~LRUCache()
 {
   for(size_t i = 0;i < capacity;i++) delete values[i];
   delete[] values;
@@ -77,8 +51,8 @@ LRUCache<key_type, value_type>::~LRUCache()
   delete[] backward_pointing;
 }
 
-template<class key_type, class value_type>
-value_type* LRUCache<key_type, value_type>::Get(const key_type& keyin)
+template<class value_type, typename... key_types>
+value_type* LRUCache<value_type, key_types...>::Get(const key_types&... keyin)
 {
   if(!isInitialized)
   {
@@ -86,29 +60,25 @@ value_type* LRUCache<key_type, value_type>::Get(const key_type& keyin)
     return NULL;
   }
 
-  boost::function<size_t (const key_type&)>
-      hash_funct(boost::bind(&key_type::GetHash, &keyin));
-  return Get(keyin, default_f, hash_funct);
+  return Get(default_f, default_hf, keyin...);
 }
 
-template<class key_type, class value_type>
-value_type* LRUCache<key_type, value_type>::
-  Get(const key_type& keyin,
-      const MissFunction& f_override)
+template<class value_type, typename... key_types>
+value_type* LRUCache<value_type, key_types...>::
+  Get(const MissFunction& f_override,
+      const key_types&... keyin)
 {
-  boost::function<size_t (const key_type&)>
-      hash_funct(boost::bind(&key_type::getHash, &keyin));
-  return Get(keyin, f_override, hash_funct);
+  return Get(f_override, default_hf, keyin...);
 }
 
-template<class key_type, class value_type>
-value_type* LRUCache<key_type, value_type>::
-  Get(const key_type& keyin,
-      const MissFunction& f_override,
-      const HashFunction& hash_funct)
+template<class value_type, typename... key_types>
+value_type* LRUCache<value_type, key_types...>::
+  Get(const MissFunction& f_override,
+      const HashFunction& hash_funct,
+      const key_types&... keyin)
 {
   // get hash value of the key
-  size_t hash = hash_funct(keyin);
+  size_t hash = hash_funct(keyin...);
 
   // check for a hit
   boost::unordered_map<size_t, unsigned short>::const_iterator it =
@@ -155,7 +125,7 @@ value_type* LRUCache<key_type, value_type>::
     backward_pointing[slot] = 0;
 
     // call miss function and update the value
-    value_type* temp = f_override(keyin);
+    value_type* temp = f_override(keyin...);
     values[slot] = temp;
     // return the calculated value
     return temp;
@@ -187,7 +157,7 @@ value_type* LRUCache<key_type, value_type>::
     backward_pointing[slot] = 0;
 
     // call the miss function and get the update the value
-    value_type* temp = f_override(keyin);
+    value_type* temp = f_override(keyin...);
     // delete the existing value
     delete values[slot];
     // replace it with new value
@@ -198,21 +168,19 @@ value_type* LRUCache<key_type, value_type>::
   return NULL; // to avoid warning
 }
 
-template<class key_type, class value_type>
-value_type* LRUCache<key_type, value_type>::Query(const key_type& keyin)
+template<class value_type, typename... key_types>
+value_type* LRUCache<value_type, key_types...>::Query(const key_types&... keyin)
 {
-  boost::function<size_t (const key_type&)>
-      hash_funct(boost::bind(key_type::getHash, &keyin));
-  return Query(keyin, hash_funct);
+  return Query(default_hf, keyin...);
 }
 
-template<class key_type, class value_type>
-value_type* LRUCache<key_type, value_type>::
-  Query(const key_type& key,
-        const HashFunction& hash_funct)
+template<class value_type, typename... key_types>
+value_type* LRUCache<value_type, key_types...>::
+  Query(const HashFunction& hash_funct,
+        const key_types&... key)
 {
   // get hash value of the key
-  size_t hash = hash_funct(key);
+  size_t hash = hash_funct(key...);
 
   // check for a hit
   boost::unordered_map<size_t, unsigned short>::const_iterator it =
@@ -222,8 +190,8 @@ value_type* LRUCache<key_type, value_type>::
   else return NULL;
 }
 
-template<class key_type, class value_type>
-void LRUCache<key_type, value_type>::
+template<class value_type, typename... key_types>
+void LRUCache<value_type, key_types...>::
     SetDefaultFunction(const MissFunction& f)
 {
   isInitialized = true;

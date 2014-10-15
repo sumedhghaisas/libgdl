@@ -6,13 +6,21 @@ GDL<Reasoner>::GDL(const std::string& filename,
                    size_t state_cache_capacity,
                    const Log& l)
   : next_state_cache_capacity(state_cache_capacity),
-    next_state_cache(next_state_cache_capacity),
+    next_state_cache(boost::bind(&GDL::cached_GetNextState, this, _1, _2),
+                     boost::bind(&GDL::StateMoveHash, this, _1, _2),
+                     next_state_cache_capacity),
     isTerminal_cache_capacity(state_cache_capacity),
     isTerminal_cache(boost::bind(&GDL::cached_IsTerminal, this, _1),
+                     boost::bind(&GDL::StateHash, this, _1),
                      isTerminal_cache_capacity),
     getLegalMoves_cache_capacity(state_cache_capacity),
     getLegalMoves_cache(boost::bind(&GDL::cached_getLegalMoves, this, _1),
+                        boost::bind(&GDL::StateHash, this, _1),
                         getLegalMoves_cache_capacity),
+    getGoal_cache_capacity(state_cache_capacity),
+    getGoal_cache(boost::bind(&GDL::cached_getGoal, this, _1, _2),
+                  boost::bind(&GDL::StateRoleHash, this, _1, _2),
+                  getGoal_cache_capacity),
     log(l)
 {
   gdlparser::KIF kif;
@@ -33,13 +41,21 @@ GDL<Reasoner>::GDL(gdlparser::KIF& kif,
                    const Log& l)
   : reasoner(kif, l),
     next_state_cache_capacity(state_cache_capacity),
-    next_state_cache(next_state_cache_capacity),
+    next_state_cache(boost::bind(&GDL::cached_GetNextState, this, _1, _2),
+                     boost::bind(&GDL::StateMoveHash, this, _1, _2),
+                     next_state_cache_capacity),
     isTerminal_cache_capacity(state_cache_capacity),
     isTerminal_cache(boost::bind(&GDL::cached_IsTerminal, this, _1),
-                      isTerminal_cache_capacity),
+                     boost::bind(&GDL::StateHash, this, _1),
+                     isTerminal_cache_capacity),
     getLegalMoves_cache_capacity(state_cache_capacity),
     getLegalMoves_cache(boost::bind(&GDL::cached_getLegalMoves, this, _1),
+                        boost::bind(&GDL::StateHash, this, _1),
                         getLegalMoves_cache_capacity),
+    getGoal_cache_capacity(state_cache_capacity),
+    getGoal_cache(boost::bind(&GDL::cached_getGoal, this, _1, _2),
+                  boost::bind(&GDL::StateRoleHash, this, _1, _2),
+                  getGoal_cache_capacity),
     log(l)
 
 {}
@@ -50,13 +66,21 @@ GDL<Reasoner>::GDL(gdlreasoner::KIFFlattener& kf,
                    const Log& l)
   : reasoner(kf, l),
     next_state_cache_capacity(state_cache_capacity),
-    next_state_cache(next_state_cache_capacity, l),
+    next_state_cache(boost::bind(&GDL::cached_GetNextState, this, _1, _2),
+                     boost::bind(&GDL::StateMoveHash, this, _1, _2),
+                     next_state_cache_capacity),
     isTerminal_cache_capacity(state_cache_capacity),
     isTerminal_cache(boost::bind(&GDL::cached_IsTerminal, this, _1),
-                     isTerminal_cache_capacity, l),
+                     boost::bind(&GDL::StateHash, this, _1),
+                     isTerminal_cache_capacity),
     getLegalMoves_cache_capacity(state_cache_capacity),
     getLegalMoves_cache(boost::bind(&GDL::cached_getLegalMoves, this, _1),
-                        getLegalMoves_cache_capacity, l),
+                        boost::bind(&GDL::StateHash, this, _1),
+                        getLegalMoves_cache_capacity),
+    getGoal_cache_capacity(state_cache_capacity),
+    getGoal_cache(boost::bind(&GDL::cached_getGoal, this, _1, _2),
+                  boost::bind(&GDL::StateRoleHash, this, _1, _2),
+                  getGoal_cache_capacity),
     log(l)
 
 {}
@@ -115,20 +139,12 @@ State GDL<Reasoner>::GetNextState(const State& state,
                                   bool useCache)
 {
   State* out;
-  //size_t start = microtimer();
+
   if(useCache)
   {
-    //start = microtimer();
-    boost::function<size_t (const State&)>
-                      hash_f(boost::bind(&GDL::StateMoveHash, this, _1, moves));
-    boost::function<State* (const State&)>
-                      miss_f(boost::bind(&GDL::cached_GetNextState, this, _1, moves));
-    //cout << microtimer() - start << endl;
-
-    out = next_state_cache.Get(state, miss_f, hash_f);
+    out = next_state_cache.Get(state, moves);
   }
   else out = cached_GetNextState(state, moves);
-  //cout << microtimer() - start << " haha" << endl;
 
   return *out;
 }
@@ -162,12 +178,7 @@ size_t GDL<Reasoner>::GetGoal(const State& state, const size_t rid, bool useCach
   size_t* out;
   if(useCache)
   {
-    boost::function<size_t (const State&)>
-                      hash_f(boost::bind(&GDL::StateRoleHash, this, _1, rid));
-    boost::function<size_t* (const State&)>
-                      miss_f(boost::bind(&GDL::cached_getGoal, this, _1, rid));
-
-    out = getGoal_cache.Get(state, miss_f, hash_f);
+    out = getGoal_cache.Get(state, rid);
   }
   else out = cached_getGoal(state, rid);
 
