@@ -16,26 +16,19 @@ namespace cache /** Cache System of libGDL **/
 {
 /**
  * LRU Cache module.
- * Hit time : around 2 microseconds (highly dependent on the machine and the
+ * Hit time : around 1 microseconds (highly dependent on the machine and the
  *                                   compiler)
  *
- * key_type should implement a getHash() function which returns a size_t hash
- * value or overload of 'Get' function can be used which accepts a boost
- * function to hash calculation. This hash calculation function should
- * take const key_type as input and should return size_t (hash value).
+ * \tparam value_type The class of which data is stored and returned
+ * \tparam key_value The list of values to pass to miss function
  *
- * Constructor accepts a boost function as a default function to call when there
- * is a miss. This default miss function can be overridden with appropriate
- * 'Get' function overload. The function should accept a constant Key_type
- * reference and return pointer to the value_type object. Member functions can
- * be passed by binding.
+ * The class supports multiple key_types via C++11 Variadic Templates. All
+ * the provided values to the get function will be passed to the miss function.
+ * The constructor accepts miss function along with the hash function. The hash
+ * function is called to check hit or miss.
  *
- * @code
- * boost::function<B* (const A&)> f(boost::bind(&A::GetVal, this, _1))
- * LRUCache<A, B> cache(f, 1024);
- * A test;
- * B* temp = cache.Get(test);
- * @endcode
+ * For sample usage see use of LRUCache in GDL module. Check files
+ * cache_tests.cpp and cache_benchmarks.cpp for more examples.
  *
  * @see GDL
  */
@@ -49,8 +42,9 @@ class LRUCache
 
   //! Constructor
   //!
-  //! \param default_f default miss function
-  //! \param capacity number of entries to cache
+  //! \param default_f Default miss function
+  //! \param default_hf Default hash function
+  //! \param capacity Number of entries to cache
   //! \param log Logging stream
   //!
   //!
@@ -65,36 +59,36 @@ class LRUCache
   //!
   ~LRUCache();
 
-  //! Returns the value associated with the given key.
-  //! The key is identified by its hash value obtained by function getHash()
-  //! Default function is called if miss.
+  //! Returns the value associated with the given keys.
+  //! The keys are identified by their hash value obtained by default hash
+  //! function. Default function is called in case of a miss.
   //!
-  //! \param key input key value
+  //! \param keys Input key values
   //! \return value_type*
   //!
   //!
   value_type* Get(const key_types&... keys);
 
-  //! Returns the value associated with the given key.
-  //! The key is identified by its hash value obtained by function getHash()
-  //! Given function is called if miss.
+  //! Returns the value associated with the given keys.
+  //! The keys are identified by its hash value obtained by default hash
+  //! function. Given function is called in case of a miss.
   //!
-  //! \param key input key value
-  //! \param f_override override for default miss function
+  //! \param f_override Override for default miss function
+  //! \param keys input key values
   //! \return value_type*
   //!
   //!
   value_type* Get(const MissFunction& f_override,
                   const key_types&... keys);
 
-  //! Returns the value associated with the given key.
-  //! The key is identified by its hash value obtained by boost function
-  //! given as the third argument
-  //! Given miss function is called if miss is detected.
+  //! Returns the value associated with the given keys.
+  //! The keys are identified by their hash value obtained by boost function
+  //! given as the third argument. Given miss function is called in case of a
+  //! miss.
   //!
-  //! \param key
-  //! \param f_override override for default miss function
-  //! \param hash_funct_override function to compute hash
+  //! \param f_override Override for default miss function
+  //! \param hash_funct_override Override for default hashing function
+  //! \param keys Input key values
   //! \return value_type*
   //!
   //!
@@ -110,10 +104,10 @@ class LRUCache
   //!
   value_type* Query(const key_types&... key);
 
-  //! Query if given key is present in cache
+  //! Query if given key is present in cache with given hash function
   //!
-  //! \param key
-  //! \param hash_funct_override
+  //! \param hash_funct_override Override for default hash function
+  //! \param keys Input key values
   //! \return value_type*
   //!
   //!
@@ -132,8 +126,9 @@ class LRUCache
   Log& GetLog() { return log; }
 
  private:
-  //! default function to call when miss detected
+  //! Default function to call when miss detected
   const MissFunction default_f;
+  //! Default hash function
   const HashFunction default_hf;
 
   //! maximum entries to cache
@@ -157,9 +152,6 @@ class LRUCache
 
   //! status of the cache (full or not)
   bool isFull;
-
-  //! does default function exist
-  bool isInitialized;
 
   //! logging stream
   mutable Log log;

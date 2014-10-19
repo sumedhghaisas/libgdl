@@ -20,7 +20,6 @@ LRUCache<value_type, key_types...>::
     : default_f(f),
     default_hf(hf),
     capacity(capacity),
-    isInitialized(true),
     log(log)
 {
   hashs = new size_t[capacity];
@@ -54,12 +53,6 @@ LRUCache<value_type, key_types...>::~LRUCache()
 template<class value_type, typename... key_types>
 value_type* LRUCache<value_type, key_types...>::Get(const key_types&... keyin)
 {
-  if(!isInitialized)
-  {
-    log.Fatal << "Cache is not initialized with default function." << std::endl;
-    return NULL;
-  }
-
   return Get(default_f, default_hf, keyin...);
 }
 
@@ -194,7 +187,6 @@ template<class value_type, typename... key_types>
 void LRUCache<value_type, key_types...>::
     SetDefaultFunction(const MissFunction& f)
 {
-  isInitialized = true;
   default_f = f;
 }
 

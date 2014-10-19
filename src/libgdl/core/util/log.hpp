@@ -197,7 +197,7 @@ class Log
 #define GLOBAL_INFO libgdl::Log::GetGlobalLogger().Info
 
 //! Get the warn stream of global logger
-#define GLOBAL_INFO libgdl::Log::GetGlobalLogger().Info
+#define GLOBAL_WARN libgdl::Log::GetGlobalLogger().Warn
 
 //! Get the fatal stream of global logger
 #define GLOBAL_FATAL libgdl::Log::GetGlobalLogger().Fatal
