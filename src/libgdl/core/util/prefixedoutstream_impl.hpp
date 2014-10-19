@@ -34,7 +34,7 @@ void PrefixedOutStream::BaseLogic(const T& val)
   // If we need to, output the prefix.
   PrefixIfNeeded();
 
-  std::ostringstream convert;
+  std::stringstream convert;
   convert << val;
 
   if(convert.fail())

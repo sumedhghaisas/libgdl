@@ -155,9 +155,6 @@ struct RelationSymbol : public Symbol
   }
 }; // RelationSymbol
 
-}; // namespace core
-}; // namespace libgdl
-
 inline std::ostream& operator<<(std::ostream& s,
                                 const libgdl::core::Symbol& sym)
 {
@@ -168,5 +165,9 @@ inline std::ostream& operator<<(std::ostream& s,
   s << sym.Name() << "/" << libgdl::ToString(sym.Arity());
   return s;
 }
+
+
+}; // namespace core
+}; // namespace libgdl
 
 #endif // SYMBOLS_HPP_INCLUDED

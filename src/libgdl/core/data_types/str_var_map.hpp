@@ -16,7 +16,7 @@ namespace libgdl
 namespace core
 {
 
-class Argument;
+struct Argument;
 
 /**
  * StrVarMap represents string to variable (Argument*) map which is used in

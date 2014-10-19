@@ -21,9 +21,9 @@ class TerminalHold;
 template<class Policy, class Head, class Hold>
 class BasicConstruct;
 
-class FunctionPolicy;
-class RelationPolicy;
-class ClausePolicy;
+struct FunctionPolicy;
+struct RelationPolicy;
+struct ClausePolicy;
 
 typedef BasicConstruct<FunctionPolicy, std::string, TerminalHold> Term;
 typedef BasicConstruct<RelationPolicy, std::string, Term> Sentence;

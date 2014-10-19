@@ -121,8 +121,6 @@ class Answer
   std::list<Clause>::const_iterator cit;
   //! Subanswers to evaluate
   std::deque<SubAnswer> m_subAnswers;
-  //! Length of current clause
-  size_t m_clauseLength;
   //! Is currently on an answer
   bool m_onAnAnswer;
   //! Answer is based on facts

@@ -109,10 +109,6 @@ struct Location
   position end;
 }; // struct Location
 
-}; // namespace core
-}; // namespace libgdl
-
-
 inline std::ostream& operator<<(std::ostream& ostr,
                                 const libgdl::core::Location& loc)
 {
@@ -132,5 +128,8 @@ inline std::ostream& operator<<(std::ostream& ostr,
     ostr << '-' << end_col;
   return ostr;
 }
+
+}; // namespace core
+}; // namespace libgdl
 
 #endif // _LIBGDL_CORE_HPP_INCLUDED

@@ -30,4 +30,12 @@
 
 #define MARK_USED(X) (void)X;
 
+//! Even though 'register' is deprecated in later versions of c++ it is still
+//! used in some implementations of bison and flex
+//! So lets undef 'register'
+#ifdef register
+#undef register
+#endif // register
+#define register
+
 #endif // __LIBGDL_CORE_HPP

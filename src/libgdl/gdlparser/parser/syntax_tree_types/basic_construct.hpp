@@ -108,7 +108,7 @@ class BasicConstruct : public Node
   //!
   //!
   void CodeGen(KIFDriver& driver,
-               StrVarMap& v_map = StrVarMap())
+               StrVarMap& v_map)
   {
     Policy::CodeGen(driver, command, args, v_map, loc);
   }
@@ -126,7 +126,7 @@ class BasicConstruct : public Node
   template<class T>
   bool CodeGen(T*& out,
                KIFDriver& driver,
-               StrVarMap& v_map = StrVarMap())
+               StrVarMap& v_map)
   {
     return Policy::CodeGen(out, driver, command, args, v_map, loc);
   }
@@ -209,7 +209,7 @@ class BasicConstruct<Policy, Head, TerminalHold> : public Node
   //!
   //!
   void CodeGen(KIFDriver& driver,
-               StrVarMap& v_map = StrVarMap())
+               StrVarMap& v_map)
   {
     Policy::CodeGen(driver, command, args, v_map, loc);
   }
@@ -227,7 +227,7 @@ class BasicConstruct<Policy, Head, TerminalHold> : public Node
   template<class T>
   bool CodeGen(T*& out,
                KIFDriver& driver,
-               StrVarMap& v_map = StrVarMap())
+               StrVarMap& v_map)
   {
     return Policy::CodeGen(out, driver, command, args, v_map, loc);
   }

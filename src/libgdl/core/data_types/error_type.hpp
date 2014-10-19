@@ -80,11 +80,8 @@ struct ErrorType
   std::list<Entry> entries;
 }; // struct ErrorType
 
-}; // namespace core
-}; // namespace libgdl
-
 inline std::ostream& operator<<(std::ostream& s,
-                                const libgdl::core::ErrorType& error)
+                                const ErrorType& error)
 {
   bool isFirst = true;
   for(std::list<libgdl::core::ErrorType::Entry>::const_iterator
@@ -99,6 +96,9 @@ inline std::ostream& operator<<(std::ostream& s,
   }
   return s;
 }
+
+}; // namespace core
+}; // namespace libgdl
 
 //! create Arity difference error
 #define ARITY_ERROR(NAME, VAR, UARITY, DARITY, ULOC, DLOC)                    \

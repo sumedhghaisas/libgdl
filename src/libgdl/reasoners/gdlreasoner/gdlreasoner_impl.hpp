@@ -52,7 +52,7 @@ inline bool* GDLReasoner::IsTerminal() const
 inline MoveList* GDLReasoner::GetLegalMoves() const
 {
   // get legal moves for all the roles
-  std::list<Argument*> result[roles.size()];
+  std::list<Argument*>* result = new std::list<Argument*>[roles.size()];
 
   Argument* question = new Argument;
   question->t = Argument::Relation;
@@ -77,7 +77,7 @@ inline MoveList* GDLReasoner::GetLegalMoves() const
   question->args.clear();
   delete question;
 
-  std::list<Argument*>::iterator it[roles.size()];
+  std::list<Argument*>::iterator* it = new std::list<Argument*>::iterator[roles.size()];
   for(size_t i = 0;i < roles.size();i++)
     it[i] = result[i].begin();
 
