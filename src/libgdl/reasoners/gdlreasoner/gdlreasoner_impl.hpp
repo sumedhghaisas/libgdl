@@ -111,6 +111,10 @@ inline MoveList* GDLReasoner::GetLegalMoves() const
               delete *it;
             }
           }
+
+          delete[] result;
+          delete[] it;
+
           return out;
         }
         else if(it[index] == (--result[index].end()))
@@ -126,6 +130,10 @@ inline MoveList* GDLReasoner::GetLegalMoves() const
       }
     }
   }
+
+  delete[] result;
+  delete[] it;
+
   return out;
 }
 
