@@ -26,9 +26,6 @@ namespace core
  */
 typedef std::map<const Argument*, const Argument*> VariableMap;
 
-}; // namespace core
-}; // namespace libgdl
-
 inline std::ostream& operator<<(std::ostream& s,
                                 const libgdl::core::VariableMap& v_map)
 {
@@ -41,5 +38,8 @@ inline std::ostream& operator<<(std::ostream& s,
   }
   return s;
 }
+
+}; // namespace core
+}; // namespace libgdl
 
 #endif // _LIBGDL_CORE_VARIABLE_MAP_HPP_INCLUDED

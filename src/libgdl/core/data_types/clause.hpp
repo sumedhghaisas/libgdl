@@ -144,9 +144,6 @@ struct Clause
   Location loc;
 }; // class Clause
 
-}; // namespace core
-}; // namespace libgdl
-
 inline std::ostream& operator<<(std::ostream& o,
                                 const libgdl::core::Clause& clause)
 {
@@ -157,5 +154,8 @@ inline std::ostream& operator<<(std::ostream& o,
   o << ")";
   return o;
 }
+
+}; // namespace core
+}; // namespace libgdl
 
 #endif // _LIBGDL_CORE_DATATYPES_CLAUSE_HPP_INCLUDED

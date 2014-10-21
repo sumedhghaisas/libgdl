@@ -295,10 +295,10 @@ class KnowledgeBase
   mutable Log log;
 }; // class KnowledgeBase
 
-}; // namespace gdlreasonerDGraph
-}; // namespace libgdl
-
 std::ostream& operator<<(std::ostream& stream,
                          const libgdl::gdlreasoner::KnowledgeBase& kb);
+
+}; // namespace gdlreasonerDGraph
+}; // namespace libgdl
 
 #endif // _LIBGDL_GDLREASONER_KNOWLEDGEBASE_HPP_INCLUDED

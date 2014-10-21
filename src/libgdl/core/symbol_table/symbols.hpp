@@ -41,7 +41,7 @@ struct Symbol
   }
 
   //! virtual destructor
-  virtual ~Symbol() {}
+  ~Symbol() {}
 
   //! Adds usage location to the symbol
   //!

@@ -271,10 +271,6 @@ struct Argument
 
 }; // struct Argument
 
-}; // namespace core
-}; //namespace libgdl
-
-
 inline std::ostream& operator<<(std::ostream& o,
                                 const libgdl::core::Argument& arg)
 {
@@ -304,5 +300,7 @@ inline std::ostream& operator<<(std::ostream& o,
   return o;
 }
 
+}; // namespace core
+}; //namespace libgdl
 
 #endif // _LIBGDL_CORE_DATATYPES_ARGUMENT_HPP

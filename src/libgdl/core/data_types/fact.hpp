@@ -145,9 +145,6 @@ struct Fact
   Location loc;
 }; // struct Fact
 
-}; // namespace core
-}; // namespace libgdl
-
 inline std::ostream& operator<<(std::ostream& o,
                                 const libgdl::core::Fact& f)
 {
@@ -155,5 +152,7 @@ inline std::ostream& operator<<(std::ostream& o,
   return o;
 }
 
+}; // namespace core
+}; // namespace libgdl
 
 #endif // _LIBGDL_CORE_FACT_HPP_INCLUDED

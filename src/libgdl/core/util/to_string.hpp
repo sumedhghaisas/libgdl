@@ -20,7 +20,7 @@ namespace libgdl
 //!
 //! \tparam T Type of the value to be printed
 //! \param s Value to be printed
-//! \return
+//! \return std::string
 //!
 //!
 template<typename T> std::string
@@ -36,7 +36,7 @@ ToString(const T& s,
 //!
 //! \tparam T Type of the value to be printed
 //! \param s Value to be printed
-//! \return
+//! \return std::string
 //!
 //!
 template<typename T> std::string

@@ -27,10 +27,10 @@ struct Argument;
  */
 typedef std::map<std::string, Argument*> StrVarMap;
 
-}; // namespace core
-}; // namespace libgdl
-
 std::ostream& operator<<(std::ostream& s,
                          const libgdl::core::StrVarMap& vmap);
+
+}; // namespace core
+}; // namespace libgdl
 
 #endif // _LIBGDL_CORE_DATATYPES_VARIABLE_MAP_HPP_INCLUDED
