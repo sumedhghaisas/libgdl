@@ -1,0 +1,74 @@
+/*! @page tut_cache Using LRUCache
+
+@section cacheintro Introduction
+
+libGDL implemented cache based on the replacement policy of 'Least Recently Used'.
+According to benchmarks the average time of execution in case of hit is around
+0.4 microseconds. 
+
+@code
+[INFO ] Running benchmarks...
+[INFO ] Running bechmark LRUCacheHitTimeBenchmark... Avg. -- 0.4microsecond(s)
+@endcode
+
+To run cache benchmarks on your system -
+
+@code
+cd build
+make
+bin/libgdl_benchmark -m CacheBenchmarks
+@endcode
+
+The usage of module LRUCache is explained below. For more detalis see files
+lru_cache.hpp, cache_tests.cpp and cache_benchmarks.cpp. To get more information 
+on the usage look at libgdl::GDL.
+
+@section cache_usage Using LRUCache
+
+LRUCache module is templatized(Variadic Templates) to provide the flexibility 
+needed. The hit/miss is computed based on hashing. LRUCache constructor accepts 
+buffer size, miss function and hash function. The given hash function is used to 
+compute hit/miss and in the case of a miss the given miss function is called with 
+arguments. The use of variadic templates makes it easy to pass any number of 
+arguments to miss function. The first template parameter to LRUCache is the 
+return type of the miss function. The cached values are stored as an array of 
+pointers for faster lookup and lesser contiguous memory overhead. There can be 
+variable number of template parameters after the first template parameter, 
+signifying the input signature of both miss function and hash function. The 'Get' 
+function of LRUCache is used as the cache function. This function accepts the 
+same signature given in the templatization(except the first template parameter 
+which is return type) as constant reference. The 'Get' function computes the 
+hash by passing all the arguments to the hash function. The return type of 'Get' 
+function is the pointer pointing to expected return value. This is to avoid the 
+expensive copy of objects. Do not delete this received pointer as memory is 
+handled internally by LRUCache module.
+
+For example -
+If you want to use LRUCache with following function
+
+@code
+A GetA(const B& b, const C& c, const D& d);
+
+size_t Hash(const B& b, const C& c, const D& d);
+@endcode
+
+Initialize LRUCache as following -
+
+@code
+std::function<A(const B&, const C&, const D&)> miss_f(GetA);
+std::function<size_t(const B&, const C&, const D&)> hash_f(Hash);
+
+LRUCache<A, B, C, D> cache(miss_f, hash_f, buffer_size);
+@endcode
+
+Example use of 'Get' -
+
+@code
+B b;
+C c;
+D d;
+A* a = cache.Get(b, c, d);
+//! Do not delete a.
+@endcode
+
+*/

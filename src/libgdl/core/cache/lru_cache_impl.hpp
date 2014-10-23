@@ -15,11 +15,11 @@ template<class value_type, typename... key_types>
 LRUCache<value_type, key_types...>::
   LRUCache(const MissFunction& f,
            const HashFunction& hf,
-           unsigned short capacity,
+           unsigned short cap,
            const Log& log)
     : default_f(f),
     default_hf(hf),
-    capacity(capacity),
+    capacity(cap + 1),
     log(log)
 {
   hashs = new size_t[capacity];

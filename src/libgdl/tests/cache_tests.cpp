@@ -12,7 +12,7 @@
 #include "libgdl_test.hpp"
 
 #include <list>
-#include <boost/function.hpp>
+#include <functional>
 
 BOOST_AUTO_TEST_SUITE(CacheTests);
 
@@ -43,8 +43,8 @@ BOOST_AUTO_TEST_CASE(LRUCacheHitTest_Time)
   MARK_START;
   OPEN_LOG;
   
-  boost::function<size_t* (const size_t&)> def(Fun);
-  boost::function<size_t (const size_t&)> h(GetHash);
+  function<size_t* (const size_t&)> def(Fun);
+  function<size_t (const size_t&)> h(GetHash);
   
   LRUCache<size_t, size_t> cache(def, h, 4);
   cache.GetLog() = TEST_LOG;
@@ -67,10 +67,10 @@ BOOST_AUTO_TEST_CASE(LRUCacheReplacementPolicyTest_Time)
   MARK_START;
   OPEN_LOG;
 
-  boost::function<size_t* (const size_t&)> def(Fun);
-  boost::function<size_t (const size_t&)> h(GetHash);
+  function<size_t* (const size_t&)> def(Fun);
+  function<size_t (const size_t&)> h(GetHash);
   
-  LRUCache<size_t, size_t> cache(def, h, 4);
+  LRUCache<size_t, size_t> cache(def, h, 3);
   cache.GetLog() = TEST_LOG;
   
   size_t* t1 = cache.Get(10);

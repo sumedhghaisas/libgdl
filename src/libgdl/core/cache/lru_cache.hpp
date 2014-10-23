@@ -7,7 +7,7 @@
 #ifndef _LIBGDL_CORE_LRU_CACHE_HPP_INCLUDED
 #define _LIBGDL_CORE_LRU_CACHE_HPP_INCLUDED
 
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/unordered_map.hpp>
 
 namespace libgdl
@@ -35,8 +35,8 @@ namespace cache /** Cache System of libGDL **/
 template<class value_type, typename... key_types>
 class LRUCache
 {
-  typedef boost::function<value_type* (const key_types&...)> MissFunction;
-  typedef boost::function<size_t (const key_types&...)> HashFunction;
+  typedef std::function<value_type* (const key_types&...)> MissFunction;
+  typedef std::function<size_t (const key_types&...)> HashFunction;
 
  public:
 
@@ -132,7 +132,7 @@ class LRUCache
   const HashFunction default_hf;
 
   //! maximum entries to cache
-  short capacity;
+  size_t capacity;
 
   //! array storing hash of the cached keys
   uint64_t *hashs;

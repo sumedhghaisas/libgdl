@@ -3,8 +3,14 @@
 @section intro_sec Introduction
 
 libGDL is an C++(std11) General Game Playing library. It aims to implement a base 
-for any General Game Player. libGDL implements fast GDL parser, reasoner
+for any General Game Player. libGDL implements fast GDL parser and reasoner
 along with flattener. The API of libGDL is uniform, scalable and intuitive.
+The core section of libGDL includes LRUCache, smart input|output, microtimer
+and many data structure specially implemented for efficiency and ease of use.
+Every module of libGDL is highly tested with boost::UnitTestFramework. To cope
+with the continuous development in the field of General Game Playing libGDL 
+implements its benchamrking system. Take a look at benchamarking tutorial for 
+more details.  
 
 
 @section howto How To Use This Documentation
@@ -43,6 +49,7 @@ A few short tutorials on how to use libGDL are given below.
 
  - @ref build
  - @ref tut_io
+ - @ref tut_cache
  - @ref verinfo
  
 Tutorials on some modules are also available

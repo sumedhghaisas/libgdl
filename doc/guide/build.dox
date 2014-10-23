@@ -5,7 +5,8 @@
 libGDL uses CMake as a build system and allows several flexible build
 configuration options.  One can consult any of numerous CMake tutorials for
 further documentation, but this tutorial should be enough to get libGDL built
-and installed.
+and installed. libGDL uses advance c++11 features for efficiency and flexibility.
+Hence the build requires latest GCC or Clang support.
 
 @section Download latest libGDL build
 Download latest libGDL stable release from <"https://github.com/sumedhghaisas/libgdl/releases">GitHub</a>
@@ -27,7 +28,7 @@ enough.
 libGDL depends on the following libraries, which need to be installed on the
 system and have headers present:
 
-
+  
   - Boost (program_options, unit_test_framework)
   - CMake >= 2.8.5
   - BISON >= 3.0.0 (OPTIONAL)

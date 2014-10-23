@@ -9,7 +9,7 @@
 #include <libgdl/core.hpp>
 #include <libgdl/core/cache/lru_cache.hpp>
 
-LIBGDL_AUTO_BENCHMARK_SUITE(LRUCacheBenchmarks);
+LIBGDL_AUTO_BENCHMARK_SUITE(CacheBenchmarks);
 
 using namespace std;
 using namespace libgdl;
@@ -42,7 +42,7 @@ BENCHMARK_T(LRUCacheHitTimeBenchmark,
   boost::function<size_t* (const size_t&)> def(Fun);
   boost::function<size_t (const size_t&)> h(GetHash);
   
-  LRUCache<size_t, size_t> cache(def, h, 4);
+  LRUCache<size_t, size_t> cache(def, h, 3);
   cache.GetLog() = BENCHMARK_LOG;
   size_t* t1 = cache.Get(10);
   
