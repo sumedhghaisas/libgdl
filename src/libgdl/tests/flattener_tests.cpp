@@ -11,6 +11,8 @@
 #include <libgdl/gdl.hpp>
 
 #include <list>
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 
 #include <boost/test/unit_test.hpp>
 #include "old_boost_test_definitions.hpp"
@@ -113,5 +115,52 @@ BOOST_AUTO_TEST_CASE(Puzzle8FlattenTest)
   
   MARK_END;
 }
+
+/**
+ * Check if flattening is working for all games.
+ */
+BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
+{
+  MARK_START;
+  cout << endl;
+  OPEN_LOG;
+
+  /* initialize random seed: */
+  srand (time(NULL));
+  
+  list<string> games;
+  games.push_back("data/games/3puzzle.kif");
+  games.push_back("data/games/8puzzle.kif");
+  games.push_back("data/games/nine_board_tictactoe.kif");
+
+  for(auto game : games)
+  {
+    Log log;
+    log.Info << "Testing for game: " << game;
+    KIF kif(false, 0, TEST_LOG);
+    kif.AddFile(game);
+    kif.Parse();
+
+    KIFFlattener kf;
+    kf.Flatten(kif);
+
+    GDL<> gdl(kf, 1024, TEST_LOG);
+    State s = gdl.InitState();
+
+    do
+    {
+      MoveList ml = gdl.GetLegalMoves(s);
+      size_t index = rand() % ml.size();
+
+      MoveList::iterator it = ml.begin();
+      for(size_t i = 0;i < index;i++)
+        it++;
+
+      s = gdl.GetNextState(s, *it);
+    }while(!gdl.IsTerminal(s));
+    log.Info << "\033[0;32m" " [PASSED]" "\033[0m" << endl;
+  }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END();

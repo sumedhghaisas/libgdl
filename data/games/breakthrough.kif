@@ -1,0 +1,229 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Breakthrough
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Components
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (role white)
+  (role black)
+
+
+  (<= (base (cellHolds ?x ?y ?w))
+      (index ?x)
+      (index ?y)
+      (role ?w))
+
+  (<= (base (control ?w))
+      (role ?w))
+
+
+  (<= (input white (move ?u ?v ?u ?y))
+      (index ?u)
+      (index ?v)
+      (succ ?v ?y))
+
+  (<= (input white (move ?u ?v ?x ?y))
+      (index ?u)
+      (index ?v)
+      (succ ?u ?x)
+      (succ ?v ?y))
+
+  (<= (input white (move ?u ?v ?x ?y))
+      (index ?u)
+      (index ?v)
+      (succ ?x ?u)
+      (succ ?v ?y))
+
+  (<= (input black (move ?u ?v ?u ?y))
+      (role ?r)
+      (index ?u)
+      (index ?v)
+      (succ ?y ?v))
+
+  (<= (input black (move ?u ?v ?x ?y))
+      (index ?u)
+      (index ?v)
+      (succ ?u ?x)
+      (succ ?y ?v))
+
+  (<= (input ?r (move ?u ?v ?x ?y))
+      (role ?r)
+      (index ?u)
+      (index ?v)
+      (succ ?x ?u)
+      (succ ?y ?v))
+
+  (<= (input ?r noop)
+      (role ?r))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; init
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (init (cellHolds 1 1 white))
+  (init (cellHolds 2 1 white))
+  (init (cellHolds 3 1 white))
+  (init (cellHolds 4 1 white))
+  (init (cellHolds 5 1 white))
+  (init (cellHolds 6 1 white))
+  (init (cellHolds 7 1 white))
+  (init (cellHolds 8 1 white))
+  (init (cellHolds 1 2 white))
+  (init (cellHolds 2 2 white))
+  (init (cellHolds 3 2 white))
+  (init (cellHolds 4 2 white))
+  (init (cellHolds 5 2 white))
+  (init (cellHolds 6 2 white))
+  (init (cellHolds 7 2 white))
+  (init (cellHolds 8 2 white))
+
+  (init (cellHolds 1 7 black))
+  (init (cellHolds 2 7 black))
+  (init (cellHolds 3 7 black))
+  (init (cellHolds 4 7 black))
+  (init (cellHolds 5 7 black))
+  (init (cellHolds 6 7 black))
+  (init (cellHolds 7 7 black))
+  (init (cellHolds 8 7 black))
+  (init (cellHolds 1 8 black))
+  (init (cellHolds 2 8 black))
+  (init (cellHolds 3 8 black))
+  (init (cellHolds 4 8 black))
+  (init (cellHolds 5 8 black))
+  (init (cellHolds 6 8 black))
+  (init (cellHolds 7 8 black))
+  (init (cellHolds 8 8 black))
+
+  (init (control white))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; legal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (<= (legal white (move ?x ?y1 ?x ?y2))
+      (true (control white))
+      (true (cellHolds ?x ?y1 white))
+      (succ ?y1 ?y2)
+      (not (true (cellHolds ?x ?y2 white)))
+      (not (true (cellHolds ?x ?y2 black))))
+
+  (<= (legal white (move ?x1 ?y1 ?x2 ?y2))
+      (true (control white))
+      (true (cellHolds ?x1 ?y1 white))
+      (succ ?y1 ?y2)
+      (succ ?x1 ?x2)
+      (not (true (cellHolds ?x2 ?y2 white))))
+
+  (<= (legal white (move ?x1 ?y1 ?x2 ?y2))
+      (true (control white))
+      (true (cellHolds ?x1 ?y1 white))
+      (succ ?y1 ?y2)
+      (succ ?x2 ?x1)
+      (not (true (cellHolds ?x2 ?y2 white))))
+
+  (<= (legal black (move ?x ?y1 ?x ?y2))
+      (true (control black))
+      (true (cellHolds ?x ?y1 black))
+      (succ ?y2 ?y1)
+      (not (true (cellHolds ?x ?y2 white)))
+      (not (true (cellHolds ?x ?y2 black))))
+
+  (<= (legal black (move ?x1 ?y1 ?x2 ?y2))
+      (true (control black))
+      (true (cellHolds ?x1 ?y1 black))
+      (succ ?y2 ?y1)
+      (succ ?x1 ?x2)
+      (not (true (cellHolds ?x2 ?y2 black))))
+
+  (<= (legal black (move ?x1 ?y1 ?x2 ?y2))
+      (true (control black))
+      (true (cellHolds ?x1 ?y1 black))
+      (succ ?y2 ?y1)
+      (succ ?x2 ?x1)
+      (not (true (cellHolds ?x2 ?y2 black))))
+    
+  (<= (legal white noop)
+      (true (control black)))
+
+  (<= (legal black noop)
+      (true (control white)))
+    
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; next
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
+  (<= (next (cellHolds ?x2 ?y2 ?player))
+      (does ?player (move ?x1 ?y1 ?x2 ?y2)))
+
+  (<= (next (cellHolds ?x3 ?y3 ?state))
+      (does ?player (move ?x1 ?y1 ?x2 ?y2))
+      (true (cellHolds ?x3 ?y3 ?state))
+      (distinct ?x1 ?x3)
+      (distinct ?x2 ?x3))
+    
+  (<= (next (cellHolds ?x3 ?y3 ?state))
+      (does ?player (move ?x1 ?y1 ?x2 ?y2))
+      (true (cellHolds ?x3 ?y3 ?state))
+      (distinct ?x1 ?x3)
+      (distinct ?y2 ?y3))
+    
+  (<= (next (cellHolds ?x3 ?y3 ?state))
+      (does ?player (move ?x1 ?y1 ?x2 ?y2))
+      (true (cellHolds ?x3 ?y3 ?state))
+      (distinct ?y1 ?y3)
+      (distinct ?x2 ?x3))
+    
+  (<= (next (cellHolds ?x3 ?y3 ?state))
+      (does ?player (move ?x1 ?y1 ?x2 ?y2))
+      (true (cellHolds ?x3 ?y3 ?state))
+      (distinct ?y1 ?y3)
+      (distinct ?y2 ?y3))
+    
+  (<= (next (control white))
+      (true (control black)))
+
+  (<= (next (control black))
+      (true (control white)))
+    
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; goal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (<= (goal white 100) whiteWin)
+  (<= (goal white 0) (not whiteWin))
+    
+  (<= (goal black 100) blackWin)
+  (<= (goal black 0) (not blackWin))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; terminal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (<= terminal whiteWin)
+  (<= terminal blackWin)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Views
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (<= whiteWin (true (cellHolds ?x 8 white)))
+  (<= whiteWin (not blackCell))
+
+  (<= blackWin (true (cellHolds ?x 1 black)))
+  (<= blackWin (not whiteCell))
+
+  (<= whiteCell (true (cellHolds ?x ?y white)))
+  (<= blackCell (true (cellHolds ?x ?y black)))    
+    
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Data
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(index 1) (index 2) (index 3) (index 4) (index 5) (index 6) (index 7) (index 8)
+(succ 1 2)  (succ 2 3)  (succ 3 4)  (succ 4 5)  (succ 5 6)  (succ 6 7)  (succ 7 8)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+

@@ -43,21 +43,31 @@ BOOST_AUTO_TEST_CASE(VariableParsingTest)
 BOOST_AUTO_TEST_CASE(GameParsingTest)
 {
   MARK_START;
+  cout << endl;
   OPEN_LOG;
   
   list<string> games;
   games.push_back("data/games/3puzzle.kif");
   games.push_back("data/games/8puzzle.kif");
-  //games.push_back("data/games/nine_board_tictactoe.kif");
+  games.push_back("data/games/nine_board_tictactoe.kif");
   games.push_back("data/games/alquerque.kif");
+  games.push_back("data/games/alquerque_zero_sum.kif");
+  games.push_back("data/games/buttons_and_lights.kif");
+  games.push_back("data/games/best_buttons_and_lights.kif");
+  games.push_back("data/games/best_buttons_and_lights_extended.kif");
+  games.push_back("data/games/breakthrough.kif");
+  games.push_back("data/games/checker_on_barrel_no_kings.kif");
+  games.push_back("data/games/chinese_checker.kif");
   
   for(auto game : games)
   {
+    Log log;
+    log.Info << "Testing for game: " << game;
     KIF kif(false, 0, TEST_LOG);
     kif.AddFile(game);
     if(!kif.Parse()) MARK_FAIL;
+    log.Info << "\033[0;32m" " [PASSED]" "\033[0m" << endl;
   }
-  MARK_END;
 }
 
 /**

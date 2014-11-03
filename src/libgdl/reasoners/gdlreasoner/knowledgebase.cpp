@@ -296,7 +296,8 @@ Answer* KnowledgeBase::GetAnswer(const Argument& question,
   return ans;
 }
 
-std::ostream& operator<<(std::ostream& stream, const KnowledgeBase& kb)
+std::ostream& libgdl::gdlreasoner::operator<<(std::ostream& stream,
+                                              const KnowledgeBase& kb)
 {
   SymbolTable symbol_table = kb.GetSymbolTable();
   SymbolDecodeStream o(symbol_table, stream);

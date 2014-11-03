@@ -223,7 +223,6 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
       continue;
     }
 
-
     // pre-process the clause
     // adjust the extra variables which are present in body but not head
     // adjust 'not' relation appropriately
@@ -490,8 +489,8 @@ Argument* KIFFlattener::ProcessPremiss(Argument* p,
        cmd != SymbolTable::DistinctID &&
        cmd != SymbolTable::RoleID &&
        cmd != SymbolTable::InputID &&
-       cmd == SymbolTable::BaseID &&
-       cmd == SymbolTable::InitID)
+       cmd != SymbolTable::BaseID &&
+       cmd != SymbolTable::InitID)
     {
       delete p;
       return ProcessPremiss(arg, state_independent);
