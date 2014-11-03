@@ -97,7 +97,6 @@ bool KIF::Parse(bool ignoreErrors)
       errors.push_back(error);
     }
   }
-  else return false;
 
   for(list<ErrorType>::const_iterator it = errors.begin();it != errors.end();it++)
     log.Fatal << *it << std::endl;

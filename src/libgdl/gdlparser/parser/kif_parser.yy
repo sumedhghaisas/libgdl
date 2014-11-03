@@ -118,7 +118,7 @@ namespace gdlparser {
 %type   <node>        start
 %type   <node>        S
 %type   <sentence>    Fact
-%type   <clause>      Clause
+%type   <node>        Clause
 %type   <premiss>     Premiss
 %type   <premisses>   Premisses
 %type   <sentence>    Sentence;
@@ -151,12 +151,22 @@ Fact      : Sentence  {
                         $$ = $1;
                       }
 
-Clause    : OBRACKET CCOMMAND Sentence Premiss Premisses CBRACKET
+Clause    : OBRACKET CCOMMAND Sentence Premisses CBRACKET
                       {
-                        $$ = new ClauseConstruct($3, @$);
-                        $$->AddArgument($4);
-                        if($5 != NULL) $$->AddArgument(*$5);
-                        delete $5;
+                        if($4 != NULL)
+                        {
+                          ClauseConstruct* temp = new ClauseConstruct($3, @$);
+                          temp->AddArgument(*$4);
+                          delete $4;
+                          $$ = temp;
+                        }
+                        else
+                        {
+                          libgdl::core::ErrorType war;
+                          war.AddEntry("Clause considered as fact as it contains no premisses.", @$);
+                          driver.Warn(war);
+                          $$ = $3;
+                        }
                       }
 
 Premiss   : Sentence  {

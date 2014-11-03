@@ -44,9 +44,19 @@ BOOST_AUTO_TEST_CASE(GameParsingTest)
 {
   MARK_START;
   OPEN_LOG;
-  KIF kif(false, 0, TEST_LOG);
-  kif.AddFile("data/games/8puzzle.kif");
-  if(!kif.Parse()) MARK_FAIL;
+  
+  list<string> games;
+  games.push_back("data/games/3puzzle.kif");
+  games.push_back("data/games/8puzzle.kif");
+  //games.push_back("data/games/nine_board_tictactoe.kif");
+  games.push_back("data/games/alquerque.kif");
+  
+  for(auto game : games)
+  {
+    KIF kif(false, 0, TEST_LOG);
+    kif.AddFile(game);
+    if(!kif.Parse()) MARK_FAIL;
+  }
   MARK_END;
 }
 

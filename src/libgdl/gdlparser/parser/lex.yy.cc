@@ -387,7 +387,7 @@ typedef unsigned char YY_CHAR;
 
 #define yytext_ptr yytext
 
-#include <libgdl/gdlparser/parser/FlexLexer.h>
+#include <FlexLexer.h>
 
 /* %if-c-only Standard (non-C++) definition */
 /* %endif */
@@ -497,8 +497,8 @@ static yyconst flex_int16_t yy_chk[53] =
 
 static yyconst flex_int16_t yy_rule_linenum[12] =
     {   0,
-       70,   74,   78,   82,   86,   90,   97,  102,  107,  113,
-      118
+       70,   74,   78,   82,   86,   90,   98,  103,  108,  114,
+      119
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -877,11 +877,12 @@ YY_RULE_SETUP
   std::string comment(yytext);
   if(comment.find("#line")!= std::string::npos) return token::HLINE;
   else delete yylval->stringVal;
+  yylloc->lines(1); yylloc->step();
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 97 "kif_scanner.ll"
+#line 98 "kif_scanner.ll"
 {
   yylval->num = atoi(yytext);
   return token::NUMBER;
@@ -889,7 +890,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 102 "kif_scanner.ll"
+#line 103 "kif_scanner.ll"
 {
   yylval->stringVal = new std::string(yytext, yyleng);
   return token::VARIABLE;
@@ -897,7 +898,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 107 "kif_scanner.ll"
+#line 108 "kif_scanner.ll"
 {
   yylval->stringVal = new std::string(yytext, yyleng);
   return token::ID;
@@ -906,7 +907,7 @@ YY_RULE_SETUP
 /* gobble up white-spaces */
 case 10:
 YY_RULE_SETUP
-#line 113 "kif_scanner.ll"
+#line 114 "kif_scanner.ll"
 {
   yylloc->step();
 }
@@ -915,17 +916,17 @@ YY_RULE_SETUP
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 118 "kif_scanner.ll"
+#line 119 "kif_scanner.ll"
 {
   yylloc->lines(yyleng); yylloc->step();
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 122 "kif_scanner.ll"
+#line 123 "kif_scanner.ll"
 ECHO;
 	YY_BREAK
-#line 929 "lex.yy.cc"
+#line 930 "lex.yy.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1974,7 +1975,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 122 "kif_scanner.ll"
+#line 123 "kif_scanner.ll"
 
 
 
