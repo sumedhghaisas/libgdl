@@ -132,6 +132,9 @@ BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
   games.push_back("data/games/3puzzle.kif");
   games.push_back("data/games/8puzzle.kif");
   games.push_back("data/games/nine_board_tictactoe.kif");
+  games.push_back("data/games/buttons_and_lights.kif");
+  games.push_back("data/games/best_buttons_and_lights.kif");
+  games.push_back("data/games/best_buttons_and_lights_extended.kif");
 
   for(auto game : games)
   {
@@ -143,6 +146,8 @@ BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
 
     KIFFlattener kf;
     kf.Flatten(kif);
+    
+    log.Info << ". Running simulation... ";
 
     GDL<> gdl(kf, 1024, TEST_LOG);
     State s = gdl.InitState();
@@ -158,8 +163,32 @@ BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
 
       s = gdl.GetNextState(s, *it);
     }while(!gdl.IsTerminal(s));
+    log.Info << "\033[0;32m" "[PASSED]" "\033[0m" << endl;
+  }
+  
+  //! Games which are too expensive knowledgebase simulation
+  
+  games.clear();
+  games.push_back("data/games/alquerque.kif"); 
+  games.push_back("data/games/alquerque_zero_sum.kif");
+  games.push_back("data/games/breakthrough.kif");
+  games.push_back("data/games/checker_on_barrel_no_kings.kif");
+  
+  for(auto game : games)
+  {
+    Log log;
+    log.Info << "Testing for game: " << game;
+    KIF kif(false, 0, TEST_LOG);
+    kif.AddFile(game);
+    kif.Parse();
+
+    KIFFlattener kf;
+    kf.Flatten(kif);
+    
     log.Info << "\033[0;32m" " [PASSED]" "\033[0m" << endl;
   }
+  
+  //games.push_back("data/games/chinese_checker.kif");
 }
 
 

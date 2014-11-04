@@ -231,13 +231,21 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
     // add the processed clause temporarily to knowledge base
     size_t c_index = m_kb.Tell(*p_clause);
 
+    VariableMap h_v_map;
+    Argument* question = SpecialArgCopy2(p_clause->head, h_v_map);
+
     // after adding the head of the clause will be the question to ask
-    Answer* ans = m_kb.GetAnswer(*p_clause->head, VariableMap(), set<size_t>());
+    Answer* ans = m_kb.GetAnswer(*question, VariableMap(), set<size_t>());
+
 
     while(ans->next())
     {
+      VariableMap ans_v_map = ans->GetVariableMap();
+      for(auto va : h_v_map)
+        ans_v_map.insert(va);
+
       // compute the answer with substitution
-      Clause* to_add = Unify::GetSubstitutedClause(&(*it), ans->GetVariableMap());
+      Clause* to_add = Unify::GetSubstitutedClause(&(*it), ans_v_map);
 
       // remove all the occurrences of data relations
       Clause* temp = RemoveDataFromClause(to_add, state_independent);
@@ -272,6 +280,8 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
 
     // delete the processed clause(without deleting the variables
     SpecialClauseDelete(p_clause);
+
+    delete question;
   }
 
   // add all the facts related to this relation to knowledge base
@@ -282,11 +292,17 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
       m_kb.Tell(*it);
     }
 
+  // compute signature and add to appropriate FactVec
+  size_t command = n->id;
+  KnowledgeBase::FactList& fl = m_kb.m_facts[command];
+
   // add heads of all the clauses to knowledge base
   for(list<Argument*>::iterator it = f_heads.begin();it != f_heads.end();it++)
   {
-    m_kb.Tell(Fact(**it));
-    delete *it;
+    Fact f;
+    f.arg = *it;
+
+    fl.push_back(std::move(f));
   }
 }
 
@@ -440,6 +456,25 @@ Argument* KIFFlattener::SpecialArgCopy(Argument* arg, set<Argument*>& vars)
 
   for(size_t i = 0; i < arg->args.size(); i++)
     out->args.push_back(SpecialArgCopy(arg->args[i], vars));
+
+  return out;
+}
+
+Argument* KIFFlattener::SpecialArgCopy2(Argument* arg, VariableMap& v_map)
+{
+  if(arg->IsVariable())
+  {
+    Argument* out = new Argument(*arg);
+    v_map[arg] = out;
+    return out;
+  }
+
+  Argument* out = new Argument();
+  out->t = arg->t;
+  out->value = arg->value;
+
+  for(size_t i = 0; i < arg->args.size(); i++)
+    out->args.push_back(SpecialArgCopy2(arg->args[i], v_map));
 
   return out;
 }

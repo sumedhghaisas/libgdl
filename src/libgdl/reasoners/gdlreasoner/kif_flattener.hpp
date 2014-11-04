@@ -224,6 +224,9 @@ class KIFFlattener
   Argument* RemoveDataFromArgument(Argument* arg,
                                    const std::set<size_t>& state_independent);
 
+  Argument* SpecialArgCopy2(Argument* arg,
+                            core::VariableMap& v_map);
+
   //! Stores flattened facts
   std::list<Fact> flattened_facts;
   //! Stores flattened clauses

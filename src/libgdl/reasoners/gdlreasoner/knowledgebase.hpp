@@ -102,7 +102,7 @@ class KnowledgeBase
   //! \param checkForDoubles To check for duplicate
   //! \return
   //!
-  //!
+  //!inspectgame.php
   std::list<Argument*> Ask(const Argument& question,
                            bool checkForDoubles = true);
 
@@ -278,6 +278,7 @@ class KnowledgeBase
 
  private:
   friend GDLReasoner;
+  friend KIFFlattener;
 
   //! all the facts stored in map for faster lookup
   FactMap m_facts;
