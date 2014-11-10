@@ -177,7 +177,7 @@ bool Handler::LoadCompareFile(const std::string& filename,
 
     getline(c_file, smin);
 
-    PMeasure pm(stod(smin, NULL), stod(smax, NULL), stod(savg, NULL));
+    PMeasure pm;//(stod(smin, NULL), stod(smax, NULL), stod(savg, NULL));
     compare_map[name] = pm;
   }
   return true;

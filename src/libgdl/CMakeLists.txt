@@ -11,7 +11,7 @@ set(DIRS
   tests
   reasoners
   core
-  benchmarks
+  #benchmarks
 )
 
 foreach(dir ${DIRS})
@@ -106,11 +106,11 @@ add_custom_target(test
 add_dependencies(test libgdl_data)
 
 # For 'make test'.
-add_custom_target(benchmark
-  ${CMAKE_BINARY_DIR}/bin/libgdl_benchmark
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ # This is where test files are put.
-  COMMENT "Running libGDL benchmarks"
-  DEPENDS libgdl_benchmark)
+#add_custom_target(benchmark
+#  ${CMAKE_BINARY_DIR}/bin/libgdl_benchmark
+#  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/ # This is where test files are put.
+#  COMMENT "Running libGDL benchmarks"
+#  DEPENDS libgdl_benchmark)
   
-add_dependencies(benchmark libgdl_data)
+#add_dependencies(benchmark libgdl_data)
 

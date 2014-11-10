@@ -7,6 +7,8 @@
 #ifndef __LIBGDL_CORE_HPP
 #define __LIBGDL_CORE_HPP
 
+#include <libgdl/core/util/system_setup.hpp>
+
 #include <libgdl/core/data_types/argument.hpp>
 #include <libgdl/core/data_types/clause.hpp>
 #include <libgdl/core/data_types/fact.hpp>
@@ -29,13 +31,5 @@
 #include <libgdl/core/util/gdl_stream.hpp>
 
 #define MARK_USED(X) (void)X;
-
-//! Even though 'register' is deprecated in later versions of c++ it is still
-//! used in some implementations of bison and flex
-//! So lets undef 'register'
-#ifdef register
-#undef register
-#endif // register
-#define register
 
 #endif // __LIBGDL_CORE_HPP

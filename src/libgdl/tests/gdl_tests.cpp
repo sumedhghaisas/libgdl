@@ -18,6 +18,7 @@ BOOST_AUTO_TEST_SUITE(GDLTests);
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::util;
 using namespace libgdl::core;
 using namespace libgdl::gdlreasoner;
 

@@ -49,7 +49,7 @@
 
 #line 51 "kif_parser.tab.cc" // lalr1.cc:407
 // Unqualified %code blocks.
-#line 81 "kif_parser.yy" // lalr1.cc:408
+#line 83 "kif_parser.yy" // lalr1.cc:408
 
 #include <algorithm>
 #include <iostream>
@@ -613,7 +613,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
           switch (yyn)
             {
   case 2:
-#line 134 "kif_parser.yy" // lalr1.cc:847
+#line 136 "kif_parser.yy" // lalr1.cc:847
     {
                         core::StrVarMap v_map;
                         (yystack_[1].value.node)->CodeGen(driver, v_map);
@@ -623,7 +623,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 3:
-#line 139 "kif_parser.yy" // lalr1.cc:847
+#line 141 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.node) = NULL;
                     }
@@ -631,7 +631,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 4:
-#line 143 "kif_parser.yy" // lalr1.cc:847
+#line 145 "kif_parser.yy" // lalr1.cc:847
     {
                     (yylhs.value.node) = (yystack_[0].value.sentence);
                   }
@@ -639,7 +639,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 5:
-#line 146 "kif_parser.yy" // lalr1.cc:847
+#line 148 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.node) = (yystack_[0].value.node);
                     }
@@ -647,7 +647,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 6:
-#line 150 "kif_parser.yy" // lalr1.cc:847
+#line 152 "kif_parser.yy" // lalr1.cc:847
     {
                         (yylhs.value.sentence) = (yystack_[0].value.sentence);
                       }
@@ -655,7 +655,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 7:
-#line 155 "kif_parser.yy" // lalr1.cc:847
+#line 157 "kif_parser.yy" // lalr1.cc:847
     {
                         if((yystack_[1].value.premisses) != NULL)
                         {
@@ -676,7 +676,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 8:
-#line 172 "kif_parser.yy" // lalr1.cc:847
+#line 174 "kif_parser.yy" // lalr1.cc:847
     {
                         (yylhs.value.premiss) = new Premiss(new std::string(""), yylhs.location);
                         (yylhs.value.premiss)->AddArgument((yystack_[0].value.sentence));
@@ -685,7 +685,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 9:
-#line 177 "kif_parser.yy" // lalr1.cc:847
+#line 179 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.premiss) = new Premiss(new std::string("not"), yylhs.location);
                       (yylhs.value.premiss)->AddArgument((yystack_[1].value.sentence));
@@ -694,7 +694,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 10:
-#line 182 "kif_parser.yy" // lalr1.cc:847
+#line 184 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.premiss) = new Premiss(new std::string("or"), yylhs.location);
                       (yylhs.value.premiss)->AddArgument((yystack_[2].value.sentence));
@@ -705,7 +705,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 11:
-#line 189 "kif_parser.yy" // lalr1.cc:847
+#line 191 "kif_parser.yy" // lalr1.cc:847
     {
                                 if((yystack_[0].value.premisses) == NULL)
                                   (yylhs.value.premisses) = new std::list<Premiss*>();
@@ -716,7 +716,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 12:
-#line 195 "kif_parser.yy" // lalr1.cc:847
+#line 197 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.premisses) = NULL;
                     }
@@ -724,7 +724,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 13:
-#line 199 "kif_parser.yy" // lalr1.cc:847
+#line 201 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.sentence) = new Sentence((yystack_[0].value.stringVal), yylhs.location);
                     }
@@ -732,7 +732,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 14:
-#line 202 "kif_parser.yy" // lalr1.cc:847
+#line 204 "kif_parser.yy" // lalr1.cc:847
     {
                                                     (yylhs.value.sentence) = new Sentence((yystack_[3].value.stringVal), yylhs.location);
                                                     (yylhs.value.sentence)->AddArgument((yystack_[2].value.term));
@@ -744,7 +744,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 15:
-#line 210 "kif_parser.yy" // lalr1.cc:847
+#line 212 "kif_parser.yy" // lalr1.cc:847
     {
                                   if((yystack_[0].value.sentences) == NULL)
                                     (yylhs.value.sentences) = new std::list<Sentence*>();
@@ -755,7 +755,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 16:
-#line 216 "kif_parser.yy" // lalr1.cc:847
+#line 218 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.sentences) = NULL;
                     }
@@ -763,7 +763,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 17:
-#line 220 "kif_parser.yy" // lalr1.cc:847
+#line 222 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.term) = new Term((yystack_[0].value.stringVal), yylhs.location);
                     }
@@ -771,7 +771,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 18:
-#line 223 "kif_parser.yy" // lalr1.cc:847
+#line 225 "kif_parser.yy" // lalr1.cc:847
     {
                         (yylhs.value.term) = new Term((yystack_[0].value.stringVal), yylhs.location);
                       }
@@ -779,7 +779,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 19:
-#line 226 "kif_parser.yy" // lalr1.cc:847
+#line 228 "kif_parser.yy" // lalr1.cc:847
     {
                                                     (yylhs.value.term) = new Term((yystack_[3].value.stringVal), yylhs.location);
                                                     (yylhs.value.term)->AddArgument((yystack_[2].value.term));
@@ -791,7 +791,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 20:
-#line 234 "kif_parser.yy" // lalr1.cc:847
+#line 236 "kif_parser.yy" // lalr1.cc:847
     {
                           if((yystack_[0].value.terms) == NULL)
                             (yylhs.value.terms) = new std::list<Term*>();
@@ -802,7 +802,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 21:
-#line 240 "kif_parser.yy" // lalr1.cc:847
+#line 242 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.terms) = NULL;
                     }
@@ -810,7 +810,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 22:
-#line 244 "kif_parser.yy" // lalr1.cc:847
+#line 246 "kif_parser.yy" // lalr1.cc:847
     {
                   (yylhs.value.stringVal) = (yystack_[0].value.stringVal);
                 }
@@ -818,7 +818,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     break;
 
   case 23:
-#line 247 "kif_parser.yy" // lalr1.cc:847
+#line 249 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.stringVal) = new std::string(ToString((yystack_[0].value.num)));
                     }
@@ -1185,9 +1185,9 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   const unsigned char
   KIFParser::yyrline_[] =
   {
-       0,   134,   134,   139,   143,   146,   150,   154,   172,   176,
-     181,   189,   195,   199,   202,   210,   216,   220,   223,   226,
-     234,   240,   244,   247
+       0,   136,   136,   141,   145,   148,   152,   156,   174,   178,
+     183,   191,   197,   201,   204,   212,   218,   222,   225,   228,
+     236,   242,   246,   249
   };
 
   // Print the state stack on the debug stream.
@@ -1270,7 +1270,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 #line 23 "kif_parser.yy" // lalr1.cc:1155
 } } } } // libgdl::gdlparser::parser::yy
 #line 1273 "kif_parser.tab.cc" // lalr1.cc:1155
-#line 250 "kif_parser.yy" // lalr1.cc:1156
+#line 252 "kif_parser.yy" // lalr1.cc:1156
 
 
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;

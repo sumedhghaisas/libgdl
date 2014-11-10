@@ -59,6 +59,8 @@
 #include <list>
 #include <string>
 
+#include <libgdl/core.hpp>
+
 //! import all abstract syntax tree node types
 #include "syntax_tree_types_decl.hpp"
 

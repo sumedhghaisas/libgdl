@@ -45,6 +45,8 @@
 #include <list>
 #include <string>
 
+#include <libgdl/core.hpp>
+
 //! import all abstract syntax tree node types
 #include "syntax_tree_types_decl.hpp"
 
@@ -58,7 +60,7 @@ namespace gdlparser {
     }
   }
 
-#line 62 "kif_parser.tab.hh" // lalr1.cc:372
+#line 64 "kif_parser.tab.hh" // lalr1.cc:372
 
 
 # include <vector>
@@ -129,7 +131,7 @@ namespace gdlparser {
 
 #line 23 "kif_parser.yy" // lalr1.cc:372
 namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
-#line 133 "kif_parser.tab.hh" // lalr1.cc:372
+#line 135 "kif_parser.tab.hh" // lalr1.cc:372
 
 
 
@@ -161,7 +163,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     Term*                       term;
     std::list<Term*>*           terms;
 
-#line 165 "kif_parser.tab.hh" // lalr1.cc:372
+#line 167 "kif_parser.tab.hh" // lalr1.cc:372
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -175,6 +177,15 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
       syntax_error (const location_type& l, const std::string& m);
       location_type location;
     };
+
+//! Remove some windows specific definitions
+#ifdef TRUE
+  #undef TRUE
+#endif // TRUE
+
+#ifdef NOT
+  #undef NOT
+#endif // NOT
 
     /// Tokens.
     struct token
@@ -500,7 +511,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 
 #line 23 "kif_parser.yy" // lalr1.cc:372
 } } } } // libgdl::gdlparser::parser::yy
-#line 504 "kif_parser.tab.hh" // lalr1.cc:372
+#line 506 "kif_parser.tab.hh" // lalr1.cc:372
 
 
 

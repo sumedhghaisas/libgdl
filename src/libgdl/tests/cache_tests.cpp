@@ -18,6 +18,7 @@ BOOST_AUTO_TEST_SUITE(CacheTests);
 
 using namespace std;
 using namespace libgdl;
+using namespace libgdl::util;
 using namespace libgdl::cache;
 
 size_t* Fun(const size_t& a)
