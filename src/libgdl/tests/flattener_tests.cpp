@@ -135,6 +135,18 @@ BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
   games.push_back("data/games/buttons_and_lights.kif");
   games.push_back("data/games/best_buttons_and_lights.kif");
   games.push_back("data/games/best_buttons_and_lights_extended.kif");
+  games.push_back("data/games/connect_four.kif");
+  games.push_back("data/games/dual_hamilton.kif");
+  games.push_back("data/games/dual_hunter.kif");
+  games.push_back("data/games/dual_rainbow.kif");
+  games.push_back("data/games/farming_quandries.kif");
+  games.push_back("data/games/hamilton.kif");
+  games.push_back("data/games/horseshoe.kif");
+  games.push_back("data/games/hunter.kif");
+  games.push_back("data/games/joint_button_and_lights.kif");
+  games.push_back("data/games/joint_connect_four.kif");
+  games.push_back("data/games/knights_tour.kif");
+  games.push_back("data/games/knights_tour_5v5.kif");
 
   for(auto game : games)
   {
@@ -142,7 +154,7 @@ BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
     log.Info << "Testing for game: " << game;
     KIF kif(false, 0, TEST_LOG);
     kif.AddFile(game);
-    kif.Parse();
+    if(!kif.Parse()) MARK_FAIL;
 
     KIFFlattener kf;
     kf.Flatten(kif);
@@ -173,6 +185,8 @@ BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
   games.push_back("data/games/alquerque_zero_sum.kif");
   games.push_back("data/games/breakthrough.kif");
   games.push_back("data/games/checker_on_barrel_no_kings.kif");
+  games.push_back("data/games/chinook.kif");
+  games.push_back("data/games/freeforall.kif");
   
   for(auto game : games)
   {
@@ -188,7 +202,11 @@ BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
     log.Info << "\033[0;32m" " [PASSED]" "\033[0m" << endl;
   }
   
+  //! Games that are too expensive for flattening
   //games.push_back("data/games/chinese_checker.kif");
+  //games.push_back("data/games/chinese_checker_4.kif");
+  //games.push_back("data/games/fire_sheep.kif");
+  //games.push_back("data/games/hex.kif");
 }
 
 
