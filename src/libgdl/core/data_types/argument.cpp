@@ -56,41 +56,9 @@ Argument::Argument(const std::string& str,
     }
 
     Symbol* sym;
-    size_t id = symbol_table.CheckEntry(str, sym);
-    if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
-    {
-      if(sym->Arity() != 0)
-      {
-        ARITY_ERROR(error,
-                    str, 0,
-                    sym->Arity(),
-                    Location(),
-                    sym->GetLocation());
-        log.Fatal << error << endl;
-        return;
-      }
-      else if(isRel && sym->SymbolType() != Symbol::RELATION)
-      {
-        RF_ERROR(error,
-                str,
-                "Relation", "Function",
-                Location(),
-                sym->GetLocation());
-        log.Fatal << error << endl;
-        return;
-      }
-      else if(!isRel && sym->SymbolType() != Symbol::FUNCTION)
-      {
-        RF_ERROR(error,
-                str,
-                "Function", "Relation",
-                Location(),
-                sym->GetLocation());
-        log.Fatal << error << endl;
-        return;
-      }
-    }
-    else if(sym == NULL) id = symbol_table.AddEntry(str, Location(), 0, isRel);
+    size_t id = symbol_table.CheckEntry(str, 0, isRel, sym);
+
+    if(sym == NULL) id = symbol_table.AddEntry(str, Location(), 0, isRel);
 
     if(isRel)
       t = Argument::Relation;
@@ -108,41 +76,9 @@ Argument::Argument(const std::string& str,
   }
 
   Symbol* sym;
-  size_t id = symbol_table.CheckEntry(cmd, sym);
-  if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
-  {
-    if(sym->Arity() != args.size())
-    {
-      ARITY_ERROR(error,
-                  cmd, args.size(),
-                  sym->Arity(),
-                  Location(),
-                  sym->GetLocation());
-      log.Fatal << error << endl;
-      return;
-    }
-    else if(isRel && sym->SymbolType() != Symbol::RELATION)
-    {
-      RF_ERROR(error,
-              cmd,
-              "Relation", "Function",
-              Location(),
-              sym->GetLocation());
-      log.Fatal << error << endl;
-      return;
-    }
-    else if(!isRel && sym->SymbolType() != Symbol::FUNCTION)
-    {
-      RF_ERROR(error,
-              cmd,
-              "Function", "Relation",
-              Location(),
-              sym->GetLocation());
-      log.Fatal << error << endl;
-      return;
-    }
-  }
-  else if(sym == NULL)
+  size_t id = symbol_table.CheckEntry(cmd, args.size(), isRel, sym);
+
+  if(sym == NULL)
     id = symbol_table.AddEntry(cmd, Location(), args.size(), isRel);
 
   if(isRel)
@@ -318,42 +254,9 @@ Argument* Argument::ConstructArgument(const std::string& str,
     }
 
     Symbol* sym;
-    size_t id = symbol_table.CheckEntry(str, sym);
-    if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
-    {
-      if(sym->Arity() != 0)
-      {
-        ARITY_ERROR(error,
-                    str, 0,
-                    sym->Arity(),
-                    Location(),
-                    sym->GetLocation());
-        log.Fatal << error << endl;
-        return NULL;
-      }
-      else if(isRel && sym->SymbolType() != Symbol::RELATION)
-      {
-        RF_ERROR(error,
-                str,
-                "Relation", "Function",
-                Location(),
-                sym->GetLocation());
-        log.Fatal << error << endl;
-        return NULL;
-      }
-      else if(!isRel && sym->SymbolType() != Symbol::FUNCTION)
-      {
-        RF_ERROR(error,
-                 str,
-                 "Function", "Relation",
-                 Location(),
-                 sym->GetLocation());
-        log.Fatal << error << endl;
-        return NULL;
-      }
-    }
-    else if(sym == NULL)
-      id = symbol_table.AddEntry(str, Location(), 0, isRel);
+    size_t id = symbol_table.CheckEntry(str, 0, isRel, sym);
+
+    if(sym == NULL) id = symbol_table.AddEntry(str, Location(), 0, isRel);
 
     Argument* out = new Argument();
     if(isRel)
@@ -372,41 +275,9 @@ Argument* Argument::ConstructArgument(const std::string& str,
   }
 
   Symbol* sym;
-  size_t id = symbol_table.CheckEntry(cmd, sym);
-  if(sym != NULL && id != SymbolTable::OrID && id != SymbolTable::NotID)
-  {
-    if(sym->Arity() != args.size())
-    {
-      ARITY_ERROR(error,
-                  cmd, args.size(),
-                  sym->Arity(),
-                  Location(),
-                  sym->GetLocation());
-      log.Fatal << error << endl;
-      return NULL;
-    }
-    else if(isRel && sym->SymbolType() != Symbol::RELATION)
-    {
-      RF_ERROR(error,
-               cmd,
-               "Relation", "Function",
-               Location(),
-               sym->GetLocation());
-      log.Fatal << error << endl;
-      return NULL;
-    }
-    else if(!isRel && sym->SymbolType() != Symbol::FUNCTION)
-    {
-      RF_ERROR(error,
-               cmd,
-               "Function", "Relation",
-               Location(),
-               sym->GetLocation());
-      log.Fatal << error << endl;
-      return NULL;
-    }
-  }
-  else if(sym == NULL)
+  size_t id = symbol_table.CheckEntry(cmd, args.size(), isRel, sym);
+
+  if(sym == NULL)
     id = symbol_table.AddEntry(cmd, Location(), args.size(), isRel);
 
   Argument* out = new Argument();

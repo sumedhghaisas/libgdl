@@ -6,6 +6,8 @@
  */
 #include "symbol_table.hpp"
 
+#include <sstream>
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
@@ -40,25 +42,69 @@ RawSymbolTable::~RawSymbolTable()
     delete it->second;
 }
 
+std::string RawSymbolTable::GetMangledName(const std::string& name,
+                                           size_t arity,
+                                           bool isRelation)
+{
+  std::string uname = "_";
+  if(isRelation)
+    uname += "r";
+  else uname += "f";
+
+  uname += "_" + name + "_" + ToString(arity);
+  return uname;
+}
+
+std::string RawSymbolTable::UnmangleName(const std::string& uname,
+                                         size_t* arity,
+                                         bool* isRelation)
+{
+  std::string name;
+
+  size_t index = uname.find("_", 1);
+  name = uname.substr(1, index - 1);
+
+  if(uname[index + 1] == 'r' && isRelation)
+    *isRelation = true;
+  else if(isRelation)
+    *isRelation = false;
+
+  if(arity)
+  {
+    stringstream stream;
+    stream << uname.substr(index + 3);
+    stream >> *arity;
+  }
+
+  return name;
+}
+
 size_t RawSymbolTable::AddEntry(const std::string& name,
                                 const Location& loc,
                                 size_t arity,
                                 bool isRelation)
 {
-  Symbol* sym;
-  if(isRelation)
-    sym = new RelationSymbol(name, arity, loc);
-  else sym = new FunctionSymbol(name, arity, loc);
+  if(name == "not" || name == "or")
+    arity = 0;
 
-  id_table[name] = index;
+  std::string uname = GetMangledName(name, arity, isRelation);
+  Symbol* sym = new Symbol(uname, name, loc);
+
+  id_table[uname] = index;
   symbol_table[index] = sym;
   index++;
   return index - 1;
 }
 
-size_t RawSymbolTable::CheckEntry(const std::string& name, Symbol*& symbol)
+size_t RawSymbolTable::CheckEntry(const std::string& name,
+                                  size_t arity,
+                                  bool isRelation,
+                                  Symbol*& symbol)
 {
-  IDMap::const_iterator it = id_table.find(name);
+  if(name == "not" || name == "or")
+    arity = 0;
+
+  IDMap::const_iterator it = id_table.find(GetMangledName(name, arity, isRelation));
   if(it == id_table.end())
   {
     symbol = NULL;
@@ -80,7 +126,7 @@ bool RawSymbolTable::AddDefined(size_t id, const Location& loc)
 std::string RawSymbolTable::GetCommandName(size_t id) const
 {
   const SymbolMap::const_iterator it = symbol_table.find(id);
-  if(it != symbol_table.end()) return (it->second)->Name();
+  if(it != symbol_table.end()) return it->second->Name();
   else
   {
     log.Warn << "Identifier " << ToString(id) << " does not exist" << std::endl;
