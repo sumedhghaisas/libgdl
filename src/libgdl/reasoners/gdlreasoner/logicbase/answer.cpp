@@ -173,6 +173,7 @@ bool Answer::next()
           v_map = VariableMap();
         }
         else v_map = o_v_map;
+
         if(Unify::mgu(*e_question, *(clause.head), v_map))
         {
           if(clause.premisses.empty())
