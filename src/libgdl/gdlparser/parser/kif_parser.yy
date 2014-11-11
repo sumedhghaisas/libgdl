@@ -201,6 +201,12 @@ Premisses : Premiss Premisses {
 Sentence  : Command {
                       $$ = new Sentence($1, @$);
                     }
+          | OBRACKET Command CBRACKET {
+                                        $$ = new Sentence($2, @$);
+                                        libgdl::core::ErrorType war;
+                                        war.AddEntry("Relation symbol of arity 0 is used inside brackets.", @$);
+                                        driver.Warn(war);
+                                      }
           | OBRACKET Command Term Terms CBRACKET  {
                                                     $$ = new Sentence($2, @$);
                                                     $$->AddArgument($3);

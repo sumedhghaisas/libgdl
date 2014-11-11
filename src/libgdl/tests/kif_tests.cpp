@@ -58,6 +58,26 @@ BOOST_AUTO_TEST_CASE(GameParsingTest)
   games.push_back("data/games/breakthrough.kif");
   games.push_back("data/games/checker_on_barrel_no_kings.kif");
   games.push_back("data/games/chinese_checker.kif");
+  games.push_back("data/games/chinese_checker_4.kif");
+  games.push_back("data/games/chinook.kif");
+  games.push_back("data/games/connect_four.kif");
+  games.push_back("data/games/dual_hamilton.kif");
+  games.push_back("data/games/dual_hunter.kif");
+  games.push_back("data/games/dual_rainbow.kif");
+  games.push_back("data/games/farming_quandries.kif");
+  games.push_back("data/games/fire_sheep.kif");
+  games.push_back("data/games/freeforall.kif");
+  games.push_back("data/games/hamilton.kif");
+  games.push_back("data/games/hex.kif");
+  games.push_back("data/games/horseshoe.kif");
+  games.push_back("data/games/hunter.kif");
+  games.push_back("data/games/joint_button_and_lights.kif");
+  games.push_back("data/games/joint_connect_four.kif");
+  games.push_back("data/games/knights_tour.kif");
+  games.push_back("data/games/knights_tour_5v5.kif");
+  games.push_back("data/games/kono.kif");
+  games.push_back("data/games/madness.kif");
+  games.push_back("data/games/multiple_buttons_and_lights.kif");
   
   for(auto game : games)
   {

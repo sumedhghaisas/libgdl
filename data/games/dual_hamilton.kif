@@ -1,0 +1,214 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Dual Hamilton
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Components
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (role left)
+  (role right)
+
+  (<= (base (location ?r ?x)) (role ?r) (node ?x))
+  (<= (base (visited ?r ?x)) (role ?r) (node ?x))
+  (<= (base (score ?r ?n)) (role ?r) (scorenext ?m ?n))
+  (<= (base (step 1)))
+  (<= (base (step ?n)) (successor ?m ?n))
+
+  (<= (input ?r (move ?y)) (role ?r) (node ?y))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; init
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (init (location left a))
+  (init (visited left a))
+  (init (score left 5))
+
+  (init (location right a))
+  (init (visited right a))
+  (init (score right 5))
+
+  (init (step 1))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; legal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (<= (legal ?r (move ?y))
+      (true (location ?r ?x))
+      (connected ?x ?y))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; next
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (<= (next (location ?r ?y))
+      (does ?r (move ?y)))
+
+  (<= (next (visited ?r ?y))
+      (does ?r (move ?y)))
+
+  (<= (next (visited ?r ?y))
+      (true (visited ?r ?y)))
+
+  (<= (next (score ?r ?n))
+      (does ?r (move ?y))
+      (not (true (visited ?r ?y)))
+      (true (score ?r ?m))
+      (scorenext ?m ?n))
+
+  (<= (next (score ?r ?n))
+      (does ?r (move ?y))
+      (true (visited ?r ?y))
+      (true (score ?r ?n)))
+
+  (<= (next (step ?n))
+      (true (step ?m))
+      (successor ?m ?n))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; goal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (<= (goal ?r ?n) (true (score ?r ?n)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; terminal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
+  (<= terminal (true (step 20)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Views
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Data
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (node a)
+  (node b)
+  (node c)
+  (node d)
+  (node e)
+  (node f)
+  (node g)
+  (node h)
+  (node i)
+  (node j)
+  (node k)
+  (node l)
+  (node m)
+  (node n)
+  (node o)
+  (node p)
+  (node q)
+  (node r)
+  (node s)
+  (node t)
+
+  (connected a b)
+  (connected a e)
+  (connected a h)
+  (connected b a)
+  (connected b c)
+  (connected b j)
+  (connected c b)
+  (connected c d)
+  (connected c l)
+  (connected d c)
+  (connected d e)
+  (connected d n)
+  (connected e a)
+  (connected e d)
+  (connected e f)
+  (connected f e)
+  (connected f g)
+  (connected f o)
+  (connected g f)
+  (connected g h)
+  (connected g q)
+  (connected h a)
+  (connected h g)
+  (connected h i)
+  (connected i h)
+  (connected i j)
+  (connected i r)
+  (connected j b)
+  (connected j i)
+  (connected j k)
+  (connected k j)
+  (connected k l)
+  (connected k s)
+  (connected l c)
+  (connected l k)
+  (connected l m)
+  (connected m l)
+  (connected m n)
+  (connected m t)
+  (connected n d)
+  (connected n m)
+  (connected n o)
+  (connected o n)
+  (connected o f)
+  (connected o p)
+  (connected p o)
+  (connected p q)
+  (connected p t)
+  (connected q g)
+  (connected q p)
+  (connected q r)
+  (connected r i)
+  (connected r q)
+  (connected r s)
+  (connected s k)
+  (connected s r)
+  (connected s t)
+  (connected t m)
+  (connected t s)
+  (connected t p)
+
+  (scorenext  0  5)
+  (scorenext  5 10)
+  (scorenext 10 15)
+  (scorenext 15 20)
+  (scorenext 20 25)
+  (scorenext 25 30)
+  (scorenext 30 35)
+  (scorenext 35 40)
+  (scorenext 40 45)
+  (scorenext 45 50)
+  (scorenext 50 55)
+  (scorenext 55 60)
+  (scorenext 60 65)
+  (scorenext 65 70)
+  (scorenext 70 75)
+  (scorenext 75 80)
+  (scorenext 80 85)
+  (scorenext 85 90)
+  (scorenext 90 95)
+  (scorenext 95 100)
+
+  (successor  1  2)
+  (successor  2  3)
+  (successor  3  4)
+  (successor  4  5)
+  (successor  5  6)
+  (successor  6  7)
+  (successor  7  8)
+  (successor  8  9)
+  (successor  9 10)
+  (successor 10 11)
+  (successor 11 12)
+  (successor 12 13)
+  (successor 13 14)
+  (successor 14 15)
+  (successor 15 16)
+  (successor 16 17)
+  (successor 17 18)
+  (successor 18 19)
+  (successor 19 20)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+

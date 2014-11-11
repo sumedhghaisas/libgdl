@@ -734,52 +734,63 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   case 14:
 #line 204 "kif_parser.yy" // lalr1.cc:847
     {
+                                        (yylhs.value.sentence) = new Sentence((yystack_[1].value.stringVal), yylhs.location);
+                                        libgdl::core::ErrorType war;
+                                        war.AddEntry("Relation symbol of arity 0 is used inside brackets.", yylhs.location);
+                                        driver.Warn(war);
+                                      }
+#line 743 "kif_parser.tab.cc" // lalr1.cc:847
+    break;
+
+  case 15:
+#line 210 "kif_parser.yy" // lalr1.cc:847
+    {
                                                     (yylhs.value.sentence) = new Sentence((yystack_[3].value.stringVal), yylhs.location);
                                                     (yylhs.value.sentence)->AddArgument((yystack_[2].value.term));
                                                     if((yystack_[1].value.terms) != NULL)
                                                       (yylhs.value.sentence)->AddArgument(*(yystack_[1].value.terms));
                                                     delete (yystack_[1].value.terms);
                                                   }
-#line 744 "kif_parser.tab.cc" // lalr1.cc:847
-    break;
-
-  case 15:
-#line 212 "kif_parser.yy" // lalr1.cc:847
-    {
-                                  if((yystack_[0].value.sentences) == NULL)
-                                    (yylhs.value.sentences) = new std::list<Sentence*>();
-                                  else (yylhs.value.sentences) = (yystack_[0].value.sentences);
-                                  (yylhs.value.sentences)->push_front((yystack_[1].value.sentence));
-                                }
 #line 755 "kif_parser.tab.cc" // lalr1.cc:847
     break;
 
   case 16:
 #line 218 "kif_parser.yy" // lalr1.cc:847
     {
-                      (yylhs.value.sentences) = NULL;
-                    }
-#line 763 "kif_parser.tab.cc" // lalr1.cc:847
+                                  if((yystack_[0].value.sentences) == NULL)
+                                    (yylhs.value.sentences) = new std::list<Sentence*>();
+                                  else (yylhs.value.sentences) = (yystack_[0].value.sentences);
+                                  (yylhs.value.sentences)->push_front((yystack_[1].value.sentence));
+                                }
+#line 766 "kif_parser.tab.cc" // lalr1.cc:847
     break;
 
   case 17:
-#line 222 "kif_parser.yy" // lalr1.cc:847
+#line 224 "kif_parser.yy" // lalr1.cc:847
     {
-                      (yylhs.value.term) = new Term((yystack_[0].value.stringVal), yylhs.location);
+                      (yylhs.value.sentences) = NULL;
                     }
-#line 771 "kif_parser.tab.cc" // lalr1.cc:847
+#line 774 "kif_parser.tab.cc" // lalr1.cc:847
     break;
 
   case 18:
-#line 225 "kif_parser.yy" // lalr1.cc:847
+#line 228 "kif_parser.yy" // lalr1.cc:847
     {
-                        (yylhs.value.term) = new Term((yystack_[0].value.stringVal), yylhs.location);
-                      }
-#line 779 "kif_parser.tab.cc" // lalr1.cc:847
+                      (yylhs.value.term) = new Term((yystack_[0].value.stringVal), yylhs.location);
+                    }
+#line 782 "kif_parser.tab.cc" // lalr1.cc:847
     break;
 
   case 19:
-#line 228 "kif_parser.yy" // lalr1.cc:847
+#line 231 "kif_parser.yy" // lalr1.cc:847
+    {
+                        (yylhs.value.term) = new Term((yystack_[0].value.stringVal), yylhs.location);
+                      }
+#line 790 "kif_parser.tab.cc" // lalr1.cc:847
+    break;
+
+  case 20:
+#line 234 "kif_parser.yy" // lalr1.cc:847
     {
                                                     (yylhs.value.term) = new Term((yystack_[3].value.stringVal), yylhs.location);
                                                     (yylhs.value.term)->AddArgument((yystack_[2].value.term));
@@ -787,46 +798,46 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
                                                       (yylhs.value.term)->AddArgument(*(yystack_[1].value.terms));
                                                     delete (yystack_[1].value.terms);
                                                   }
-#line 791 "kif_parser.tab.cc" // lalr1.cc:847
-    break;
-
-  case 20:
-#line 236 "kif_parser.yy" // lalr1.cc:847
-    {
-                          if((yystack_[0].value.terms) == NULL)
-                            (yylhs.value.terms) = new std::list<Term*>();
-                          else (yylhs.value.terms) = (yystack_[0].value.terms);
-                          (yylhs.value.terms)->push_front((yystack_[1].value.term));
-                        }
 #line 802 "kif_parser.tab.cc" // lalr1.cc:847
     break;
 
   case 21:
 #line 242 "kif_parser.yy" // lalr1.cc:847
     {
-                      (yylhs.value.terms) = NULL;
-                    }
-#line 810 "kif_parser.tab.cc" // lalr1.cc:847
+                          if((yystack_[0].value.terms) == NULL)
+                            (yylhs.value.terms) = new std::list<Term*>();
+                          else (yylhs.value.terms) = (yystack_[0].value.terms);
+                          (yylhs.value.terms)->push_front((yystack_[1].value.term));
+                        }
+#line 813 "kif_parser.tab.cc" // lalr1.cc:847
     break;
 
   case 22:
-#line 246 "kif_parser.yy" // lalr1.cc:847
+#line 248 "kif_parser.yy" // lalr1.cc:847
     {
-                  (yylhs.value.stringVal) = (yystack_[0].value.stringVal);
-                }
-#line 818 "kif_parser.tab.cc" // lalr1.cc:847
+                      (yylhs.value.terms) = NULL;
+                    }
+#line 821 "kif_parser.tab.cc" // lalr1.cc:847
     break;
 
   case 23:
-#line 249 "kif_parser.yy" // lalr1.cc:847
+#line 252 "kif_parser.yy" // lalr1.cc:847
+    {
+                  (yylhs.value.stringVal) = (yystack_[0].value.stringVal);
+                }
+#line 829 "kif_parser.tab.cc" // lalr1.cc:847
+    break;
+
+  case 24:
+#line 255 "kif_parser.yy" // lalr1.cc:847
     {
                       (yylhs.value.stringVal) = new std::string(ToString((yystack_[0].value.num)));
                     }
-#line 826 "kif_parser.tab.cc" // lalr1.cc:847
+#line 837 "kif_parser.tab.cc" // lalr1.cc:847
     break;
 
 
-#line 830 "kif_parser.tab.cc" // lalr1.cc:847
+#line 841 "kif_parser.tab.cc" // lalr1.cc:847
             default:
               break;
             }
@@ -1088,83 +1099,83 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   const signed char
   KIFParser::yypact_[] =
   {
-      40,    22,   -25,   -25,     6,    40,   -25,   -25,   -25,   -25,
-      41,    35,   -25,   -25,    -3,    46,    -3,   -25,    35,   -25,
-      27,    46,     5,   -25,    35,    35,     7,    41,    41,   -25,
-     -25,    35,   -25,   -25,     8,    41,    12,   -25,    41,    18,
-     -25,   -25,   -25
+      45,     0,   -25,   -25,     1,    45,   -25,   -25,   -25,   -25,
+      46,    35,   -25,   -25,     7,    51,     7,   -25,   -25,    40,
+     -25,    27,    51,     2,   -25,    40,    40,    15,    46,    46,
+     -25,   -25,    40,   -25,   -25,    17,    46,    22,   -25,    46,
+      23,   -25,   -25,   -25
   };
 
   const unsigned char
   KIFParser::yydefact_[] =
   {
-       3,     0,    22,    23,     0,     3,     4,     5,     6,    13,
-       0,     0,     1,     2,     0,    12,     0,    18,    21,    17,
-       0,    12,     0,     8,     0,    21,     0,     0,     0,    11,
-       7,    21,    20,    14,     0,    16,     0,     9,    16,     0,
-      19,    15,    10
+       3,     0,    23,    24,     0,     3,     4,     5,     6,    13,
+       0,     0,     1,     2,     0,    12,     0,    14,    19,    22,
+      18,     0,    12,     0,     8,     0,    22,     0,     0,     0,
+      11,     7,    22,    21,    15,     0,    17,     0,     9,    17,
+       0,    20,    16,    10
   };
 
   const signed char
   KIFParser::yypgoto_[] =
   {
-     -25,    20,   -25,   -25,   -25,   -25,    14,    -7,   -12,    -6,
+     -25,    24,   -25,   -25,   -25,   -25,     6,    -6,    -4,    -8,
      -24,    -1
   };
 
   const signed char
   KIFParser::yydefgoto_[] =
   {
-      -1,     4,     5,     6,     7,    21,    22,     8,    39,    25,
-      26,     9
+      -1,     4,     5,     6,     7,    22,    23,     8,    40,    26,
+      27,     9
   };
 
   const unsigned char
   KIFParser::yytable_[] =
   {
-      11,    32,     2,    15,     3,    18,    12,    36,    23,    30,
-      19,    33,    37,    11,    23,    24,    40,    19,    31,    11,
-      34,    35,    42,    19,    19,    13,    41,     2,    38,     3,
-      19,    38,     2,    10,     3,    29,    27,    28,    16,     0,
-       2,    17,     3,     1,    14,     2,     2,     3,     3,    20,
-       0,     2,     0,     3
+      11,    12,    33,    19,    15,     2,    31,     3,    37,    24,
+      20,    10,     2,    11,     3,    25,    24,    32,    20,    34,
+      11,    38,    35,    36,    20,    20,    41,    43,    30,    13,
+      39,    20,     2,    39,     3,    42,    28,    29,    16,    17,
+       2,    18,     3,    16,     0,     2,    18,     3,     1,    14,
+       2,     2,     3,     3,    21,     0,     2,     0,     3
   };
 
   const signed char
   KIFParser::yycheck_[] =
   {
-       1,    25,     5,    10,     7,    11,     0,    31,    15,     4,
-      11,     4,     4,    14,    21,    16,     4,    18,    24,    20,
-      27,    28,     4,    24,    25,     5,    38,     5,    35,     7,
-      31,    38,     5,    11,     7,    21,     9,    10,     3,    -1,
-       5,     6,     7,     3,     3,     5,     5,     7,     7,     3,
-      -1,     5,    -1,     7
+       1,     0,    26,    11,    10,     5,     4,     7,    32,    15,
+      11,    11,     5,    14,     7,    16,    22,    25,    19,     4,
+      21,     4,    28,    29,    25,    26,     4,     4,    22,     5,
+      36,    32,     5,    39,     7,    39,     9,    10,     3,     4,
+       5,     6,     7,     3,    -1,     5,     6,     7,     3,     3,
+       5,     5,     7,     7,     3,    -1,     5,    -1,     7
   };
 
   const unsigned char
   KIFParser::yystos_[] =
   {
        0,     3,     5,     7,    14,    15,    16,    17,    20,    24,
-      11,    24,     0,    14,     3,    20,     3,     6,    22,    24,
-       3,    18,    19,    20,    24,    22,    23,     9,    10,    19,
-       4,    22,    23,     4,    20,    20,    23,     4,    20,    21,
-       4,    21,     4
+      11,    24,     0,    14,     3,    20,     3,     4,     6,    22,
+      24,     3,    18,    19,    20,    24,    22,    23,     9,    10,
+      19,     4,    22,    23,     4,    20,    20,    23,     4,    20,
+      21,     4,    21,     4
   };
 
   const unsigned char
   KIFParser::yyr1_[] =
   {
        0,    13,    14,    14,    15,    15,    16,    17,    18,    18,
-      18,    19,    19,    20,    20,    21,    21,    22,    22,    22,
-      23,    23,    24,    24
+      18,    19,    19,    20,    20,    20,    21,    21,    22,    22,
+      22,    23,    23,    24,    24
   };
 
   const unsigned char
   KIFParser::yyr2_[] =
   {
        0,     2,     2,     0,     1,     1,     1,     5,     1,     4,
-       5,     2,     0,     1,     5,     2,     0,     1,     1,     5,
-       2,     0,     1,     1
+       5,     2,     0,     1,     3,     5,     2,     0,     1,     1,
+       5,     2,     0,     1,     1
   };
 
 
@@ -1186,8 +1197,8 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
   KIFParser::yyrline_[] =
   {
        0,   136,   136,   141,   145,   148,   152,   156,   174,   178,
-     183,   191,   197,   201,   204,   212,   218,   222,   225,   228,
-     236,   242,   246,   249
+     183,   191,   197,   201,   204,   210,   218,   224,   228,   231,
+     234,   242,   248,   252,   255
   };
 
   // Print the state stack on the debug stream.
@@ -1269,8 +1280,8 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
 
 #line 23 "kif_parser.yy" // lalr1.cc:1155
 } } } } // libgdl::gdlparser::parser::yy
-#line 1273 "kif_parser.tab.cc" // lalr1.cc:1155
-#line 252 "kif_parser.yy" // lalr1.cc:1156
+#line 1284 "kif_parser.tab.cc" // lalr1.cc:1155
+#line 258 "kif_parser.yy" // lalr1.cc:1156
 
 
 typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
