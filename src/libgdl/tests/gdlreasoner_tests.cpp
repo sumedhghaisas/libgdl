@@ -168,6 +168,24 @@ BOOST_AUTO_TEST_CASE(EraseTest)
 }
 
 /**
+ * Check MGU check.
+ */
+BOOST_AUTO_TEST_CASE(MGUCheckTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  KIF kif(false, 0, TEST_LOG);
+  kif.AddFile("data/parser_tests/mgu_check.kif");
+  if(!kif.Parse(true)) MARK_FAIL;
+  
+  KnowledgeBase kb(kif);
+  list<Argument*> result = kb.Ask("(input ?x ?y)");
+  for(auto arg : result)
+    delete arg;
+  MARK_END;
+}
+
+/**
  * Answer question 1.
  */
 BOOST_AUTO_TEST_CASE(Question1Test)

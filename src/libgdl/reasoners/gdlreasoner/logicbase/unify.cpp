@@ -44,7 +44,8 @@ bool Unify::mgu(const Argument& arg1, const Argument& arg2, VariableMap& theta)
 
     if(s->IsVariable() && t->IsVariable())
     {
-      theta[s] = t;
+      if(s != t)
+        theta[s] = t;
     }
     else if(s->IsVariable())
     {
