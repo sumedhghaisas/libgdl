@@ -1,0 +1,28 @@
+  (role white)
+  (role black)
+
+  (<= (input ?role (move ?u ?v ?x ?y))
+      (role ?role)
+      (horizontal ?u ?v ?x ?y))
+
+
+  (<= (horizontal ?x1 ?y ?x2 ?y)
+      (add 1 ?x1 ?x2)
+      (rank ?y))
+
+  (<= (horizontal ?x1 ?y ?x3 ?y)
+      (add 1 ?x1 ?x2)
+      (horizontal ?x2 ?y ?x3 ?y)
+      (rank ?y))
+
+  (rank 1)
+  (rank 2)
+  (rank 3)
+  (rank 4)
+  (rank 5)
+  (rank 6)
+  (rank 7)
+  (rank 8)
+	
+  (add 1 f g) 
+  (add 1 g h)
