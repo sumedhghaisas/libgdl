@@ -28,8 +28,6 @@ void KIFFlattener::Flatten(KIF& kif)
 
   DGraph graph = kif.DependencyGraph();
 
-  kif.PrintDependencyGraph("test.dot");
-
   // dependency graph
   const map<size_t, DGraphNode*>& dgraph = graph.GetGraph();
 
@@ -138,6 +136,8 @@ void KIFFlattener::Flatten(KIF& kif)
       }
     }
   }
+
+  cout << "Passed" << endl;
 }
 
 void KIFFlattener::DFSMarking(const DGraphNode* n, set<size_t>& marked)
@@ -228,6 +228,9 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
     // adjust 'not' relation appropriately
     Clause* p_clause = ProcessClause(*it, state_independent);
 
+    SymbolDecodeStream stream(symbol_table);
+    stream << *p_clause << endl;
+
     // add the processed clause temporarily to knowledge base
     size_t c_index = m_kb.Tell(*p_clause);
 
@@ -246,6 +249,8 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
 
       // compute the answer with substitution
       Clause* to_add = Unify::GetSubstitutedClause(&(*it), ans_v_map);
+
+      stream << *to_add << endl;
 
       // remove all the occurrences of data relations
       Clause* temp = RemoveDataFromClause(to_add, state_independent);
@@ -296,9 +301,14 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   size_t command = n->id;
   KnowledgeBase::FactList& fl = m_kb.m_facts[command];
 
+  cout << "Adding wait..." << endl;
+
+  size_t i = 0;
   // add heads of all the clauses to knowledge base
   for(list<Argument*>::iterator it = f_heads.begin();it != f_heads.end();it++)
   {
+    if(i % 100)
+      cout << i << endl;
     Fact f;
     f.arg = *it;
 
