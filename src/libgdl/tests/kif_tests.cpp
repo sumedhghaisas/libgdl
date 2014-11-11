@@ -75,6 +75,9 @@ BOOST_AUTO_TEST_CASE(GameParsingTest)
   games.push_back("data/games/joint_connect_four.kif");
   games.push_back("data/games/knights_tour.kif");
   games.push_back("data/games/knights_tour_5v5.kif");
+  games.push_back("data/games/kono.kif");
+  games.push_back("data/games/madness.kif");
+  games.push_back("data/games/multiple_buttons_and_lights.kif");
   
   for(auto game : games)
   {
