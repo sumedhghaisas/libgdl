@@ -236,15 +236,17 @@ inline void GDLReasoner::ApplyActions(const Move& moves)
 
 inline void GDLReasoner::RemoveState()
 {
-  KnowledgeBase::FactMap::iterator
-                            m_it = base_rules.m_facts.find(SymbolTable::TrueID);
-  KnowledgeBase::FactList& fvec = m_it->second;
-  for(KnowledgeBase::FactList::iterator it = fvec.begin(); it != fvec.end();it++)
+  auto m_it = base_rules.m_facts.find(SymbolTable::TrueID);
+  if(m_it != base_rules.m_facts.end())
   {
-    Fact& f = *it;
-    f.arg->args.clear();
+    KnowledgeBase::FactList& fvec = m_it->second;
+    for(auto it = fvec.begin(); it != fvec.end();it++)
+    {
+      Fact& f = *it;
+      f.arg->args.clear();
+    }
+    base_rules.m_facts.erase(m_it);
   }
-  base_rules.m_facts.erase(m_it);
 }
 
 inline void GDLReasoner::RemoveActions()

@@ -178,15 +178,6 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
       location_type location;
     };
 
-//! Remove some windows specific definitions
-#ifdef TRUE
-  #undef TRUE
-#endif // TRUE
-
-#ifdef NOT
-  #undef NOT
-#endif // NOT
-
     /// Tokens.
     struct token
     {
@@ -493,7 +484,7 @@ namespace libgdl { namespace gdlparser { namespace parser { namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 53,     ///< Last index in yytable_.
+      yylast_ = 58,     ///< Last index in yytable_.
       yynnts_ = 12,  ///< Number of nonterminal symbols.
       yyempty_ = -2,
       yyfinal_ = 12, ///< Termination state number.
