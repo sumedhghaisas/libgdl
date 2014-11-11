@@ -68,7 +68,10 @@ class RawSymbolTable
   //! \return size_t ID of the entry
   //!
   //!
-  size_t CheckEntry(const std::string& name, Symbol*& symbol);
+  size_t CheckEntry(const std::string& name,
+                    size_t arity,
+                    bool isRelation,
+                    Symbol*& symbol);
 
   //! Returns symbol name(command name) given ID.
   //!
@@ -122,6 +125,14 @@ class RawSymbolTable
     return id_table;
   }
 
+  static std::string GetMangledName(const std::string& name,
+                             size_t arity,
+                             bool isRelation);
+
+  static std::string UnmangleName(const std::string& uname,
+                           size_t* arity = NULL,
+                           bool* isRelation = NULL);
+
   //! Represents GDL predefined IDs.
   enum IDS {NotID,
             OrID,
@@ -141,6 +152,7 @@ class RawSymbolTable
   std::atomic_size_t count;
 
  private:
+
   //! ID to symbol entry mapping
   SymbolMap symbol_table;
   //! String to ID mapping
@@ -240,9 +252,12 @@ class SymbolTable : public boost::intrusive_ptr<RawSymbolTable>
   //! \return size_t ID of the entry
   //!
   //!
-  size_t CheckEntry(const std::string& name, Symbol*& symbol)
+  size_t CheckEntry(const std::string& name,
+                    size_t arity,
+                    bool isRelation,
+                    Symbol*& symbol)
   {
-    return get()->CheckEntry(name, symbol);
+    return get()->CheckEntry(name, arity, isRelation, symbol);
   }
 
   //! Returns symbol name(command name) given ID.

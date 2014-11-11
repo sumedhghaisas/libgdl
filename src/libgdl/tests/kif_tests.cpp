@@ -71,19 +71,6 @@ BOOST_AUTO_TEST_CASE(GameParsingTest)
 }
 
 /**
- * Check multiple arity error.
- */
-BOOST_AUTO_TEST_CASE(MultipleArityErrorTest)
-{
-  MARK_START;
-  OPEN_LOG;
-  KIF kif(false, 0, TEST_LOG);
-  kif.AddFile("data/parser_tests/mularity.kif");
-  if(kif.Parse()) MARK_FAIL;
-  MARK_END;
-}
-
-/**
  * Check stratified negation.
  */
 BOOST_AUTO_TEST_CASE(StratifiedNegationTest)

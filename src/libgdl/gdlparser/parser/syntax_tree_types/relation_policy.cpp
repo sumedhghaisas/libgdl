@@ -27,31 +27,9 @@ bool RelationPolicy::CodeGen(Argument*& out,
 {
   SymbolTable symbol_table = driver.GetSymbolTable();
   Symbol* sym;
-  size_t id = symbol_table->CheckEntry(*command, sym);
-  if(sym != NULL)
-  {
-    if(sym->Arity() != terms.size())
-    {
-      ARITY_ERROR(error,
-                  *command, terms.size(),
-                  sym->Arity(),
-                  command_loc,
-                  sym->GetLocation());
-      driver.Error(error);
-      return false;
-    }
-    else if(sym->SymbolType() != Symbol::RELATION)
-    {
-      RF_ERROR(error,
-               *command,
-               "Relation", "Function",
-               command_loc,
-               sym->GetLocation());
-      driver.Error(error);
-      return false;
-    }
-  }
-  else id = symbol_table->AddEntry(*command, command_loc, terms.size(), true);
+  size_t id = symbol_table->CheckEntry(*command, terms.size(), true, sym);
+
+  if(sym == NULL) id = symbol_table->AddEntry(*command, command_loc, terms.size(), true);
 
   Argument* arg = new Argument();
   arg->t = Argument::Relation;
@@ -95,31 +73,9 @@ bool RelationPolicy::CodeGen(KIFDriver& driver,
 
   SymbolTable symbol_table = driver.GetSymbolTable();
   Symbol* sym;
-  size_t id = symbol_table->CheckEntry(*command, sym);
-  if(sym != NULL)
-  {
-    if(sym->Arity() != terms.size())
-    {
-      ARITY_ERROR(error,
-                  *command, terms.size(),
-                  sym->Arity(),
-                  command_loc,
-                  sym->GetLocation());
-      driver.Error(error);
-      return false;
-    }
-    else if(sym->SymbolType() != Symbol::RELATION)
-    {
-      RF_ERROR(error,
-               *command,
-               "Relation", "Function",
-               command_loc,
-               sym->GetLocation());
-      driver.Error(error);
-      return false;
-    }
-  }
-  else id = symbol_table->AddEntry(*command, command_loc, terms.size(), true);
+  size_t id = symbol_table->CheckEntry(*command, terms.size(), true, sym);
+
+  if(sym == NULL) id = symbol_table->AddEntry(*command, command_loc, terms.size(), true);
 
   symbol_table->AddDefined(id, command_loc);
 
@@ -174,7 +130,7 @@ bool RelationPolicy::CodeGen(Argument*& out,
   SymbolTable symbol_table = driver.GetSymbolTable();
   Symbol* sym;
 
-  size_t id = symbol_table->CheckEntry(*command, sym);
+  size_t id = symbol_table->CheckEntry(*command, 0 , true, sym);
 
   Argument* arg = new Argument();
   arg->t = Argument::Relation;

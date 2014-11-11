@@ -38,52 +38,13 @@ bool FunctionPolicy::CodeGen(Argument*& out,
     else out = it->second;
     return true;
   }
-  else if(*command == "role" ||
-          *command == "base" ||
-          *command == "input" ||
-          *command == "init" ||
-          *command == "legal" ||
-          *command == "next" ||
-          *command == "true" ||
-          *command == "does" ||
-          *command == "goal" ||
-          *command == "terminal" ||
-          *command == "distinct")
-  {
-    Q_ERROR(error, *command + " cannot be used as function.", command_loc);
-    driver.Error(error);
-    return false;
-  }
 
   SymbolTable symbol_table = driver.GetSymbolTable();
   Symbol* sym;
-  size_t id = symbol_table->CheckEntry(*command, sym);
-  if(sym != NULL)
-  {
-    if(sym->Arity() != terms.size())
-    {
-      ARITY_ERROR(error,
-                  *command,
-                  terms.size(),
-                  sym->Arity(),
-                  command_loc,
-                  sym->GetLocation());
-      driver.Error(error);
-      return false;
-    }
-    else if(sym->SymbolType() != Symbol::FUNCTION)
-    {
-      RF_ERROR(error,
-               *command,
-               "Function",
-               "Relation",
-               command_loc,
-               sym->GetLocation());
-      driver.Error(error);
-      return false;
-    }
-  }
-  else id = symbol_table->AddEntry(*command, command_loc, terms.size());
+  size_t id = symbol_table->CheckEntry(*command, terms.size(), false, sym);
+
+  if(sym == NULL)
+    id = symbol_table->AddEntry(*command, command_loc, terms.size(), false);
 
   out = new Argument();
   out->t = Argument::Function;
