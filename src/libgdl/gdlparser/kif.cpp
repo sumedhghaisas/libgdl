@@ -24,7 +24,7 @@ using namespace libgdl::gdlparser::parser;
 
 KIF::KIF(bool isWarn,
          char o_level,
-         const Log& log)
+         Log log)
   : isWarn(isWarn),
     o_level(o_level),
     driver(*this),

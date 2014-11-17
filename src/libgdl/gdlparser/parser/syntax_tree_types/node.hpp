@@ -1,5 +1,5 @@
 /**
- * @file node.hpp
+ * @file syntax_tree_types/node.hpp
  * @author Sumedh Ghaisas
  *
  * Declaration Node class.

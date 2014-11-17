@@ -1,8 +1,8 @@
 /**
- * @file system_setup.hpp.hpp
+ * @file system_setup.hpp
  * @author Sumedh Ghaisas
  *
- * For cross platform dependencies.
+ * For platform dependencies.
  */
 
 #ifndef LIBGDL_CORE_UTIL_SYSTEM_SETUP_HPP_INCLUDED

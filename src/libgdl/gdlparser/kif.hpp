@@ -71,7 +71,7 @@ class KIF
   //!
   KIF(bool isWarn = true,
       char o_level = 1,
-      const Log& log = GLOBAL_LOG);
+      Log log = GLOBAL_LOG);
 
   //! KIF destructor
   ~KIF();

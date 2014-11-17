@@ -84,15 +84,17 @@ inline std::ostream& operator<<(std::ostream& s,
                                 const ErrorType& error)
 {
   bool isFirst = true;
-  for(std::list<libgdl::core::ErrorType::Entry>::const_iterator
-      it = error.entries.begin(); it!= error.entries.end();it++)
+  for(auto it = error.entries.begin(); it!= error.entries.end();it++)
   {
     if(isFirst)
     {
-      s << it->GetString(0) << std::endl;
+      s << it->GetString(0);
       isFirst = false;
     }
-    else s << it->GetString(1) << std::endl;
+    else s << it->GetString(1);
+
+    if(it != (--error.entries.end()))
+      s << std::endl;
   }
   return s;
 }

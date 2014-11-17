@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     if(temp == "OFF" || temp == "off" || temp == "Off") warn = false;
   }
 
-  KIF kif(warn, 1, std::cout);
+  KIF kif(warn, 1, Log(std::cerr, false, false));
   for(size_t i = 0;i < files.size();i++)
     if(!kif.AddFile(files[i]))
     {

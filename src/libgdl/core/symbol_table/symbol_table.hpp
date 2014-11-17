@@ -64,6 +64,8 @@ class RawSymbolTable
   //! Returns ID of the symbol if found else returns 0.
   //!
   //! \param name Name of the symbol
+  //! \param arity Arity associated with the symbol
+  //! \param isRelation Is the symbol associated with relation or function
   //! \param symbol Symbol object corresponding to the entry
   //! \return size_t ID of the entry
   //!
@@ -248,6 +250,8 @@ class SymbolTable : public boost::intrusive_ptr<RawSymbolTable>
   //! Returns ID of the symbol if found else returns 0.
   //!
   //! \param name Name of the symbol
+  //! \param arity Arity associated with the symbol
+  //! \param isRelation Is the symbol associated with relation or function
   //! \param symbol Symbol object corresponding to the entry
   //! \return size_t ID of the entry
   //!

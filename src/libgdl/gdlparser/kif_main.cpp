@@ -49,6 +49,8 @@ int main(int argc, char* argv[])
                      "source files")
   ("flatten,f", "Flatten the knowledge")
   ("version", "Print version info.")
+  ("O0", "Optimization level 0")
+  ("O1", "Optmization level 1")
   ;
 
   positional_options_description p;
@@ -71,6 +73,8 @@ int main(int argc, char* argv[])
   bool warn = true;
   //! to flatten
   bool isFlatten = false;
+  //! opt level
+  size_t o_level = 1;
   
   if(vm.count("version"))
   {
@@ -88,7 +92,9 @@ int main(int argc, char* argv[])
                 "\n-w off         : Will disable all the warnings (by default warnings are enabled" +
                 "\n-f[--flatten]  : To output flattened KIF" +
                 "\n-h[--help]     : Prints help." +
-                "\n--version      : For version information";
+                "\n--version      : For version information" +
+                "\n--O1           : Enable premiss reordering(Enabled by default)." +
+                "\n--O0           : Disable premiss reordering.";
 
     std::cout << des << std::endl;
     return 0;
@@ -129,8 +135,13 @@ int main(int argc, char* argv[])
   {
     isFlatten = true;
   }
+  
+  if(vm.count("O0"))
+  {
+    o_level = 0;
+  }
 
-  KIF kif(warn, 1);
+  KIF kif(warn, o_level, Log(std::cerr, false, false));
   for(size_t i = 0;i < files.size();i++)
     if(!kif.AddFile(files[i]))
     {

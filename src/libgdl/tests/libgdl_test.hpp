@@ -17,7 +17,10 @@
 
 #define MARK_END std::cout << "\033[0;32m" "[PASSED]" "\033[0m" << std::endl
 
-#define OPEN_LOG std::ofstream test_log("test_log.log", std::fstream::app); 
+#define OPEN_LOG                                                              \
+std::ofstream out_file("test_log.log", std::fstream::app);                    \
+libgdl::Log test_log(out_file, false, false); 
+                 
 
 #define TEST_LOG test_log
 
