@@ -17,6 +17,7 @@
 #include <libgdl/core/util/log.hpp>
 #include <libgdl/core/util/to_string.hpp>
 #include <libgdl/core/data_types/location.hpp>
+#include <libgdl/core/data_types/error_type.hpp>
 
 #include "symbols.hpp"
 
@@ -91,6 +92,23 @@ class RawSymbolTable
   //!
   //!
   bool AddDefined(size_t id, const Location& loc);
+
+  //! Adds usage location to the given symbol
+  //!
+  //! \param id ID of the symbol
+  //! \param loc Location of usage
+  //! \return bool If the symbol is not found returns false.
+  //!
+  //!
+  bool AddUsed(size_t id, const Location& loc);
+
+  //! Generate warnings for unused and undefined relations
+  //!
+  //! \param out List of warnings
+  //! \return void
+  //!
+  //!
+  void GenerateWarnings(std::list<ErrorType>& out) const;
 
   //! Get-Set logging stream
   Log& GetLog() { return log; }

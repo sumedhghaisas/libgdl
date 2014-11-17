@@ -1,28 +1,267 @@
-/*! 
-
-@file kif.dox
-@author Sumedh Ghaisas
-@brief Tutorial on how to use KIF.
-
-@page tut_kif KIF Tutorial
+/*! @page tut_kif KIF Parser Tutorial
 
 @section intro_tut_kif Introduction
 
 KIF module handles the parsing of GDL. This parser follows the specifications 
 given in <a href="http://logic.stanford.edu/classes/cs227/2013/readings/gdl_spec.pdf">GDL Specifications</a>.
 
-Apart from these specifications this modules also accomodates some other warnings 
-and checks. The parser is implemented in BISON while the scanning is handled by
-FLEX. The parser and scanner files are provided with the every libGDL distribution.
-KIF generates AST(Abstract Syntax Tree) after parsing. This AST is travered for
-sematical analysis of parsed GDL. Every identifier of GDL is assigned a unique 
-symbol ID for faster processing. This process in turn generates a symbol table 
-which is used by many other modules of libGDL. SymbolTable also helps generate
-verbose errors by location tracking. KIF module also generates dependency graph
-of all the predicates which is used heavily by Flattener for fast one pass
-flattening.
+The KIF parser framework implemented in libGDL uses BISON as parser and FLEX as
+scanner. The parser follows specification of GDL given in 
+<a href = "http://logic.stanford.edu/classes/cs227/2013/readings/gdl_spec.pdf">
+GDL Specifications</a>.
 
-\b KIF implements detection of following errors:
+The parser is implemented in BISON while the scanning is handled by FLEX. The 
+parser and scanner files are provided with the every libGDL distribution.
+KIF generates AST(Abstract Syntax Tree) after parsing. This AST is traversed for
+sematical analysis of GDL. The parsing of libGDL supports following features -
 
+  - @ref tut_kif_ltaclo
+  - @ref tut_kif_sfmf
+  - @ref tut_kif_foro
+  - @ref tut_kif_wauaur
+  - @ref tut_kif_wauc
+  - @ref tut_kif_dgg
+  - @ref tut_kif_ol
+
+@subsection tut_kif_ltaclo Location Tracking and Compiler Like Output
+
+KIF parser produces errors and warnings with location information. The precise
+loction of the error of warning is tracked by BISON. Also the generated output
+follows a predefined construct. This constructs can be used to generate IDE 
+around this parser. 
+The predefined construct for warning -
+@code
+[WARN ] %filename:%line.%start-%end: %message
+@endcode
+The predefined construct for errors -
+@code
+[ERROR] %filename:%line.%start-%end: %message
+@endcode
+
+@subsection tut_kif_sfmf Support For Multiple Files
+At a time multiple files can be passed to KIF to parse. The output generated will
+combine all the knowledge in those files. This can be used to generate a GDL code
+libraries.
+
+For Example -
+@code
+KIF kif;
+kif.AddFile("game.kif");
+kif.AddFile("numeric.kif");
+kif.Parse();
+@endcode
+
+@subsection tut_kif_foro Function or Relation Overloading
+
+Due to incomplete description in GDL specification, it is not clear if a symbol 
+can act as both relation and function or not. Neither is it given that a 
+relation of symbol can be overloaded with different arities or not. Therefore
+semantics in libGDL supports both these features with nme mangling. Name of 
+each symbol in libGDL parsing is mangled with type and arity, hence each different
+overloa of symbol can be uniquely identified. This mangling is an internal
+feature of libGDL and the output will unmangled. Mangling of symbols helps us 
+trak unused symbols and undefined symbols.
+
+@subsection tut_kif_wauaur Warnings About Unused and Undefined Relations
+
+If a relation occurs in the head of the clause or as a fact then it is considered 
+defined. If a relation occurs as a tail of the clause then it is termed as used.
+Semantical analysis of ibGDL keeps track of unused and undefined relations and 
+outputs them in a warning. These warnings can help resolve typing errors in KIF.
+These warning can also help remove unused predicated, ultimately decreasing 
+processing time.
+
+For example, kif input -
+@code
+(<= (test x) (test2 x))
+@endcode
+
+will generates warnings -
+@code
+[WARN ] test.kif:1.1-23: Relation 'test2' used but not defined.
+[WARN ] test.kif:1.1-23: Relation 'test' defined but not used.
+@endcode
+
+@subsection tut_kif_wauc Warning About Clauses with No Tail
+KIF parser accepts constructs such as "(<= (test x))" as fact. It generates a 
+appropriate warning while doing that.
+
+For example -
+@code
+[WARN ] test.kif:1.1-13: Clause considered as fact as it contains no premisses.
+@endcode
+
+@subsection tut_kif_dgg Dependency Graph Generation
+KIF parser generates a dependency graph of relations occuring in the input. 
+If a relation 'r2' occurs in a tail where relation 'r1' is in head, 'r1' is 
+considered dependent on 'r2'. The generted dependency graph can be stored in a 
+file in 'DOT' format. For more information 'DOT' format check out 
+<a href = "http://en.wikipedia.org/wiki/DOT_%28graph_description_language%29">
+DOT Format</a>. There are many visualization libraries generating image output 
+from DOT file, for example Graphviz. The generated dependency graph helps in 
+flattening the GDL in one pass. Check out ... for more information on 
+GDL Flattening. Check out @ref tut_kif_cli for saving dependency graph through 
+CLI. Check out tut_kif_ucppi for saving dependency graph through C++ interface.
+
+@subsection tut_kif_ol Optmizaion Levels
+Currently KIF parser supports only 2 optimization levels, 0 and 1. In level 1,
+distinct and not premisses are reordered. Distinct and not are kept at the end of
+the tail. This is the default optimization level of KIF parser. In level 0 no 
+reordering is performed. Check out @ref tut_kif_cli to set optimization level in 
+KIF CLI. Check out @ref tut_kif_ucppi to set optimization level in KIF C++
+interface.
+
+@section tut_kif_cli Using Command Line Interface
+libGDL provides a command line GDL parser. This executable will be found in 
+/build/bin. If you have already installed libGDL on your system it will
+available in default search path. You can always pass '-h' to the executable 
+for help.
+
+@code
+kif -h
+@endcode
+
+Example usage of the executable - 
+
+@code
+kif out.kif -c test.kif test2.kif
+@endcode
+
+Here 'out.kif' is the output file. There can be any number of source files after
+option '-c'.
+
+To generate dependency graph with CLI -
+
+@code
+kif out.kif -c test.kif test2.kif -g test.dot
+@endcode
+
+All command line options are 
+  - '-g'             : To generate DOT representation of dependency graph
+  - '-w off'         : Will disable all the warnings (by default warnings are enabled
+  - '-f[--flatten]'  : To output flattened KIF
+  - '-h[--help]'     : Prints help.
+  - '--version'      : For version information    
+  - '--O1'           : Enable premiss reordering(Enabled by default).
+  - '--O0'           : Disable premiss reordering.
+
+
+@section tut_kif_ucppi Using C++ Interface
+
+The simplest parsing with KIF module can be done with this code -
+
+@code
+#include <libgdl/core.hpp>
+#include <libgdl/gdlparser/kif.hpp>
+
+using namespace std;
+using namespace libgdl::gdlparser;
+
+int main()
+{
+  KIF kif;
+  kif.AddFile(<filename>);
+  kif.Parse();
+}
+@endcode
+
+Check out the signature of KIF constructor - libgdl::gdlparser::KIF::KIF. The 
+first parameter can be used to set warnings off and on. By default its set to
+true. Setting first parameter to false will set the warnings off.
+
+@code
+KIF kif(false);
+@endcode
+
+The second parameter sets the optimization level described in @ref tut_kif_ol.
+The default value is 1. Setting it to 0 will turn of premiss reordering.
+
+The third and the last parameter is the libgdl::Log object. All the generated 
+errors and warnings are redirected to this object. 
+
+Example code to redirect the output to file -
+@code
+#include <fstream>
+#include <libgdl/core.hpp>
+#include <libgdl/gdlparser/kif.hpp>
+
+using namespace std;
+using namespace libgdl::gdlparser;
+
+int main()
+{
+  ofstream out("filename");
+  KIF kif(true, 1, out);
+  kif.AddFile(<filename>);
+  kif.Parse();
+}
+@endcode
+
+Due to implicit casting any std::ostream is directly converted to a Log object.
+The default value of this third parameter is 'GLOBAL_LOG'. Check out @ref simplelog
+for more information on Logging. 
+
+Files can be added to this parsing by libgdl::gdlparser::KIF::AddFile function.
+This function takes filename as the only parameter. Any stream can be added to 
+this parser via libgdl::util::GDLStream. Check out @ref gdlstream for more 
+information on GDLStream.
+
+Example to add stingstream to the parser - 
+@code
+stringstream ss;
+KIF kif;
+GDLStream stream("<name>", ss);
+kif.AddStream(stream);
+@endcode
+
+The parsing is done with libgdl::gdlparser::KIF::Parse function. The function 
+returns the success state while printing the errors and warnings on the log.
+IF any error occurs, the object is cleaned of all the parsed knowledge. 
+
+@code
+KIF kif;
+kif.AddFile("test.kif");
+kif.Parse();
+@endcode 
+
+Parse function can also accept a bool, if set will not clean the parsed knowledge
+in any case. 
+
+@code
+bool result = kif.Parse(true);
+@endcode
+
+For example, in the above code, if parsing produces any errors the parsed knowledge
+will not be erased, but still variable 'result' will hold false. This can be 
+used to parse non-GDL kif. Check file 'data/questions/question1.kif' and 
+'data/questions/question2.kif'. These files contains logical problems coded in
+KIF format. These logical problems are solved with libgdl::gdlreasoner::KnowledgeBase
+in file 'src/tests/parser_test.cpp'. As these files define no role relation or any
+other GDL language relations the parsing will produce errors and the parsed 
+knowledge will be cleaned. The above code can be used to parse such files.
+Check out ... for tutorial on libgdl::gdlreasoner::KnowledgeBase.
+
+The parsed knowledge can be printed to file with libgdl::gdlparser::KIF::PrintToFile.
+It takes filename as the only parameter.
+
+@code
+Kif kif;
+kif.AddFile("3puzzle.kif");
+kif.Parse();
+
+kif.PrintToFile("out.txt");
+@endcode
+
+The generated dependency graph can be saved to a file by 
+libgdl::gdlparser::KIF::PrintDependencyGraph function. The graph will be saved
+in 'DOT' format. Libraries like GraphViz can be used to visualize this saved file.
+
+@code
+kif.PrintDependencyGraph("filename");
+@endcode
+
+The reasoner given in libGDL can be initialized with this kif object. Check
+out ... for more information on this reasoner. The knowledge parsed in this 
+kif object can be flattened with flattener provided in libGDL. Check out 
+... for more information on flattening.
 */
-

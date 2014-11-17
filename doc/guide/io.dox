@@ -48,6 +48,16 @@ Output of the code -
 [FATAL] Program has crashed.
 @endcode
 
+Here the '[DEBUG]' and similar prefixes are colored by their severity level. 
+This coloring only works for terminal output. To turn the coloring off 
+
+@code
+GLOBAL_LOG.RemoveColor();
+@endcode
+
+'GLOBAL_LOG' returns the global logging object. 'GLOBAL_LOG.SetColor()' can be 
+used to set the colors back. For more logging options check class libgdl::Log. 
+
 For setting global sink of the log well documented libgdl::Log::SetStream
 function can be used on GLOBAL_LOG object.
 
@@ -67,13 +77,6 @@ int main(int argc, char** argv)
   log.Warn << "A warning!" << std::endl;
   log.Fatal << "Program has crashed." << std::endl;
 }
-@endcode
-
-Here the '[DEBUG]' and similar prefixes are colored by their severity level. 
-This coloring only works for terminal output. To turn the coloring off 
-
-@code
-Log log(std::cout, false, false);
 @endcode
 
 Log also supports time-stamp addition. For example -

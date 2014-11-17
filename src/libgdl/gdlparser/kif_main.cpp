@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
   ("graph-filename,g", value<std::string>(), "graph output filename")
   ("enable-warnings,w", value<std::string>()->default_value("ON"), 
                         "enable/disable warnings")
-  ("output-file", value<std::string>(), "Output filename")
+  ("output-file,o", value<std::string>(), "Output filename")
   ("source-files,c", value<std::vector<std::string> >()->multitoken(), 
                      "source files")
   ("flatten,f", "Flatten the knowledge")

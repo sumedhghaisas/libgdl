@@ -5,6 +5,12 @@
 # First, read the Doxyfile in as a variable.
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile" DOXYFILE_CONTENTS)
 
+# set version information
+set(LIBGDL_MAJOR_VERSION "0")
+set(LIBGDL_MINOR_VERSION "0")
+set(LIBGDL_PATCH_VERSION "0")
+set(LIBGDL_VERSION_NAME "master")
+
 # Now, modify all the "INPUT" paths.  I've written each of the three out by
 # hand.  If more are added, they'll need to be added here too.
 string(REPLACE
@@ -19,7 +25,7 @@ string(REPLACE
 )
 string(REPLACE
     "release_number"
-    "${LIBGDL_MAJOR_VERSION}.${LIBGDL_MINOR_VERSION}.${LIBGDL_PATCH_VERSION}"
+    "${LIBGDL_VERSION_NAME} - ${LIBGDL_MAJOR_VERSION}.${LIBGDL_MINOR_VERSION}.${LIBGDL_PATCH_VERSION}"
     DOXYFILE_CONTENTS "${DOXYFILE_CONTENTS}"
 )
 

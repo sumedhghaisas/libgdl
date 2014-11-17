@@ -90,8 +90,6 @@ class PrefixedOutStream
   template<typename T>
   PrefixedOutStream& operator<<(const T& s);
 
-  //! Get output stream
-  const std::ostream& Stream() { return *destination; }
   //! Set output stream
   std::ostream& Stream() const { return *destination; }
   //! Get destination
@@ -102,6 +100,8 @@ class PrefixedOutStream
   bool IgnoreInput() const { return ignoreInput; }
   //! Get prefix
   std::string Prefix() const { return prefix; }
+  //! Get bool timestamp
+  bool TimeStamp() const { return timestamp; }
 
  private:
    //! The output stream that all data is to be sent too; example: std::cout.

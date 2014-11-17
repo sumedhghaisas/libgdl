@@ -145,6 +145,8 @@ bool RelationPolicy::CodeGen(Argument*& out,
       delete arg;
       return false;
     }
+
+    symbol_table->AddUsed(temp->value, command_loc);
     arg->args.push_back(temp);
   }
 

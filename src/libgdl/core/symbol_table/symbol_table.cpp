@@ -116,10 +116,31 @@ size_t RawSymbolTable::CheckEntry(const std::string& name,
 
 bool RawSymbolTable::AddDefined(size_t id, const Location& loc)
 {
-  SymbolMap::iterator it = symbol_table.find(id);
-  if(it == symbol_table.end()) return false;
+  if(id != NotID && id != OrID && id != DistinctID && id != RoleID &&
+     id != BaseID && id != InputID && id != InitID && id != LegalID &&
+     id != NextID && id != DoesID && id != TrueID && id != GoalID &&
+     id != TerminalID)
+  {
+    SymbolMap::iterator it = symbol_table.find(id);
+    if(it == symbol_table.end()) return false;
 
-  it->second->AddDef(loc);
+    it->second->AddDef(loc);
+  }
+  return true;
+}
+
+bool RawSymbolTable::AddUsed(size_t id, const Location& loc)
+{
+  if(id != NotID && id != OrID && id != DistinctID && id != RoleID &&
+     id != BaseID && id != InputID && id != InitID && id != LegalID &&
+     id != NextID && id != DoesID && id != TrueID && id != GoalID &&
+     id != TerminalID)
+  {
+    SymbolMap::iterator it = symbol_table.find(id);
+    if(it == symbol_table.end()) return false;
+
+    it->second->AddUsed(loc);
+  }
   return true;
 }
 
@@ -131,5 +152,32 @@ std::string RawSymbolTable::GetCommandName(size_t id) const
   {
     log.Warn << "Identifier " << ToString(id) << " does not exist" << std::endl;
     return "";
+  }
+}
+
+void RawSymbolTable::GenerateWarnings(list<ErrorType>& out) const
+{
+  for(auto it : symbol_table)
+  {
+    Symbol* sym = it.second;
+
+    const std::string& uname = sym->UName();
+    if(uname.find("_r_") != string::npos)
+    {
+      if(sym->IsDef() && !sym->IsUsed())
+      {
+        ErrorType warn;
+        warn.AddEntry("Relation '" + sym->Name() +
+                      "' defined but not used.", sym->loc_def);
+        out.push_back(warn);
+      }
+      else if(sym->IsUsed() && !sym->IsDef())
+      {
+        ErrorType warn;
+        warn.AddEntry("Relation '" + sym->Name() +
+                      "' used but not defined.", sym->loc_used);
+        out.push_back(warn);
+      }
+    }
   }
 }

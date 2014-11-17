@@ -91,7 +91,7 @@ class Log
   //!
   Log(std::ostream& stream = std::cout,
       bool timestamp = false,
-      bool addColor = true)
+      bool addColor = false)
   {
     if(addColor)
     {
@@ -160,6 +160,58 @@ class Log
     Fatal.SetStream(stream);
   }
 
+  //! Turn on the color support for prefixes
+  //! Using this function will clear and reset the stream
+  //!
+  //! \return void
+  //!
+  //!
+  void SetColor()
+  {
+    Debug = util::PrefixedOutStream(Debug.Stream(),
+                                    BASH_CYAN "[DEBUG] " BASH_CLEAR,
+                                    false,
+                                    Debug.TimeStamp());
+    Info = util::PrefixedOutStream(Info.Stream(),
+                                   BASH_GREEN "[INFO ] " BASH_CLEAR,
+                                   false /* unless --verbose */,
+                                   Info.TimeStamp());
+    Warn = util::PrefixedOutStream(Warn.Stream(),
+                                   BASH_YELLOW "[WARN ] " BASH_CLEAR,
+                                   false,
+                                   Warn.TimeStamp());
+    Fatal = util::PrefixedOutStream(Fatal.Stream(),
+                                    BASH_RED "[FATAL] " BASH_CLEAR,
+                                    false,
+                                    Fatal.TimeStamp());
+  }
+
+  //! Turn off the color support for prefixes
+  //! Using this function will clear and reset the stream
+  //!
+  //! \return void
+  //!
+  //!
+  void RemoveColor()
+  {
+    Debug = util::PrefixedOutStream(Debug.Stream(),
+                                    "[DEBUG] ",
+                                    false,
+                                    Debug.TimeStamp());
+    Info = util::PrefixedOutStream(Info.Stream(),
+                                   "[INFO ] ",
+                                   false /* unless --verbose */,
+                                   Info.TimeStamp());
+    Warn = util::PrefixedOutStream(Warn.Stream(),
+                                   "[WARN ] ",
+                                   false,
+                                   Warn.TimeStamp());
+    Fatal = util::PrefixedOutStream(Fatal.Stream(),
+                                    "[FATAL] ",
+                                    false,
+                                    Fatal.TimeStamp());
+  }
+
   //! Returns the instance of global logger
   //!
   //! \return Log&
@@ -167,7 +219,7 @@ class Log
   //!
   static Log& GetGlobalLogger()
   {
-    static Log singleton;
+    static Log singleton(std::cout, false, true);
     return singleton;
   }
 

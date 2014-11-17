@@ -103,6 +103,7 @@ bool KIF::Parse(bool ignoreErrors)
 
   if(isWarn)
   {
+    symbol_table->GenerateWarnings(warnings);
     for(list<ErrorType>::const_iterator it = warnings.begin();it != warnings.end();
         it++)
       log.Warn << *it << std::endl;

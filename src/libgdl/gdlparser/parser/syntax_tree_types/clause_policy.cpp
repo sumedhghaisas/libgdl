@@ -60,6 +60,8 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
     driver.Error(error);
   }
 
+  symbol_table->AddDefined(head->value, command_loc);
+
   vector<Argument*> args;
 
   for(std::list<Premiss*>::iterator it = terms.begin();it != terms.end();it++)
@@ -72,6 +74,9 @@ bool ClausePolicy::CodeGen(KIFDriver& driver,
       delete head;
       return false;
     }
+
+    symbol_table->AddUsed(temp->value, command_loc);
+
     args.push_back(temp);
   }
 
