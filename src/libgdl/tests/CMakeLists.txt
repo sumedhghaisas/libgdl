@@ -11,6 +11,7 @@ add_executable(libgdl_test
   unify_tests.cpp
   state_tests.cpp
   gdl_tests.cpp
+  propnet_tests.cpp
 )
 # Link dependencies of test executable.
 target_link_libraries(libgdl_test

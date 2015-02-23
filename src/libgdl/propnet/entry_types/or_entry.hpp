@@ -29,7 +29,7 @@ struct OrEntry : public Entry
     PrintAccess(*in_id, mm, ss);
     PrintAccess(*in_id, mm, ss2);
     in_id++;
-    for(in_id;in_id != in_ids.end();in_id++)
+    for(in_id = in_id;in_id != in_ids.end();in_id++)
     {
       ss << " || ";
       ss2 << " | ";

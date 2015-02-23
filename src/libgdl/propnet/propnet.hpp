@@ -8,6 +8,7 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
+#include <libgdl/gdlparser/kif.hpp>
 
 #include "node_types.hpp"
 #include "istate.hpp"
@@ -26,13 +27,23 @@ class PropNet
   typedef node_types::Node Node;
 
  public:
+  explicit PropNet(const std::string& filename, Log log = Log());
+
   explicit PropNet(gdlreasoner::KIFFlattener& kf, Log log = Log());
+
+  ~PropNet();
 
   bool PrintPropnet(const std::string& filename) const;
 
-  void GenerateCode();
+  void GenerateStateMachineCode(std::ostream& stream);
+
+  void GenerateMoveCode(std::ostream& stream);
+
+  void GenerateStateCode(std::ostream& stream);
 
  private:
+  void CreatePropNet(gdlreasoner::KIFFlattener& kf);
+
   node_types::Node* CreateNode(core::SymbolTable sym, const core::Argument* arg);
 
   std::map<std::string, size_t> roles_ids;

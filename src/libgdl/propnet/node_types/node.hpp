@@ -23,6 +23,8 @@ struct Node
     : name(name), type(type), isVisited(false), visit_stamp(0)
   {}
 
+  virtual ~Node() {}
+
   void AddIn(Node* n)
   {
     in_degree.push_back(n);

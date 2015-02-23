@@ -7,6 +7,8 @@
 
 #include "memory_manager.hpp"
 
+#include "entry_types/entry.hpp"
+
 namespace libgdl
 {
 namespace propnet
@@ -24,6 +26,17 @@ class EntryManager
  public:
   EntryManager()
     : current_id(0) {}
+
+  ~EntryManager()
+  {
+    for(auto it : l_entries)
+    {
+      for(auto it2 : it)
+      {
+        delete it2;
+      }
+    }
+  }
 
   size_t GetNewID()
   {

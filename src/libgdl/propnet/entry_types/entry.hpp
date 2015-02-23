@@ -17,6 +17,8 @@ struct Entry
   Entry(size_t id)
     : id(id) {}
 
+  virtual ~Entry() {}
+
   virtual void CodeGen(MemoryManager& mm, std::ostream& ss, std::ostream& ss2) = 0;
 
   void PrintAccess(std::tuple<bool, size_t> entry_ret,

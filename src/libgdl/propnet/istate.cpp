@@ -22,15 +22,11 @@ size_t IState::AddProp(const string& str)
 
 void IState::CodeGen(ostream& file)
 {
-  cout << l_base.size() << endl;
-
   size_t size_char = l_base.size() / 8;
   if(l_base.size() % 8 != 0)
   {
     size_char++;
   }
-
-  cout << size_char << endl;
 
   //! Add header guards
   file << "#ifndef LIBGDL_STATE_HPP_INCLUDED" << endl;
@@ -45,6 +41,10 @@ void IState::CodeGen(ostream& file)
 
   //! Protect with namespace
   file << "namespace libgdl {" << endl << endl;
+
+////////////////////////////////////////////////////////////////////////////////
+/// Generate RawState
+////////////////////////////////////////////////////////////////////////////////
 
   //! Define RawState
   file << "struct RawState {" << endl;
@@ -151,7 +151,9 @@ void IState::CodeGen(ostream& file)
   file << "return stream;" << endl;
   file << "}" << endl;
 
-
+////////////////////////////////////////////////////////////////////////////////
+/// Generate State
+////////////////////////////////////////////////////////////////////////////////
 
   //! Declare State
   file << "struct State : public boost::intrusive_ptr<RawState> {" << endl;

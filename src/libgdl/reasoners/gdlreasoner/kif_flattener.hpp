@@ -64,7 +64,7 @@ class KIFFlattener
   //! \param log Logging stream
   //!
   //!
-  KIFFlattener(Log log = GLOBAL_LOG)
+  explicit KIFFlattener(Log log = GLOBAL_LOG)
     : log(log) {}
 
   //! Flattens the knowledge in given KIF object
