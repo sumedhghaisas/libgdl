@@ -11,6 +11,7 @@ set(DIRS
   tests
   reasoners
   core
+  propnet
   #benchmarks
 )
 
