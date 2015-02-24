@@ -12,6 +12,7 @@ void IMove::CodeGen(std::ostream& file)
   //! Add required includes
   file << "#include <iostream>" << endl;
   file << "#include <atomic>" << endl;
+  file << "#include <list>" << endl;
   file << "#include <boost/intrusive_ptr.hpp>" << endl << endl;
 
   //! Put Move inside namespace libgdl
@@ -34,6 +35,16 @@ void IMove::CodeGen(std::ostream& file)
   file << "{" << endl;
   file << "for(size_t i = 0;i < " << map_list.size() << ";i++)" << endl;
   file << "{ moves[i] = rm.moves[i]; }" << endl;
+  file << "}" << endl;
+
+  file << "RawMove(const std::list<size_t>& m)" << endl;
+  file << "{" << endl;
+  file << "auto it = m.begin();" << endl;
+  file << "for(size_t i = 0;i < n_roles;i++)" << endl;
+  file << "{" << endl;
+  file << "moves[i] = *it;" << endl;
+  file << "it++;" << endl;
+  file << "}" << endl;
   file << "}" << endl;
 
   file << "template<typename... Args>" << endl;
@@ -69,6 +80,9 @@ void IMove::CodeGen(std::ostream& file)
 
   //! Create a local array which holds the move ids
   file << "size_t moves[" << map_list.size() << "];" << endl << endl;
+
+  //! Create constant which stores the number of roles
+  file << "static const size_t n_roles = " << map_list.size() << ";" << endl << endl;
 
   //! Create atomic Reference count for the raw object
   file << "size_t ref_count() { return count; }" << endl;
@@ -116,6 +130,8 @@ void IMove::CodeGen(std::ostream& file)
 
   //! Default empty constructor
   file << "Move(RawMove* rm = NULL) : boost::intrusive_ptr<RawMove>(rm) {}" << endl << endl;
+
+  file << "Move(const std::list<size_t>& l) : boost::intrusive_ptr<RawMove>(new RawMove(l)) {}" << endl << endl;
 
   //! Cloning function(Deep Copy)
   file << "Move Clone() const" << endl;

@@ -44,6 +44,8 @@ class PropNet
  private:
   void CreatePropNet(gdlreasoner::KIFFlattener& kf);
 
+  void GenerateSeriesFunctions(std::ostream& stream, size_t mark_index);
+
   node_types::Node* CreateNode(core::SymbolTable sym, const core::Argument* arg);
 
   std::map<std::string, size_t> roles_ids;
