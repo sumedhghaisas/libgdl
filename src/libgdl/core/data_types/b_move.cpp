@@ -1,4 +1,4 @@
-#include "move.hpp"
+#include "b_move.hpp"
 
 #include <sstream>
 
@@ -6,9 +6,9 @@ using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
 
-Move::Move(const std::string& str,
-           SymbolTable symbol_table,
-           Log log)
+BMove::BMove(const std::string& str,
+             SymbolTable symbol_table,
+             Log log)
 {
   moves.push_back(new Argument(str, symbol_table, false, log));
   hash = 0;
@@ -19,10 +19,10 @@ Move::Move(const std::string& str,
   }
 }
 
-Move::Move(const std::string& str1,
-           const std::string& str2,
-           SymbolTable symbol_table,
-           Log log)
+BMove::BMove(const std::string& str1,
+             const std::string& str2,
+             SymbolTable symbol_table,
+             Log log)
 {
   moves.push_back(new Argument(str1, symbol_table, false, log));
   moves.push_back(new Argument(str2, symbol_table, false, log));
@@ -34,7 +34,7 @@ Move::Move(const std::string& str1,
   }
 }
 
-Move::Move(const std::vector<Argument*>& m)
+BMove::BMove(const std::vector<Argument*>& m)
 {
   hash = 0;
   for(vector<Argument*>::const_iterator it = m.begin();it != m.end();it++)
@@ -45,28 +45,28 @@ Move::Move(const std::vector<Argument*>& m)
   }
 }
 
-Move::Move(const Move& m) noexcept
+BMove::BMove(const BMove& m) noexcept
 {
   for(size_t i = 0;i < m.moves.size();i++)
     moves.push_back(new Argument(*m.moves[i]));
   hash = m.hash;
 }
 
-Move::Move(Move&& m) noexcept
+BMove::BMove(BMove&& m) noexcept
 {
   moves = m.moves;
   hash = m.hash;
   m.moves.clear();
 }
 
-Move::~Move()
+BMove::~BMove()
 {
   for(size_t i = 0;i < moves.size();i++)
     delete moves[i];
   moves.clear();
 }
 
-Move& Move::operator=(const Move& m)
+BMove& BMove::operator=(const BMove& m)
 {
   for(size_t i = 0;i < moves.size();i++)
     delete moves[i];
@@ -77,7 +77,7 @@ Move& Move::operator=(const Move& m)
   return *this;
 }
 
-std::string Move::DecodeToString(const SymbolTable& symbol_table) const
+std::string BMove::DecodeToString(const SymbolTable& symbol_table) const
 {
   stringstream s;
   s << "Move :";
@@ -86,18 +86,5 @@ std::string Move::DecodeToString(const SymbolTable& symbol_table) const
     s << "\t" << moves[i]->DecodeToString(symbol_table) << endl;
   }
   s << "\tHash = " << std::hex << hash << std::dec;
-  return s.str();
-}
-
-std::string MoveList::DecodeToString(const SymbolTable& symbol_table) const
-{
-  stringstream s;
-  s << "MoveList {" << endl;
-  for(libgdl::core::IntrusiveList<libgdl::Move>::const_iterator it = begin();
-                                                          it != end();it++)
-  {
-    s << it->DecodeToString(symbol_table) << std::endl;
-  }
-  s << "}";
   return s.str();
 }

@@ -6,6 +6,8 @@
  */
 #include <libgdl/core.hpp>
 #include <libgdl/core/data_types/b_state.hpp>
+#include <libgdl/core/data_types/b_move.hpp>
+#include <libgdl/core/data_types/move_list.hpp>
 #include <libgdl/gdl.hpp>
 #include <libgdl/reasoners/gdlreasoner/gdlreasoner.hpp>
 
@@ -37,7 +39,7 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateTest)
   
   SymbolTable sym = gdl.GetSymbolTable();
   
-  Move moves("right", sym, TEST_LOG);  
+  BMove moves("right", sym, TEST_LOG);  
   BState s2 = gdl.GetNextState(s1, moves);
   
   list<Argument*> result2;
@@ -73,7 +75,7 @@ BOOST_AUTO_TEST_CASE(GDLGetNextBStateCacheTest_Time)
   
   SymbolTable sym = gdl.GetSymbolTable();
   
-  Move moves("right", sym, TEST_LOG);  
+  BMove moves("right", sym, TEST_LOG);  
   
   gdl.GetNextState(s1, moves);
   
@@ -102,13 +104,13 @@ BOOST_AUTO_TEST_CASE(GDLIsTerminalTest)
   
   SymbolTable sym = gdl.GetSymbolTable();
   
-  vector<Move> moves;
-  moves.push_back(Move("down", sym, TEST_LOG));
-  moves.push_back(Move("right", sym, TEST_LOG));
-  moves.push_back(Move("up", sym, TEST_LOG));
-  moves.push_back(Move("left", sym, TEST_LOG));
-  moves.push_back(Move("down", sym, TEST_LOG));
-  moves.push_back(Move("right", sym, TEST_LOG));
+  vector<BMove> moves;
+  moves.push_back(BMove("down", sym, TEST_LOG));
+  moves.push_back(BMove("right", sym, TEST_LOG));
+  moves.push_back(BMove("up", sym, TEST_LOG));
+  moves.push_back(BMove("left", sym, TEST_LOG));
+  moves.push_back(BMove("down", sym, TEST_LOG));
+  moves.push_back(BMove("right", sym, TEST_LOG));
   
   for(size_t i = 0;i < moves.size();i++)
     s = gdl.GetNextState(s, moves[i]);
@@ -153,7 +155,7 @@ BOOST_AUTO_TEST_CASE(GDLGetLegalMovesTest)
   
   const BState& init = gdl.InitState();
   
-  MoveList moves = gdl.GetLegalMoves(init);
+  MoveList<BMove> moves = gdl.GetLegalMoves(init);
     
   if(moves.size() != 81) MARK_FAIL;
     
@@ -202,13 +204,13 @@ BOOST_AUTO_TEST_CASE(GDLGetGoalTest)
   
   SymbolTable sym = gdl.GetSymbolTable();
   
-  vector<Move> moves;
-  moves.push_back(Move("down", sym, TEST_LOG));
-  moves.push_back(Move("right", sym, TEST_LOG));
-  moves.push_back(Move("up", sym, TEST_LOG));
-  moves.push_back(Move("left", sym, TEST_LOG));
-  moves.push_back(Move("down", sym, TEST_LOG));
-  moves.push_back(Move("right", sym, TEST_LOG));
+  vector<BMove> moves;
+  moves.push_back(BMove("down", sym, TEST_LOG));
+  moves.push_back(BMove("right", sym, TEST_LOG));
+  moves.push_back(BMove("up", sym, TEST_LOG));
+  moves.push_back(BMove("left", sym, TEST_LOG));
+  moves.push_back(BMove("down", sym, TEST_LOG));
+  moves.push_back(BMove("right", sym, TEST_LOG));
   
   for(size_t i = 0;i < moves.size();i++)
     s = gdl.GetNextState(s, moves[i]);

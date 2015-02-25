@@ -11,6 +11,8 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/core/data_types/b_state.hpp>
+#include <libgdl/core/data_types/b_move.hpp>
+#include <libgdl/core/data_types/move_list.hpp>
 #include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
 #include <libgdl/gdlparser/kif.hpp>
 
@@ -117,7 +119,7 @@ class GDLReasoner
   //! \return MoveList*
   //!
   //!
-  inline MoveList* GetLegalMoves() const;
+  inline MoveList<BMove>* GetLegalMoves() const;
 
   //! Returns next state based on the current knowledge
   //!
@@ -149,7 +151,7 @@ class GDLReasoner
   //! \return void
   //!
   //!
-  inline void ApplyActions(const Move& moves);
+  inline void ApplyActions(const BMove& moves);
 
 
   //! Remove the state representation from the knowledge base

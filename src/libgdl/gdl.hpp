@@ -87,7 +87,7 @@ class GDL
   //!
   //!
   BState GetNextState(const BState& state,
-                      const Move& moves,
+                      const BMove& moves,
                       bool useCache = true);
 
   //! Returns if the given state is terminal.
@@ -112,7 +112,7 @@ class GDL
   //! \return std::list<Move>
   //!
   //!
-  MoveList GetLegalMoves(const BState& state, bool useCache = true);
+  MoveList<BMove> GetLegalMoves(const BState& state, bool useCache = true);
 
 
   //! Returns goal value associated with the given state for given role
@@ -147,7 +147,7 @@ private:
   //!
   //!
   BState* cached_GetNextState(const BState& state,
-                             const Move& moves);
+                              const BMove& moves);
 
   //! Returns the combined Hash value of given State along with the actions
   //!
@@ -157,7 +157,7 @@ private:
   //!
   //!
   size_t StateMoveHash(const BState& state,
-                       const Move& moves) const;
+                       const BMove& moves) const;
 
   //! The function to be called by cache when IsTerminal produces cache miss.
   //!
@@ -173,7 +173,7 @@ private:
   //! \return MoveList*
   //!
   //!
-  MoveList* cached_getLegalMoves(const BState& state);
+  MoveList<BMove>* cached_getLegalMoves(const BState& state);
 
   //! The function to be called by cach when GetGoal produces cache miss.
   //!
@@ -204,7 +204,7 @@ private:
   //! Cache capacity of cache associated with function GetNextState
   size_t next_state_cache_capacity;
   //! Cache associated with function GetNextState
-  cache::LRUCache<BState, BState, Move> next_state_cache;
+  cache::LRUCache<BState, BState, BMove> next_state_cache;
 
   //! Cache capacity of cache associated with function IsTerminal
   size_t isTerminal_cache_capacity;
@@ -214,7 +214,7 @@ private:
   //! Cache capacity of cache associated with functions GetLegalMoves
   size_t getLegalMoves_cache_capacity;
   //! Cache associated with function GetLegalMoves
-  cache::LRUCache<MoveList, BState> getLegalMoves_cache;
+  cache::LRUCache<MoveList<BMove>, BState> getLegalMoves_cache;
 
   //! Cache capacity of cache associated with function GetGoal
   size_t getGoal_cache_capacity;

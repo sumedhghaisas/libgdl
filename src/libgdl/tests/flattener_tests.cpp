@@ -10,6 +10,8 @@
 #include <libgdl/reasoners/gdlreasoner/gdlreasoner.hpp>
 #include <libgdl/gdl.hpp>
 #include <libgdl/core/data_types/b_state.hpp>
+#include <libgdl/core/data_types/b_move.hpp>
+#include <libgdl/core/data_types/move_list.hpp>
 
 #include <list>
 #include <stdlib.h>     /* srand, rand */
@@ -72,20 +74,20 @@ BOOST_AUTO_TEST_CASE(Puzzle8FlattenTest)
 
   SymbolTable sym = gdl.GetSymbolTable();
 
-  list<Move> moves;
-  moves.push_back(Move("(move 2 3)", sym, TEST_LOG));
-  moves.push_back(Move("(move 2 2)", sym, TEST_LOG));
-  moves.push_back(Move("(move 3 2)", sym, TEST_LOG));
-  moves.push_back(Move("(move 3 1)", sym, TEST_LOG));
-  moves.push_back(Move("(move 2 1)", sym, TEST_LOG));
-  moves.push_back(Move("(move 2 2)", sym, TEST_LOG));
-  moves.push_back(Move("(move 1 2)", sym, TEST_LOG));
-  moves.push_back(Move("(move 1 1)", sym, TEST_LOG));
-  moves.push_back(Move("(move 2 1)", sym, TEST_LOG));
+  list<BMove> moves;
+  moves.push_back(BMove("(move 2 3)", sym, TEST_LOG));
+  moves.push_back(BMove("(move 2 2)", sym, TEST_LOG));
+  moves.push_back(BMove("(move 3 2)", sym, TEST_LOG));
+  moves.push_back(BMove("(move 3 1)", sym, TEST_LOG));
+  moves.push_back(BMove("(move 2 1)", sym, TEST_LOG));
+  moves.push_back(BMove("(move 2 2)", sym, TEST_LOG));
+  moves.push_back(BMove("(move 1 2)", sym, TEST_LOG));
+  moves.push_back(BMove("(move 1 1)", sym, TEST_LOG));
+  moves.push_back(BMove("(move 2 1)", sym, TEST_LOG));
 
   BState s = init;
 
-  for(list<Move>::iterator it = moves.begin();it != moves.end();it++)
+  for(list<BMove>::iterator it = moves.begin();it != moves.end();it++)
     s = gdl.GetNextState(s, *it);
 
   list<Argument*> result2;
@@ -169,10 +171,10 @@ BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
 
     do
     {
-      MoveList ml = gdl.GetLegalMoves(s);
+      MoveList<BMove> ml = gdl.GetLegalMoves(s);
       size_t index = rand() % ml.size();
 
-      MoveList::iterator it = ml.begin();
+      MoveList<BMove>::iterator it = ml.begin();
       for(size_t i = 0;i < index;i++)
         it++;
 

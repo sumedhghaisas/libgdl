@@ -10,8 +10,9 @@ set(SOURCES
   location.hpp
   b_state.hpp
   b_state.cpp
-  move.hpp
-  move.cpp
+  b_move.hpp
+  b_move.cpp
+  move_list.hpp
   intrusive_list.hpp
   str_var_map.hpp
   str_var_map.cpp

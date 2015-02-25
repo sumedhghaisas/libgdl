@@ -49,7 +49,7 @@ inline bool* GDLReasoner::IsTerminal() const
   return out;
 }
 
-inline MoveList* GDLReasoner::GetLegalMoves() const
+inline MoveList<BMove>* GDLReasoner::GetLegalMoves() const
 {
   // get legal moves for all the roles
   std::list<Argument*>* result = new std::list<Argument*>[roles.size()];
@@ -81,7 +81,7 @@ inline MoveList* GDLReasoner::GetLegalMoves() const
   for(size_t i = 0;i < roles.size();i++)
     it[i] = result[i].begin();
 
-  MoveList* out = new MoveList(new core::IntrusiveList<Move>());
+  MoveList<BMove>* out = new MoveList<BMove>(new core::IntrusiveList<BMove>());
 
   while(true)
   {
@@ -90,7 +90,7 @@ inline MoveList* GDLReasoner::GetLegalMoves() const
     {
       moves.push_back((*it[i])->args[1]);
     }
-    (*out)->push_back(Move(moves));
+    (*out)->push_back(BMove(moves));
 
     it[0]++;
     size_t index = 1;
@@ -216,7 +216,7 @@ inline void GDLReasoner::ApplyState(const BState& state)
   }
 }
 
-inline void GDLReasoner::ApplyActions(const Move& moves)
+inline void GDLReasoner::ApplyActions(const BMove& moves)
 {
   size_t r_index = 0;
   for(std::list<Argument*>::const_iterator it = roles.begin();

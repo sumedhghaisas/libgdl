@@ -111,9 +111,9 @@ bool* GDL<Reasoner>::cached_IsTerminal(const BState& state)
 }
 
 template<class Reasoner>
-MoveList GDL<Reasoner>::GetLegalMoves(const BState& state, bool useCache)
+MoveList<BMove> GDL<Reasoner>::GetLegalMoves(const BState& state, bool useCache)
 {
-  MoveList* out;
+  MoveList<BMove>* out;
   if(useCache)
   {
     out = getLegalMoves_cache.Get(state);
@@ -124,11 +124,11 @@ MoveList GDL<Reasoner>::GetLegalMoves(const BState& state, bool useCache)
 }
 
 template<class Reasoner>
-MoveList* GDL<Reasoner>::cached_getLegalMoves(const BState& state)
+MoveList<BMove>* GDL<Reasoner>::cached_getLegalMoves(const BState& state)
 {
   reasoner.ApplyState(state);
 
-  MoveList* out = reasoner.GetLegalMoves();
+  MoveList<BMove>* out = reasoner.GetLegalMoves();
 
   reasoner.RemoveState();
 
@@ -137,7 +137,7 @@ MoveList* GDL<Reasoner>::cached_getLegalMoves(const BState& state)
 
 template<class Reasoner>
 BState GDL<Reasoner>::GetNextState(const BState& state,
-                                   const Move& moves,
+                                   const BMove& moves,
                                    bool useCache)
 {
   BState* out;
@@ -153,7 +153,7 @@ BState GDL<Reasoner>::GetNextState(const BState& state,
 
 template<class Reasoner>
 BState* GDL<Reasoner>::cached_GetNextState(const BState& state,
-                                           const Move& moves)
+                                           const BMove& moves)
 {
   reasoner.ApplyState(state);
   reasoner.ApplyActions(moves);
@@ -167,7 +167,7 @@ BState* GDL<Reasoner>::cached_GetNextState(const BState& state,
 }
 
 template<class Reasoner>
-size_t GDL<Reasoner>::StateMoveHash(const BState& state, const Move& moves) const
+size_t GDL<Reasoner>::StateMoveHash(const BState& state, const BMove& moves) const
 {
   size_t seed = state.GetHash();
   boost::hash_combine(seed, moves.Hash());
