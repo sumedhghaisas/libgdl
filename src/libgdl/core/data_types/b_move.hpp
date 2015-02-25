@@ -5,8 +5,8 @@
  * Declaration of Move data structure which is used to represent the actions
  * performed by players.
  */
-#ifndef MOVE_HPP_INCLUDED
-#define MOVE_HPP_INCLUDED
+#ifndef LIBGDL_CORE_DATA_TYPES_BMOVE_HPP_INCLUDED
+#define LIBGDL_CORE_DATA_TYPES_BMOVE_HPP_INCLUDED
 
 #include <vector>
 #include <list>
@@ -133,4 +133,4 @@ struct BMove
 
 }; // namespace libgdl
 
-#endif // MOVE_HPP_INCLUDED
+#endif // LIBGDL_CORE_DATA_TYPES_BMOVE_HPP_INCLUDED

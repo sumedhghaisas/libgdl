@@ -17,8 +17,8 @@ struct SaveEntry : public Entry
 
   void CodeGen(MemoryManager& mm, std::ostream& ss, std::ostream& ss2)
   {
-    ss << "s_out->Set_" << base_id << "(";
-    ss2 << "s_out.Set_" << base_id << "(";
+    ss << "s_out->Set(" << base_id << ", ";
+    ss2 << "s_out.Set(" << base_id << ", ";
 
     auto in_id = in_ids.begin();
     PrintAccess(*in_id, mm, ss);

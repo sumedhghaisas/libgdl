@@ -416,8 +416,8 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   m_file << "#include <stdlib.h>" << endl;
   m_file << "#include <time.h>" << endl << endl;
 
-  m_file << "#include \"state.hpp\"" << endl;
-  m_file << "#include \"move.hpp\"" << endl;
+  m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
+  m_file << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
   m_file << "#include <libgdl/core/data_types/move_list.hpp>" << endl << endl;
 
   m_file << "using namespace std;" << endl;
@@ -427,9 +427,9 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
 /// InitState Function Generation
 ////////////////////////////////////////////////////////////////////////////////
   {
-    m_file << "extern \"C\" State InitState()" << std::endl;
+    m_file << "extern \"C\" AState InitState()" << std::endl;
     m_file << "{" << std::endl;
-    m_file << "State init(new RawState());" << std::endl;
+    m_file << "AState init(new RawState());" << std::endl;
 
     for(auto i_prop : init_props)
     {
@@ -480,7 +480,7 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   stringstream goals_ss2;
   list<size_t> goals_ret = gg_em.CodeGen(goals_ss1, goals_ss2, goal_to_get_l);
 
-  m_file << "extern \"C\" std::list<size_t> GetGoals(const State& s, bool* buff)" << endl;
+  m_file << "extern \"C\" std::list<size_t> GetGoals(const AState& s, bool* buff)" << endl;
   m_file << "{" << endl;
 
   m_file << goals_ss1.str() << endl;
@@ -818,7 +818,7 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
     /// Create series IsTerminal function
     ////////////////////////////////////////////////////////////////////////////
 
-    m_file << "extern \"C\" bool IsTerminal(const State& s, bool* buff)" << endl;
+    m_file << "extern \"C\" bool IsTerminal(const AState& s, bool* buff)" << endl;
     m_file << "{" << endl;
 
     m_file << terminal_ss1.str() << endl;
@@ -831,7 +831,7 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
   /// Create a series GetLegalMoves function
   ////////////////////////////////////////////////////////////////////////////////
 
-    m_file << "extern \"C\" MoveList GetLegalMoves_sc1(const State& s, bool* buff)" << endl;
+    m_file << "extern \"C\" MoveList<AMove> GetLegalMoves_sc1(const AState& s, bool* buff)" << endl;
     m_file << "{" << endl;
 
     //! print the legal move generator code
@@ -852,7 +852,7 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
       r_index++;
     }
 
-    m_file << "return MoveList(legal_moves, " << roles_ids.size() << ");" << endl;
+    m_file << "return MoveList<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
 
     m_file << "}" << endl << endl;
 
@@ -860,9 +860,9 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
   /// Create series GetNextState function
   //////////////////////////////////////////////////////////////////////////////
 
-    m_file << "extern \"C\" State GetNextState_sc1(const State& s, const Move& move, bool* buff)" << endl;
+    m_file << "extern \"C\" AState GetNextState_sc1(const AState& s, const AMove& move, bool* buff)" << endl;
     m_file << "{" << endl;
-    m_file << "State s_out(new RawState());" << endl;
+    m_file << "AState s_out(new RawAState());" << endl;
 
     m_file << next_ss1.str() << endl;
 

@@ -4,8 +4,8 @@
  *
  * This State stores true propositions as list.
  */
-#ifndef _LIBGDL_GDL_STATES_HPP_INCLUDED
-#define _LIBGDL_GDL_STATES_HPP_INCLUDED
+#ifndef LIBGDL_CORE_DATA_TYPES_STATES_HPP_INCLUDED
+#define LIBGDL_CORE_DATA_TYPES_STATES_HPP_INCLUDED
 
 #include <atomic>
 #include <list>
@@ -183,4 +183,4 @@ struct BState : public boost::intrusive_ptr<core::RawBState>
 
 }; // namespace libgdl
 
-#endif // _LIBGDL_GDL_STATES_HPP_INCLUDED
+#endif // LIBGDL_CORE_DATA_TYPES_STATES_HPP_INCLUDED
