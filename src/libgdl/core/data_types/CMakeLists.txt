@@ -8,8 +8,8 @@ set(SOURCES
   clause.hpp
   clause.cpp
   location.hpp
-  state.hpp
-  state.cpp
+  b_state.hpp
+  b_state.cpp
   move.hpp
   move.cpp
   intrusive_list.hpp

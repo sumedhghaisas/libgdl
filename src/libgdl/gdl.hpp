@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/b_state.hpp>
 #include <libgdl/core/cache/lru_cache.hpp>
 #include <libgdl/gdlparser/kif.hpp>
 #include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
@@ -85,9 +86,9 @@ class GDL
   //! \return State
   //!
   //!
-  State GetNextState(const State& state,
-                     const Move& moves,
-                     bool useCache = true);
+  BState GetNextState(const BState& state,
+                      const Move& moves,
+                      bool useCache = true);
 
   //! Returns if the given state is terminal.
   //! If useCache is true function returns the answer from cache if it exists
@@ -97,7 +98,7 @@ class GDL
   //! \return bool
   //!
   //!
-  bool IsTerminal(const State& state, bool useCache = true);
+  bool IsTerminal(const BState& state, bool useCache = true);
 
   //! Returns all the legal move combinations possible in the given state
   //! if you have 3 roles; first role has 4 possibility (ABCD), second role 3
@@ -111,7 +112,7 @@ class GDL
   //! \return std::list<Move>
   //!
   //!
-  MoveList GetLegalMoves(const State& state, bool useCache = true);
+  MoveList GetLegalMoves(const BState& state, bool useCache = true);
 
 
   //! Returns goal value associated with the given state for given role
@@ -123,10 +124,10 @@ class GDL
   //! \return int
   //!
   //!
-  size_t GetGoal(const State& state, const size_t role, bool useCache = true);
+  size_t GetGoal(const BState& state, const size_t role, bool useCache = true);
 
   //! Returns the initial state of the game
-  const State& InitState() const { return reasoner.InitState(); }
+  const BState& InitState() const { return reasoner.InitState(); }
 
   //! Get the symbol table
   SymbolTable GetSymbolTable() const
@@ -145,7 +146,7 @@ private:
   //! \return State*
   //!
   //!
-  State* cached_GetNextState(const State& state,
+  BState* cached_GetNextState(const BState& state,
                              const Move& moves);
 
   //! Returns the combined Hash value of given State along with the actions
@@ -155,7 +156,7 @@ private:
   //! \return size_t
   //!
   //!
-  size_t StateMoveHash(const State& state,
+  size_t StateMoveHash(const BState& state,
                        const Move& moves) const;
 
   //! The function to be called by cache when IsTerminal produces cache miss.
@@ -164,7 +165,7 @@ private:
   //! \return bool*
   //!
   //!
-  bool* cached_IsTerminal(const State& state);
+  bool* cached_IsTerminal(const BState& state);
 
   //! The function to be called by cache when GetLegalMoves produces cache miss.
   //!
@@ -172,7 +173,7 @@ private:
   //! \return MoveList*
   //!
   //!
-  MoveList* cached_getLegalMoves(const State& state);
+  MoveList* cached_getLegalMoves(const BState& state);
 
   //! The function to be called by cach when GetGoal produces cache miss.
   //!
@@ -181,7 +182,7 @@ private:
   //! \return size_t*
   //!
   //!
-  size_t* cached_getGoal(const State& state, const size_t rid);
+  size_t* cached_getGoal(const BState& state, const size_t rid);
 
   //! Returns the combined hash value of State along with the role ID.
   //!
@@ -190,9 +191,9 @@ private:
   //! \return size_t
   //!
   //!
-  size_t StateRoleHash(const State& state, const size_t role) const;
+  size_t StateRoleHash(const BState& state, const size_t role) const;
 
-  size_t StateHash(const State& state) const
+  size_t StateHash(const BState& state) const
   {
     return state.GetHash();
   }
@@ -203,22 +204,22 @@ private:
   //! Cache capacity of cache associated with function GetNextState
   size_t next_state_cache_capacity;
   //! Cache associated with function GetNextState
-  cache::LRUCache<State, State, Move> next_state_cache;
+  cache::LRUCache<BState, BState, Move> next_state_cache;
 
   //! Cache capacity of cache associated with function IsTerminal
   size_t isTerminal_cache_capacity;
   //! Cache associated with function IsTerminal
-  cache::LRUCache<bool, State> isTerminal_cache;
+  cache::LRUCache<bool, BState> isTerminal_cache;
 
   //! Cache capacity of cache associated with functions GetLegalMoves
   size_t getLegalMoves_cache_capacity;
   //! Cache associated with function GetLegalMoves
-  cache::LRUCache<MoveList, State> getLegalMoves_cache;
+  cache::LRUCache<MoveList, BState> getLegalMoves_cache;
 
   //! Cache capacity of cache associated with function GetGoal
   size_t getGoal_cache_capacity;
   //! Cache associated with function GetGoal
-  cache::LRUCache<size_t, State, size_t> getGoal_cache;
+  cache::LRUCache<size_t, BState, size_t> getGoal_cache;
 
   //! Logging stream
   mutable Log log;

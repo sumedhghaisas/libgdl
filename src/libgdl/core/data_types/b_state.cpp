@@ -1,10 +1,10 @@
 /**
- * @file state_types.cpp
+ * @file b_state.cpp
  * @author Sumedh Ghaisas
  *
- * Implementation of State.
+ * Implementation of BState.
  */
-#include "state.hpp"
+#include "b_state.hpp"
 
 #include <sstream>
 
@@ -13,13 +13,13 @@ using namespace boost;
 using namespace libgdl;
 using namespace libgdl::core;
 
-RawState::RawState (const list<Argument*>& facts)
+RawBState::RawBState (const list<Argument*>& facts)
   : facts(facts), count(0u)
 {
   calcHash();
 }
 
-RawState::RawState(const RawState& s) noexcept
+RawBState::RawBState(const RawBState& s) noexcept
   : count(0u)
 {
   for(list<Argument*>::const_iterator it = s.facts.begin();it != s.facts.end();
@@ -28,7 +28,7 @@ RawState::RawState(const RawState& s) noexcept
   hash = s.hash;
 }
 
-RawState& RawState::operator=(const RawState& s)
+RawBState& RawBState::operator=(const RawBState& s)
 {
   for(list<Argument*>::iterator it = facts.begin();it != facts.end();it++)
     delete *it;
@@ -42,7 +42,7 @@ RawState& RawState::operator=(const RawState& s)
   return *this;
 }
 
-void RawState::calcHash()
+void RawBState::calcHash()
 {
   hash = 0;
   for(list<Argument*>::const_iterator it = facts.begin();it != facts.end();it++)
@@ -51,7 +51,7 @@ void RawState::calcHash()
   }
 }
 
-std::string RawState::DecodeToString(const core::SymbolTable& symbol_table) const
+std::string RawBState::DecodeToString(const core::SymbolTable& symbol_table) const
 {
   stringstream ss;
   ss << "State: ";
@@ -65,7 +65,7 @@ std::string RawState::DecodeToString(const core::SymbolTable& symbol_table) cons
   return ss.str();
 }
 
-std::string State::DecodeToString(const core::SymbolTable& symbol_table) const
+std::string BState::DecodeToString(const core::SymbolTable& symbol_table) const
 {
   stringstream ss;
   ss << (*this)->DecodeToString(symbol_table) << std::endl;

@@ -9,9 +9,8 @@ add_executable(libgdl_test
   cache_tests.cpp
   flattener_tests.cpp
   unify_tests.cpp
-  state_tests.cpp
+  b_state_tests.cpp
   gdl_tests.cpp
-  propnet_tests.cpp
 )
 # Link dependencies of test executable.
 target_link_libraries(libgdl_test

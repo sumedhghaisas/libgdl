@@ -19,7 +19,7 @@ struct LoadEntry : public Entry
   {
     size_t mem_id = mm.RequestLocation(id);
 
-    ss << "s->Get_" << base_id << "(buff[" << mem_id << "]);" << std::endl;
+    ss << "s->GetN(buff[" << mem_id << "], " << base_id << ");" << std::endl;
     ss2 << "s.Get_" << base_id << "(buff[" << mem_id << "]);" << std::endl;
   }
 

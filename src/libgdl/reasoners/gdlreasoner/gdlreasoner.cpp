@@ -19,7 +19,7 @@ GDLReasoner::GDLReasoner(const GDLReasoner& gdlr)
     roles.push_back(new Argument(**it));
   }
 
-  init = new State(new core::RawState(*gdlr.InitState().get()));
+  init = new BState(new core::RawBState(*gdlr.InitState().get()));
 
   base_rules = gdlr.base_rules;
 }
@@ -55,7 +55,7 @@ GDLReasoner& GDLReasoner::operator=(const GDLReasoner& gdlr)
     roles.push_back(new Argument(**it));
   }
 
-  init = new State(new core::RawState(*gdlr.InitState().get()));
+  init = new BState(new core::RawBState(*gdlr.InitState().get()));
   base_rules = gdlr.base_rules;
   return *this;
 }

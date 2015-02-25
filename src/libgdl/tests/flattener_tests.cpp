@@ -9,6 +9,7 @@
 #include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
 #include <libgdl/reasoners/gdlreasoner/gdlreasoner.hpp>
 #include <libgdl/gdl.hpp>
+#include <libgdl/core/data_types/b_state.hpp>
 
 #include <list>
 #include <stdlib.h>     /* srand, rand */
@@ -67,7 +68,7 @@ BOOST_AUTO_TEST_CASE(Puzzle8FlattenTest)
 
   GDL<GDLReasoner> gdl(kf);
 
-  const State& init = gdl.InitState();
+  const BState& init = gdl.InitState();
 
   SymbolTable sym = gdl.GetSymbolTable();
 
@@ -82,7 +83,7 @@ BOOST_AUTO_TEST_CASE(Puzzle8FlattenTest)
   moves.push_back(Move("(move 1 1)", sym, TEST_LOG));
   moves.push_back(Move("(move 2 1)", sym, TEST_LOG));
 
-  State s = init;
+  BState s = init;
 
   for(list<Move>::iterator it = moves.begin();it != moves.end();it++)
     s = gdl.GetNextState(s, *it);
@@ -109,7 +110,7 @@ BOOST_AUTO_TEST_CASE(Puzzle8FlattenTest)
   result2.push_back(new Argument("(step 9)",
                                  sym, false, TEST_LOG));
 
-  State s2(new RawState(result2));
+  BState s2(new RawBState(result2));
 
   if(s != s2) MARK_FAIL;
   
@@ -164,7 +165,7 @@ BOOST_AUTO_TEST_CASE(GamesFlattenTest_NMC)
     log.Info << ". Running simulation... ";
 
     GDL<> gdl(kf, 1024, TEST_LOG);
-    State s = gdl.InitState();
+    BState s = gdl.InitState();
 
     do
     {

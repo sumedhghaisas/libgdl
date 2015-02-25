@@ -8,6 +8,7 @@
 #include <boost/unordered_map.hpp> 
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/b_state.hpp>
 #include <libgdl/gdlparser/kif.hpp>
 #include <libgdl/reasoners/gdlreasoner/knowledgebase.hpp>
 
@@ -22,12 +23,12 @@ using namespace libgdl::core;
 using namespace libgdl::gdlparser;
 using namespace libgdl::gdlreasoner;
 
-BOOST_AUTO_TEST_SUITE(StateTests);
+BOOST_AUTO_TEST_SUITE(BStateTests);
 
 /**
- * Test State for hash computation.
+ * Test BState for hash computation.
  */
-BOOST_AUTO_TEST_CASE(StateHashTest)
+BOOST_AUTO_TEST_CASE(BStateHashTest)
 {
   MARK_START;
   OPEN_LOG;
@@ -41,7 +42,7 @@ BOOST_AUTO_TEST_CASE(StateHashTest)
   kb.GetLog() = TEST_LOG;
   list<Argument*> result = kb.Ask("(init ?x)");
   
-  State s1(new RawState(result));
+  BState s1(new RawBState(result));
   
   SymbolTable sym = kb.GetSymbolTable();
   
@@ -57,7 +58,7 @@ BOOST_AUTO_TEST_CASE(StateHashTest)
   result2.push_back(new Argument("(init (step 1))", 
                                  sym, true, TEST_LOG));
 
-  State s2(new RawState(result2));
+  BState s2(new RawBState(result2));
 
   if(s1 != s2) MARK_FAIL;
   

@@ -33,7 +33,7 @@ GDLReasoner::GDLReasoner(T& obj,
     (*it)->args.clear();
     delete *it;
   }
-  init = new State(new core::RawState(temp));
+  init = new BState(new core::RawBState(temp));
 }
 
 inline bool* GDLReasoner::IsTerminal() const
@@ -137,7 +137,7 @@ inline MoveList* GDLReasoner::GetLegalMoves() const
   return out;
 }
 
-inline State* GDLReasoner::GetNextState() const
+inline BState* GDLReasoner::GetNextState() const
 {
   Argument* question = new Argument;
   question->t = Argument::Relation;
@@ -161,7 +161,7 @@ inline State* GDLReasoner::GetNextState() const
     (*it)->args.clear();
     delete *it;
   }
-  return new State(new core::RawState(temp));
+  return new BState(new core::RawBState(temp));
 }
 
 inline size_t* GDLReasoner::GetGoal(size_t rid)
@@ -199,7 +199,7 @@ inline size_t* GDLReasoner::GetGoal(size_t rid)
 }
 
 
-inline void GDLReasoner::ApplyState(const State& state)
+inline void GDLReasoner::ApplyState(const BState& state)
 {
   const std::list<Argument*>& facts = state.GetProps();
   for(std::list<Argument*>::const_iterator it = facts.begin();it != facts.end();

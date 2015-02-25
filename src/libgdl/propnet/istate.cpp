@@ -35,6 +35,7 @@ void IState::CodeGen(ostream& file)
   //! Add required includes
   file << "#include <iostream>" << endl;
   file << "#include <atomic>" << endl;
+  file << "#include <cmath>" << endl;
   file << "#include <boost/intrusive_ptr.hpp>" << endl << endl;
 
   //! Protect with namespace
@@ -60,6 +61,16 @@ void IState::CodeGen(ostream& file)
 
   //! Define character array of state
   file << "char s[" << size_char << "];" << endl;
+
+  //! Get function
+  file << "bool GetN(bool& out, size_t i) const {" << endl;
+  file << "size_t buff = i / 8;" << endl;
+  file << "size_t p = pow(2, i % 8);" << endl;
+  file << "char temp = s[buff] & p;" << endl;
+  file << "if(temp != 0) out = true;" << endl;
+  file << "else out = false;" << endl;
+  file << "return true;" << endl;
+  file << "}" << endl;
 
   //! Add Get, Set and Reset function
   for(size_t i = 0;i < l_base.size();i++)

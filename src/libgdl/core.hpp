@@ -12,7 +12,6 @@
 #include <libgdl/core/data_types/argument.hpp>
 #include <libgdl/core/data_types/clause.hpp>
 #include <libgdl/core/data_types/fact.hpp>
-#include <libgdl/core/data_types/state.hpp>
 #include <libgdl/core/data_types/location.hpp>
 #include <libgdl/core/data_types/move.hpp>
 #include <libgdl/core/data_types/intrusive_list.hpp>

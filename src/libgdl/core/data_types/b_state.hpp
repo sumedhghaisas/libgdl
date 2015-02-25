@@ -2,7 +2,7 @@
  * @file state.hpp
  * @author Sumedh Ghaisas
  *
- * Declaration of State which is used to represent the state of the game.
+ * This State stores true propositions as list.
  */
 #ifndef _LIBGDL_GDL_STATES_HPP_INCLUDED
 #define _LIBGDL_GDL_STATES_HPP_INCLUDED
@@ -25,32 +25,32 @@ namespace core
  * Represents a raw state of the game. This representation of the state stores
  * the base propositions of the game true in this current state. This
  * representation can be applied to the knowledge base faster but can cause a
- * little memory overhead. RawState supports intrusive pointers which is used
+ * little memory overhead. RawBState supports intrusive pointers which is used
  * by State
  *
- * @see State
+ * @see BState
  */
-struct RawState
+struct RawBState
 {
   //! Generates a state out of a existing vector of base_propositions
   //!
   //! \param props base_proposition true in the current state
   //!
   //!
-  RawState(const std::list<Argument*> & props);
+  RawBState(const std::list<Argument*> & props);
 
   //! Copy-constructor
   //!
   //! \param s state to copy from
   //!
   //!
-  RawState(const RawState& s) noexcept;
+  RawBState(const RawBState& s) noexcept;
 
   //! Copy-assignment operator
-  RawState& operator=(const RawState& state);
+  RawBState& operator=(const RawBState& state);
 
   //! Destructor
-  ~RawState()
+  ~RawBState()
   {
     for(std::list<Argument*>::const_iterator it = facts.begin();
                                                         it != facts.end();it++)
@@ -67,13 +67,13 @@ struct RawState
   const size_t& GetHash() const { return hash; }
 
   //! comparison operators for State class
-  bool operator==(const RawState& s) const
+  bool operator==(const RawBState& s) const
   {
     if (hash != s.GetHash()) return false;
     return true;
   }
   //! comparison operators for State class
-  bool operator!=(const RawState& s) const {return !(*this == s); }
+  bool operator!=(const RawBState& s) const {return !(*this == s); }
 
   //! Returns true base propositions
   const std::list<Argument*>& GetProps() const { return facts; }
@@ -108,7 +108,7 @@ struct RawState
 //! \param p object to decrement
 //!
 //!
-inline void intrusive_ptr_release(core::RawState* p)
+inline void intrusive_ptr_release(core::RawBState* p)
 {
    if (--p->count == 0u)
         delete p;
@@ -120,7 +120,7 @@ inline void intrusive_ptr_release(core::RawState* p)
 //! \param p object to increment
 //!
 //!
-inline void intrusive_ptr_add_ref(core::RawState* p)
+inline void intrusive_ptr_add_ref(core::RawBState* p)
 {
   ++p->count;
 }
@@ -128,21 +128,21 @@ inline void intrusive_ptr_add_ref(core::RawState* p)
 }; // namespace core
 
 /**
- * State represents state of the game. State is a intrusive pointer
- * implementation which wraps RawState. State is implemented in such a way as to
+ * BState represents state of the game. BState is a intrusive pointer
+ * implementation which wraps RawState. BState is implemented in such a way as to
  * abstract the intrusive pointer from user.
  *
- * @see KnowledgeBase, RawState
+ * @see KnowledgeBase, RawBState
  */
-struct State : public boost::intrusive_ptr<core::RawState>
+struct BState : public boost::intrusive_ptr<core::RawBState>
 {
-  //! Constructs State from RawState pointer
+  //! Constructs BState from RawBState pointer
   //!
-  //! \param s RawState pointer
+  //! \param s RawBState pointer
   //!
   //!
-  State(core::RawState* s)
-    : boost::intrusive_ptr<core::RawState>(s) {}
+  BState(core::RawBState* s)
+    : boost::intrusive_ptr<core::RawBState>(s) {}
 
   //! \brief
   //!
@@ -166,9 +166,9 @@ struct State : public boost::intrusive_ptr<core::RawState>
   std::list<core::Argument*>& GetProps() { return get()->facts; }
 
   //! Comparison operator for State
-  bool operator==(const State& s) { return *get() == *s.get(); }
+  bool operator==(const BState& s) { return *get() == *s.get(); }
   //! Comparison operator for State
-  bool operator!=(const State& s) { return *get() != *s.get(); }
+  bool operator!=(const BState& s) { return *get() != *s.get(); }
 
   //! Returns string representation of this State using the symbol table
   //! This function is used by SymbolDecodeStream to print State

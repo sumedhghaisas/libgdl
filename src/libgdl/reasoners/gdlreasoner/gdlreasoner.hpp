@@ -10,6 +10,7 @@
 #include <list>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/b_state.hpp>
 #include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
 #include <libgdl/gdlparser/kif.hpp>
 
@@ -120,10 +121,10 @@ class GDLReasoner
 
   //! Returns next state based on the current knowledge
   //!
-  //! \return State*
+  //! \return BState*
   //!
   //!
-  inline State* GetNextState() const;
+  inline BState* GetNextState() const;
 
   //! Returns the goal value associated with given role ID based on the current
   //! knowledge
@@ -140,7 +141,7 @@ class GDLReasoner
   //! \return void
   //!
   //!
-  inline void ApplyState(const State& state);
+  inline void ApplyState(const BState& state);
 
   //! Apply the given actions to knowledge base
   //!
@@ -170,7 +171,7 @@ class GDLReasoner
   //! \return const State&
   //!
   //!
-  const State& InitState() const
+  const BState& InitState() const
   {
     return *init;
   }
@@ -191,7 +192,7 @@ class GDLReasoner
   //! KnowledgeBase storing the current known knowledge
   mutable KnowledgeBase base_rules;
   //! Initial state
-  State* init;
+  BState* init;
   //! Roles of the game
   std::list<Argument*> roles;
   //! Logging stream

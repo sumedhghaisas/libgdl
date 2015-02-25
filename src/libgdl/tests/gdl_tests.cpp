@@ -5,6 +5,7 @@
  * Test file for GDL class.
  */
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/b_state.hpp>
 #include <libgdl/gdl.hpp>
 #include <libgdl/reasoners/gdlreasoner/gdlreasoner.hpp>
 
@@ -32,12 +33,12 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateTest)
   
   GDL<GDLReasoner> gdl("data/games/3puzzle.kif", 1024, TEST_LOG);
   
-  const State& s1 = gdl.InitState();
+  const BState& s1 = gdl.InitState();
   
   SymbolTable sym = gdl.GetSymbolTable();
   
   Move moves("right", sym, TEST_LOG);  
-  State s2 = gdl.GetNextState(s1, moves);
+  BState s2 = gdl.GetNextState(s1, moves);
   
   list<Argument*> result2;
   result2.push_back(new Argument("(cell 1 1 3)", 
@@ -51,7 +52,7 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateTest)
   result2.push_back(new Argument("(step 2)", 
                                  sym, false, TEST_LOG));
 
-  State s3(new RawState(result2));
+  BState s3(new RawBState(result2));
   
   if(s2 != s3) MARK_FAIL;
   
@@ -61,14 +62,14 @@ BOOST_AUTO_TEST_CASE(GDLGetNextStateTest)
 /**
  * Test GDL abstraction for GetNextState cache
  */
-BOOST_AUTO_TEST_CASE(GDLGetNextStateCacheTest_Time)
+BOOST_AUTO_TEST_CASE(GDLGetNextBStateCacheTest_Time)
 {
   MARK_START;
   OPEN_LOG;
   
   GDL<GDLReasoner> gdl("data/games/3puzzle.kif", 1024, TEST_LOG);
   
-  const State& s1 = gdl.InitState();
+  const BState& s1 = gdl.InitState();
   
   SymbolTable sym = gdl.GetSymbolTable();
   
@@ -95,7 +96,7 @@ BOOST_AUTO_TEST_CASE(GDLIsTerminalTest)
   
   GDL<GDLReasoner> gdl("data/games/3puzzle.kif", 1024, TEST_LOG);
   
-  State s = gdl.InitState();
+  BState s = gdl.InitState();
   
   if(gdl.IsTerminal(s)) MARK_FAIL;
   
@@ -127,7 +128,7 @@ BOOST_AUTO_TEST_CASE(GDLIsTerminalCacheTest_Time)
   
   GDL<GDLReasoner> gdl("data/games/3puzzle.kif", 1024, TEST_LOG);
   
-  State s = gdl.InitState();
+  BState s = gdl.InitState();
   
   gdl.IsTerminal(s);
   
@@ -150,7 +151,7 @@ BOOST_AUTO_TEST_CASE(GDLGetLegalMovesTest)
   
   GDL<GDLReasoner> gdl("data/games/nine_board_tictactoe.kif", 1024, TEST_LOG);
   
-  const State& init = gdl.InitState();
+  const BState& init = gdl.InitState();
   
   MoveList moves = gdl.GetLegalMoves(init);
     
@@ -169,7 +170,7 @@ BOOST_AUTO_TEST_CASE(GDLGetLegalMovesCacheTest_Time)
   
   GDL<GDLReasoner> gdl("data/games/nine_board_tictactoe.kif", 1024, TEST_LOG);
   
-  const State& init = gdl.InitState();
+  const BState& init = gdl.InitState();
   
   gdl.GetLegalMoves(init);
   size_t start = Timer::microtimer();
@@ -192,12 +193,12 @@ BOOST_AUTO_TEST_CASE(GDLGetGoalTest)
   
   GDL<GDLReasoner> gdl("data/games/3puzzle.kif", 1024, TEST_LOG);
   
-  const State& init = gdl.InitState();
+  const BState& init = gdl.InitState();
   
   size_t g1 = gdl.GetGoal(init, 0);
   if(g1 != 0) MARK_FAIL;
   
-  State s = init;
+  BState s = init;
   
   SymbolTable sym = gdl.GetSymbolTable();
   
@@ -228,7 +229,7 @@ BOOST_AUTO_TEST_CASE(GDLGetGoalCacheTest_Time)
   
   GDL<GDLReasoner> gdl("data/games/nine_board_tictactoe.kif", 1024, TEST_LOG);
   
-  const State& init = gdl.InitState();
+  const BState& init = gdl.InitState();
   
   gdl.GetGoal(init, 0);
   size_t start = Timer::microtimer();
