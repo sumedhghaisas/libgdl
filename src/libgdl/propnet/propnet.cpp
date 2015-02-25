@@ -429,11 +429,11 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   {
     m_file << "extern \"C\" AState InitState()" << std::endl;
     m_file << "{" << std::endl;
-    m_file << "AState init(new RawState());" << std::endl;
+    m_file << "AState init(new core::RawAState());" << std::endl;
 
     for(auto i_prop : init_props)
     {
-      m_file << "init->Set_" << i_prop << "(true);" << std::endl;
+      m_file << "init->Set(" << i_prop << ", true);" << std::endl;
     }
     m_file << "return init;" << std::endl;
     m_file << "}" << std::endl << std::endl;
@@ -862,7 +862,7 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
 
     m_file << "extern \"C\" AState GetNextState_sc1(const AState& s, const AMove& move, bool* buff)" << endl;
     m_file << "{" << endl;
-    m_file << "AState s_out(new RawAState());" << endl;
+    m_file << "AState s_out(new core::RawAState());" << endl;
 
     m_file << next_ss1.str() << endl;
 

@@ -13,14 +13,21 @@ namespace core
 
 struct RawAState
 {
-  RawState() : s(new char[arr_size]) {};
+  RawAState()
+    : s(new char[arr_size])
+  {
+    for(size_t i = 0;i < arr_size;i++)
+    {
+      s[i] = 0;
+    }
+  };
 
-  ~RawState()
+  ~RawAState()
   {
     delete s;
   }
 
-  RawState(const RawAState& state)
+  RawAState(const RawAState& state)
     : s(new char[arr_size])
   {
     for(size_t i = 0;i < arr_size;i++)
@@ -52,7 +59,9 @@ struct RawAState
     else s[buff] = s[buff] & q;
   }
 
-  char s*;
+  void Print(std::ostream& stream) const;
+
+  char *s;
 
   static size_t arr_size;
 
@@ -70,22 +79,26 @@ inline void intrusive_ptr_add_ref(RawAState* p)
   ++p->count;
 }
 
-std::ostream& operator<<(std::ostream& stream, const RawAState& state);
+inline std::ostream& operator<<(std::ostream& stream, const RawAState& state)
+{
+  state.Print(stream);
+  return stream;
+}
 
 } // namespace core
 
-struct State : public boost::intrusive_ptr<RawAState>
+struct AState : public boost::intrusive_ptr<core::RawAState>
 {
-  AState() : boost::intrusive_ptr<RawAState>(NULL) {}
-  AState(RawAState* state) : boost::intrusive_ptr<RawAState>(state) {}
+  AState() : boost::intrusive_ptr<core::RawAState>(NULL) {}
+  AState(core::RawAState* state) : boost::intrusive_ptr<core::RawAState>(state) {}
 
   AState Clone() const
   {
-    return State(new RawState(*get()));
+    return AState(new core::RawAState(*get()));
   }
 }; // struct AState
 
-std::ostream& operator<<(std::ostream& stream, const State& s)
+inline std::ostream& operator<<(std::ostream& stream, const AState& s)
 {
   stream << *s;
   return stream;

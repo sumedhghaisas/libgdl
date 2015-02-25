@@ -14,15 +14,15 @@ namespace core
 struct RawAMove
 {
   RawAMove()
-    : moves(new size_t[n_roles] {}
+    : moves(new size_t[n_roles]) {}
 
-  ~RawMove()
+  ~RawAMove()
   {
     delete moves;
   }
 
-  RawMove(const RawMove& rm)
-    : moves(new size_t[n_roles]
+  RawAMove(const RawAMove& rm)
+    : moves(new size_t[n_roles])
   {
     for(size_t i = 0;i < n_roles;i++)
     {
@@ -30,7 +30,7 @@ struct RawAMove
     }
   }
 
-  RawMove(const std::list<size_t>& m)
+  RawAMove(const std::list<size_t>& m)
     : moves(new size_t[n_roles])
   {
     auto it = m.begin();
@@ -57,6 +57,8 @@ struct RawAMove
     moves[r_id] = m_id;
   }
 
+  void Print(std::ostream& stream) const;
+
   size_t* moves;
 
   static size_t n_roles;
@@ -75,20 +77,24 @@ inline void intrusive_ptr_add_ref(RawAMove* p)
   ++p->count;
 }
 
-std::ostream& operator<<(std::ostream& stream, const RawMove& move);
+inline std::ostream& operator<<(std::ostream& stream, const RawAMove& move)
+{
+  move.Print(stream);
+  return stream;
+}
 
 } // namespace core
 
 struct AMove : public boost::intrusive_ptr<core::RawAMove>
 {
-  AMove(RawMove* rm = NULL) : boost::intrusive_ptr<RawAMove>(rm) {}
+  AMove(core::RawAMove* rm = NULL) : boost::intrusive_ptr<core::RawAMove>(rm) {}
 
   AMove(const std::list<size_t>& l)
-    : boost::intrusive_ptr<RawAMove>(new RawAMove(l)) {}
+    : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove(l)) {}
 
   AMove Clone() const
   {
-    return Move(new RawMove(*get()));
+    return AMove(new core::RawAMove(*get()));
   }
 
   void Get(size_t r_id, size_t in_id, bool& out)
@@ -107,7 +113,7 @@ struct AMove : public boost::intrusive_ptr<core::RawAMove>
   }
 };
 
-std::ostream& operator<<(std::ostream& stream, const Move& m)
+inline std::ostream& operator<<(std::ostream& stream, const AMove& m)
 {
   stream << *m;
   return stream;

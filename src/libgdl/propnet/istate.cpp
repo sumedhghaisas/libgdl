@@ -40,14 +40,13 @@ void IState::CodeGen(ostream& file)
   file << "size_t RawAState::arr_size = " << size_char << ";" << endl;
 
   //! overload operator<< for RawState
-  file << "std::ostream& operator<<(std::ostream& stream, const RawAState& state) {" << endl;
+  file << "void RawAState::Print(std::ostream& stream) const {" << endl;
   file << "bool temp = false;" << endl;
   file << "stream << \"State: \" << std::endl;" << endl;
   for(size_t i = 0;i < l_base.size();i++)
   {
-    file << "state.Get_" << i << "(temp);" << endl;
+    file << "Get(" << i << ", temp);" << endl;
     file << "if(temp) stream << \"\\t\" << \"" << l_base[i] << "\" << std::endl;" << endl;
   }
-  file << "return stream;" << endl;
   file << "}" << endl;
 }
