@@ -412,28 +412,22 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   //! Add required includes
   m_file << "#include <iostream>" << endl;
   m_file << "#include <vector>" << endl;
-  m_file << "#include <functional>" << endl;
   m_file << "#include <list>" << std::endl;
   m_file << "#include <stdlib.h>" << endl;
-  m_file << "#include <time.h>" << endl;
-  m_file << "#include <tuple>" << endl << endl;
+  m_file << "#include <time.h>" << endl << endl;
 
   m_file << "#include \"state.hpp\"" << endl;
   m_file << "#include \"move.hpp\"" << endl;
   m_file << "#include <libgdl/core/data_types/move_list.hpp>" << endl << endl;
 
-  //! Create StateMachine inside namespace libgdl
-  m_file << "namespace libgdl{" << endl << endl;
-
-  //! Open class StateMachine
-  m_file << "class StateMachine" << endl;
-  m_file << "{public: " << endl << endl;
+  m_file << "using namespace std;" << endl;
+  m_file << "using namespace libgdl;" << endl << endl;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// InitState Function Generation
 ////////////////////////////////////////////////////////////////////////////////
   {
-    m_file << "static State InitState()" << std::endl;
+    m_file << "extern \"C\" State InitState()" << std::endl;
     m_file << "{" << std::endl;
     m_file << "State init(new RawState());" << std::endl;
 
@@ -454,86 +448,46 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   m_file << endl << endl;
 
 ////////////////////////////////////////////////////////////////////////////////
-/// IsTerminal Function Generation
+/// GetGoals function
 ////////////////////////////////////////////////////////////////////////////////
-  {
-    EntryManager is_terminal_em;
-    is_terminal_em.StartNewList();
 
-    //! Generate entries for IsTerminal function
-    tuple<bool, size_t> is_terminal_out = terminal->CodeGen(is_terminal_em, 1);
+  EntryManager gg_em;
 
-    std::stringstream is_terminal_ss1;
-    std::stringstream is_terminal_ss2;
+  tuple<bool, size_t> out;
 
-    //! This list is used to receive memory locations of the entries required
-    list<size_t> is_terminal_to_get_l;
-    is_terminal_to_get_l.push_back(get<1>(is_terminal_out));
-
-    //! Initialize the entry manager to start
-    is_terminal_em.InitializeIterator();
-
-    //! Generate code from generated entries
-    list<size_t> is_terminal_ret = is_terminal_em.CodeGen(is_terminal_ss1, is_terminal_ss2, is_terminal_to_get_l);
-
-//    m_file << "template<typename BType, typename SType>" << std::endl;
-//    m_file << "static void IsTerminal(const SType& s, BType* buff, BType* ret)" << endl;
-//    m_file << "{" << endl;
-//
-//    m_file << ss2.str() << endl;
-//
-//    m_file << "*ret = buff[" << *ret.begin() << "];" << endl;
-//    m_file << "}" << endl;
-
-    //! Generate code for the function
-    m_file << "static void IsTerminal(const State& s, bool* buff, bool* ret)" << endl;
-    m_file << "{" << endl;
-
-    m_file << is_terminal_ss1.str() << endl;
-
-    is_terminal_to_get_l.push_back(get<1>(is_terminal_out));
-
-    m_file << "*ret = buff[" << *is_terminal_ret.begin() << "];" << endl;
-
-    m_file << "}" << endl;
-  }
-
-  //! Generate GetGoals function
-  EntryManager em2;
-  em2.StartNewList();
-  std::list<size_t> to_get_l;
-  to_get_l.clear();
-
+  //! Generate entries for goal nodes
+  gg_em.StartNewList();
+  list<size_t> goal_to_get_l;
   list<list<tuple<size_t, size_t>>> goal_fun_m;
-
-  std::tuple<bool, size_t> out;
 
   for(auto role_goals : goal_nodes)
   {
     list<tuple<size_t, size_t>> temp;
     for(auto goal : role_goals)
     {
-      out = goal.second->CodeGen(em2, 1);
+      out = goal.second->CodeGen(gg_em, 1);
       temp.emplace_back(goal.first, get<1>(out));
-      to_get_l.push_back(get<1>(out));
+      goal_to_get_l.push_back(get<1>(out));
     }
     goal_fun_m.push_back(temp);
   }
 
-  std::stringstream getgoal_ss1;
-  std::stringstream getgoal_ss2;
+  //! Initialize the entry manager to start
+  gg_em.InitializeIterator();
 
-  em2.InitializeIterator();
-  std::list<size_t> ret = em2.CodeGen(getgoal_ss1, getgoal_ss2, to_get_l);
+  //! Generate code for GetGoals
+  stringstream goals_ss1;
+  stringstream goals_ss2;
+  list<size_t> goals_ret = gg_em.CodeGen(goals_ss1, goals_ss2, goal_to_get_l);
 
-  m_file << "static void GetGoals(const State& s, bool* buff, std::list<size_t>& out)" << endl;
+  m_file << "extern \"C\" std::list<size_t> GetGoals(const State& s, bool* buff)" << endl;
   m_file << "{" << endl;
 
-  m_file << getgoal_ss1.str() << std::endl;
+  m_file << goals_ss1.str() << endl;
 
-  m_file << "out.clear();" << endl;
+  auto ret_it = goals_ret.begin();
 
-  auto ret_it = ret.begin();
+  m_file << "std::list<size_t> out;" << endl;
 
   for(auto role : goal_fun_m)
   {
@@ -548,260 +502,383 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
     }
   }
 
-  m_file << "}" << endl << endl;
-
-  //! generate the simulation function
-  EntryManager em3;
-
-  to_get_l.clear();
-
-  list<list<tuple<size_t, size_t>>> sim_legal_fun_m;
-
-  //! Generate entries for legal nodes
-  em3.StartNewList();
-  for(auto role_legals : legal_nodes)
-  {
-    list<tuple<size_t, size_t>> temp;
-    for(auto legal : role_legals)
-    {
-      out = legal.second->CodeGen(em3, 2);
-      temp.emplace_back(legal.first, get<1>(out));
-      to_get_l.push_back(get<1>(out));
-    }
-    sim_legal_fun_m.push_back(temp);
-  }
-
-  //! Generate entries for next nodes and terminal
-  em3.StartNewList();
-  for(auto nn : next_nodes)
-  {
-    out = nn.second->CodeGen(em3, 2);
-  }
-  tuple<bool, size_t> terminal_entry_id = terminal->CodeGen(em3, 2);
-
-  //! Generate entries for goal nodes
-  em3.StartNewList();
-  std::list<size_t> sim_goal_to_get_l;
-  list<list<tuple<size_t, size_t>>> sim_goal_fun_m;
-
-  for(auto role_goals : goal_nodes)
-  {
-    list<tuple<size_t, size_t>> temp;
-    for(auto goal : role_goals)
-    {
-      out = goal.second->CodeGen(em3, 2);
-      temp.emplace_back(goal.first, get<1>(out));
-      sim_goal_to_get_l.push_back(get<1>(out));
-    }
-    sim_goal_fun_m.push_back(temp);
-  }
-
-  stringstream sim_legal_ss1;
-  stringstream sim_legal_ss2;
-
-  em3.InitializeIterator();
-
-  //! generate code to compute legal moves
-  std::list<size_t> legal_ret = em3.CodeGen(sim_legal_ss1, sim_legal_ss2, to_get_l);
-
-  std::stringstream sim_next_t_ss1;
-  std::stringstream sim_next_t_ss2;
-
-  to_get_l.clear();
-  to_get_l.push_back(std::get<1>(terminal_entry_id));
-
-  //! Generate code for next nodes and terminal
-  std::list<size_t> terminal_ret = em3.CodeGen(sim_next_t_ss1, sim_next_t_ss2, to_get_l);
-
-  stringstream sim_goals_ss1;
-  stringstream sim_goals_ss2;
-
-  //! Generate code for goal nodes
-  std::list<size_t> sim_goals_ret = em3.CodeGen(sim_goals_ss1, sim_goals_ss2, sim_goal_to_get_l);
-
-  //! Random Move taker
-  m_file << "static size_t RandomActionTaker(size_t role_id, size_t* actions, size_t count)" << endl;
-  m_file << "{" << endl;
-  m_file << "size_t ran = rand() % count;" << endl;
-  m_file << "return actions[ran];" << endl;
-  m_file << "}" << endl;
-
-  //! simulation function
-  m_file << "static void RunSimulation(const State& in_s, bool* buff, size_t* l_move_buff, const std::function<size_t(size_t,size_t*, size_t)>& action_taker, std::list<size_t>& out)" << endl;
-  m_file << "{" << endl;
-
-  m_file << "State s = in_s;" << std::endl;
-  m_file << "bool isTerminal = false;" << std::endl;
-  m_file << "while(!isTerminal) {" << endl << endl;
-
-  //! print the legal move generator code
-  m_file << sim_legal_ss1.str() << endl;
-
-  //! Create a move based on ActionTaker function
-  m_file << "Move move(new RawMove());" << endl;
-  m_file << "size_t index = 0;" << endl;
-
-  m_file << "size_t m_buffer_index = 0;" << endl;
-
-  ret_it = legal_ret.begin();
-
-  for(auto role : sim_legal_fun_m)
-  {
-    for(auto it : role)
-    {
-      m_file << "if(buff[" << *ret_it << "]) l_move_buff[m_buffer_index++] = " << get<0>(it) << ";" << endl;
-      ret_it++;
-    }
-    m_file << "move.SetMove(index++, action_taker(index, l_move_buff, m_buffer_index));" << endl;
-    m_file << "m_buffer_index = 0;" << endl;
-  }
-
-  m_file << "std::cout << move << std::endl;" << endl;
-
-  m_file << "State s_out(new RawState());" << endl;
-
-  m_file << sim_next_t_ss1.str() << endl;
-
-  m_file << "std::cout << s_out << std::endl;" << endl;
-  m_file << "s = s_out;" << std::endl;
-
-  m_file << "isTerminal = buff[" << *terminal_ret.begin() << "];" << endl;
-  m_file << "std::cout << isTerminal << std::endl;" << endl;
-
-  m_file << "}//while loop" << endl;
-
-  m_file << sim_goals_ss1.str() << endl;
-
-  m_file << "out.clear();" << endl;
-
-  auto sim_ret_it = sim_goals_ret.begin();
-
-  for(auto role : sim_goal_fun_m)
-  {
-    auto it = role.begin();
-    m_file << "if(buff[" << *sim_ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
-    sim_ret_it++;
-    it++;
-    for(it = it;it != role.end();it++)
-    {
-      m_file << "else if(buff[" << *sim_ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
-      sim_ret_it++;
-    }
-  }
+  m_file << "return out;" << endl;
 
   m_file << "}" << endl;
 
-  m_file << "};" << std::endl;
+  m_file << "extern \"C\" size_t GetGoalMemoryRequirement()" << endl;
+  m_file << "{" << endl;
+  m_file << "return " << gg_em.GetRequiredMemory() << ";" << endl;
+  m_file << "}" << endl;
 
-  m_file << std::endl << "}" << endl << endl;
+//////////////////////////////////////////////////////////////////////////////////
+///// IsTerminal Function Generation
+//////////////////////////////////////////////////////////////////////////////////
+//  {
+//    EntryManager is_terminal_em;
+//    is_terminal_em.StartNewList();
+//
+//    //! Generate entries for IsTerminal function
+//    tuple<bool, size_t> is_terminal_out = terminal->CodeGen(is_terminal_em, 2);
+//
+//    std::stringstream is_terminal_ss1;
+//    std::stringstream is_terminal_ss2;
+//
+//    //! This list is used to receive memory locations of the entries required
+//    list<size_t> is_terminal_to_get_l;
+//    is_terminal_to_get_l.push_back(get<1>(is_terminal_out));
+//
+//    //! Initialize the entry manager to start
+//    is_terminal_em.InitializeIterator();
+//
+//    //! Generate code from generated entries
+//    list<size_t> is_terminal_ret = is_terminal_em.CodeGen(is_terminal_ss1, is_terminal_ss2, is_terminal_to_get_l);
+//
+////    m_file << "template<typename BType, typename SType>" << std::endl;
+////    m_file << "static void IsTerminal(const SType& s, BType* buff, BType* ret)" << endl;
+////    m_file << "{" << endl;
+////
+////    m_file << ss2.str() << endl;
+////
+////    m_file << "*ret = buff[" << *ret.begin() << "];" << endl;
+////    m_file << "}" << endl;
+//
+//    //! Generate code for the function
+//    m_file << "static void IsTerminal(const State& s, bool* buff, bool* ret)" << endl;
+//    m_file << "{" << endl;
+//
+//    m_file << is_terminal_ss1.str() << endl;
+//
+//    is_terminal_to_get_l.push_back(get<1>(is_terminal_out));
+//
+//    m_file << "*ret = buff[" << *is_terminal_ret.begin() << "];" << endl;
+//
+//    m_file << "}" << endl;
+//  }
+
+//  //! Generate GetGoals function
+//  EntryManager em2;
+//  em2.StartNewList();
+//  std::list<size_t> to_get_l;
+//  to_get_l.clear();
+//
+//  list<list<tuple<size_t, size_t>>> goal_fun_m;
+//
+//  std::tuple<bool, size_t> out;
+//
+//  for(auto role_goals : goal_nodes)
+//  {
+//    list<tuple<size_t, size_t>> temp;
+//    for(auto goal : role_goals)
+//    {
+//      out = goal.second->CodeGen(em2, 2);
+//      temp.emplace_back(goal.first, get<1>(out));
+//      to_get_l.push_back(get<1>(out));
+//    }
+//    goal_fun_m.push_back(temp);
+//  }
+//
+//  std::stringstream getgoal_ss1;
+//  std::stringstream getgoal_ss2;
+//
+//  em2.InitializeIterator();
+//  std::list<size_t> ret = em2.CodeGen(getgoal_ss1, getgoal_ss2, to_get_l);
+//
+//  m_file << "static void GetGoals(const State& s, bool* buff, std::list<size_t>& out)" << endl;
+//  m_file << "{" << endl;
+//
+//  m_file << getgoal_ss1.str() << std::endl;
+//
+//  m_file << "out.clear();" << endl;
+//
+//  auto ret_it = ret.begin();
+//
+//  for(auto role : goal_fun_m)
+//  {
+//    auto it = role.begin();
+//    m_file << "if(buff[" << *ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
+//    ret_it++;
+//    it++;
+//    for(it = it;it != role.end();it++)
+//    {
+//      m_file << "else if(buff[" << *ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
+//      ret_it++;
+//    }
+//  }
+//
+//  m_file << "}" << endl << endl;
+//
+//  //! generate the simulation function
+//  EntryManager em3;
+//
+//  to_get_l.clear();
+//
+//  list<list<tuple<size_t, size_t>>> sim_legal_fun_m;
+//
+//  //! Generate entries for legal nodes
+//  em3.StartNewList();
+//  for(auto role_legals : legal_nodes)
+//  {
+//    list<tuple<size_t, size_t>> temp;
+//    for(auto legal : role_legals)
+//    {
+//      out = legal.second->CodeGen(em3, 2);
+//      temp.emplace_back(legal.first, get<1>(out));
+//      to_get_l.push_back(get<1>(out));
+//    }
+//    sim_legal_fun_m.push_back(temp);
+//  }
+//
+//  //! Generate entries for next nodes and terminal
+//  em3.StartNewList();
+//  for(auto nn : next_nodes)
+//  {
+//    out = nn.second->CodeGen(em3, 2);
+//  }
+//  tuple<bool, size_t> terminal_entry_id = terminal->CodeGen(em3, 2);
+//
+//  //! Generate entries for goal nodes
+//  em3.StartNewList();
+//  std::list<size_t> sim_goal_to_get_l;
+//  list<list<tuple<size_t, size_t>>> sim_goal_fun_m;
+//
+//  for(auto role_goals : goal_nodes)
+//  {
+//    list<tuple<size_t, size_t>> temp;
+//    for(auto goal : role_goals)
+//    {
+//      out = goal.second->CodeGen(em3, 2);
+//      temp.emplace_back(goal.first, get<1>(out));
+//      sim_goal_to_get_l.push_back(get<1>(out));
+//    }
+//    sim_goal_fun_m.push_back(temp);
+//  }
+//
+//  stringstream sim_legal_ss1;
+//  stringstream sim_legal_ss2;
+//
+//  em3.InitializeIterator();
+//
+//  //! generate code to compute legal moves
+//  std::list<size_t> legal_ret = em3.CodeGen(sim_legal_ss1, sim_legal_ss2, to_get_l);
+//
+//  std::stringstream sim_next_t_ss1;
+//  std::stringstream sim_next_t_ss2;
+//
+//  to_get_l.clear();
+//  to_get_l.push_back(std::get<1>(terminal_entry_id));
+//
+//  //! Generate code for next nodes and terminal
+//  std::list<size_t> terminal_ret = em3.CodeGen(sim_next_t_ss1, sim_next_t_ss2, to_get_l);
+//
+//  stringstream sim_goals_ss1;
+//  stringstream sim_goals_ss2;
+//
+//  //! Generate code for goal nodes
+//  std::list<size_t> sim_goals_ret = em3.CodeGen(sim_goals_ss1, sim_goals_ss2, sim_goal_to_get_l);
+//
+//  //! Random Move taker
+//  m_file << "static size_t RandomActionTaker(size_t role_id, size_t* actions, size_t count)" << endl;
+//  m_file << "{" << endl;
+//  m_file << "size_t ran = rand() % count;" << endl;
+//  m_file << "return actions[ran];" << endl;
+//  m_file << "}" << endl;
+//
+//  //! simulation function
+//  m_file << "static void RunSimulation(const State& in_s, bool* buff, size_t* l_move_buff, const std::function<size_t(size_t,size_t*, size_t)>& action_taker, std::list<size_t>& out)" << endl;
+//  m_file << "{" << endl;
+//
+//  m_file << "State s = in_s;" << std::endl;
+//  m_file << "bool isTerminal = false;" << std::endl;
+//  m_file << "while(!isTerminal) {" << endl << endl;
+//
+//  //! print the legal move generator code
+//  m_file << sim_legal_ss1.str() << endl;
+//
+//  //! Create a move based on ActionTaker function
+//  m_file << "Move move(new RawMove());" << endl;
+//  m_file << "size_t index = 0;" << endl;
+//
+//  m_file << "size_t m_buffer_index = 0;" << endl;
+//
+//  ret_it = legal_ret.begin();
+//
+//  for(auto role : sim_legal_fun_m)
+//  {
+//    for(auto it : role)
+//    {
+//      m_file << "if(buff[" << *ret_it << "]) l_move_buff[m_buffer_index++] = " << get<0>(it) << ";" << endl;
+//      ret_it++;
+//    }
+//    m_file << "move.SetMove(index++, action_taker(index, l_move_buff, m_buffer_index));" << endl;
+//    m_file << "m_buffer_index = 0;" << endl;
+//  }
+//
+//  //m_file << "std::cout << move << std::endl;" << endl;
+//
+//  m_file << "State s_out(new RawState());" << endl;
+//
+//  m_file << sim_next_t_ss1.str() << endl;
+//
+//  //m_file << "std::cout << s_out << std::endl;" << endl;
+//  m_file << "s = s_out;" << std::endl;
+//
+//  m_file << "isTerminal = buff[" << *terminal_ret.begin() << "];" << endl;
+//  //m_file << "std::cout << isTerminal << std::endl;" << endl;
+//
+//  m_file << "}//while loop" << endl;
+//
+//  m_file << sim_goals_ss1.str() << endl;
+//
+//  m_file << "out.clear();" << endl;
+//
+//  auto sim_ret_it = sim_goals_ret.begin();
+//
+//  for(auto role : sim_goal_fun_m)
+//  {
+//    auto it = role.begin();
+//    m_file << "if(buff[" << *sim_ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
+//    sim_ret_it++;
+//    it++;
+//    for(it = it;it != role.end();it++)
+//    {
+//      m_file << "else if(buff[" << *sim_ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
+//      sim_ret_it++;
+//    }
+//  }
+//
+//  m_file << "}" << endl;
+//
 }
 
 void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
 {
-  EntryManager global_em;
+////////////////////////////////////////////////////////////////////////////////
+/// Scenario 1
+/// IsTerminal -> GetLegalMoves -> NextState
+////////////////////////////////////////////////////////////////////////////////
 
-  tuple<bool, size_t> out;
-
-  //! Generate entries for legal nodes
-  list<list<tuple<size_t, size_t>>> legal_fun_m;
-  list<size_t> legal_to_get_l;
-
-  global_em.StartNewList();
-  for(auto role_legals : legal_nodes)
   {
-    list<tuple<size_t, size_t>> temp;
-    for(auto legal : role_legals)
+    tuple<bool, size_t> out;
+
+    EntryManager global_em;
+
+    //! Generate entries for terminal node
+    global_em.StartNewList();
+    tuple<bool, size_t> terminal_entry_id = terminal->CodeGen(global_em, mark_index);
+
+    //! Generate entries for legal nodes
+    list<list<tuple<size_t, size_t>>> legal_fun_m;
+    list<size_t> legal_to_get_l;
+
+    global_em.StartNewList();
+    for(auto role_legals : legal_nodes)
     {
-      out = legal.second->CodeGen(global_em, mark_index);
-      temp.emplace_back(legal.first, get<1>(out));
-      legal_to_get_l.push_back(get<1>(out));
+      list<tuple<size_t, size_t>> temp;
+      for(auto legal : role_legals)
+      {
+        out = legal.second->CodeGen(global_em, mark_index);
+        temp.emplace_back(legal.first, get<1>(out));
+        legal_to_get_l.push_back(get<1>(out));
+      }
+      legal_fun_m.push_back(temp);
     }
-    legal_fun_m.push_back(temp);
-  }
 
-  //! Generate entries for next nodes
-  global_em.StartNewList();
-  for(auto nn : next_nodes)
-  {
-    out = nn.second->CodeGen(global_em, mark_index);
-  }
-
-  //! Generate entries for terminal node
-  global_em.StartNewList();
-  tuple<bool, size_t> terminal_entry_id = terminal->CodeGen(global_em, mark_index);
-
-  //! Generate entries for goal nodes
-  global_em.StartNewList();
-  list<size_t> goal_to_get_l;
-  list<list<tuple<size_t, size_t>>> goal_fun_m;
-
-  for(auto role_goals : goal_nodes)
-  {
-    list<tuple<size_t, size_t>> temp;
-    for(auto goal : role_goals)
+    //! Generate entries for next nodes
+    global_em.StartNewList();
+    for(auto nn : next_nodes)
     {
-      out = goal.second->CodeGen(global_em, mark_index);
-      temp.emplace_back(goal.first, get<1>(out));
-      goal_to_get_l.push_back(get<1>(out));
+      out = nn.second->CodeGen(global_em, mark_index);
     }
-    goal_fun_m.push_back(temp);
-  }
 
-  //! Initialize entry manager
-  global_em.InitializeIterator();
+    //! Initialize entry manager
+    global_em.InitializeIterator();
 
-  //! Generate code for legal moves
-  stringstream legal_ss1;
-  stringstream legal_ss2;
-  list<size_t> legal_ret = global_em.CodeGen(legal_ss1, legal_ss2, legal_to_get_l);
-
-  //! Generate code for next state
-  stringstream next_ss1;
-  stringstream next_ss2;
-  global_em.CodeGen(next_ss1, next_ss2, legal_to_get_l);
-
-////////////////////////////////////////////////////////////////////////////////
-/// Create a series GetLegalMoves function
-////////////////////////////////////////////////////////////////////////////////
-
-  m_file << "static MoveList GetLegalMoves(const State& s, bool* buff)" << endl;
-  m_file << "{" << endl;
-
-  //! print the legal move generator code
-  m_file << legal_ss1.str() << endl;
-
-  m_file << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
-
-  auto legal_ret_it = legal_ret.begin();
-
-  size_t r_index = 0;
-  for(auto role : legal_fun_m)
-  {
-    for(auto it : role)
+    //! Generate code for is terminal
+    stringstream terminal_ss1;
+    stringstream terminal_ss2;
+    list<size_t> terminal_ret;
     {
-      m_file << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
-      legal_ret_it++;
+      list<size_t> temp;
+      temp.push_back(get<1>(terminal_entry_id));
+      terminal_ret = global_em.CodeGen(terminal_ss1, terminal_ss2, temp);
     }
-    r_index++;
+
+    //! Generate code for legal moves
+    stringstream legal_ss1;
+    stringstream legal_ss2;
+    list<size_t> legal_ret = global_em.CodeGen(legal_ss1, legal_ss2, legal_to_get_l);
+
+    //! Generate code for next state
+    stringstream next_ss1;
+    stringstream next_ss2;
+    global_em.CodeGen(next_ss1, next_ss2, legal_to_get_l);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Create series IsTerminal function
+    ////////////////////////////////////////////////////////////////////////////
+
+    m_file << "extern \"C\" bool IsTerminal(const State& s, bool* buff)" << endl;
+    m_file << "{" << endl;
+
+    m_file << terminal_ss1.str() << endl;
+
+    m_file << "return buff[" << *terminal_ret.begin() << "];" << endl;
+
+    m_file << "}" << endl << endl;
+
+    ////////////////////////////////////////////////////////////////////////////////
+  /// Create a series GetLegalMoves function
+  ////////////////////////////////////////////////////////////////////////////////
+
+    m_file << "extern \"C\" MoveList GetLegalMoves_sc1(const State& s, bool* buff)" << endl;
+    m_file << "{" << endl;
+
+    //! print the legal move generator code
+    m_file << legal_ss1.str() << endl;
+
+    m_file << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
+
+    auto legal_ret_it = legal_ret.begin();
+
+    size_t r_index = 0;
+    for(auto role : legal_fun_m)
+    {
+      for(auto it : role)
+      {
+        m_file << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
+        legal_ret_it++;
+      }
+      r_index++;
+    }
+
+    m_file << "return MoveList(legal_moves, " << roles_ids.size() << ");" << endl;
+
+    m_file << "}" << endl << endl;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Create series GetNextState function
+  //////////////////////////////////////////////////////////////////////////////
+
+    m_file << "extern \"C\" State GetNextState_sc1(const State& s, const Move& move, bool* buff)" << endl;
+    m_file << "{" << endl;
+    m_file << "State s_out(new RawState());" << endl;
+
+    m_file << next_ss1.str() << endl;
+
+    m_file << "return s_out;" << endl;
+
+    m_file << "}" << endl << endl;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Save buffer space requirements
+    ////////////////////////////////////////////////////////////////////////////
+
+    m_file << "extern \"C\" size_t GetSeriesMemoryRequirement()" << endl;
+    m_file << "{" << endl;
+    m_file << "return " << global_em.GetRequiredMemory() << ";" << endl;
+    m_file << "}" << endl;
   }
-
-  m_file << "return MoveList(legal_moves, " << roles_ids.size() << ");" << endl;
-
-  m_file << "}" << endl << endl;
-
-////////////////////////////////////////////////////////////////////////////////
-/// Create a series GetNextState function
-////////////////////////////////////////////////////////////////////////////////
-
-  m_file << "static State GetNextState_S(const State& in, const Move& move, bool* buff)" << endl;
-  m_file << "{" << endl;
-  m_file << "State s_out(new RawState());" << endl;
-
-  m_file << next_ss1.str() << endl;
-
-  m_file << "return s_out;" << endl;
-
-  m_file << "}" << endl;
 }
 
 void PropNet::GenerateMoveCode(std::ostream& stream)

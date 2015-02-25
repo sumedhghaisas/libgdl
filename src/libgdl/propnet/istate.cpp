@@ -37,8 +37,6 @@ void IState::CodeGen(ostream& file)
   file << "#include <atomic>" << endl;
   file << "#include <boost/intrusive_ptr.hpp>" << endl << endl;
 
-  file << "#include <libgdl/core/util/template_utils.hpp>" << endl << endl;
-
   //! Protect with namespace
   file << "namespace libgdl {" << endl << endl;
 
@@ -80,25 +78,25 @@ void IState::CodeGen(ostream& file)
     file << "return true;" << endl;
     file << "}" << endl;
 
-    file << "template<typename T>" << endl;
-    file << "bool Get_" << i << "(T& t, size_t N) const" << endl;
-    file << "{" << endl;
-    file << "char temp = s[" << buff << "] & " << p << ";" << endl << endl;
-
-    file << "T temp2 = 1;" << endl;
-    file << "temp2 = temp2 << N;" << endl << endl;
-
-    file << "if(temp != 0)" << endl;
-    file << "{" << endl;
-    file << "t = t | temp2;" << endl;
-    file << "}" << endl;
-    file << "else" << endl;
-    file << "{" << endl;
-    file << "t = t & ~temp2;" << endl;
-    file << "}" << endl << endl;
-
-    file << "return true;" << endl;
-    file << "}" << endl;
+//    file << "template<typename T>" << endl;
+//    file << "bool Get_" << i << "(T& t, size_t N) const" << endl;
+//    file << "{" << endl;
+//    file << "char temp = s[" << buff << "] & " << p << ";" << endl << endl;
+//
+//    file << "T temp2 = 1;" << endl;
+//    file << "temp2 = temp2 << N;" << endl << endl;
+//
+//    file << "if(temp != 0)" << endl;
+//    file << "{" << endl;
+//    file << "t = t | temp2;" << endl;
+//    file << "}" << endl;
+//    file << "else" << endl;
+//    file << "{" << endl;
+//    file << "t = t & ~temp2;" << endl;
+//    file << "}" << endl << endl;
+//
+//    file << "return true;" << endl;
+//    file << "}" << endl;
 
     //! Set function
     file << "bool Set_" << i << "(bool val) {" << endl;
@@ -107,17 +105,17 @@ void IState::CodeGen(ostream& file)
     file << "return true;" << endl;
     file << "}" << endl;
 
-    file << "template<typename T>" << endl;
-    file << "bool Set_" << i << "(const T& t, size_t N)" << endl;
-    file << "{" << endl;
-    file << "T temp = 1;" << endl;
-    file << "temp = temp << N;" << endl << endl;
-
-    file << "temp = temp & t;" << endl;
-    file << "if(temp != 0) s[" << buff << "] = s[" << buff << "] | " << p << ";" << endl;
-    file << "else s[" << buff << "] = s[" << buff << "] & " << q << ";" << endl;
-    file << "return true;" << endl;
-    file << "}" << endl;
+//    file << "template<typename T>" << endl;
+//    file << "bool Set_" << i << "(const T& t, size_t N)" << endl;
+//    file << "{" << endl;
+//    file << "T temp = 1;" << endl;
+//    file << "temp = temp << N;" << endl << endl;
+//
+//    file << "temp = temp & t;" << endl;
+//    file << "if(temp != 0) s[" << buff << "] = s[" << buff << "] | " << p << ";" << endl;
+//    file << "else s[" << buff << "] = s[" << buff << "] & " << q << ";" << endl;
+//    file << "return true;" << endl;
+//    file << "}" << endl;
 
     file << endl;
   }
@@ -212,46 +210,46 @@ void IState::CodeGen(ostream& file)
   file << "return stream;" << endl;
   file << "}" << endl << endl;
 
-  //! Generate StateGroup
-  file << "template<size_t N>" << endl;
-  file << "struct StateGroup" << endl;
-  file << "{" << endl;
-  file << "template<typename... Args>" << endl;
-  file << "StateGroup(Args... args)" << endl;
-  file << ": states(args...) {}" << endl << endl;
-
-  file << "template<size_t... Args>" << endl;
-  file << "StateGroup(State s, core::template_utils::SeriesHolder<Args...>)" << endl;
-  file << ": StateGroup(s.Clone<Args>()...) {}" << endl << endl;
-
-  file << "StateGroup(State s)" << endl;
-  file << ": StateGroup(s, typename core::template_utils::SeriesGenerator<N - 1>::type()) {}" << endl << endl;
-
-  file << "template<typename... Args>" << endl;
-  file << "void temp2(Args... args) const {}" << endl;
-
-  //! Add Get, Set and Reset function
-  for(size_t i = 0;i < l_base.size();i++)
-  {
-    file << endl;
-
-    //! Get function
-    file << "template<typename T, size_t... Args>" << endl;
-    file << "void Get_" << i << "_caller(T& t, core::template_utils::SeriesHolder<Args...>) const" << endl;
-    file << "{" << endl;
-    file << "temp2(std::get<Args>(states)->Get_" << i << "(t, Args)...);" << endl;
-    file << "}" << endl;
-    file << "template<typename T>" << endl;
-    file << "void Get_" << i << "(T& t) const" << endl;
-    file << "{" << endl;
-    file << "Get_" << i << "_caller(t, typename core::template_utils::SeriesGenerator<N -1>::type());" << endl;
-    file << "}" << endl;
-
-    file << endl;
-  }
-
-  file << "typename core::template_utils::NTupleGenerator<N, State>::type states;" << endl;
-  file << "};" << endl << endl;
+//  //! Generate StateGroup
+//  file << "template<size_t N>" << endl;
+//  file << "struct StateGroup" << endl;
+//  file << "{" << endl;
+//  file << "template<typename... Args>" << endl;
+//  file << "StateGroup(Args... args)" << endl;
+//  file << ": states(args...) {}" << endl << endl;
+//
+//  file << "template<size_t... Args>" << endl;
+//  file << "StateGroup(State s, core::template_utils::SeriesHolder<Args...>)" << endl;
+//  file << ": StateGroup(s.Clone<Args>()...) {}" << endl << endl;
+//
+//  file << "StateGroup(State s)" << endl;
+//  file << ": StateGroup(s, typename core::template_utils::SeriesGenerator<N - 1>::type()) {}" << endl << endl;
+//
+//  file << "template<typename... Args>" << endl;
+//  file << "void temp2(Args... args) const {}" << endl;
+//
+//  //! Add Get, Set and Reset function
+//  for(size_t i = 0;i < l_base.size();i++)
+//  {
+//    file << endl;
+//
+//    //! Get function
+//    file << "template<typename T, size_t... Args>" << endl;
+//    file << "void Get_" << i << "_caller(T& t, core::template_utils::SeriesHolder<Args...>) const" << endl;
+//    file << "{" << endl;
+//    file << "temp2(std::get<Args>(states)->Get_" << i << "(t, Args)...);" << endl;
+//    file << "}" << endl;
+//    file << "template<typename T>" << endl;
+//    file << "void Get_" << i << "(T& t) const" << endl;
+//    file << "{" << endl;
+//    file << "Get_" << i << "_caller(t, typename core::template_utils::SeriesGenerator<N -1>::type());" << endl;
+//    file << "}" << endl;
+//
+//    file << endl;
+//  }
+//
+//  file << "typename core::template_utils::NTupleGenerator<N, State>::type states;" << endl;
+//  file << "};" << endl << endl;
 
   //! End of namespace
   file << "}; // namespace libgdl" << endl;

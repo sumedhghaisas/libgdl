@@ -68,6 +68,11 @@ class EntryManager
                             std::ostream& ss2,
                             std::list<size_t> to_get_l);
 
+  size_t GetRequiredMemory()
+  {
+    return mm.GetRequiredMemory();
+  }
+
  private:
   std::list<std::list<entry_types::Entry*>> l_entries;
 

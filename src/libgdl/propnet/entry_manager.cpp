@@ -34,7 +34,6 @@ list<size_t> EntryManager::CodeGen(std::ostream& ss,
     out.push_back(mm.GetLocation(to_get));
   }
 
-  std::cout << "memory: " << mm.GetRequiredMemory() << std::endl;
   l_entries_it++;
   return out;
 }
