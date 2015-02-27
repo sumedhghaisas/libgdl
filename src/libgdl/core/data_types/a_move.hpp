@@ -19,7 +19,7 @@ struct RawAMove
 
   ~RawAMove()
   {
-    delete moves;
+    delete[] moves;
   }
 
   RawAMove(const RawAMove& rm)

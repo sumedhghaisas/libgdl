@@ -13,7 +13,8 @@ set(SOURCES
   b_move.hpp
   b_move.cpp
   move_list.hpp
-  intrusive_list.hpp
+  move_vector.hpp
+  intrusive_wrapper.hpp
   str_var_map.hpp
   str_var_map.cpp
   error_type.hpp

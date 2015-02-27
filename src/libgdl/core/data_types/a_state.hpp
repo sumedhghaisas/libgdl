@@ -24,7 +24,7 @@ struct RawAState
 
   ~RawAState()
   {
-    delete s;
+    delete[] s;
   }
 
   RawAState(const RawAState& state)
