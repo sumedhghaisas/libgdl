@@ -14,7 +14,7 @@ namespace core
 struct RawAState
 {
   RawAState()
-    : s(new char[arr_size])
+    : s(new char[arr_size]), count(0u)
   {
     for(size_t i = 0;i < arr_size;i++)
     {
@@ -28,7 +28,7 @@ struct RawAState
   }
 
   RawAState(const RawAState& state)
-    : s(new char[arr_size])
+    : s(new char[arr_size]), count(0u)
   {
     for(size_t i = 0;i < arr_size;i++)
     {

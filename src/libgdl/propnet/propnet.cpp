@@ -418,6 +418,7 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
 
   m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
   m_file << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
+  m_file << "#include <libgdl/core/data_types/move_vector.hpp>" << endl;
   m_file << "#include <libgdl/core/data_types/move_list.hpp>" << endl << endl;
 
   m_file << "using namespace std;" << endl;
@@ -504,12 +505,155 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
 
   m_file << "return out;" << endl;
 
-  m_file << "}" << endl;
+  m_file << "}" << endl << endl;
 
   m_file << "extern \"C\" size_t GetGoalMemoryRequirement()" << endl;
   m_file << "{" << endl;
   m_file << "return " << gg_em.GetRequiredMemory() << ";" << endl;
-  m_file << "}" << endl;
+  m_file << "}" << endl << endl;
+
+////////////////////////////////////////////////////////////////////////////////
+/// Generate GetNextState function
+////////////////////////////////////////////////////////////////////////////////
+
+  EntryManager gns_em;
+
+  //! Generate entries for next nodes
+  gns_em.StartNewList();
+  for(auto nn : next_nodes)
+  {
+    out = nn.second->CodeGen(gns_em, 2);
+  }
+
+  //! Initialize entry manager
+  gns_em.InitializeIterator();
+
+  std::list<size_t> next_temp;
+
+  //! Generate code for next state
+  stringstream next_ss1;
+  stringstream next_ss2;
+  gns_em.CodeGen(next_ss1, next_ss2, next_temp);
+
+  m_file << "extern \"C\" AState GetNextState(const AState& s, const AMove& move, bool* buff)" << endl;
+  m_file << "{" << endl;
+
+  m_file << "AState s_out(new core::RawAState());" << endl;
+
+  m_file << next_ss1.str() << endl;
+
+  m_file << "return s_out;" << endl;
+
+  m_file << "}" << endl << endl;
+
+////////////////////////////////////////////////////////////////////////////////
+/// Generate GetLegalMoves function
+////////////////////////////////////////////////////////////////////////////////
+
+  EntryManager glm_em;
+
+  //! Generate entries for legal nodes
+  list<list<tuple<size_t, size_t>>> legal_fun_m;
+  list<size_t> legal_to_get_l;
+
+  glm_em.StartNewList();
+  for(auto role_legals : legal_nodes)
+  {
+    list<tuple<size_t, size_t>> temp;
+    for(auto legal : role_legals)
+    {
+      out = legal.second->CodeGen(glm_em, 3);
+      temp.emplace_back(legal.first, get<1>(out));
+      legal_to_get_l.push_back(get<1>(out));
+    }
+    legal_fun_m.push_back(temp);
+  }
+
+  //! Initialize entry manager
+  glm_em.InitializeIterator();
+
+  //! Generate code for legal moves
+  stringstream legal_ss1;
+  stringstream legal_ss2;
+  list<size_t> legal_ret = glm_em.CodeGen(legal_ss1, legal_ss2, legal_to_get_l);
+
+  m_file << "extern \"C\" MoveList<AMove> GetLegalMoves_l(const AState& s, bool* buff)" << endl;
+  m_file << "{" << endl;
+
+  //! print the legal move generator code
+  m_file << legal_ss1.str() << endl;
+
+  m_file << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
+
+  auto legal_ret_it = legal_ret.begin();
+
+  size_t r_index = 0;
+  for(auto role : legal_fun_m)
+  {
+    for(auto it : role)
+    {
+      m_file << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
+      legal_ret_it++;
+    }
+    r_index++;
+  }
+
+  m_file << "return MoveList<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
+
+  m_file << "}" << endl << endl;
+
+  m_file << "extern \"C\" MoveVector<AMove> GetLegalMoves_v(const AState& s, bool* buff)" << endl;
+  m_file << "{" << endl;
+
+  //! print the legal move generator code
+  m_file << legal_ss1.str() << endl;
+
+  m_file << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
+
+  legal_ret_it = legal_ret.begin();
+
+  r_index = 0;
+  for(auto role : legal_fun_m)
+  {
+    for(auto it : role)
+    {
+      m_file << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
+      legal_ret_it++;
+    }
+    r_index++;
+  }
+
+  m_file << "return MoveVector<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
+
+  m_file << "}" << endl << endl;
+
+////////////////////////////////////////////////////////////////////////////////
+/// Generate Move Creator
+////////////////////////////////////////////////////////////////////////////////
+
+  m_file << "extern \"C\" AMove CreateMove(const std::list<std::string>& s_moves)" << endl;
+  m_file << "{" << endl;
+  m_file << "return AMove(s_moves);" << endl;
+  m_file << "}" << endl << endl;
+
+////////////////////////////////////////////////////////////////////////////////
+/// Generate Print Functions
+////////////////////////////////////////////////////////////////////////////////
+
+  m_file << "extern \"C\" void PrintState(std::ostream& stream, const AState& s)" << endl;
+  m_file << "{" << endl;
+  m_file << "stream << s;" << endl;
+  m_file << "}" << endl << endl;
+
+  m_file << "extern \"C\" void PrintMove(std::ostream& stream, const AMove& m)" << endl;
+  m_file << "{" << endl;
+  m_file << "stream << m;" << endl;
+  m_file << "}" << endl << endl;
+
+  m_file << "extern \"C\" void PrintMoveList(std::ostream& stream, const MoveList<AMove>& ml)" << endl;
+  m_file << "{" << endl;
+  m_file << "stream << ml;" << endl;
+  m_file << "}" << endl << endl;
 
 //////////////////////////////////////////////////////////////////////////////////
 ///// IsTerminal Function Generation
@@ -831,7 +975,7 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
   /// Create a series GetLegalMoves function
   ////////////////////////////////////////////////////////////////////////////////
 
-    m_file << "extern \"C\" MoveList<AMove> GetLegalMoves_sc1(const AState& s, bool* buff)" << endl;
+    m_file << "extern \"C\" MoveList<AMove> GetLegalMoves_l_sc1(const AState& s, bool* buff)" << endl;
     m_file << "{" << endl;
 
     //! print the legal move generator code
@@ -853,6 +997,31 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
     }
 
     m_file << "return MoveList<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
+
+    m_file << "}" << endl << endl;
+
+     m_file << "extern \"C\" MoveVector<AMove> GetLegalMoves_v_sc1(const AState& s, bool* buff)" << endl;
+    m_file << "{" << endl;
+
+    //! print the legal move generator code
+    m_file << legal_ss1.str() << endl;
+
+    m_file << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
+
+    legal_ret_it = legal_ret.begin();
+
+    r_index = 0;
+    for(auto role : legal_fun_m)
+    {
+      for(auto it : role)
+      {
+        m_file << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
+        legal_ret_it++;
+      }
+      r_index++;
+    }
+
+    m_file << "return MoveVector<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
 
     m_file << "}" << endl << endl;
 

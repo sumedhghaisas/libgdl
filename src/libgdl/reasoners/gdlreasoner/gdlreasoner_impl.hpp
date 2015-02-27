@@ -81,7 +81,7 @@ inline MoveList<BMove>* GDLReasoner::GetLegalMoves() const
   for(size_t i = 0;i < roles.size();i++)
     it[i] = result[i].begin();
 
-  MoveList<BMove>* out = new MoveList<BMove>(new core::IntrusiveList<BMove>());
+  MoveList<BMove>* out = new MoveList<BMove>(new core::IntrusiveWrapper<std::list<BMove>>());
 
   while(true)
   {

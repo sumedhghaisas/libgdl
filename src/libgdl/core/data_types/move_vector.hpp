@@ -1,8 +1,7 @@
-#ifndef LIBGDL_CORE_DATA_TYPES_OVE_LIST_HPP_INCLUDED
-#define LIBGDL_CORE_DATA_TYPES_OVE_LIST_HPP_INCLUDED
+#ifndef LIBGDL_CORE_DATA_TYPES_MOVE_VECTOR_HPP_INCLUDED
+#define LIBGDL_CORE_DATA_TYPES_MOVE_VECTOR_HPP_INCLUDED
 
 #include <iostream>
-#include <list>
 #include <vector>
 #include <boost/intrusive_ptr.hpp>
 
@@ -23,10 +22,10 @@ namespace libgdl
  * @see IntrusiveList, BMove, GDL
  */
 template<typename Move>
-class MoveList : public boost::intrusive_ptr<core::IntrusiveWrapper<std::list<Move>>>
+class MoveVector : public boost::intrusive_ptr<core::IntrusiveWrapper<std::vector<Move>>>
 {
   template<typename T>
-  using IntrusiveList = core::IntrusiveWrapper<std::list<T>>;
+  using IntrusiveVector = core::IntrusiveWrapper<std::vector<T>>;
 
  public:
   //! Creates MoveList from IntrusiveList pointer
@@ -34,13 +33,18 @@ class MoveList : public boost::intrusive_ptr<core::IntrusiveWrapper<std::list<Mo
   //! \param m pointer to list
   //!
   //!
-  MoveList(IntrusiveList<Move>* m = NULL)
-    : boost::intrusive_ptr<IntrusiveList<Move>>(m) {}
+  MoveVector(IntrusiveVector<Move>* m)
+    : boost::intrusive_ptr<IntrusiveVector<Move>>(m) {}
+
+  Move operator[](size_t index)
+  {
+    return (*this->get())[index];
+  }
 
   //! implements its own iterator
-  typedef typename IntrusiveList<Move>::iterator iterator;
+  typedef typename IntrusiveVector<Move>::iterator iterator;
   //! implements its own const_iterator
-  typedef typename IntrusiveList<Move>::const_iterator const_iterator;
+  typedef typename IntrusiveVector<Move>::const_iterator const_iterator;
 
   //! Returns const_iterator pointing to the beginning of the list
   //!
@@ -80,10 +84,10 @@ class MoveList : public boost::intrusive_ptr<core::IntrusiveWrapper<std::list<Mo
 }; // class MoveList
 
 template<>
-class MoveList<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std::list<AMove>>>
+class MoveVector<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std::vector<AMove>>>
 {
   template<typename T>
-  using IntrusiveList = core::IntrusiveWrapper<std::list<T>>;
+  using IntrusiveVector = core::IntrusiveWrapper<std::vector<T>>;
 
  public:
   //! Creates MoveList from IntrusiveList pointer
@@ -91,11 +95,11 @@ class MoveList<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std::
   //! \param m pointer to list
   //!
   //!
-  MoveList(IntrusiveList<AMove>* m = NULL)
-    : boost::intrusive_ptr<IntrusiveList<AMove> >(m) {}
+  MoveVector(IntrusiveVector<AMove>* m = NULL)
+    : boost::intrusive_ptr<IntrusiveVector<AMove> >(m) {}
 
-  MoveList(const std::list<size_t>* result, size_t n_roles)
-    : boost::intrusive_ptr<IntrusiveList<AMove>>(new IntrusiveList<AMove>())
+  MoveVector(const std::list<size_t>* result, size_t n_roles)
+    : boost::intrusive_ptr<IntrusiveVector<AMove>>(new IntrusiveVector<AMove>())
   {
     std::list<size_t>::const_iterator* it = new std::list<size_t>::const_iterator[n_roles];
     for(size_t i = 0;i < n_roles;i++)
@@ -139,10 +143,15 @@ class MoveList<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std::
     }
   }
 
+  AMove operator[](size_t index)
+  {
+    return (*this->get())[index];
+  }
+
   //! implements its own iterator
-  typedef typename IntrusiveList<AMove>::iterator iterator;
+  typedef typename IntrusiveVector<AMove>::iterator iterator;
   //! implements its own const_iterator
-  typedef typename IntrusiveList<AMove>::const_iterator const_iterator;
+  typedef typename IntrusiveVector<AMove>::const_iterator const_iterator;
 
   //! Returns const_iterator pointing to the beginning of the list
   //!
@@ -181,9 +190,9 @@ class MoveList<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std::
 
 }; // class MoveList
 
-inline std::ostream& operator<<(std::ostream& stream, const MoveList<AMove>& m)
+inline std::ostream& operator<<(std::ostream& stream, const MoveVector<AMove>& m)
 {
-  stream << "MoveList {" << std::endl;
+  stream << "MoveVector {" << std::endl;
   for(auto it : m)
   {
     stream << it << std::endl;
@@ -194,5 +203,4 @@ inline std::ostream& operator<<(std::ostream& stream, const MoveList<AMove>& m)
 
 }
 
-
-#endif // LIBGDL_CORE_DATA_TYPES_OVE_LIST_HPP_INCLUDED
+#endif // LIBGDL_CORE_DATA_TYPES_MOVE_VECTOR_HPP_INCLUDED

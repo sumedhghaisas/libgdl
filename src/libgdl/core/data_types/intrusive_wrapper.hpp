@@ -1,11 +1,11 @@
 /**
- * @file intrusive_list.hpp
+ * @file intrusive_wrapper.hpp
  * @author Sumedh Ghaisas
  *
  * Declaration of IntrusiveList.
  */
-#ifndef _LIBGDL_CORE_DATATYPES_INTRUSIVE_LIST_HPP_INCLUDED
-#define _LIBGDL_CORE_DATATYPES_INTRUSIVE_LIST_HPP_INCLUDED
+#ifndef _LIBGDL_CORE_DATATYPES_INTRUSIVE_WRAPPER_HPP_INCLUDED
+#define _LIBGDL_CORE_DATATYPES_INTRUSIVE_WRAPPER_HPP_INCLUDED
 
 #include <list>
 #include <atomic>
@@ -15,18 +15,14 @@ namespace libgdl
 namespace core
 {
 
-/**
- * IntrusiveList represents list which supports intrusive pointer.
- * It inherits all the basic functionality from std::list
- */
 template<typename T>
-class IntrusiveList : public std::list<T>
+class IntrusiveWrapper : public T
 {
  public:
   //! Constructor which assigns reference count to 0
   //!
   //!
-  IntrusiveList()
+  IntrusiveWrapper()
     : count(0u) {}
 
   //! Get reference count
@@ -41,14 +37,8 @@ class IntrusiveList : public std::list<T>
 }; // class IntrusiveList
 
 
-//! Intrusive pointer release function for IntrusiveList
-//! Decrements reference count of IntrusiveList object
-//!
-//! \param p object to decrement
-//!
-//!
 template<typename T>
-inline void intrusive_ptr_release(IntrusiveList<T>* p)
+inline void intrusive_ptr_release(IntrusiveWrapper<T>* p)
 {
    if (--p->count == 0u)
         delete p;
@@ -61,7 +51,7 @@ inline void intrusive_ptr_release(IntrusiveList<T>* p)
 //!
 //!
 template<typename T>
-inline void intrusive_ptr_add_ref(IntrusiveList<T>* p)
+inline void intrusive_ptr_add_ref(IntrusiveWrapper<T>* p)
 {
   ++p->count;
 }
@@ -69,4 +59,4 @@ inline void intrusive_ptr_add_ref(IntrusiveList<T>* p)
 }; // namespace core
 }; // namespace libgdl
 
-#endif // _LIBGDL_CORE_DATATYPES_INTRUSIVE_LIST_HPP_INCLUDED
+#endif // _LIBGDL_CORE_DATATYPES_INTRUSIVE_WRAPPER_HPP_INCLUDED

@@ -2,6 +2,7 @@
 #define LIBGDL_CORE_DATA_TYPES_AMOVE_HPP_INCLUDED
 
 #include <iostream>
+#include <string>
 #include <atomic>
 #include <list>
 #include <boost/intrusive_ptr.hpp>
@@ -14,7 +15,7 @@ namespace core
 struct RawAMove
 {
   RawAMove()
-    : moves(new size_t[n_roles]) {}
+    : moves(new size_t[n_roles]), count(0u) {}
 
   ~RawAMove()
   {
@@ -22,7 +23,7 @@ struct RawAMove
   }
 
   RawAMove(const RawAMove& rm)
-    : moves(new size_t[n_roles])
+    : moves(new size_t[n_roles]), count(0u)
   {
     for(size_t i = 0;i < n_roles;i++)
     {
@@ -31,7 +32,7 @@ struct RawAMove
   }
 
   RawAMove(const std::list<size_t>& m)
-    : moves(new size_t[n_roles])
+    : moves(new size_t[n_roles]), count(0u)
   {
     auto it = m.begin();
     for(size_t i = 0;i < n_roles;i++)
@@ -40,6 +41,8 @@ struct RawAMove
       it++;
     }
   }
+
+  RawAMove(const std::list<std::string>& s_moves);
 
   inline void Get(size_t r_id, size_t in_id, bool& out) const
   {
@@ -91,6 +94,9 @@ struct AMove : public boost::intrusive_ptr<core::RawAMove>
 
   AMove(const std::list<size_t>& l)
     : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove(l)) {}
+
+  AMove(const std::list<std::string>& s_moves)
+    : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove(s_moves)) {}
 
   AMove Clone() const
   {
