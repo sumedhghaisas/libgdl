@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <boost/functional/hash.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include "old_boost_test_definitions.hpp"
@@ -68,6 +69,27 @@ BOOST_AUTO_TEST_CASE(ArgumentIsGroundTest)
   
   arg = Argument("?x", symbol_table, false, TEST_LOG);
   if(arg.IsGround()) MARK_FAIL;
+  
+  MARK_END;
+}
+
+/**
+ * Check hashing of arguments.
+ */
+BOOST_AUTO_TEST_CASE(ArgumentHashTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  SymbolTable symbol_table;
+  Argument arg("(not (test ?x))" , symbol_table, true, TEST_LOG);
+  
+  Argument arg2("(not (test ?y))", symbol_table, true, TEST_LOG);
+  
+  boost::hash<Argument> arg_hasher;
+  size_t arg_hash = arg_hasher(arg);
+  size_t arg2_hash = arg_hasher(arg2);
+  
+  if(arg_hash != arg2_hash) MARK_FAIL;
   
   MARK_END;
 }

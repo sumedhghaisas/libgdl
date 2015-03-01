@@ -207,7 +207,7 @@ struct Argument
   //! \return size_t
   //!
   //!
-  size_t Hash();
+  size_t Hash() const;
 
   //! Returns string representation of this argument using the symbol table
   //! This function is used by SymbolDecodeStream to print argument
@@ -298,6 +298,11 @@ inline std::ostream& operator<<(std::ostream& o,
   else if(t == libgdl::core::Argument::Function) o << "Function";
   else o << "Variable";
   return o;
+}
+
+inline size_t hash_value(const Argument& arg)
+{
+  return arg.Hash();
 }
 
 }; // namespace core

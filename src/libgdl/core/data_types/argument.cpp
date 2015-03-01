@@ -299,8 +299,10 @@ Argument* Argument::ConstructArgument(const std::string& str,
   return out;
 }
 
-size_t Argument::Hash()
+size_t Argument::Hash() const
 {
+  if(t == Argument::Var) return 0;
+
   size_t total = 0;
   for(size_t i = 0;i < args.size();i++)
   {
