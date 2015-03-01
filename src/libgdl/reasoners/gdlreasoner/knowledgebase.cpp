@@ -8,6 +8,8 @@
 
 #include "kif_flattener.hpp"
 
+#include <boost/functional/hash.hpp>
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
@@ -78,16 +80,16 @@ std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,
   }
   else
   {
-    std::set<std::string> str_ans;
+    std::set<size_t> h_ans;
     while(ans->next())
     {
       Argument* temp = Unify::GetSubstitutedArgument(&arg, ans->GetVariableMap());
-      std::stringstream stream;
-      stream << *temp;
-      if(str_ans.find(stream.str()) == str_ans.end())
+      boost::hash<Argument> arg_hasher;
+      size_t h = arg_hasher(*temp);
+      if(h_ans.find(h) == h_ans.end())
       {
         out.push_back(temp);
-        str_ans.insert(stream.str());
+        h_ans.insert(h);
       }
       else delete temp;
     }
@@ -103,40 +105,7 @@ std::list<Argument*> KnowledgeBase::Ask(const std::string& s_arg,
 {
   Argument arg(s_arg, symbol_table, true, log);
 
-  std::list<Argument*> out;
-
-  // get answer
-  Answer *ans = GetAnswer(arg, VariableMap(), std::set<size_t>());
-  // get all the valid substitution and add them to list
-
-  if(!checkForDoubles)
-  {
-    while(ans->next())
-    {
-      Argument* temp = Unify::GetSubstitutedArgument(&arg, ans->GetVariableMap());
-      out.push_back(temp);
-    }
-  }
-  else
-  {
-    std::set<std::string> str_ans;
-    while(ans->next())
-    {
-      Argument* temp = Unify::GetSubstitutedArgument(&arg, ans->GetVariableMap());
-      std::stringstream stream;
-      stream << *temp;
-      if(str_ans.find(stream.str()) == str_ans.end())
-      {
-        out.push_back(temp);
-        str_ans.insert(stream.str());
-      }
-      else delete temp;
-    }
-  }
-  // delete answer
-  delete ans;
-
-  return out;
+  return Ask(arg, checkForDoubles);
 }
 
 bool KnowledgeBase::IsSatisfiable(const Argument& arg)
@@ -272,28 +241,6 @@ const KnowledgeBase::ClauseList*
   ClauseMap::const_iterator it = m_clauses.find(sig);
   if(it == m_clauses.end()) return NULL;
     else return &(it->second);
-}
-
-Answer* KnowledgeBase::GetAnswer(const Argument& question,
-                                 const VariableMap& v_map,
-                                 const std::set<size_t>& visited) const
-{
-  Answer *ans = NULL;
-
-  if(question.value == SymbolTable::OrID)
-    ans = new Answer(Answer::OR, question, v_map, *this, visited, NULL);
-  else if(question.value == SymbolTable::DistinctID)
-    ans = new Answer(Answer::DISTINCT, question, v_map, *this, visited, NULL);
-  else if(question.value == SymbolTable::NotID)
-    ans = new Answer(Answer::NOT, question, v_map, *this, visited, NULL);
-  else ans = new Answer(Answer::CLAUSE, question, v_map, *this, visited, NULL);
-
-  if(Unify::IsGroundQuestion(&question, v_map))
-  {
-    ans = new Answer(Answer::GROUND, question, v_map, *this, visited, ans);
-  }
-
-  return ans;
 }
 
 std::ostream& libgdl::gdlreasoner::operator<<(std::ostream& stream,

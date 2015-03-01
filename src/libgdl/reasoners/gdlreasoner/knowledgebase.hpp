@@ -130,9 +130,9 @@ class KnowledgeBase
   //! \return Answer*
   //!
   //!
-  Answer* GetAnswer(const Argument& question,
-                    const VariableMap& v_map,
-                    const std::set<size_t>& visited) const;
+  inline Answer* GetAnswer(const Argument& question,
+                           const VariableMap& v_map,
+                           const std::set<size_t>& visited) const;
 
   //! Returns true if the question is satisfiable
   //!
@@ -301,5 +301,7 @@ std::ostream& operator<<(std::ostream& stream,
 
 }; // namespace gdlreasonerDGraph
 }; // namespace libgdl
+
+#include "knowledgebase_impl.hpp"
 
 #endif // _LIBGDL_GDLREASONER_KNOWLEDGEBASE_HPP_INCLUDED
