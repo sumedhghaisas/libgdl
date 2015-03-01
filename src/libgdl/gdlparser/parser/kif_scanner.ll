@@ -100,12 +100,12 @@ typedef libgdl::gdlparser::parser::yy::KIFParser KIFParser;
   return token::NUMBER;
 }
 
-[?][A-Za-z][A-Za-z0-9_]* {
+[?][A-Za-z+-][A-Za-z0-9_+-/*]* {
   yylval->stringVal = new std::string(yytext, yyleng);
   return token::VARIABLE;
 }
 
-[A-Za-z][A-Za-z0-9_]* {
+[A-Za-z+-][A-Za-z0-9_+-/*]* {
   yylval->stringVal = new std::string(yytext, yyleng);
   return token::ID;
 }

@@ -306,6 +306,7 @@ size_t Argument::Hash()
   {
     total += (i + 1) * args[i]->Hash();
   }
+
   if(total != 0) return total * value;
   else return value;
 }
