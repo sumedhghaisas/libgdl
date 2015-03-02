@@ -407,19 +407,14 @@ bool PropNet::PrintPropnet(const std::string& filename) const
   return true;
 }
 
-void PropNet::GenerateStateMachineCode(std::ostream& m_file)
+void PropNet::GenerateStateMachineCode()
 {
-  //! Add required includes
-  m_file << "#include <iostream>" << endl;
-  m_file << "#include <vector>" << endl;
-  m_file << "#include <list>" << std::endl;
-  m_file << "#include <stdlib.h>" << endl;
-  m_file << "#include <time.h>" << endl << endl;
+////////////////////////////////////////////////////////////////////////////////
+/// START FILE init_statecpp
+////////////////////////////////////////////////////////////////////////////////
+  ofstream m_file("state_machine/init_state.cpp");
 
   m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
-  m_file << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
-  m_file << "#include <libgdl/core/data_types/move_vector.hpp>" << endl;
-  m_file << "#include <libgdl/core/data_types/move_list.hpp>" << endl << endl;
 
   m_file << "using namespace std;" << endl;
   m_file << "using namespace libgdl;" << endl << endl;
@@ -427,6 +422,7 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
 ////////////////////////////////////////////////////////////////////////////////
 /// InitState Function Generation
 ////////////////////////////////////////////////////////////////////////////////
+
   {
     m_file << "extern \"C\" AState InitState()" << std::endl;
     m_file << "{" << std::endl;
@@ -440,13 +436,17 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
     m_file << "}" << std::endl << std::endl;
   }
 
+  m_file.close();
+
+////////////////////////////////////////////////////////////////////////////////
+/// END OF FILE init_state.cpp
+////////////////////////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Series Functions generation
 ////////////////////////////////////////////////////////////////////////////////
 
-  GenerateSeriesFunctions(m_file, 0);
-
-  m_file << endl << endl;
+  GenerateSeriesFunctions(0);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// GetGoals function
@@ -481,6 +481,19 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   stringstream goals_ss2;
   list<size_t> goals_ret = gg_em.CodeGen(goals_ss1, goals_ss2, goal_to_get_l);
 
+////////////////////////////////////////////////////////////////////////////////
+/// START FILE get_goals.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+  m_file.open("state_machine/get_goals.cpp");
+
+  //! Add required includes
+  m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
+  m_file << "#include <list>" << endl;
+
+  m_file << "using namespace std;" << endl;
+  m_file << "using namespace libgdl;" << endl << endl;
+
   m_file << "extern \"C\" std::list<size_t> GetGoals(const AState& s, bool* buff)" << endl;
   m_file << "{" << endl;
 
@@ -512,6 +525,12 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   m_file << "return " << gg_em.GetRequiredMemory() << ";" << endl;
   m_file << "}" << endl << endl;
 
+  m_file.close();
+
+////////////////////////////////////////////////////////////////////////////////
+/// END FILE get_goals.cpp
+////////////////////////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Generate GetNextState function
 ////////////////////////////////////////////////////////////////////////////////
@@ -535,6 +554,19 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   stringstream next_ss2;
   gns_em.CodeGen(next_ss1, next_ss2, next_temp);
 
+////////////////////////////////////////////////////////////////////////////////
+/// START FILE get_next_state.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+  m_file.open("state_machine/get_next_state.cpp");
+
+  //! Add required includes
+  m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
+  m_file << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
+
+  m_file << "using namespace std;" << endl;
+  m_file << "using namespace libgdl;" << endl << endl;
+
   m_file << "extern \"C\" AState GetNextState(const AState& s, const AMove& move, bool* buff)" << endl;
   m_file << "{" << endl;
 
@@ -545,6 +577,12 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   m_file << "return s_out;" << endl;
 
   m_file << "}" << endl << endl;
+
+  m_file.close();
+
+////////////////////////////////////////////////////////////////////////////////
+/// END FILE get_next_state.cpp
+////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Generate GetLegalMoves function
@@ -576,6 +614,21 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   stringstream legal_ss1;
   stringstream legal_ss2;
   list<size_t> legal_ret = glm_em.CodeGen(legal_ss1, legal_ss2, legal_to_get_l);
+
+////////////////////////////////////////////////////////////////////////////////
+/// START FILE get_legal_moves.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+  m_file.open("state_machine/get_legal_moves.cpp");
+
+  //! Add required includes
+  m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
+  m_file << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
+  m_file << "#include <libgdl/core/data_types/move_vector.hpp>" << endl;
+  m_file << "#include <libgdl/core/data_types/move_list.hpp>" << endl << endl;
+
+  m_file << "using namespace std;" << endl;
+  m_file << "using namespace libgdl;" << endl << endl;
 
   m_file << "extern \"C\" MoveList<AMove> GetLegalMoves_l(const AState& s, bool* buff)" << endl;
   m_file << "{" << endl;
@@ -636,6 +689,27 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   m_file << "return AMove(s_moves);" << endl;
   m_file << "}" << endl << endl;
 
+  m_file.close();
+
+////////////////////////////////////////////////////////////////////////////////
+/// END FILE get_legal_moves.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+/// START FILE print_functions.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+  m_file.open("state_machine/print_functions.cpp");
+
+  //! Add required includes
+  m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
+  m_file << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
+  m_file << "#include <libgdl/core/data_types/move_vector.hpp>" << endl;
+  m_file << "#include <libgdl/core/data_types/move_list.hpp>" << endl << endl;
+
+  m_file << "using namespace std;" << endl;
+  m_file << "using namespace libgdl;" << endl << endl;
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Generate Print Functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -654,6 +728,10 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
   m_file << "{" << endl;
   m_file << "stream << ml;" << endl;
   m_file << "}" << endl << endl;
+
+////////////////////////////////////////////////////////////////////////////////
+/// END FILE print_functions.cpp
+////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
 ///// IsTerminal Function Generation
@@ -895,7 +973,7 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
 //
 }
 
-void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
+void PropNet::GenerateSeriesFunctions(size_t mark_index)
 {
 ////////////////////////////////////////////////////////////////////////////////
 /// Scenario 1
@@ -958,6 +1036,17 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
     stringstream next_ss2;
     global_em.CodeGen(next_ss1, next_ss2, legal_to_get_l);
 
+////////////////////////////////////////////////////////////////////////////////
+/// START FILE is_terminal.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+    ofstream m_file("state_machine/is_terminal.cpp");
+
+    m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl << endl;
+
+    m_file << "using namespace std;" << endl;
+    m_file << "using namespace libgdl;" << endl << endl;
+
     ////////////////////////////////////////////////////////////////////////////
     /// Create series IsTerminal function
     ////////////////////////////////////////////////////////////////////////////
@@ -971,9 +1060,29 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
 
     m_file << "}" << endl << endl;
 
-    ////////////////////////////////////////////////////////////////////////////////
+    m_file.close();
+
+////////////////////////////////////////////////////////////////////////////////
+/// END OF FILE is_terminal.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+/// START FILE get_legal_moves_sci.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+    m_file.open("state_machine/get_legal_moves_sci.cpp");
+
+    m_file << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
+    m_file << "#include <libgdl/core/data_types/move_list.hpp>" << endl;
+    m_file << "#include <libgdl/core/data_types/move_vector.hpp>" << endl;
+    m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl << endl;
+
+    m_file << "using namespace std;" << endl;
+    m_file << "using namespace libgdl;" << endl << endl;
+
+  //////////////////////////////////////////////////////////////////////////////
   /// Create a series GetLegalMoves function
-  ////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
     m_file << "extern \"C\" MoveList<AMove> GetLegalMoves_l_sc1(const AState& s, bool* buff)" << endl;
     m_file << "{" << endl;
@@ -1025,6 +1134,24 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
 
     m_file << "}" << endl << endl;
 
+    m_file.close();
+
+////////////////////////////////////////////////////////////////////////////////
+/// END OF FILE get_legal_moves_sci.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+/// START FILE get_next_state_sci.cpp
+////////////////////////////////////////////////////////////////////////////////
+
+    m_file.open("state_machine/get_next_state_sci.cpp");
+
+    m_file << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
+    m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl << endl;
+
+    m_file << "using namespace std;" << endl;
+    m_file << "using namespace libgdl;" << endl << endl;
+
   //////////////////////////////////////////////////////////////////////////////
   /// Create series GetNextState function
   //////////////////////////////////////////////////////////////////////////////
@@ -1047,6 +1174,13 @@ void PropNet::GenerateSeriesFunctions(std::ostream& m_file, size_t mark_index)
     m_file << "{" << endl;
     m_file << "return " << global_em.GetRequiredMemory() << ";" << endl;
     m_file << "}" << endl;
+
+    m_file.close();
+
+////////////////////////////////////////////////////////////////////////////////
+/// END OF FILE get_next_state_sci.cpp
+////////////////////////////////////////////////////////////////////////////////
+
   }
 }
 
