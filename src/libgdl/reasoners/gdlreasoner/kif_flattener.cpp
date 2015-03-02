@@ -11,6 +11,8 @@
 
 #include <libgdl/core/util/setop.hpp>
 
+size_t combination_optimization_index = 0;
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
@@ -209,6 +211,10 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   // start flattening clauses
   for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
   {
+    SymbolDecodeStream sds(symbol_table);
+
+    //sds << *it << endl;
+
     // if the clause is already ground add it directly
     // add its head to heads list
     if((*it).IsGround())
@@ -236,6 +242,12 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
     Answer* ans = m_kb.GetAnswer(*question, VariableMap(), set<size_t>());
 
 
+    bool opti = false;
+    Argument opt_args[2];
+    bool is_initialized = false;
+
+    list<Clause> opt_clauses;
+
     while(ans->next())
     {
       VariableMap ans_v_map = ans->GetVariableMap();
@@ -244,6 +256,8 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
 
       // compute the answer with substitution
       Clause* to_add = Unify::GetSubstitutedClause(&(*it), ans_v_map);
+
+      //sds << *to_add << endl;
 
       // remove all the occurrences of data relations
       Clause* temp = RemoveDataFromClause(to_add, state_independent);
@@ -261,9 +275,89 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
       }
       else
       {
-        f_clauses.push_back(*temp);
-        f_clauses.back().loc = (*it).loc;
-        f_clauses.back().isLocation = (*it).isLocation;
+        if(!opti && temp->premisses.size() > 2)
+        {
+          opti = true;
+        }
+
+        if(opti)
+        {
+          if(!is_initialized)
+          {
+            opt_args[0] = *temp->premisses[0];
+            opt_args[1] = *temp->premisses[1];
+
+            opt_clauses.push_back(*temp);
+            opt_clauses.back().loc = (*it).loc;
+            opt_clauses.back().isLocation = (*it).isLocation;
+
+            is_initialized = true;
+          }
+          else
+          {
+            if(*temp->premisses[0] == opt_args[0] && *temp->premisses[1] == opt_args[1])
+            {
+              opt_clauses.push_back(*temp);
+              opt_clauses.back().loc = (*it).loc;
+              opt_clauses.back().isLocation = (*it).isLocation;
+            }
+            else
+            {
+//              for(auto it : opt_clauses)
+//              {
+//                sds << it << endl;
+//              }
+//              cout << endl;
+
+              if(opt_clauses.size() > 3)
+              {
+                stringstream stream;
+                stream << "combination_optimization_" << combination_optimization_index++;
+                Argument* arg = new Argument(stream.str(), symbol_table, true);
+                Clause c;
+                c.head = arg;
+                c.premisses.push_back(new Argument(opt_args[0]));
+                c.premisses.push_back(new Argument(opt_args[1]));
+
+                //sds << c << endl;
+
+                f_clauses.push_back(c);
+
+                for(auto it : opt_clauses)
+                {
+                  delete it.premisses[0];
+                  delete it.premisses[1];
+
+                  it.premisses.erase(it.premisses.begin(), it.premisses.begin() + 2);
+
+                  it.premisses.push_back(new Argument(*arg));
+
+                  //sds << it << endl;
+
+                  f_clauses.push_back(it);
+                }
+              }
+              else
+              {
+                for(auto it : opt_clauses)
+                {
+                  f_clauses.push_back(it);
+                }
+              }
+
+              opti = false;
+              is_initialized = false;
+              opt_clauses.clear();
+            }
+          }
+        }
+        else
+        {
+          f_clauses.push_back(*temp);
+          f_clauses.back().loc = (*it).loc;
+          f_clauses.back().isLocation = (*it).isLocation;
+        }
+
         f_heads.push_back(temp->head);
         temp->head = NULL;
         delete temp;

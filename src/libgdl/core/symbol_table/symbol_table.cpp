@@ -16,7 +16,7 @@ using namespace libgdl::gdlparser::parser;
 bool SymbolTable::loader = SymbolTable::LoadPrimes();
 size_t SymbolTable::primes[10000] = {};
 
-bool SymbolTable::LoadPrimes();
+bool SymbolTable::LoadPrimes()
 {
   ifstream file("prime_nums.txt");
   if(!file.is_open())
