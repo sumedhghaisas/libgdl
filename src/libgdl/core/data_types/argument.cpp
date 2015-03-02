@@ -299,18 +299,19 @@ Argument* Argument::ConstructArgument(const std::string& str,
   return out;
 }
 
-size_t Argument::Hash() const
+size_t Argument::Hash(size_t seed) const
 {
-  if(t == Argument::Var) return 0;
+  if(t == Argument::Var) return seed;
 
-  size_t total = 0;
+  boost::hash_combine(seed, SymbolTable::GetPrime(2 * value));
+
   for(size_t i = 0;i < args.size();i++)
   {
-    total += (i + 1) * args[i]->Hash();
+    boost::hash_combine(seed, i);
+    boost::hash_combine(seed, args[i]->Hash(seed));
   }
 
-  if(total != 0) return total * value;
-  else return value;
+  return seed;
 }
 
 bool Argument::operator==(const Argument& arg) const

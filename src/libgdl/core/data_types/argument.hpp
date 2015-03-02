@@ -207,7 +207,7 @@ struct Argument
   //! \return size_t
   //!
   //!
-  size_t Hash() const;
+  size_t Hash(size_t seed = 0) const;
 
   //! Returns string representation of this argument using the symbol table
   //! This function is used by SymbolDecodeStream to print argument

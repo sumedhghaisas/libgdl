@@ -80,16 +80,16 @@ std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,
   }
   else
   {
-    std::set<size_t> h_ans;
+    std::set<std::string> str_ans;
     while(ans->next())
     {
       Argument* temp = Unify::GetSubstitutedArgument(&arg, ans->GetVariableMap());
-      boost::hash<Argument> arg_hasher;
-      size_t h = arg_hasher(*temp);
-      if(h_ans.find(h) == h_ans.end())
+      std::stringstream stream;
+      stream << *temp;
+      if(str_ans.find(stream.str()) == str_ans.end())
       {
         out.push_back(temp);
-        h_ans.insert(h);
+        str_ans.insert(stream.str());
       }
       else delete temp;
     }

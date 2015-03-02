@@ -10,6 +10,8 @@
 
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <set>
 #include <boost/functional/hash.hpp>
 
 #include <boost/test/unit_test.hpp>
@@ -80,16 +82,23 @@ BOOST_AUTO_TEST_CASE(ArgumentHashTest)
 {
   MARK_START;
   OPEN_LOG;
-  SymbolTable symbol_table;
-  Argument arg("(not (test ?x))" , symbol_table, true, TEST_LOG);
   
-  Argument arg2("(not (test ?y))", symbol_table, true, TEST_LOG);
+  set<size_t> hashes;
+  ifstream file("data/argument_test/hash_test1.kif");
+
+  SymbolTable sym;
+
+  size_t total = 0;
+
+  string line;
+  while(getline(file, line))
+  {
+    Argument arg(line, sym, true, TEST_LOG);
+    hashes.insert(arg.Hash());
+  }
   
-  boost::hash<Argument> arg_hasher;
-  size_t arg_hash = arg_hasher(arg);
-  size_t arg2_hash = arg_hasher(arg2);
-  
-  if(arg_hash != arg2_hash) MARK_FAIL;
+  if(hashes.size() != 302)
+    MARK_FAIL;
   
   MARK_END;
 }

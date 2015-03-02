@@ -13,6 +13,39 @@ using namespace libgdl;
 using namespace libgdl::core;
 using namespace libgdl::gdlparser::parser;
 
+bool SymbolTable::loader = SymbolTable::LoadPrimes();
+size_t SymbolTable::primes[10000] = {};
+
+bool SymbolTable::LoadPrimes();
+{
+  ifstream file("prime_nums.txt");
+  if(!file.is_open())
+  {
+    cerr << "Prime number file not available!!" << endl;
+    exit(1);
+  }
+
+  size_t index = 0;
+
+  string line;
+  while(getline(file, line))
+  {
+    std::stringstream stream;
+    stream << line;
+
+    for(size_t i = 0;i < 10;i++)
+    {
+      size_t temp;
+      stream >> temp;
+      primes[index++] = temp;
+    }
+  }
+
+  file.close();
+  return true;
+}
+
+
 RawSymbolTable::RawSymbolTable(const Log& log)
   : count(0u),
   log(log)
