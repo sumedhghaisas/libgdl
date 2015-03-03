@@ -57,7 +57,7 @@ class Answer
 
  public:
   //! Type of the this answering
-  enum Type {CLAUSE, DISTINCT, GROUND, NOT, OR, CACHE };
+  enum Type {CLAUSE, DISTINCT, GROUND, NOT, OR, CACHE, DECODER};
 
   //! Constructs empty Answer
   //!
@@ -84,10 +84,24 @@ class Answer
   //! Returns false if no next result is available
   bool next();
 
+  VariableMap AdjustToQuestion(const Argument* arg, const Argument* adj_to,
+                             const VariableMap& v_map);
+
   /// Returns the variable mapping in which this solution is valid
   /// Returns variable map of last viable solution after next() returns false
   inline VariableMap GetVariableMap()
   {
+    if(t == CACHE)
+    {
+      auto temp_it = maps_it;
+      temp_it--;
+      return AdjustToQuestion(sub_struct, &question, *(temp_it));
+    }
+    else if(t == DECODER)
+    {
+      return to_ret;
+    }
+
     return Unify::DecodeSubstitutions(v_map, &question, o_v_map, to_del);
   }
 
@@ -170,6 +184,14 @@ class Answer
   const std::list<VariableMap>* maps;
   const Argument* sub_struct;
   std::list<VariableMap>::const_iterator maps_it;
+
+  /* Decoder answer */
+  Answer* to_dec;
+  VariableMap to_ret;
+  bool to_cache;
+  std::list<VariableMap>* cache_maps;
+  Argument* cache_q;
+  VariableMap conv_map;
 }; // class Answer
 
 }; // namespace logicbase

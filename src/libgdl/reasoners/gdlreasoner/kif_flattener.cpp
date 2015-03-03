@@ -186,6 +186,8 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   //compute signature of relation
   const size_t& sig = n->id;
 
+  list<Argument*> f_heads;
+
   // get all the facts and clauses associated with this signature
   const KnowledgeBase::FactList* facts = all_kb.GetFacts(sig);
   const KnowledgeBase::ClauseList* p_clauses = all_kb.GetClauses(sig);
@@ -206,7 +208,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
 
   // to store the heads of the flattened clauses
   // these will be added later to temporary knowledge base
-  list<Argument*> f_heads;
+  map<size_t, tuple<Argument*, list<VariableMap>*>> cache;
 
   // start flattening clauses
   for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
@@ -396,6 +398,9 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
 
     fl.push_back(std::move(f));
   }
+
+  for(auto it : cache)
+    m_kb.cached_maps.insert(it);
 }
 
 Clause* KIFFlattener::RemoveDataFromClause(Clause* c,

@@ -61,6 +61,24 @@ KnowledgeBase::KnowledgeBase(KIFFlattener& kiff, const Log& log)
   kiff.Clear();
 }
 
+KnowledgeBase::~KnowledgeBase()
+{
+  for(auto it : cached_maps)
+  {
+    auto& tup = it.second;
+    delete get<0>(tup);
+
+    for(auto it2 : *get<1>(tup))
+    {
+      for(auto it3 : it2)
+      {
+        delete it3.second;
+      }
+    }
+    delete get<1>(tup);
+  }
+}
+
 std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,
                                         bool checkForDoubles)
 {

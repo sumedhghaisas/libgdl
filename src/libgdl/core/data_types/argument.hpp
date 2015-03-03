@@ -7,6 +7,7 @@
 #ifndef _LIBGDL_CORE_DATATYPES_ARGUMENT_HPP
 #define _LIBGDL_CORE_DATATYPES_ARGUMENT_HPP
 
+#include <iostream>
 #include <vector>
 #include <string>
 #include <map>
@@ -260,6 +261,10 @@ struct Argument
   static Argument* CopyWithMapping(const Argument* arg,
                                    VariableMap& v_map);
 
+  static VariableMap ConvertMapToArg(const Argument* arg,
+                                     const Argument* con_to,
+                                     const VariableMap& v_map);
+
   //! Separates a string input into command and arguments
   //!
   //! \param input string representation
@@ -273,6 +278,8 @@ struct Argument
                               std::string& cmd,
                               std::vector<std::string>& args,
                               Log log = GLOBAL_LOG);
+
+  size_t del_track;
 
 }; // struct Argument
 

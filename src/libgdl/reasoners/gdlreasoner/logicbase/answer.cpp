@@ -80,28 +80,43 @@ Answer::Answer(const Type& t,
 
   else if(t == CACHE)
   {
-    const tuple<Argument*, list<VariableMap>>& tup = kb.cached_maps.find(question.Hash())->second;
+    const tuple<Argument*, list<VariableMap>*>& tup = kb.cached_maps.find(question.Hash())->second;
 
-    maps = &get<1>(tup);
+    maps = get<1>(tup);
     sub_struct = get<0>(tup);
-    maps_it = maps->begin();
+    if(maps != NULL) maps_it = maps->begin();
+  }
+
+  else if(t == DECODER)
+  {
+    to_dec = ans;
+    cache_maps = NULL;
+    cache_q = NULL;
+    if(kb.IsCacheRel(question.value))
+    {
+      to_cache = true;
+
+      cache_q = Argument::CopyWithMapping(&question, conv_map);
+      cache_maps = new list<VariableMap>();
+    }
+    else to_cache = false;
   }
 }
 
-VariableMap AdjustToQuestion(const Argument* arg, const Argument* adj_to,
+VariableMap Answer::AdjustToQuestion(const Argument* arg, const Argument* adj_to,
                              const VariableMap& v_map)
 {
   VariableMap out;
 
-  stack<tuple<const Argument*, const Argument*>> s;
+  stack<pair<const Argument*, const Argument*>> s;
   s.emplace(arg, adj_to);
 
   while(!s.empty())
   {
     auto& tup = s.top();
 
-    const Argument* arg1 = get<0>(tup);
-    const Argument* arg2 = get<1>(tup);
+    const Argument* arg1 = tup.first;
+    const Argument* arg2 = tup.second;
 
     s.pop();
 
@@ -161,6 +176,11 @@ Answer::~Answer()
   else if(t == GROUND)
   {
     delete ans;
+  }
+
+  else if(t == DECODER)
+  {
+    delete to_dec;
   }
 }
 
@@ -356,12 +376,43 @@ bool Answer::next()
 
   else if(t == CACHE)
   {
+    if(maps == NULL)
+      return false;
     if(maps_it != maps->end())
     {
       maps_it++;
       return true;
     }
     return false;
+  }
+
+  else if(t == DECODER)
+  {
+    bool res = to_dec->next();
+    if(res)
+    {
+      to_ret = to_dec->GetVariableMap();
+
+      if(to_cache)
+      {
+        VariableMap to_add;
+        for(auto it : conv_map)
+        {
+          const Argument* temp = to_ret[it.second];
+          while(temp->t == Argument::Var)
+          {
+            temp = to_ret[temp];
+          }
+          to_add[it.first] = new Argument(*temp);
+        }
+        cache_maps->push_back(to_add);
+      }
+    }
+    else
+    {
+      if(to_cache) kb.cached_maps[question.Hash()] = tuple<Argument*, list<VariableMap>*>(cache_q, cache_maps);
+    }
+    return res;
   }
 
   std::cerr << "Something is gone wrong!!!" << endl;

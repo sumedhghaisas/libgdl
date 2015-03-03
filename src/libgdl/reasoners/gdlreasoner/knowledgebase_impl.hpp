@@ -7,6 +7,14 @@ inline logicbase::Answer* KnowledgeBase::GetAnswer(const Argument& question,
                                                    const VariableMap& v_map,
                                                    const std::set<size_t>& visited) const
 {
+  //core::SymbolDecodeStream sds(symbol_table);
+  //sds << question << std::endl;
+
+  if(cached_maps.find(question.Hash()) != cached_maps.end())
+  {
+    return new Answer(Answer::CACHE, question, v_map, *this, visited, NULL);
+  }
+
   Answer *ans = NULL;
 
   if(question.value == SymbolTable::OrID)
@@ -22,7 +30,7 @@ inline logicbase::Answer* KnowledgeBase::GetAnswer(const Argument& question,
     ans = new Answer(Answer::GROUND, question, v_map, *this, visited, ans);
   }
 
-  return ans;
+  return new Answer(Answer::DECODER, question, v_map, *this, visited, ans);
 }
 
 }

@@ -8,6 +8,7 @@
 
 #include <stack>
 #include <sstream>
+#include <tuple>
 
 #include <libgdl/core/data_types/error_type.hpp>
 
@@ -457,22 +458,54 @@ set<const Argument*> Argument::GetVariables() const
 }
 
 Argument* Argument::CopyWithMapping(const Argument* arg,
-                                    VariableMap& v_map)
+                                   VariableMap& v_map)
 {
   Argument* out = new Argument();
   out->t = arg->t;
   out->value = arg->value;
-  out->val = arg->val;
 
   if(arg->t == Argument::Var)
   {
-    v_map[arg] = out;
+    v_map[out] = arg;
     return out;
   }
 
   for(auto it : arg->args)
   {
     out->args.push_back(CopyWithMapping(it, v_map));
+  }
+
+  return out;
+}
+
+VariableMap Argument::ConvertMapToArg(const Argument* arg,
+                                      const Argument* con_to,
+                                      const VariableMap& v_map)
+{
+  VariableMap out;
+
+  stack<pair<const Argument*, const Argument*>> s;
+  s.emplace(arg, con_to);
+
+  while(!s.empty())
+  {
+    auto& tup = s.top();
+
+    const Argument* arg1 = get<0>(tup);
+    const Argument* arg2 = get<1>(tup);
+
+    s.pop();
+
+    if(arg1->t == Argument::Var)
+    {
+      out[arg2] = v_map.find(arg1)->second;
+      continue;
+    }
+
+    for(size_t i = 0;i < arg->args.size();i++)
+    {
+      s.emplace(arg2->args[i], arg2->args[i]);
+    }
   }
 
   return out;

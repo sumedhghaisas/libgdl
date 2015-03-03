@@ -93,6 +93,8 @@ class KnowledgeBase
   //!
   explicit KnowledgeBase(KIFFlattener& kiff, const Log& log = GLOBAL_LOG);
 
+  ~KnowledgeBase();
+
   //! Asks knowledge base given question and returns the list of answers
   //! The answers are returned as pointer to 'Argument'
   //! Delete the answer for yourself
@@ -278,7 +280,20 @@ class KnowledgeBase
     return log;
   }
 
-  std::map<size_t, std::tuple<Argument*, std::list<VariableMap>>> cached_maps;
+  mutable std::map<size_t, std::tuple<Argument*, std::list<VariableMap>*>> cached_maps;
+
+  std::set<size_t> cache_rels;
+
+  void AddCacheRel(size_t val)
+  {
+    cache_rels.insert(val);
+  }
+  bool IsCacheRel(size_t val) const
+  {
+    if(cache_rels.find(val) != cache_rels.end())
+      return true;
+    return false;
+  }
 
  private:
   friend GDLReasoner;
