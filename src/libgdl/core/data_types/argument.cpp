@@ -315,6 +315,29 @@ size_t Argument::Hash(size_t seed) const
   return seed;
 }
 
+size_t Argument::Hash2(size_t seed, const VariableMap& v_map) const
+{
+  if(t == Argument::Var)
+  {
+    auto it = v_map.find(this);
+    if(it != v_map.end())
+    {
+      seed = it->second->Hash2(seed, v_map);
+    }
+    return seed;
+  }
+
+  boost::hash_combine(seed, SymbolTable::GetPrime(2 * value));
+
+  for(size_t i = 0;i < args.size();i++)
+  {
+    boost::hash_combine(seed, i);
+    boost::hash_combine(seed, args[i]->Hash2(seed, v_map));
+  }
+
+  return seed;
+}
+
 bool Argument::operator==(const Argument& arg) const
 {
   if(t != arg.t) return false;
@@ -458,21 +481,31 @@ set<const Argument*> Argument::GetVariables() const
 }
 
 Argument* Argument::CopyWithMapping(const Argument* arg,
-                                   VariableMap& v_map)
+                                    const VariableMap& o_v_map,
+                                    VariableMap& v_map)
 {
   Argument* out = new Argument();
   out->t = arg->t;
   out->value = arg->value;
+  out->val = arg->val;
 
   if(arg->t == Argument::Var)
   {
-    v_map[out] = arg;
+    auto it = o_v_map.find(arg);
+    if(it == o_v_map.end())
+      v_map[out] = arg;
+    else
+    {
+      delete out;
+      out = CopyWithMapping(it->second, o_v_map, v_map);
+    }
+
     return out;
   }
 
   for(auto it : arg->args)
   {
-    out->args.push_back(CopyWithMapping(it, v_map));
+    out->args.push_back(CopyWithMapping(it, o_v_map, v_map));
   }
 
   return out;

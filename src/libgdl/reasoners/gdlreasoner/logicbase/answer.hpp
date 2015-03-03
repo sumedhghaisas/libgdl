@@ -89,21 +89,27 @@ class Answer
 
   /// Returns the variable mapping in which this solution is valid
   /// Returns variable map of last viable solution after next() returns false
-  inline VariableMap GetVariableMap()
-  {
-    if(t == CACHE)
-    {
-      auto temp_it = maps_it;
-      temp_it--;
-      return AdjustToQuestion(sub_struct, &question, *(temp_it));
-    }
-    else if(t == DECODER)
-    {
-      return to_ret;
-    }
-
-    return Unify::DecodeSubstitutions(v_map, &question, o_v_map, to_del);
-  }
+  VariableMap GetVariableMap();
+//  {
+//    if(t == CACHE)
+//    {
+//      auto temp_it = maps_it;
+//      temp_it--;
+//      VariableMap v_map = AdjustToQuestion(sub_struct, &question, *(temp_it));
+//      Argument* temp = Unify::GetSubstitutedArgument(&question, v_map);
+//
+//      core::SymbolDecodeStream sds(kb.GetSymbolTable());
+//      sds << *temp << std::endl;
+//
+//      return v_map;
+//    }
+//    else if(t == DECODER)
+//    {
+//      return to_ret;
+//    }
+//
+//    return Unify::DecodeSubstitutions(v_map, &question, o_v_map, to_del);
+//  }
 
   //! Returns visited clause set
   inline const std::set<size_t>& Visited() { return visited; }

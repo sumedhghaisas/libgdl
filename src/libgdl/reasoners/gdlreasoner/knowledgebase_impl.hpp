@@ -10,7 +10,10 @@ inline logicbase::Answer* KnowledgeBase::GetAnswer(const Argument& question,
   //core::SymbolDecodeStream sds(symbol_table);
   //sds << question << std::endl;
 
-  if(cached_maps.find(question.Hash()) != cached_maps.end())
+  //std::cout << question.Hash2(0, v_map) << std::endl;
+  //std::cout << question.Hash(0) << std::endl;
+
+  if(cached_maps.find(question.Hash2(0, v_map)) != cached_maps.end())
   {
     return new Answer(Answer::CACHE, question, v_map, *this, visited, NULL);
   }

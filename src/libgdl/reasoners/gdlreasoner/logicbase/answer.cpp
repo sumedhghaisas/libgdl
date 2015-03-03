@@ -80,7 +80,7 @@ Answer::Answer(const Type& t,
 
   else if(t == CACHE)
   {
-    const tuple<Argument*, list<VariableMap>*>& tup = kb.cached_maps.find(question.Hash())->second;
+    const tuple<Argument*, list<VariableMap>*>& tup = kb.cached_maps.find(question.Hash2(0, o_v_map))->second;
 
     maps = get<1>(tup);
     sub_struct = get<0>(tup);
@@ -96,7 +96,7 @@ Answer::Answer(const Type& t,
     {
       to_cache = true;
 
-      cache_q = Argument::CopyWithMapping(&question, conv_map);
+      cache_q = Argument::CopyWithMapping(&question, o_v_map, conv_map);
       cache_maps = new list<VariableMap>();
     }
     else to_cache = false;
@@ -122,7 +122,9 @@ VariableMap Answer::AdjustToQuestion(const Argument* arg, const Argument* adj_to
 
     if(arg1->t == Argument::Var)
     {
-      out[arg2] = v_map.find(arg1)->second;
+      auto it = v_map.find(arg1);
+      if(it != v_map.end())
+        out[arg2] = it->second;
       continue;
     }
 
@@ -293,6 +295,7 @@ bool Answer::next()
           {
             // final solution
             v_map = tail.partAnswer->GetVariableMap();
+
             if(isExtra)
             {
               Unify::SpecialMapCompression(e_map, v_map, o_v_map);
@@ -410,7 +413,14 @@ bool Answer::next()
     }
     else
     {
-      if(to_cache) kb.cached_maps[question.Hash()] = tuple<Argument*, list<VariableMap>*>(cache_q, cache_maps);
+      if(to_cache)
+      {
+        //cout << question.Hash2(0, o_v_map) << endl;
+
+        //core::SymbolDecodeStream sds(kb.GetSymbolTable());
+        //sds << *cache_q << endl;
+        kb.cached_maps[question.Hash2(0, o_v_map)] = tuple<Argument*, list<VariableMap>*>(cache_q, cache_maps);
+      }
     }
     return res;
   }
@@ -418,3 +428,40 @@ bool Answer::next()
   std::cerr << "Something is gone wrong!!!" << endl;
   return false;
 }
+
+VariableMap Answer::GetVariableMap()
+  {
+    //core::SymbolDecodeStream sds(kb.GetSymbolTable());
+
+    if(t == CACHE)
+    {
+      auto temp_it = maps_it;
+      temp_it--;
+
+      //sds << *sub_struct << endl;
+
+      VariableMap v_map = AdjustToQuestion(sub_struct, &question, *(temp_it));
+
+      for(auto it : o_v_map)
+      {
+        v_map.insert(it);
+      }
+
+      //Argument* temp = Unify::GetSubstitutedArgument(&question, v_map);
+
+      //sds << *temp << std::endl;
+
+      return v_map;
+    }
+    else if(t == DECODER)
+    {
+      return to_ret;
+    }
+
+    VariableMap temp = Unify::DecodeSubstitutions(v_map, &question, o_v_map, to_del);
+    //Argument* temp2 = Unify::GetSubstitutedArgument(&question, temp);
+
+    //sds << *temp2 << endl;
+
+    return temp;
+  }

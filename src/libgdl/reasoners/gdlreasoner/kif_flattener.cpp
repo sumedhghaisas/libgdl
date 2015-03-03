@@ -20,7 +20,7 @@ using namespace libgdl::gdlreasoner;
 using namespace libgdl::gdlparser;
 using namespace libgdl::gdlreasoner::logicbase;
 
-void KIFFlattener::Flatten(KIF& kif)
+void KIFFlattener::Flatten(KIF& kif, bool useCache)
 {
   symbol_table = kif.GetSymbolTable();
 
@@ -121,7 +121,7 @@ void KIFFlattener::Flatten(KIF& kif)
           if(state_independent.find(temp->id) == state_independent.end())
           {
             FlattenRelation(temp, all_kb, state_independent,
-                            m_kb, flattened_clauses, flattened_facts);
+                            m_kb, flattened_clauses, flattened_facts, useCache);
           }
           continue;
         }
@@ -181,7 +181,8 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
                                    const std::set<size_t>& state_independent,
                                    KnowledgeBase& m_kb,
                                    std::list<Clause>& f_clauses,
-                                   std::list<Fact>& f_facts)
+                                   std::list<Fact>& f_facts,
+                                   bool useCache)
 {
   //compute signature of relation
   const size_t& sig = n->id;
@@ -213,9 +214,9 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   // start flattening clauses
   for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
   {
-    SymbolDecodeStream sds(symbol_table);
+    //SymbolDecodeStream sds(symbol_table);
 
-    sds << *it << endl;
+    //sds << *it << endl;
 
     // if the clause is already ground add it directly
     // add its head to heads list
@@ -259,7 +260,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
       // compute the answer with substitution
       Clause* to_add = Unify::GetSubstitutedClause(&(*it), ans_v_map);
 
-      sds << *to_add << endl;
+      //sds << *to_add << endl;
 
       // remove all the occurrences of data relations
       Clause* temp = RemoveDataFromClause(to_add, state_independent);
@@ -399,8 +400,9 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
     fl.push_back(std::move(f));
   }
 
-  for(auto it : cache)
-    m_kb.cached_maps.insert(it);
+  //cout << symbol_table.GetCommandName(sig) << endl;
+
+  m_kb.AddCacheRel(sig);
 }
 
 Clause* KIFFlattener::RemoveDataFromClause(Clause* c,

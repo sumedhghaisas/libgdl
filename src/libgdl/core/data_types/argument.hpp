@@ -212,6 +212,8 @@ struct Argument
   //!
   size_t Hash(size_t seed = 0) const;
 
+  size_t Hash2(size_t seed, const VariableMap& v_map) const;
+
   //! Returns string representation of this argument using the symbol table
   //! This function is used by SymbolDecodeStream to print argument
   //!
@@ -259,6 +261,7 @@ struct Argument
                                      Log log = GLOBAL_LOG);
 
   static Argument* CopyWithMapping(const Argument* arg,
+                                   const VariableMap& o_v_map,
                                    VariableMap& v_map);
 
   static VariableMap ConvertMapToArg(const Argument* arg,

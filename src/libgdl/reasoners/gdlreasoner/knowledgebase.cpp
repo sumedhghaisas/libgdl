@@ -104,6 +104,10 @@ std::list<Argument*> KnowledgeBase::Ask(const Argument& arg,
       Argument* temp = Unify::GetSubstitutedArgument(&arg, ans->GetVariableMap());
       std::stringstream stream;
       stream << *temp;
+
+      //SymbolDecodeStream sds(symbol_table);
+      //sds << *temp << endl;
+
       if(str_ans.find(stream.str()) == str_ans.end())
       {
         out.push_back(temp);
