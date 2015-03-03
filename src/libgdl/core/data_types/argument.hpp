@@ -22,6 +22,8 @@ namespace libgdl
 namespace core /** Core functionality of libGDL **/
 {
 
+typedef std::map<const Argument*, const Argument*> VariableMap;
+
 /**
  * Represents argument of fact or clause.
  * Can be relation, function or variable depending on type.
@@ -254,6 +256,9 @@ struct Argument
                                      SymbolTable& symbol_table,
                                      bool isRel = true,
                                      Log log = GLOBAL_LOG);
+
+  static Argument* CopyWithMapping(const Argument* arg,
+                                   VariableMap& v_map);
 
   //! Separates a string input into command and arguments
   //!

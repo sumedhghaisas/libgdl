@@ -77,6 +77,54 @@ Answer::Answer(const Type& t,
                                                 v_map);
     m_returnedResult = false;
   }
+
+  else if(t == CACHE)
+  {
+    const tuple<Argument*, list<VariableMap>>& tup = kb.cached_maps.find(question.Hash())->second;
+
+    maps = &get<1>(tup);
+    sub_struct = get<0>(tup);
+    maps_it = maps->begin();
+  }
+}
+
+VariableMap AdjustToQuestion(const Argument* arg, const Argument* adj_to,
+                             const VariableMap& v_map)
+{
+  VariableMap out;
+
+  stack<tuple<const Argument*, const Argument*>> s;
+  s.emplace(arg, adj_to);
+
+  while(!s.empty())
+  {
+    auto& tup = s.top();
+
+    const Argument* arg1 = get<0>(tup);
+    const Argument* arg2 = get<1>(tup);
+
+    s.pop();
+
+    if(arg1->t == Argument::Var)
+    {
+      out[arg2] = v_map.find(arg1)->second;
+      continue;
+    }
+
+    if(arg1->args.size() != arg2->args.size())
+    {
+      cerr << "In function AdjustToQuestion, number of arguments do not match." << endl;
+      cerr << "Improve Argument hash function." << endl;
+      exit(1);
+    }
+
+    for(size_t i = 0;i < arg1->args.size();i++)
+    {
+      s.emplace(arg1->args[i], arg2->args[i]);
+    }
+  }
+
+  return out;
 }
 
 Answer::~Answer()
@@ -304,6 +352,16 @@ bool Answer::next()
     if (m_returnedResult) return false;
     m_returnedResult = true;
     return m_distinct;
+  }
+
+  else if(t == CACHE)
+  {
+    if(maps_it != maps->end())
+    {
+      maps_it++;
+      return true;
+    }
+    return false;
   }
 
   std::cerr << "Something is gone wrong!!!" << endl;

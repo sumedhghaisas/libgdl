@@ -57,7 +57,7 @@ class Answer
 
  public:
   //! Type of the this answering
-  enum Type {CLAUSE, DISTINCT, GROUND, NOT, OR};
+  enum Type {CLAUSE, DISTINCT, GROUND, NOT, OR, CACHE };
 
   //! Constructs empty Answer
   //!
@@ -165,6 +165,11 @@ class Answer
   Answer * m_currentAnswer;
   //! Current argument in 'or'
   size_t current_arg;
+
+  /* Cache answer */
+  const std::list<VariableMap>* maps;
+  const Argument* sub_struct;
+  std::list<VariableMap>::const_iterator maps_it;
 }; // class Answer
 
 }; // namespace logicbase

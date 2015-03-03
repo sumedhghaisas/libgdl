@@ -455,3 +455,25 @@ set<const Argument*> Argument::GetVariables() const
   }
   return variables;
 }
+
+Argument* Argument::CopyWithMapping(const Argument* arg,
+                                    VariableMap& v_map)
+{
+  Argument* out = new Argument();
+  out->t = arg->t;
+  out->value = arg->value;
+  out->val = arg->val;
+
+  if(arg->t == Argument::Var)
+  {
+    v_map[arg] = out;
+    return out;
+  }
+
+  for(auto it : arg->args)
+  {
+    out->args.push_back(CopyWithMapping(it, v_map));
+  }
+
+  return out;
+}

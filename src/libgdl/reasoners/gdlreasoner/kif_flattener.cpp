@@ -213,7 +213,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   {
     SymbolDecodeStream sds(symbol_table);
 
-    //sds << *it << endl;
+    sds << *it << endl;
 
     // if the clause is already ground add it directly
     // add its head to heads list
@@ -257,7 +257,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
       // compute the answer with substitution
       Clause* to_add = Unify::GetSubstitutedClause(&(*it), ans_v_map);
 
-      //sds << *to_add << endl;
+      sds << *to_add << endl;
 
       // remove all the occurrences of data relations
       Clause* temp = RemoveDataFromClause(to_add, state_independent);

@@ -227,6 +227,8 @@ class KnowledgeBase
   //!
   bool Erase(const Fact& f, size_t index);
 
+
+
   //! Returns facts associated with given signature
   //! Returns NULL if no facts are found
   //! Signature represents SymbolTable ID of the fact command
@@ -275,6 +277,8 @@ class KnowledgeBase
   {
     return log;
   }
+
+  std::map<size_t, std::tuple<Argument*, std::list<VariableMap>>> cached_maps;
 
  private:
   friend GDLReasoner;
