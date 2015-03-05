@@ -37,19 +37,20 @@ struct RawAState
   }
 
   //! Get function
-  void Get(size_t i, bool& out) const
+  inline void Get(size_t i, bool& out) const
   {
     size_t buff = i / 8;
     size_t p = pow(2, i % 8);
 
     char temp = s[buff] & p;
 
-    if(temp != 0) out = true;
-    else out = false;
+    out = temp;
+    //if(temp != 0) out = true;
+    //else out = false;
   }
 
   //! Set function
-  void Set(size_t i, bool val)
+  inline void Set(size_t i, bool val)
   {
     size_t buff = i / 8;
     size_t p = pow(2, i % 8);

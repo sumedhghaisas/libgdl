@@ -343,6 +343,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
                 {
                   f_clauses.push_back(it);
                 }
+                f_clauses.push_back(*temp);
               }
 
               opti = false;
