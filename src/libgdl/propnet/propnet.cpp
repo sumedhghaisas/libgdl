@@ -602,6 +602,86 @@ void PropNet::GenerateStateMachineCode(std::ostream& m_file)
 
   m_file << "}" << endl << endl;
 
+  m_file << "extern \"C\" MoveList<AMove> GetLegalMoves_l2(const AState& s, bool* buff)" << endl;
+  m_file << "{" << endl;
+
+  //! print the legal move generator code
+  m_file << legal_ss1.str() << endl;
+
+  m_file << "MoveList<AMove> out(\"\");" << endl;
+  m_file << "bool dummy = false;" << endl;
+
+  legal_ret_it = legal_ret.begin();
+
+  vector<list<tuple<size_t, size_t>>> special_l;
+
+  for(auto role : legal_fun_m)
+  {
+    list<tuple<size_t, size_t>> temp;
+    for(auto it : role)
+    {
+      //m_file << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
+      temp.emplace_back(*legal_ret_it, get<0>(it));
+      legal_ret_it++;
+    }
+    special_l.push_back(temp);
+  }
+
+  m_file << "size_t arr[" << special_l.size() << "];" << endl;
+
+  list<tuple<size_t, size_t>>::const_iterator* legal_sp_it = new list<tuple<size_t, size_t>>::const_iterator[special_l.size()];
+  for(size_t i = 0;i < special_l.size();i++)
+    legal_sp_it[i] = special_l[i].begin();
+
+  bool isBreak = false;
+
+  while(!isBreak)
+  {
+    stringstream ss;
+    m_file << "dummy = buff[" << get<0>(*legal_sp_it[0]) << "]";
+    ss << " && out.ForwardToEmplaceBack(" << get<1>(*legal_sp_it[0]);
+    for(size_t i = 1;i < special_l.size();i++)
+    {
+      m_file << " && buff[" << get<0>(*legal_sp_it[0]) << "]";
+      ss << ", " << get<0>(*legal_sp_it[1]);
+    }
+    ss << ");";
+    m_file << ss.str() << endl;
+
+    legal_sp_it[0]++;
+    size_t index = 1;
+    if(legal_sp_it[0] == special_l[0].end())
+    {
+      legal_sp_it[0] = special_l[0].begin();
+
+      while(true)
+      {
+        if(index == special_l.size() ||
+          (legal_sp_it[index] == (--special_l[index].end()) && index == special_l.size() - 1))
+        {
+          isBreak = true;
+          break;
+        }
+        else if(legal_sp_it[index] == (--special_l[index].end()))
+        {
+          legal_sp_it[index] = special_l[index].begin();
+          index++;
+        }
+        else
+        {
+          legal_sp_it[index]++;
+          break;
+        }
+      }
+    }
+  }
+
+  delete[] legal_sp_it;
+
+  m_file << "return out;" << endl;
+
+  m_file << "}" << endl << endl;
+
   m_file << "extern \"C\" MoveVector<AMove> GetLegalMoves_v(const AState& s, bool* buff)" << endl;
   m_file << "{" << endl;
 

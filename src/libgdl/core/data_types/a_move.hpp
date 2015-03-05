@@ -44,6 +44,12 @@ struct RawAMove
 
   RawAMove(const std::list<std::string>& s_moves);
 
+  RawAMove(size_t i)
+    : moves(new size_t[n_roles]), count(0u)
+  {
+    moves[0] = i;
+  }
+
   inline void Get(size_t r_id, size_t in_id, bool& out) const
   {
     if(moves[r_id] == in_id) out = true;
@@ -97,6 +103,9 @@ struct AMove : public boost::intrusive_ptr<core::RawAMove>
 
   AMove(const std::list<std::string>& s_moves)
     : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove(s_moves)) {}
+
+  AMove(size_t i)
+    : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove(i)) {}
 
   AMove Clone() const
   {
