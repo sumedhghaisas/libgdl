@@ -737,7 +737,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 /// START FILE IsTerminal.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-    CodeHandler is_terminal_ch("bool", "IsTerminal", "(const AState& s, bool* buff)");
+    CodeHandler is_terminal_ch("bool", "IsTerminal", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
 
     is_terminal_ch.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl << endl;
 
@@ -764,7 +764,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 /// START FILE GetLegalMoves_l_sci.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-    CodeHandler get_legal_moves_l_sc1("MoveList<AMove>", "GetLegalMoves_l_sc1", "(const AState& s, bool* buff)");
+    CodeHandler get_legal_moves_l_sc1("MoveList<AMove>", "GetLegalMoves_l_sc1", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
 
     get_legal_moves_l_sc1.init_ss << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
     get_legal_moves_l_sc1.init_ss << "#include <libgdl/core/data_types/move_list.hpp>" << endl;
@@ -809,7 +809,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 /// START FILE GetLegalMoves_v_sci.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-    CodeHandler get_legal_moves_v_sc1("MoveVector<AMove>", "GetLegalMoves_v_sc1", "(const AState& s, bool* buff)");
+    CodeHandler get_legal_moves_v_sc1("MoveVector<AMove>", "GetLegalMoves_v_sc1", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
 
     get_legal_moves_v_sc1.s_entries = get_legal_moves_l_sc1.s_entries;
     get_legal_moves_v_sc1.init_ss << get_legal_moves_l_sc1.init_ss.str();
@@ -841,7 +841,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 /// START FILE GetNextState_sc1.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-    CodeHandler get_next_state_sc1("AState", "GetNextState_sc1", "(const AState& s, const AMove& move, bool* buff)");
+    CodeHandler get_next_state_sc1("AState", "GetNextState_sc1", "(const AState& s, const AMove& move, bool* buff)", "(const AState& s, const AMove& move, bool* buff, AState& s_out)", "(s, move, buff, s_out)");
 
     get_next_state_sc1.init_ss << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
     get_next_state_sc1.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl << endl;
@@ -870,7 +870,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 /// Save buffer space requirements
 ////////////////////////////////////////////////////////////////////////////////
 
-    CodeHandler GetSeriesMemoryRequirement("size_t", "GetSeriesMemoryRequirement", "()");
+    CodeHandler GetSeriesMemoryRequirement("size_t", "GetSeriesMemoryRequirement", "()", "()", "()");
 
     GetSeriesMemoryRequirement.init_ss << "#include <iostream>" << endl
                                        << "using namespace std;" << endl;
@@ -909,7 +909,7 @@ void PropNet::GenerateStateMachine()
 /// Generate init_state.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-  CodeHandler init_state("AState", "InitState", "()");
+  CodeHandler init_state("AState", "InitState", "()", "()", "()");
 
   init_state.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
 
@@ -966,7 +966,7 @@ void PropNet::GenerateStateMachine()
 /// START FILE GetGoals.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-  CodeHandler GetGoals("std::list<size_t>", "GetGoals", "(const AState& s, bool* buff)");
+  CodeHandler GetGoals("std::list<size_t>", "GetGoals", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
 
   //! Add required includes
   GetGoals.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
@@ -1007,7 +1007,7 @@ void PropNet::GenerateStateMachine()
 /// START FILE GetGoalMemoryRequirement.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-  CodeHandler GetGoalMemoryRequirement("size_t", "GetGoalMemoryRequirement", "()");
+  CodeHandler GetGoalMemoryRequirement("size_t", "GetGoalMemoryRequirement", "()", "()", "()");
 
   GetGoalMemoryRequirement.init_ss << "#include <iostream>" << endl
                                    << "using namespace std;" << endl;
@@ -1040,7 +1040,7 @@ void PropNet::GenerateStateMachine()
 /// START FILE GetNextState.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-  CodeHandler GetNextState("AState", "GetNextState", "(const AState& s, const AMove& move, bool* buff)");
+  CodeHandler GetNextState("AState", "GetNextState", "(const AState& s, const AMove& move, bool* buff)", "(const AState& s, const AMove& move, bool* buff, AState& s_out)", "(s, move, buff, s_out)");
 
   //! Add required includes
   GetNextState.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
@@ -1094,7 +1094,7 @@ void PropNet::GenerateStateMachine()
 /// START FILE GetLegalMoves_l
 ////////////////////////////////////////////////////////////////////////////////
 
-  CodeHandler GetLegalMoves_l("MoveList<AMove>", "GetLegalMoves_l", "(const AState& s, bool* buff)");
+  CodeHandler GetLegalMoves_l("MoveList<AMove>", "GetLegalMoves_l", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
 
   //! Add required includes
   GetLegalMoves_l.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
@@ -1136,7 +1136,7 @@ void PropNet::GenerateStateMachine()
 /// START FILE GetLegalMoves_l
 ////////////////////////////////////////////////////////////////////////////////
 
-  CodeHandler GetLegalMoves_v("MoveVector<AMove>", "GetLegalMoves_v", "(const AState& s, bool* buff)");
+  CodeHandler GetLegalMoves_v("MoveVector<AMove>", "GetLegalMoves_v", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
   GetLegalMoves_v.s_entries = GetLegalMoves_l.s_entries;
   GetLegalMoves_v.init_ss << GetLegalMoves_l.init_ss.str();
 
@@ -1167,7 +1167,7 @@ void PropNet::GenerateStateMachine()
 /// Generate Move Creator
 ////////////////////////////////////////////////////////////////////////////////
 
-  CodeHandler CreateMove("AMove", "CreateMove", "(const std::list<std::string>& s_moves)");
+  CodeHandler CreateMove("AMove", "CreateMove", "(const std::list<std::string>& s_moves)", "(const std::list<std::string>& s_moves)", "(s_moves)");
   CreateMove.init_ss << GetLegalMoves_l.init_ss.str();
 
   CreateMove.fun_deinit_ss << "return AMove(s_moves);" << endl;

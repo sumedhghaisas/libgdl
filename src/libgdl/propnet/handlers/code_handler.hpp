@@ -18,8 +18,21 @@ struct CodeHandler
   CodeHandler(const std::string& r_type,
               const std::string& name,
               const std::string& sig,
-              size_t limit = 15000)
-    : r_type(r_type), name(name), sig(sig), limit(limit){}
+              const std::string& helper_sig,
+              const std::string& helper_call,
+              size_t limit = 10000)
+    : r_type(r_type),
+    name(name),
+    sig(sig),
+    helper_sig(helper_sig),
+    helper_call(helper_call),
+    helper(NULL),
+    limit(limit){}
+
+  ~CodeHandler()
+  {
+    delete helper;
+  }
 
   void AddEntry(const std::string& str)
   {
@@ -31,6 +44,8 @@ struct CodeHandler
   std::string r_type;
   std::string name;
   std::string sig;
+  std::string helper_sig;
+  std::string helper_call;
 
   std::stringstream init_ss;
   std::stringstream fun_init_ss;
@@ -38,8 +53,9 @@ struct CodeHandler
 
   std::list<std::string> s_entries;
 
-  size_t c_helper;
+  CodeHandler* helper;
   size_t limit;
+
 };
 
 }
