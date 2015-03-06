@@ -782,77 +782,22 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
     //! Generate code for legal moves
     list<size_t> legal_ret = global_em.CodeGen(get_legal_moves_l_sc1, legal_to_get_l);
 
-    get_legal_moves_l_sc1.fun_deinit_ss << "MoveList<AMove> out(\"\");" << endl;
-    get_legal_moves_l_sc1.fun_deinit_ss << "bool dummy = false;" << endl;
+    get_legal_moves_l_sc1.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
 
     auto legal_ret_it = legal_ret.begin();
 
-    vector<list<tuple<size_t, size_t>>> special_l;
-
+    size_t r_index = 0;
     for(auto role : legal_fun_m)
     {
-      list<tuple<size_t, size_t>> temp;
       for(auto it : role)
       {
-        //m_file << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
-        temp.emplace_back(*legal_ret_it, get<0>(it));
+        get_legal_moves_l_sc1.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
         legal_ret_it++;
       }
-      special_l.push_back(temp);
+      r_index++;
     }
 
-    get_legal_moves_l_sc1.fun_deinit_ss << "size_t arr[" << special_l.size() << "];" << endl;
-
-    list<tuple<size_t, size_t>>::const_iterator* legal_sp_it = new list<tuple<size_t, size_t>>::const_iterator[special_l.size()];
-    for(size_t i = 0;i < special_l.size();i++)
-      legal_sp_it[i] = special_l[i].begin();
-
-    bool isBreak = false;
-
-    while(!isBreak)
-    {
-      stringstream ss;
-      get_legal_moves_l_sc1.fun_deinit_ss << "dummy = buff[" << get<0>(*legal_sp_it[0]) << "]";
-      ss << " && out.ForwardToEmplaceBack(" << get<1>(*legal_sp_it[0]);
-      for(size_t i = 1;i < special_l.size();i++)
-      {
-        get_legal_moves_l_sc1.fun_deinit_ss << " && buff[" << get<0>(*legal_sp_it[0]) << "]";
-        ss << ", " << get<0>(*legal_sp_it[1]);
-      }
-      ss << ");";
-      get_legal_moves_l_sc1.fun_deinit_ss << ss.str() << endl;
-
-      legal_sp_it[0]++;
-      size_t index = 1;
-      if(legal_sp_it[0] == special_l[0].end())
-      {
-        legal_sp_it[0] = special_l[0].begin();
-
-        while(true)
-        {
-          if(index == special_l.size() ||
-            (legal_sp_it[index] == (--special_l[index].end()) && index == special_l.size() - 1))
-          {
-            isBreak = true;
-            break;
-          }
-          else if(legal_sp_it[index] == (--special_l[index].end()))
-          {
-            legal_sp_it[index] = special_l[index].begin();
-            index++;
-          }
-          else
-          {
-            legal_sp_it[index]++;
-            break;
-          }
-        }
-      }
-    }
-
-    delete[] legal_sp_it;
-
-    get_legal_moves_l_sc1.fun_deinit_ss << "return out;" << endl;
+    get_legal_moves_l_sc1.fun_deinit_ss << "return MoveList<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
 
     get_legal_moves_l_sc1.GenerateCode();
 
@@ -874,7 +819,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 
     legal_ret_it = legal_ret.begin();
 
-    special_l.clear();
+    vector<list<tuple<size_t, size_t>>> special_l;
 
     for(auto role : legal_fun_m)
     {
@@ -890,11 +835,11 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 
     get_legal_moves_v_sc1.fun_deinit_ss << "size_t arr[" << special_l.size() << "];" << endl;
 
-    legal_sp_it = new list<tuple<size_t, size_t>>::const_iterator[special_l.size()];
+    auto legal_sp_it = new list<tuple<size_t, size_t>>::const_iterator[special_l.size()];
     for(size_t i = 0;i < special_l.size();i++)
       legal_sp_it[i] = special_l[i].begin();
 
-    isBreak = false;
+    auto isBreak = false;
 
     while(!isBreak)
     {
@@ -1219,77 +1164,22 @@ void PropNet::GenerateStateMachine()
   //! Generate code for legal moves
   list<size_t> legal_ret = glm_em.CodeGen(GetLegalMoves_l, legal_to_get_l);
 
-  GetLegalMoves_l.fun_deinit_ss << "MoveList<AMove> out(\"\");" << endl;
-  GetLegalMoves_l.fun_deinit_ss << "bool dummy = false;" << endl;
+  GetLegalMoves_l.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
 
   auto legal_ret_it = legal_ret.begin();
 
-  vector<list<tuple<size_t, size_t>>> special_l;
-
+  size_t r_index = 0;
   for(auto role : legal_fun_m)
   {
-    list<tuple<size_t, size_t>> temp;
     for(auto it : role)
     {
-      //m_file << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
-      temp.emplace_back(*legal_ret_it, get<0>(it));
+      GetLegalMoves_l.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
       legal_ret_it++;
     }
-    special_l.push_back(temp);
+    r_index++;
   }
 
-  GetLegalMoves_l.fun_deinit_ss << "size_t arr[" << special_l.size() << "];" << endl;
-
-  list<tuple<size_t, size_t>>::const_iterator* legal_sp_it = new list<tuple<size_t, size_t>>::const_iterator[special_l.size()];
-  for(size_t i = 0;i < special_l.size();i++)
-    legal_sp_it[i] = special_l[i].begin();
-
-  bool isBreak = false;
-
-  while(!isBreak)
-  {
-    stringstream ss;
-    GetLegalMoves_l.fun_deinit_ss << "dummy = buff[" << get<0>(*legal_sp_it[0]) << "]";
-    ss << " && out.ForwardToEmplaceBack(" << get<1>(*legal_sp_it[0]);
-    for(size_t i = 1;i < special_l.size();i++)
-    {
-      GetLegalMoves_l.fun_deinit_ss << " && buff[" << get<0>(*legal_sp_it[0]) << "]";
-      ss << ", " << get<0>(*legal_sp_it[1]);
-    }
-    ss << ");";
-    GetLegalMoves_l.fun_deinit_ss << ss.str() << endl;
-
-    legal_sp_it[0]++;
-    size_t index = 1;
-    if(legal_sp_it[0] == special_l[0].end())
-    {
-      legal_sp_it[0] = special_l[0].begin();
-
-      while(true)
-      {
-        if(index == special_l.size() ||
-          (legal_sp_it[index] == (--special_l[index].end()) && index == special_l.size() - 1))
-        {
-          isBreak = true;
-          break;
-        }
-        else if(legal_sp_it[index] == (--special_l[index].end()))
-        {
-          legal_sp_it[index] = special_l[index].begin();
-          index++;
-        }
-        else
-        {
-          legal_sp_it[index]++;
-          break;
-        }
-      }
-    }
-  }
-
-  delete[] legal_sp_it;
-
-  GetLegalMoves_l.fun_deinit_ss << "return out;" << endl;
+  GetLegalMoves_l.fun_deinit_ss << "return MoveList<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
 
   GetLegalMoves_l.GenerateCode();
 
@@ -1310,7 +1200,7 @@ void PropNet::GenerateStateMachine()
 
   legal_ret_it = legal_ret.begin();
 
-  special_l.clear();
+  vector<list<tuple<size_t, size_t>>> special_l;
 
   for(auto role : legal_fun_m)
   {
@@ -1326,11 +1216,11 @@ void PropNet::GenerateStateMachine()
 
   GetLegalMoves_v.fun_deinit_ss << "size_t arr[" << special_l.size() << "];" << endl;
 
-  legal_sp_it = new list<tuple<size_t, size_t>>::const_iterator[special_l.size()];
+  auto legal_sp_it = new list<tuple<size_t, size_t>>::const_iterator[special_l.size()];
   for(size_t i = 0;i < special_l.size();i++)
     legal_sp_it[i] = special_l[i].begin();
 
-  isBreak = false;
+  auto isBreak = false;
 
   while(!isBreak)
   {
