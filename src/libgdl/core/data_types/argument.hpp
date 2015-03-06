@@ -7,6 +7,7 @@
 #ifndef _LIBGDL_CORE_DATATYPES_ARGUMENT_HPP
 #define _LIBGDL_CORE_DATATYPES_ARGUMENT_HPP
 
+#include <iostream>
 #include <vector>
 #include <string>
 #include <map>
@@ -21,6 +22,8 @@ namespace libgdl
 {
 namespace core /** Core functionality of libGDL **/
 {
+
+typedef std::map<const Argument*, const Argument*> VariableMap;
 
 /**
  * Represents argument of fact or clause.
@@ -209,6 +212,8 @@ struct Argument
   //!
   size_t Hash(size_t seed = 0) const;
 
+  size_t Hash2(size_t seed, const VariableMap& v_map) const;
+
   //! Returns string representation of this argument using the symbol table
   //! This function is used by SymbolDecodeStream to print argument
   //!
@@ -255,6 +260,14 @@ struct Argument
                                      bool isRel = true,
                                      Log log = GLOBAL_LOG);
 
+  static Argument* CopyWithMapping(const Argument* arg,
+                                   const VariableMap& o_v_map,
+                                   VariableMap& v_map);
+
+  static VariableMap ConvertMapToArg(const Argument* arg,
+                                     const Argument* con_to,
+                                     const VariableMap& v_map);
+
   //! Separates a string input into command and arguments
   //!
   //! \param input string representation
@@ -268,6 +281,8 @@ struct Argument
                               std::string& cmd,
                               std::vector<std::string>& args,
                               Log log = GLOBAL_LOG);
+
+  size_t del_track;
 
 }; // struct Argument
 

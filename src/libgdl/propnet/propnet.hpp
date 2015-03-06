@@ -35,7 +35,7 @@ class PropNet
 
   bool PrintPropnet(const std::string& filename) const;
 
-  void GenerateStateMachineCode(std::ostream& stream);
+  void GenerateStateMachineCode();
 
   void GenerateMoveCode(std::ostream& stream);
 
@@ -44,7 +44,7 @@ class PropNet
  private:
   void CreatePropNet(gdlreasoner::KIFFlattener& kf);
 
-  void GenerateSeriesFunctions(std::ostream& stream, size_t mark_index);
+  void GenerateSeriesFunctions(size_t mark_index);
 
   node_types::Node* CreateNode(core::SymbolTable sym, const core::Argument* arg);
 

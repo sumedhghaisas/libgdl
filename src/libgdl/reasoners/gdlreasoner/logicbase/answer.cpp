@@ -77,6 +77,71 @@ Answer::Answer(const Type& t,
                                                 v_map);
     m_returnedResult = false;
   }
+
+  else if(t == CACHE)
+  {
+    const tuple<Argument*, list<VariableMap>*>& tup = kb.cached_maps.find(question.Hash2(0, o_v_map))->second;
+
+    maps = get<1>(tup);
+    sub_struct = get<0>(tup);
+    if(maps != NULL) maps_it = maps->begin();
+  }
+
+  else if(t == DECODER)
+  {
+    to_dec = ans;
+    cache_maps = NULL;
+    cache_q = NULL;
+    if(kb.IsCacheRel(question.value))
+    {
+      to_cache = true;
+
+      cache_q = Argument::CopyWithMapping(&question, o_v_map, conv_map);
+      cache_maps = new list<VariableMap>();
+    }
+    else to_cache = false;
+  }
+}
+
+VariableMap Answer::AdjustToQuestion(const Argument* arg, const Argument* adj_to,
+                             const VariableMap& v_map)
+{
+  VariableMap out;
+
+  stack<pair<const Argument*, const Argument*>> s;
+  s.emplace(arg, adj_to);
+
+  while(!s.empty())
+  {
+    auto& tup = s.top();
+
+    const Argument* arg1 = tup.first;
+    const Argument* arg2 = tup.second;
+
+    s.pop();
+
+    if(arg1->t == Argument::Var)
+    {
+      auto it = v_map.find(arg1);
+      if(it != v_map.end())
+        out[arg2] = it->second;
+      continue;
+    }
+
+    if(arg1->args.size() != arg2->args.size())
+    {
+      cerr << "In function AdjustToQuestion, number of arguments do not match." << endl;
+      cerr << "Improve Argument hash function." << endl;
+      exit(1);
+    }
+
+    for(size_t i = 0;i < arg1->args.size();i++)
+    {
+      s.emplace(arg1->args[i], arg2->args[i]);
+    }
+  }
+
+  return out;
 }
 
 Answer::~Answer()
@@ -113,6 +178,11 @@ Answer::~Answer()
   else if(t == GROUND)
   {
     delete ans;
+  }
+
+  else if(t == DECODER)
+  {
+    delete to_dec;
   }
 }
 
@@ -225,6 +295,7 @@ bool Answer::next()
           {
             // final solution
             v_map = tail.partAnswer->GetVariableMap();
+
             if(isExtra)
             {
               Unify::SpecialMapCompression(e_map, v_map, o_v_map);
@@ -306,6 +377,91 @@ bool Answer::next()
     return m_distinct;
   }
 
+  else if(t == CACHE)
+  {
+    if(maps == NULL)
+      return false;
+    if(maps_it != maps->end())
+    {
+      maps_it++;
+      return true;
+    }
+    return false;
+  }
+
+  else if(t == DECODER)
+  {
+    bool res = to_dec->next();
+    if(res)
+    {
+      to_ret = to_dec->GetVariableMap();
+
+      if(to_cache)
+      {
+        VariableMap to_add;
+        for(auto it : conv_map)
+        {
+          const Argument* temp = to_ret[it.second];
+          while(temp->t == Argument::Var)
+          {
+            temp = to_ret[temp];
+          }
+          to_add[it.first] = new Argument(*temp);
+        }
+        cache_maps->push_back(to_add);
+      }
+    }
+    else
+    {
+      if(to_cache)
+      {
+        //cout << question.Hash2(0, o_v_map) << endl;
+
+        //core::SymbolDecodeStream sds(kb.GetSymbolTable());
+        //sds << *cache_q << endl;
+        kb.cached_maps[question.Hash2(0, o_v_map)] = tuple<Argument*, list<VariableMap>*>(cache_q, cache_maps);
+      }
+    }
+    return res;
+  }
+
   std::cerr << "Something is gone wrong!!!" << endl;
   return false;
 }
+
+VariableMap Answer::GetVariableMap()
+  {
+    //core::SymbolDecodeStream sds(kb.GetSymbolTable());
+
+    if(t == CACHE)
+    {
+      auto temp_it = maps_it;
+      temp_it--;
+
+      //sds << *sub_struct << endl;
+
+      VariableMap v_map = AdjustToQuestion(sub_struct, &question, *(temp_it));
+
+      for(auto it : o_v_map)
+      {
+        v_map.insert(it);
+      }
+
+      //Argument* temp = Unify::GetSubstitutedArgument(&question, v_map);
+
+      //sds << *temp << std::endl;
+
+      return v_map;
+    }
+    else if(t == DECODER)
+    {
+      return to_ret;
+    }
+
+    VariableMap temp = Unify::DecodeSubstitutions(v_map, &question, o_v_map, to_del);
+    //Argument* temp2 = Unify::GetSubstitutedArgument(&question, temp);
+
+    //sds << *temp2 << endl;
+
+    return temp;
+  }

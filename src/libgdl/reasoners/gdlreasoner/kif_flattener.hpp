@@ -73,7 +73,7 @@ class KIFFlattener
   //! \return void
   //!
   //!
-  void Flatten(gdlparser::KIF& kif);
+  void Flatten(gdlparser::KIF& kif, bool useCache = false);
 
   //! Print the current flattened knowledge to file
   //! Returns the success state
@@ -152,7 +152,8 @@ class KIFFlattener
                        const std::set<size_t>& state_independent,
                        KnowledgeBase& m_kb,
                        std::list<Clause>& f_clauses,
-                       std::list<Fact>& f_facts);
+                       std::list<Fact>& f_facts,
+                       bool useCache);
 
   //! Preprocesses clause before flattening
   //! Returns the clause with special substitution

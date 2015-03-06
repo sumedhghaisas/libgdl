@@ -57,7 +57,7 @@ class Answer
 
  public:
   //! Type of the this answering
-  enum Type {CLAUSE, DISTINCT, GROUND, NOT, OR};
+  enum Type {CLAUSE, DISTINCT, GROUND, NOT, OR, CACHE, DECODER};
 
   //! Constructs empty Answer
   //!
@@ -84,12 +84,32 @@ class Answer
   //! Returns false if no next result is available
   bool next();
 
+  VariableMap AdjustToQuestion(const Argument* arg, const Argument* adj_to,
+                             const VariableMap& v_map);
+
   /// Returns the variable mapping in which this solution is valid
   /// Returns variable map of last viable solution after next() returns false
-  inline VariableMap GetVariableMap()
-  {
-    return Unify::DecodeSubstitutions(v_map, &question, o_v_map, to_del);
-  }
+  VariableMap GetVariableMap();
+//  {
+//    if(t == CACHE)
+//    {
+//      auto temp_it = maps_it;
+//      temp_it--;
+//      VariableMap v_map = AdjustToQuestion(sub_struct, &question, *(temp_it));
+//      Argument* temp = Unify::GetSubstitutedArgument(&question, v_map);
+//
+//      core::SymbolDecodeStream sds(kb.GetSymbolTable());
+//      sds << *temp << std::endl;
+//
+//      return v_map;
+//    }
+//    else if(t == DECODER)
+//    {
+//      return to_ret;
+//    }
+//
+//    return Unify::DecodeSubstitutions(v_map, &question, o_v_map, to_del);
+//  }
 
   //! Returns visited clause set
   inline const std::set<size_t>& Visited() { return visited; }
@@ -165,6 +185,19 @@ class Answer
   Answer * m_currentAnswer;
   //! Current argument in 'or'
   size_t current_arg;
+
+  /* Cache answer */
+  const std::list<VariableMap>* maps;
+  const Argument* sub_struct;
+  std::list<VariableMap>::const_iterator maps_it;
+
+  /* Decoder answer */
+  Answer* to_dec;
+  VariableMap to_ret;
+  bool to_cache;
+  std::list<VariableMap>* cache_maps;
+  Argument* cache_q;
+  VariableMap conv_map;
 }; // class Answer
 
 }; // namespace logicbase
