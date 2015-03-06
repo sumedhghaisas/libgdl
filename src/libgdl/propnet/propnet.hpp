@@ -41,6 +41,8 @@ class PropNet
 
   void GenerateStateCode(std::ostream& stream);
 
+  void GenerateStateMachine();
+
  private:
   void CreatePropNet(gdlreasoner::KIFFlattener& kf);
 

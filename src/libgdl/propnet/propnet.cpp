@@ -6,6 +6,9 @@
 #include <fstream>
 #include <tuple>
 
+#include "handlers/code_handler.hpp"
+#include "handlers/file_handler.hpp"
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
@@ -1272,4 +1275,25 @@ void PropNet::GenerateMoveCode(std::ostream& stream)
 void PropNet::GenerateStateCode(std::ostream& stream)
 {
   istate.CodeGen(stream);
+}
+
+void PropNet::GenerateStateMachine()
+{
+  CodeHandler init_state("AState", "InitState", "()");
+
+  init_state.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
+
+  init_state.init_ss << "using namespace std;" << endl;
+  init_state.init_ss << "using namespace libgdl;" << endl << endl;
+
+  init_state.fun_init_ss << "AState init(new core::RawAState());" << endl;
+
+  for(auto i_prop : init_props)
+  {
+    stringstream ss;
+    ss << "init->Set(" << i_prop << ", true);";
+    init_state.AddEntry(ss.str());
+  }
+
+  init_state.fun_deinit_ss << "return init;" << std::endl;
 }
