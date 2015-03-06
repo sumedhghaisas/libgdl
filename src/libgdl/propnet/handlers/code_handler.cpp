@@ -7,7 +7,7 @@ void CodeHandler::GenerateCode()
 {
   std::ofstream file("state_machine/" + name + ".cpp");
 
-  FileHandler::GetMasterFileHandler().AddFile("state_machine/" + name + ".cpp");
+  FileHandler::GetMasterFileHandler().AddFile("state_machine/" + name);
 
   file << init_ss.str() << endl << endl;
 

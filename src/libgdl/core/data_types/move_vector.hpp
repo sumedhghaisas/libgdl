@@ -98,6 +98,9 @@ class MoveVector<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std
   MoveVector(IntrusiveVector<AMove>* m = NULL)
     : boost::intrusive_ptr<IntrusiveVector<AMove> >(m) {}
 
+  MoveVector(const std::string&)
+    : boost::intrusive_ptr<IntrusiveVector<AMove> >(new IntrusiveVector<AMove>()) {}
+
   MoveVector(const std::list<size_t>* result, size_t n_roles)
     : boost::intrusive_ptr<IntrusiveVector<AMove>>(new IntrusiveVector<AMove>())
   {

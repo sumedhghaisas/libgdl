@@ -982,9 +982,24 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 
     CodeHandler GetSeriesMemoryRequirement("size_t", "GetSeriesMemoryRequirement", "()");
 
+    GetSeriesMemoryRequirement.init_ss << "#include <iostream>" << endl
+                                       << "using namespace std;" << endl;
+
     GetSeriesMemoryRequirement.fun_deinit_ss << "return " << global_em.GetRequiredMemory() << ";" << endl;
 
     GetSeriesMemoryRequirement.GenerateCode();
+
+    ofstream s_stream("state_machine/a_state.cpp");
+    GenerateStateCode(s_stream);
+
+    FileHandler::GetMasterFileHandler().AddFile("state_machine/a_state");
+
+    ofstream m_stream("state_machine/a_move.cpp");
+    GenerateMoveCode(m_stream);
+
+    FileHandler::GetMasterFileHandler().AddFile("state_machine/a_move");
+
+    FileHandler::GetMasterFileHandler().AddFile("state_machine/print_functions");
   }
 }
 
@@ -1061,7 +1076,7 @@ void PropNet::GenerateStateMachine()
 /// START FILE GetGoals.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-  CodeHandler GetGoals("std::list<size_t>", "GetGoals", "(const AState& s, bool* buff");
+  CodeHandler GetGoals("std::list<size_t>", "GetGoals", "(const AState& s, bool* buff)");
 
   //! Add required includes
   GetGoals.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
@@ -1102,7 +1117,10 @@ void PropNet::GenerateStateMachine()
 /// START FILE GetGoalMemoryRequirement.cpp
 ////////////////////////////////////////////////////////////////////////////////
 
-  CodeHandler GetGoalMemoryRequirement("size_t", "GetGoalMemoryRequirement", "");
+  CodeHandler GetGoalMemoryRequirement("size_t", "GetGoalMemoryRequirement", "()");
+
+  GetGoalMemoryRequirement.init_ss << "#include <iostream>" << endl
+                                   << "using namespace std;" << endl;
 
   GetGoalMemoryRequirement.fun_deinit_ss << "return " << gg_em.GetRequiredMemory() << ";" << endl;
 
@@ -1375,4 +1393,6 @@ void PropNet::GenerateStateMachine()
   CreateMove.fun_deinit_ss << "return AMove(s_moves);" << endl;
 
   CreateMove.GenerateCode();
+
+  FileHandler::GetMasterFileHandler().GenerateSharedObject();
 }

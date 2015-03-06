@@ -19,7 +19,7 @@ struct CodeHandler
               const std::string& name,
               const std::string& sig,
               size_t limit = 15000)
-    : r_type(r_type), name(name), limit(limit) {}
+    : r_type(r_type), name(name), sig(sig), limit(limit){}
 
   void AddEntry(const std::string& str)
   {
