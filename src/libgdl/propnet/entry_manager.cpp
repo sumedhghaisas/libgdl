@@ -5,8 +5,7 @@
 using namespace std;
 using namespace libgdl::propnet;
 
-list<size_t> EntryManager::CodeGen(std::ostream& ss,
-                                   std::ostream& ss2,
+list<size_t> EntryManager::CodeGen(CodeHandler& ch,
                                    list<size_t> to_get_l)
 {
   for(auto entry : *l_entries_it)
@@ -22,7 +21,7 @@ list<size_t> EntryManager::CodeGen(std::ostream& ss,
       }
     }
 
-    entry->CodeGen(mm, ss, ss2);
+    entry->CodeGen(mm, ch);
 
     cl_lists[entry_stamps[entry_id]].push_back(entry_id);
   }

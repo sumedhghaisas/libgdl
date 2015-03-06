@@ -148,6 +148,13 @@ class MoveVector<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std
     return (*this->get())[index];
   }
 
+  template<typename... Args>
+  bool ForwardToEmplaceBack(Args... args)
+  {
+    (*this)->emplace_back(args...);
+    return true;
+  }
+
   //! implements its own iterator
   typedef typename IntrusiveVector<AMove>::iterator iterator;
   //! implements its own const_iterator

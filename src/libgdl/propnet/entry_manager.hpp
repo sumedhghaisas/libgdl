@@ -9,6 +9,8 @@
 
 #include "entry_types/entry.hpp"
 
+#include "handlers/code_handler.hpp"
+
 namespace libgdl
 {
 namespace propnet
@@ -64,8 +66,7 @@ class EntryManager
     mm = MemoryManager();
   }
 
-  std::list<size_t> CodeGen(std::ostream& ss,
-                            std::ostream& ss2,
+  std::list<size_t> CodeGen(CodeHandler& ch,
                             std::list<size_t> to_get_l);
 
   size_t GetRequiredMemory()

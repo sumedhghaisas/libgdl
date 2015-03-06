@@ -18,9 +18,11 @@ struct OrEntry : public Entry
   OrEntry(size_t id, const std::list<std::tuple<bool, size_t>>& in_ids)
     : Entry(id), in_ids(in_ids) {}
 
-  void CodeGen(MemoryManager& mm, std::ostream& ss, std::ostream& ss2)
+  void CodeGen(MemoryManager& mm, CodeHandler& ch)
   {
     size_t ml = mm.RequestLocation(id);
+
+    std::stringstream ss, ss2;
 
     ss << "buff[" << ml << "] = ";
     ss2 << "buff[" << ml << "] = ";
@@ -36,8 +38,10 @@ struct OrEntry : public Entry
       PrintAccess(*in_id, mm ,ss);
       PrintAccess(*in_id, mm ,ss2);
     }
-    ss << ";" << std::endl;
-    ss2 << ";" << std::endl;
+    ss << ";";
+    ss2 << ";";
+
+    ch.AddEntry(ss.str());
   }
 
   std::list<std::tuple<bool, size_t>> in_ids;

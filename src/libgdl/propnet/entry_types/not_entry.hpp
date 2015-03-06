@@ -18,13 +18,17 @@ struct NotEntry : public Entry
   NotEntry(size_t id, std::tuple<bool, size_t> in)
     : Entry(id), in(in) {}
 
-  void CodeGen(MemoryManager& mm, std::ostream& ss, std::ostream& ss2)
+  void CodeGen(MemoryManager& mm, CodeHandler& ch)
   {
     size_t ml = mm.RequestLocation(id);
 
+    std::stringstream ss;
+
     ss << "buff[" << ml << "] = !";
     PrintAccess(in, mm, ss);
-    ss << ";" << std::endl;
+    ss << ";";
+
+    ch.AddEntry(ss.str());
   }
 
   std::tuple<bool, size_t> in;

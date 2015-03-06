@@ -15,8 +15,10 @@ struct SaveEntry : public Entry
   SaveEntry(size_t id, size_t base_id, const std::list<std::tuple<bool, size_t>>& in_ids)
     : Entry(id), base_id(base_id), in_ids(in_ids) {}
 
-  void CodeGen(MemoryManager& mm, std::ostream& ss, std::ostream& ss2)
+  void CodeGen(MemoryManager& mm, CodeHandler& ch)
   {
+    std::stringstream ss, ss2;
+
     ss << "s_out->Set(" << base_id << ", ";
     ss2 << "s_out.Set(" << base_id << ", ";
 
@@ -32,8 +34,10 @@ struct SaveEntry : public Entry
       PrintAccess(*in_id, mm ,ss2);
     }
 
-    ss << ");" << std::endl;
-    ss2 << ");" << std::endl;
+    ss << ");";
+    ss2 << ");";
+
+    ch.AddEntry(ss.str());
   }
 
   size_t base_id;

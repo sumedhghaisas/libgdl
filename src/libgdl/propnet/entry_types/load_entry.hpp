@@ -15,11 +15,15 @@ struct LoadEntry : public Entry
   LoadEntry(size_t id, size_t base_id)
     : Entry(id), base_id(base_id) {}
 
-  void CodeGen(MemoryManager& mm, std::ostream& ss, std::ostream& ss2)
+  void CodeGen(MemoryManager& mm, CodeHandler& ch)
   {
     size_t mem_id = mm.RequestLocation(id);
 
-    ss << "s->Get(" << base_id << ", buff[" << mem_id << "]);" << std::endl;
+    std::stringstream ss;
+
+    ss << "s->Get(" << base_id << ", buff[" << mem_id << "]);";
+
+    ch.AddEntry(ss.str());
     //ss2 << "s.Get_" << base_id << "(buff[" << mem_id << "]);" << std::endl;
   }
 

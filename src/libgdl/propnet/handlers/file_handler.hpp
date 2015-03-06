@@ -22,6 +22,15 @@ struct FileHandler
     files.push_back(file);
   }
 
+  void GenerateSharedObject()
+  {
+    std::list<std::string> obj_list;
+    for(auto it : files)
+    {
+
+    }
+  }
+
   std::list<std::string> files;
 };
 

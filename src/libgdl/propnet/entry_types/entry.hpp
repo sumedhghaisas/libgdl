@@ -2,8 +2,11 @@
 #define LIBGDL_PROPNET_ENTRY_HPP_INCLUDED
 
 #include <tuple>
+#include <sstream>
 
 #include "../memory_manager.hpp"
+
+#include "../handlers/code_handler.hpp"
 
 namespace libgdl
 {
@@ -19,7 +22,7 @@ struct Entry
 
   virtual ~Entry() {}
 
-  virtual void CodeGen(MemoryManager& mm, std::ostream& ss, std::ostream& ss2) = 0;
+  virtual void CodeGen(MemoryManager& mm, CodeHandler& ch) = 0;
 
   void PrintAccess(std::tuple<bool, size_t> entry_ret,
                    MemoryManager& mm,
