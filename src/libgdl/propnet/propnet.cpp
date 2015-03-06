@@ -814,7 +814,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
     get_legal_moves_v_sc1.s_entries = get_legal_moves_l_sc1.s_entries;
     get_legal_moves_v_sc1.init_ss << get_legal_moves_l_sc1.init_ss.str();
 
-    get_legal_moves_l_sc1.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
+    get_legal_moves_v_sc1.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
 
     legal_ret_it = legal_ret.begin();
 
@@ -823,13 +823,13 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
     {
       for(auto it : role)
       {
-        get_legal_moves_l_sc1.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
+        get_legal_moves_v_sc1.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
         legal_ret_it++;
       }
       r_index++;
     }
 
-    get_legal_moves_l_sc1.fun_deinit_ss << "return MoveVector<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
+    get_legal_moves_v_sc1.fun_deinit_ss << "return MoveVector<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
 
     get_legal_moves_v_sc1.GenerateCode();
 
