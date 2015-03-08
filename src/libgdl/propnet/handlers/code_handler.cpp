@@ -37,12 +37,12 @@ void CodeHandler::GenerateCode()
 
   if(isHelp)
   {
-    helper = new CodeHandler("void", name + "_helper", helper_sig, helper_sig, helper_call);
+    helper = new CodeHandler("void", name + "_h", helper_sig, helper_sig, helper_call);
     helper->init_ss << init_ss.str();
 
-    f_stream << name << "_helper" << helper_call << ";" << endl;
+    f_stream << name << "_h" << helper_call << ";" << endl;
 
-    h_stream << "extern \"C\" void " << name << "_helper" << helper_sig << ";" << endl;
+    h_stream << "extern \"C\" void " << name << "_h" << helper_sig << ";" << endl;
 
     for(it = it;it != s_entries.end();it++)
     {

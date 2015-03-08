@@ -42,7 +42,7 @@ struct FileHandler
 
   void GenerateSharedObject()
   {
-    std::string com_prefix = "g++ -O3 -std=c++11 -fPIC -Isrc";
+    std::string com_prefix = "g++ -std=c++11 -fPIC -Isrc";
 
     for(auto it : files)
     {

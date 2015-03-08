@@ -27,6 +27,9 @@ PropNet::PropNet(const std::string& filename, Log log)
   KIFFlattener kf(log);
   kf.Flatten(kif);
 
+  kf.PrintToFile("out.kif");
+  exit(0);
+
   CreatePropNet(kf);
 }
 

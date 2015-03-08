@@ -22,29 +22,41 @@ struct OrEntry : public Entry
   {
     size_t ml = mm.RequestLocation(id);
 
-    std::stringstream ss, ss2;
+    std::stringstream* ss = new std::stringstream();
 
-    ss << "buff[" << ml << "] = ";
-    ss2 << "buff[" << ml << "] = ";
+    *ss << "buff[" << ml << "] = ";
 
     auto in_id = in_ids.begin();
-    PrintAccess(*in_id, mm, ss);
-    PrintAccess(*in_id, mm, ss2);
+    PrintAccess(*in_id, mm, *ss);
     in_id++;
+
+    size_t or_count = 0;
+
     for(in_id = in_id;in_id != in_ids.end();in_id++)
     {
-      ss << " || ";
-      ss2 << " | ";
-      PrintAccess(*in_id, mm ,ss);
-      PrintAccess(*in_id, mm ,ss2);
-    }
-    ss << ";";
-    ss2 << ";";
+      if(or_count > or_limit)
+      {
+        *ss << ";";
+        ch.AddEntry(ss->str());
+        delete ss;
+        ss = new std::stringstream();
+        *ss << "buff[" << ml << "] = buff[" << ml << "]";
+        or_count = or_count - 1;
+      }
 
-    ch.AddEntry(ss.str());
+      *ss << " || ";
+      PrintAccess(*in_id, mm , *ss);
+      or_count++;
+    }
+
+    *ss << ";";
+
+    ch.AddEntry(ss->str());
   }
 
   std::list<std::tuple<bool, size_t>> in_ids;
+
+  static const size_t or_limit = 20;
 };
 
 }
