@@ -231,6 +231,32 @@ void InitializePropnetOptimizer(const Clause& c,
   opt_clauses.back().isLocation = c.isLocation;
 }
 
+bool IsSelfRecursive(const Clause& c)
+{
+  size_t sig = c.head->value;
+
+  for(auto premiss : c.premisses)
+  {
+    size_t p_id = premiss->value;
+
+    if(p_id == SymbolTable::OrID)
+    {
+      for(auto arg : premiss->args)
+      {
+        if(arg->value == sig)
+          return true;
+      }
+    }
+    else
+    {
+      if(p_id == sig)
+        return true;
+    }
+  }
+
+  return false;
+}
+
 void KIFFlattener::FlattenRelation(const DGraphNode* n,
                                    const KnowledgeBase& all_kb,
                                    const std::set<size_t>& state_independent,
@@ -266,6 +292,8 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   // these will be added later to temporary knowledge base
   map<size_t, tuple<Argument*, list<VariableMap>*>> cache;
 
+  list<const Clause*> rec_clauses;
+
   // start flattening clauses
   for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
   {
@@ -285,6 +313,12 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
       continue;
     }
 
+    if(IsSelfRecursive(*it))
+    {
+      rec_clauses.push_back(&(*it));
+      continue;
+    }
+
     // pre-process the clause
     // adjust the extra variables which are present in body but not head
     // adjust 'not' relation appropriately
@@ -299,8 +333,6 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
     // after adding the head of the clause will be the question to ask
     Answer* ans = m_kb.GetAnswer(*question, VariableMap(), set<size_t>());
 
-
-    bool opti = false;
     Argument opt_args[2];
     bool is_initialized = false;
 
@@ -413,13 +445,146 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   size_t command = n->id;
   KnowledgeBase::FactList& fl = m_kb.m_facts[command];
 
+  set<size_t> head_hashes;
+
+  if(rec_clauses.empty())
+  {
+    // add heads of all the clauses to knowledge base
+    for(list<Argument*>::iterator it = f_heads.begin();it != f_heads.end();it++)
+    {
+      Fact f;
+      f.arg = *it;
+
+      fl.push_back(std::move(f));
+    }
+  }
+  else
+  {
+    // add heads of all the clauses to knowledge base
+    for(list<Argument*>::iterator it = f_heads.begin();it != f_heads.end();it++)
+    {
+      Fact f;
+      f.arg = *it;
+
+      head_hashes.insert(f.arg->Hash());
+
+      fl.push_back(std::move(f));
+    }
+  }
+
+  list<Argument*> rec_f_heads;
+
+  SymbolDecodeStream sds(symbol_table);
+
+  for(auto c_rec : rec_clauses)
+  {
+    Clause* p_clause = ProcessClause(*c_rec, state_independent);
+
+    size_t head_id = p_clause->head->value;
+
+    string head_command = symbol_table->GetCommandName(head_id);
+
+    head_command += "_recurse";
+
+    size_t rec_head_id = symbol_table.AddEntry(head_command, core::Location());
+
+    p_clause->head->value = rec_head_id;
+
+    Clause* rec_clause = new Clause(*p_clause);
+    rec_clause->head->value = rec_head_id;
+    for(auto premiss : rec_clause->premisses)
+    {
+      if(premiss->value == SymbolTable::OrID)
+      {
+        for(auto arg : premiss->args)
+        {
+          if(arg->value == head_id)
+            arg->value = rec_head_id;
+        }
+      }
+      else if(premiss->value == head_id)
+        premiss->value = rec_head_id;
+    }
+
+    sds << *p_clause << endl;
+    sds << *rec_clause << endl;
+
+    // add the processed clause temporarily to knowledge base
+    size_t c_index = m_kb.Tell(*p_clause);
+    size_t rec_c_index = m_kb.Tell(*rec_clause);
+
+    VariableMap h_v_map;
+    Argument* question = SpecialArgCopy2(p_clause->head, h_v_map);
+
+    // after adding the head of the clause will be the question to ask
+    Answer* ans = m_kb.GetAnswer(*question, VariableMap(), set<size_t>());
+
+    while(ans->next())
+    {
+      VariableMap ans_v_map = ans->GetVariableMap();
+      for(auto va : h_v_map)
+        ans_v_map.insert(va);
+
+      // compute the answer with substitution
+      Clause* to_add = Unify::GetSubstitutedClause(c_rec, ans_v_map);
+
+      //sds << *to_add << endl;
+
+      // remove all the occurrences of data relations
+      Clause* temp = RemoveDataFromClause(to_add, state_independent);
+
+      sds << *temp << endl;
+
+      // check whether clause can be converted to fact after data relations removal
+      if(temp == NULL)
+      {
+        Argument* h = to_add->head;
+        to_add->head = NULL;
+        delete to_add;
+        f_facts.push_back(*h);
+        f_facts.back().loc = c_rec->loc;
+        f_facts.back().isLocation = c_rec->isLocation;
+        rec_f_heads.push_back(h);
+      }
+      else
+      {
+        f_clauses.push_back(*temp);
+        f_clauses.back().loc = c_rec->loc;
+        f_clauses.back().isLocation = c_rec->isLocation;
+
+        rec_f_heads.push_back(temp->head);
+        temp->head = NULL;
+        delete temp;
+      }
+    }
+
+    // delete answer
+    delete ans;
+
+    // erase the temporary knowledge from knowledge base
+    m_kb.Erase(*rec_clause, rec_c_index);
+    m_kb.Erase(*p_clause, c_index);
+
+    // delete the processed clause(without deleting the variables
+    SpecialClauseDelete(p_clause);
+
+    delete rec_clause;
+
+    delete question;
+  }
+
   // add heads of all the clauses to knowledge base
-  for(list<Argument*>::iterator it = f_heads.begin();it != f_heads.end();it++)
+  for(list<Argument*>::iterator it = rec_f_heads.begin();it != rec_f_heads.end();it++)
   {
     Fact f;
     f.arg = *it;
 
-    fl.push_back(std::move(f));
+    size_t h = f.arg->Hash();
+    if(head_hashes.find(h) == head_hashes.end())
+    {
+      fl.push_back(std::move(f));
+      head_hashes.insert(h);
+    }
   }
 
   //cout << symbol_table.GetCommandName(sig) << endl;
