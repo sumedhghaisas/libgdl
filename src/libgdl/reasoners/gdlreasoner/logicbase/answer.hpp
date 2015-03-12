@@ -11,6 +11,10 @@
 #include <deque>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/argument.hpp>
+#include <libgdl/core/data_types/fact.hpp>
+#include <libgdl/core/data_types/clause.hpp>
+
 #include "unify.hpp"
 
 namespace libgdl

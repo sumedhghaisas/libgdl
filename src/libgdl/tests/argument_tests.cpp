@@ -5,6 +5,7 @@
  * Test file for Argument data structure.
  */
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/argument.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
 #include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
 

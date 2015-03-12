@@ -30,6 +30,7 @@ add_executable(kif
 target_link_libraries(kif
   gdl
   boost_program_options
+  pthread
 )
 
 set_target_properties(kif PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)

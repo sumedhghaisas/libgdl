@@ -35,6 +35,7 @@ add_executable(flatten
 target_link_libraries(flatten
   gdl
   boost_program_options
+  pthread
 )
 
 set_target_properties(flatten PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)

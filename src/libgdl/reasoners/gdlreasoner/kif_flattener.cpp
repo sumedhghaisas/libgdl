@@ -10,6 +10,7 @@
 #include <stack>
 
 #include <libgdl/core/util/setop.hpp>
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
 
 size_t combination_optimization_index = 0;
 
@@ -176,6 +177,60 @@ void KIFFlattener::DFSMarking(const DGraphNode* n, set<size_t>& marked)
   }
 }
 
+void OptimizeClausesForPropnet(list<Clause>& opt_clauses,
+                               Argument* opt_args,
+                               SymbolTable symbol_table,
+                               size_t& combination_optimization_index,
+                               std::list<Clause>& f_clauses)
+{
+  if(opt_clauses.size() > 3)
+  {
+    stringstream stream;
+    stream << "combination_optimization_" << combination_optimization_index++;
+    Argument* arg = new Argument(stream.str(), symbol_table, true);
+
+    Clause c;
+    c.head = arg;
+    c.premisses.push_back(new Argument(opt_args[0]));
+    c.premisses.push_back(new Argument(opt_args[1]));
+
+    f_clauses.push_back(c);
+
+    for(auto it : opt_clauses)
+    {
+      delete it.premisses[0];
+      delete it.premisses[1];
+
+      it.premisses.erase(it.premisses.begin(), it.premisses.begin() + 2);
+
+      it.premisses.push_back(new Argument(*arg));
+
+      f_clauses.push_back(it);
+    }
+    combination_optimization_index++;
+  }
+  else
+  {
+    for(auto it : opt_clauses)
+    {
+      f_clauses.push_back(it);
+    }
+  }
+}
+
+void InitializePropnetOptimizer(const Clause& c,
+                                Clause* temp,
+                                list<Clause>& opt_clauses,
+                                Argument* opt_args)
+{
+  opt_args[0] = *temp->premisses[0];
+  opt_args[1] = *temp->premisses[1];
+
+  opt_clauses.push_back(*temp);
+  opt_clauses.back().loc = c.loc;
+  opt_clauses.back().isLocation = c.isLocation;
+}
+
 void KIFFlattener::FlattenRelation(const DGraphNode* n,
                                    const KnowledgeBase& all_kb,
                                    const std::set<size_t>& state_independent,
@@ -275,84 +330,36 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
         f_facts.back().loc = (*it).loc;
         f_facts.back().isLocation = (*it).isLocation;
         f_heads.push_back(h);
+
+        if(is_initialized)
+        {
+          OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
+          is_initialized = false;
+        }
       }
       else
       {
-        if(!opti && temp->premisses.size() > 2)
-        {
-          opti = true;
-        }
-
-        if(opti)
+        if(temp->premisses.size() > 2)
         {
           if(!is_initialized)
           {
-            opt_args[0] = *temp->premisses[0];
-            opt_args[1] = *temp->premisses[1];
+            InitializePropnetOptimizer(*it, temp, opt_clauses, opt_args);
+            is_initialized = true;
+          }
 
+          if(*temp->premisses[0] == opt_args[0] && *temp->premisses[1] == opt_args[1])
+          {
             opt_clauses.push_back(*temp);
             opt_clauses.back().loc = (*it).loc;
             opt_clauses.back().isLocation = (*it).isLocation;
-
-            is_initialized = true;
           }
           else
           {
-            if(*temp->premisses[0] == opt_args[0] && *temp->premisses[1] == opt_args[1])
-            {
-              opt_clauses.push_back(*temp);
-              opt_clauses.back().loc = (*it).loc;
-              opt_clauses.back().isLocation = (*it).isLocation;
-            }
-            else
-            {
-//              for(auto it : opt_clauses)
-//              {
-//                sds << it << endl;
-//              }
-//              cout << endl;
+            OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
 
-              if(opt_clauses.size() > 3)
-              {
-                stringstream stream;
-                stream << "combination_optimization_" << combination_optimization_index++;
-                Argument* arg = new Argument(stream.str(), symbol_table, true);
-                Clause c;
-                c.head = arg;
-                c.premisses.push_back(new Argument(opt_args[0]));
-                c.premisses.push_back(new Argument(opt_args[1]));
+            opt_clauses.clear();
 
-                //sds << c << endl;
-
-                f_clauses.push_back(c);
-
-                for(auto it : opt_clauses)
-                {
-                  delete it.premisses[0];
-                  delete it.premisses[1];
-
-                  it.premisses.erase(it.premisses.begin(), it.premisses.begin() + 2);
-
-                  it.premisses.push_back(new Argument(*arg));
-
-                  //sds << it << endl;
-
-                  f_clauses.push_back(it);
-                }
-              }
-              else
-              {
-                for(auto it : opt_clauses)
-                {
-                  f_clauses.push_back(it);
-                }
-                f_clauses.push_back(*temp);
-              }
-
-              opti = false;
-              is_initialized = false;
-              opt_clauses.clear();
-            }
+            InitializePropnetOptimizer(*it, temp, opt_clauses, opt_args);
           }
         }
         else
@@ -360,12 +367,26 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
           f_clauses.push_back(*temp);
           f_clauses.back().loc = (*it).loc;
           f_clauses.back().isLocation = (*it).isLocation;
+
+          if(is_initialized)
+          {
+            OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
+
+            opt_clauses.clear();
+            is_initialized = false;
+          }
         }
 
         f_heads.push_back(temp->head);
         temp->head = NULL;
         delete temp;
       }
+    }
+
+    if(is_initialized)
+    {
+      OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
+      is_initialized = false;
     }
 
     // delete answer

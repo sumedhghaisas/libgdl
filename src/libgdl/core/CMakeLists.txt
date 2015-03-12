@@ -6,6 +6,7 @@ set(DIRS
   symbol_table
   dgraph
   benchmark
+  thread_pool
 )
 
 foreach(dir ${DIRS})

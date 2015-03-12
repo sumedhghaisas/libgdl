@@ -31,6 +31,7 @@ void IState::CodeGen(ostream& file)
   file << "#include <libgdl/core/data_types/a_state.hpp>" << endl << endl;
 
   file << "using namespace std;" << endl;
+  file << "using namespace libgdl;" << endl;
   file << "using namespace libgdl::core;" << endl << endl;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,12 +41,12 @@ void IState::CodeGen(ostream& file)
   file << "size_t RawAState::arr_size = " << size_char << ";" << endl;
 
   //! overload operator<< for RawState
-  file << "void RawAState::Print(std::ostream& stream) const {" << endl;
+  file << "extern \"C\" void PrintAState(ostream& stream, const AState& s) {" << endl;
   file << "bool temp = false;" << endl;
   file << "stream << \"State: \" << std::endl;" << endl;
   for(size_t i = 0;i < l_base.size();i++)
   {
-    file << "Get(" << i << ", temp);" << endl;
+    file << "s->Get(" << i << ", temp);" << endl;
     file << "if(temp) stream << \"\\t\" << \"" << l_base[i] << "\" << std::endl;" << endl;
   }
   file << "}" << endl;

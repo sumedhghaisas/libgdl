@@ -5,8 +5,11 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <set>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/a_state.hpp>
+#include <libgdl/core/data_types/a_move.hpp>
 #include <libgdl/reasoners/gdlreasoner/kif_flattener.hpp>
 #include <libgdl/gdlparser/kif.hpp>
 
@@ -14,8 +17,12 @@
 #include "istate.hpp"
 #include "imove.hpp"
 
+#include <libgdl/core.hpp>
+
 namespace libgdl
 {
+class StateMachine;
+
 namespace propnet
 {
 
@@ -27,9 +34,10 @@ class PropNet
   typedef node_types::Node Node;
 
  public:
-  explicit PropNet(const std::string& filename, Log log = Log());
+  explicit PropNet(Log log = GLOBAL_LOG);
 
-  explicit PropNet(gdlreasoner::KIFFlattener& kf, Log log = Log());
+  void Initialize(const std::string& filename);
+  void Initialize(gdlreasoner::KIFFlattener& kf);
 
   ~PropNet();
 
@@ -42,6 +50,87 @@ class PropNet
   void GenerateStateCode(std::ostream& stream);
 
   void GenerateStateMachine();
+
+  void SplitGoalNet(PropNet& pn);
+
+  size_t BaseSize() const
+  {
+    return base_nodes.size();
+  }
+
+  size_t RoleSize() const
+  {
+    return roles_ids.size();
+  }
+
+  template<typename StateType>
+  void InitState(StateType& init);
+
+  template<typename StateType>
+  void PrintState(std::ostream& stream, const StateType& s);
+
+  template<typename MoveType>
+  void PrintMove(std::ostream& stream, const MoveType& m);
+
+  template<typename CType>
+  void PrintMoveCollection(std::ostream& stream, const CType& mc);
+
+  template<typename StateType>
+  void GetPropNetBaseMask(StateType& s);
+
+  void InitializeRun(AState& s, AState& base_mask, std::set<size_t>* m_set, size_t* goals);
+
+  bool IsInitProp(size_t id) const
+  {
+    for(auto it : init_props)
+      if(it == id) return true;
+    return false;
+  }
+
+  Map<size_t, Node*>& BaseNodes()
+  {
+    return base_nodes;
+  }
+
+  std::vector<Map<size_t, Node*>>& InputNodes()
+  {
+    return input_nodes;
+  }
+
+  void InitializeToRoles(size_t num_roles)
+  {
+    for(size_t i = 0;i < num_roles;i++)
+    {
+      goal_nodes.emplace_back();
+      input_nodes.emplace_back();
+      legal_nodes.emplace_back();
+    }
+  }
+
+  void AddAndNode(Node* n) { and_nodes.push_back(n); }
+
+  void AddBaseNode(Node* n, size_t id) { base_nodes[id] = n; }
+
+  void AddGoalNode(Node* n, size_t r_id, size_t id) { goal_nodes[r_id][id] = n; }
+
+  void AddInputNode(Node* n, size_t r_id, size_t id) { input_nodes[r_id][id] = n; }
+
+  void AddLegalNode(Node* n, size_t r_id, size_t id) { legal_nodes[r_id][id] = n; }
+
+  void AddNextNode(Node* n, size_t id) { next_nodes[id] = n; }
+
+  void AddNotNode(Node* n) { not_nodes.push_back(n); }
+
+  void AddOrNode(Node* n) { or_nodes.push_back(n); }
+
+  void AddTerminalNode(Node* n) { terminal = n; }
+
+  void AddViewNode(Node* n, const std::string& name) { view_nodes[name] = n; }
+
+  Node* GetTerminalNode()
+  {
+    return terminal;
+  }
 
  private:
   void CreatePropNet(gdlreasoner::KIFFlattener& kf);
@@ -70,6 +159,8 @@ class PropNet
 
   std::list<size_t> init_props;
 
+  std::set<Node*> del;
+
   size_t c_r_id;
   size_t c_and_id;
   size_t c_not_id;
@@ -82,5 +173,6 @@ class PropNet
 }
 }
 
+#include "propnet_impl.hpp"
 
 #endif // LIBGDL_PROPNET_HPP_INCLUDED

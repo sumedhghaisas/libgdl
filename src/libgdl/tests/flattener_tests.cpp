@@ -13,6 +13,8 @@
 #include <libgdl/core/data_types/b_move.hpp>
 #include <libgdl/core/data_types/move_list.hpp>
 
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
+
 #include <list>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */

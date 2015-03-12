@@ -20,6 +20,9 @@
 #include <libgdl/core/util/gdl_stream.hpp>
 #include <libgdl/core/symbol_table/symbol_table.hpp>
 #include <libgdl/core/dgraph/dgraph.hpp>
+#include <libgdl/core/data_types/fact.hpp>
+#include <libgdl/core/data_types/clause.hpp>
+#include <libgdl/core/data_types/argument.hpp>
 
 #include "kif_scanner.hpp"
 #include "kif_parser.tab.hh"

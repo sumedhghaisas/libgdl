@@ -56,7 +56,7 @@ struct OrEntry : public Entry
 
   std::list<std::tuple<bool, size_t>> in_ids;
 
-  static const size_t or_limit = 20;
+  static const size_t or_limit = 105;
 };
 
 }

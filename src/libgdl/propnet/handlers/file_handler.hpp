@@ -14,6 +14,9 @@ namespace propnet
 
 struct FileHandler
 {
+  FileHandler(bool optimize_for_time = false)
+    : optimize_for_time(optimize_for_time), is_primary(true) {}
+
   static FileHandler& GetMasterFileHandler()
   {
     static FileHandler singleton;
@@ -22,49 +25,22 @@ struct FileHandler
 
   void AddFile(const std::string& file)
   {
-    files.push_back(file);
+    if(is_primary)
+      p_files.push_back(file);
+    else
+      s_files.push_back(file);
   }
 
-  std::string exec(const std::string& cmd)
-  {
-      FILE* pipe = popen(cmd.c_str(), "r");
-      if (!pipe) return "ERROR";
-      char buffer[128];
-      std::string result = "";
-      while(!feof(pipe))
-      {
-        if(fgets(buffer, 128, pipe) != NULL)
-          result += buffer;
-      }
-      pclose(pipe);
-      return result;
-  }
+  static std::string exec(const std::string& cmd);
 
-  void GenerateSharedObject()
-  {
-    std::string com_prefix = "g++ -std=c++11 -fPIC -Isrc";
+  bool GenerateSharedObject();
 
-    for(auto it : files)
-    {
-      std::stringstream stream;
-      stream << com_prefix << " -c " << it << ".cpp -o " << it << ".o";
-      exec(stream.str());
-      std::cout << "Done file " << it << std::endl;
-    }
+  std::list<std::string> p_files;
 
-    std::stringstream stream;
-    stream << "g++ -O3 -shared -fPIC";
+  std::list<std::string> s_files;
 
-    for(auto it : files)
-    {
-      stream << " " << it << ".o";
-    }
-    stream << " -o state_machine/state_machine.so";
-    exec(stream.str());
-    std::cout << "StateMachine shared object created." << std::endl;
-  }
-
-  std::list<std::string> files;
+  bool optimize_for_time;
+  bool is_primary;
 };
 
 }

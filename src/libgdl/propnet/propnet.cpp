@@ -17,24 +17,30 @@ using namespace libgdl::gdlparser;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
 
-PropNet::PropNet(const std::string& filename, Log log)
-  : terminal(NULL), c_r_id(0), c_and_id(0), c_not_id(0), c_or_id(0), c_view_id(0), log(log)
+PropNet::PropNet(Log log)
+  : terminal(NULL), c_r_id(0), c_and_id(0), c_not_id(0),
+  c_or_id(0), c_view_id(0), log(log)
+{
+}
+
+void PropNet::Initialize(const std::string& filename)
 {
   KIF kif(true, 1, log);
   kif.AddFile(filename);
   kif.Parse();
 
+  //kif.PrintDependencyGraph("test.dot");
+  //exit(1);
+
   KIFFlattener kf(log);
   kf.Flatten(kif);
 
   kf.PrintToFile("out.kif");
-  exit(0);
 
   CreatePropNet(kf);
 }
 
-PropNet::PropNet(KIFFlattener& kf, Log log)
-  : terminal(NULL), c_r_id(0), c_and_id(0), c_not_id(0), c_or_id(0), c_view_id(0), log(log)
+void PropNet::Initialize(gdlreasoner::KIFFlattener& kf)
 {
   CreatePropNet(kf);
 }
@@ -43,19 +49,22 @@ PropNet::~PropNet()
 {
   for(auto it : view_nodes)
   {
-    delete it.second;
+    if(del.find(it.second) == del.end())
+      delete it.second;
   }
 
   for(auto it : next_nodes)
   {
-    delete it.second;
+    if(del.find(it.second) == del.end())
+      delete it.second;
   }
 
   for(auto it : input_nodes)
   {
     for(auto it2 : it)
     {
-      delete it2.second;
+      if(del.find(it2.second) == del.end())
+        delete it2.second;
     }
   }
 
@@ -63,7 +72,8 @@ PropNet::~PropNet()
   {
     for(auto it2 : it)
     {
-      delete it2.second;
+      if(del.find(it2.second) == del.end())
+        delete it2.second;
     }
   }
 
@@ -71,7 +81,8 @@ PropNet::~PropNet()
   {
     for(auto it2 : it)
     {
-      delete it2.second;
+      if(del.find(it2.second) == del.end())
+        delete it2.second;
     }
   }
 
@@ -79,22 +90,26 @@ PropNet::~PropNet()
 
   for(auto it : base_nodes)
   {
-    delete it.second;
+    if(del.find(it.second) == del.end())
+      delete it.second;
   }
 
   for(auto it : and_nodes)
   {
-    delete it;
+    if(del.find(it) == del.end())
+      delete it;
   }
 
   for(auto it : or_nodes)
   {
-    delete it;
+    if(del.find(it) == del.end())
+      delete it;
   }
 
   for(auto it : not_nodes)
   {
-    delete it;
+    if(del.find(it) == del.end())
+      delete it;
   }
 }
 
@@ -277,19 +292,22 @@ bool PropNet::PrintPropnet(const std::string& filename) const
 
   for(auto it : base_nodes)
   {
-    stream << it.second->UName() << " [label = \""
+    if(del.find(it.second) == del.end())
+      stream << it.second->UName() << " [label = \""
            << it.second->Name() << "\"];" << endl;
   }
 
   for(auto it : next_nodes)
   {
-    stream << it.second->UName() << " [label = \""
+    if(del.find(it.second) == del.end())
+      stream << it.second->UName() << " [label = \""
            << it.second->Name() << "\"];" << endl;
   }
 
   for(auto it : view_nodes)
   {
-    stream << it.second->UName() << " [label = \""
+    if(del.find(it.second) == del.end())
+      stream << it.second->UName() << " [label = \""
            << it.second->Name() << "\"];" << endl;
   }
 
@@ -297,7 +315,8 @@ bool PropNet::PrintPropnet(const std::string& filename) const
   {
     for(auto it : m)
     {
-      stream << it.second->UName() << " [label = \""
+      if(del.find(it.second) == del.end())
+        stream << it.second->UName() << " [label = \""
              << it.second->Name() << "\"];" << endl;
     }
   }
@@ -306,7 +325,8 @@ bool PropNet::PrintPropnet(const std::string& filename) const
   {
     for(auto it : m)
     {
-      stream << it.second->UName() << " [label = \""
+      if(del.find(it.second) == del.end())
+        stream << it.second->UName() << " [label = \""
              << it.second->Name() << "\"];" << endl;
     }
   }
@@ -315,80 +335,91 @@ bool PropNet::PrintPropnet(const std::string& filename) const
   {
     for(auto it : m)
     {
-      stream << it.second->UName() << " [label = \""
+      if(del.find(it.second) == del.end())
+        stream << it.second->UName() << " [label = \""
              << it.second->Name() << "\"];" << endl;
     }
   }
 
   for(auto a : and_nodes)
   {
+    if(del.find(a) == del.end())
     stream << a->UName() << " [label = \""
            << a->Name() << "\"];" << endl;
   }
 
   for(auto a : or_nodes)
   {
-    stream << a->UName() << " [label = \""
+    if(del.find(a) == del.end())
+      stream << a->UName() << " [label = \""
            << a->Name() << "\"];" << endl;
   }
 
   for(auto a : not_nodes)
   {
-    stream << a->UName() << " [label = \""
+    if(del.find(a) == del.end())
+      stream << a->UName() << " [label = \""
            << a->Name() << "\"];" << endl;
   }
 
-  stream << terminal->UName() << " [label = \""
+  if(terminal != NULL)
+    stream << terminal->UName() << " [label = \""
          << terminal->Name() << "\"];" << endl;
 
   for(auto it : view_nodes)
   {
-    for(auto n : it.second->in_degree)
-    {
-      stream << n->UName() << " -> " << it.second->UName() << ";" << endl;
-    }
+    if(del.find(it.second) == del.end())
+      for(auto n : it.second->in_degree)
+      {
+        stream << n->UName() << " -> " << it.second->UName() << ";" << endl;
+      }
   }
 
   for(auto it : next_nodes)
   {
-    for(auto n : it.second->in_degree)
-    {
-      stream << n->UName() << " -> " << it.second->UName() << ";" << endl;
-    }
+    if(del.find(it.second) == del.end())
+      for(auto n : it.second->in_degree)
+      {
+        stream << n->UName() << " -> " << it.second->UName() << ";" << endl;
+      }
   }
 
   for(auto a : and_nodes)
   {
-    for(auto n : a->in_degree)
-    {
-      stream << n->UName() << " -> " << a->UName() << ";" << endl;
-    }
+    if(del.find(a) == del.end())
+      for(auto n : a->in_degree)
+      {
+        stream << n->UName() << " -> " << a->UName() << ";" << endl;
+      }
   }
 
   for(auto a : or_nodes)
   {
-    for(auto n : a->in_degree)
-    {
-      stream << n->UName() << " -> " << a->UName() << ";" << endl;
-    }
+    if(del.find(a) == del.end())
+      for(auto n : a->in_degree)
+      {
+        stream << n->UName() << " -> " << a->UName() << ";" << endl;
+      }
   }
 
   for(auto a : not_nodes)
   {
-    for(auto n : a->in_degree)
-    {
-      stream << n->UName() << " -> " << a->UName() << ";" << endl;
-    }
+    if(del.find(a) == del.end())
+      for(auto n : a->in_degree)
+      {
+        stream << n->UName() << " -> " << a->UName() << ";" << endl;
+      }
   }
 
   for(auto m : legal_nodes)
   {
     for(auto it : m)
     {
-      for(auto n : it.second->in_degree)
-      {
-        stream << n->UName() << " -> " << it.second->UName() << ";" << endl;
-      }
+      if(del.find(it.second) == del.end())
+        for(auto n : it.second->in_degree)
+        {
+          stream << n->UName() << " -> " << it.second->UName() << ";" << endl;
+        }
     }
   }
 
@@ -396,17 +427,19 @@ bool PropNet::PrintPropnet(const std::string& filename) const
   {
     for(auto it : m)
     {
-      for(auto n : it.second->in_degree)
-      {
-        stream << n->UName() << " -> " << it.second->UName() << ";" << endl;
-      }
+      if(del.find(it.second) == del.end())
+        for(auto n : it.second->in_degree)
+        {
+          stream << n->UName() << " -> " << it.second->UName() << ";" << endl;
+        }
     }
   }
 
-  for(auto n : terminal->in_degree)
-  {
-    stream << n->UName() << " -> " << terminal->UName() << ";" << endl;
-  }
+  if(terminal != NULL)
+    for(auto n : terminal->in_degree)
+    {
+      stream << n->UName() << " -> " << terminal->UName() << ";" << endl;
+    }
 
   stream << "}";
   stream.close();
@@ -802,7 +835,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 
     get_legal_moves_l_sc1.fun_deinit_ss << "return MoveList<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
 
-    get_legal_moves_l_sc1.GenerateCode();
+    //get_legal_moves_l_sc1.GenerateCode();
 
 ////////////////////////////////////////////////////////////////////////////////
 /// END FILE GetLegalMoves_l_sci.cpp
@@ -834,7 +867,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 
     get_legal_moves_v_sc1.fun_deinit_ss << "return MoveVector<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
 
-    get_legal_moves_v_sc1.GenerateCode();
+    //get_legal_moves_v_sc1.GenerateCode();
 
 ////////////////////////////////////////////////////////////////////////////////
 /// END OF FILE GetLegalMoves_v_sc1.cpp
@@ -863,7 +896,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 
     get_next_state_sc1.fun_deinit_ss << "return s_out;" << endl;
 
-    get_next_state_sc1.GenerateCode();
+    //get_next_state_sc1.GenerateCode();
 
 ////////////////////////////////////////////////////////////////////////////////
 /// END OF FILE get_next_state_sci.cpp
@@ -880,19 +913,7 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
 
     GetSeriesMemoryRequirement.fun_deinit_ss << "return " << global_em.GetRequiredMemory() << ";" << endl;
 
-    GetSeriesMemoryRequirement.GenerateCode();
-
-    ofstream s_stream("state_machine/a_state.cpp");
-    GenerateStateCode(s_stream);
-
-    FileHandler::GetMasterFileHandler().AddFile("state_machine/a_state");
-
-    ofstream m_stream("state_machine/a_move.cpp");
-    GenerateMoveCode(m_stream);
-
-    FileHandler::GetMasterFileHandler().AddFile("state_machine/a_move");
-
-    FileHandler::GetMasterFileHandler().AddFile("state_machine/print_functions");
+    //GetSeriesMemoryRequirement.GenerateCode();
   }
 }
 
@@ -1061,7 +1082,7 @@ void PropNet::GenerateStateMachine()
 
   GetNextState.fun_deinit_ss << "return s_out;" << endl;
 
-  GetNextState.GenerateCode();
+  //GetNextState.GenerateCode();
 
 ////////////////////////////////////////////////////////////////////////////////
 /// END FILE GetNextState.cpp
@@ -1143,7 +1164,7 @@ void PropNet::GenerateStateMachine()
   GetLegalMoves_v.s_entries = GetLegalMoves_l.s_entries;
   GetLegalMoves_v.init_ss << GetLegalMoves_l.init_ss.str();
 
-  GetLegalMoves_l.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
+  GetLegalMoves_v.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
 
   legal_ret_it = legal_ret.begin();
 
@@ -1152,13 +1173,13 @@ void PropNet::GenerateStateMachine()
   {
     for(auto it : role)
     {
-      GetLegalMoves_l.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
+      GetLegalMoves_v.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
       legal_ret_it++;
     }
     r_index++;
   }
 
-  GetLegalMoves_l.fun_deinit_ss << "return MoveVector<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
+  GetLegalMoves_v.fun_deinit_ss << "return MoveVector<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
 
   GetLegalMoves_v.GenerateCode();
 
@@ -1177,5 +1198,63 @@ void PropNet::GenerateStateMachine()
 
   CreateMove.GenerateCode();
 
+  ofstream s_stream("state_machine/a_state.cpp");
+  GenerateStateCode(s_stream);
+
+  FileHandler::GetMasterFileHandler().AddFile("state_machine/a_state");
+
+  ofstream m_stream("state_machine/a_move.cpp");
+  GenerateMoveCode(m_stream);
+
+  FileHandler::GetMasterFileHandler().AddFile("state_machine/a_move");
+
   FileHandler::GetMasterFileHandler().GenerateSharedObject();
+}
+
+void PropNet::InitializeRun(AState& s, AState& base_mark, set<size_t>* m_set, size_t* goals)
+{
+  if(terminal != NULL)
+    terminal->InitializeValue(*this, s, m_set, goals);
+
+  for(auto it : goal_nodes)
+    for(auto it2 : it)
+      if(del.find(it2.second) == del.end())
+        it2.second->InitializeValue(*this, s, m_set, goals);
+
+  for(auto it : legal_nodes)
+    for(auto it2 : it)
+      if(del.find(it2.second) == del.end())
+        it2.second->InitializeValue(*this, s, m_set, goals);
+
+  for(auto it : next_nodes)
+    if(del.find(it.second) == del.end())
+      it.second->InitializeValue(*this, s, m_set, goals);
+
+  base_mark.Clear();
+
+  for(auto it : base_nodes)
+    if(del.find(it.second) == del.end())
+      base_mark.Set(it.first, true);
+}
+
+void PropNet::SplitGoalNet(PropNet& goal_net)
+{
+  map<Node*, Node*> node_map;
+
+  for(auto it : goal_nodes)
+    for(auto it2 : it)
+      it2.second->CreateCopy(goal_net, NULL, node_map);
+
+  for(auto it : legal_nodes)
+    for(auto it2 : it)
+      it2.second->DFSMark(1);
+
+  for(auto it : next_nodes)
+    it.second->DFSMark(1);
+
+  terminal->DFSMark(1);
+
+  for(auto it : goal_nodes)
+    for(auto it2 : it)
+      it2.second->DeleteIfNotMarked(NULL, del, 1);
 }

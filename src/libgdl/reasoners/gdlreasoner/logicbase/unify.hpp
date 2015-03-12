@@ -12,6 +12,8 @@
 #include <map>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/argument.hpp>
+#include <libgdl/core/data_types/clause.hpp>
 
 namespace libgdl
 {

@@ -3,6 +3,8 @@
 #include "../entry_manager.hpp"
 #include "../entry_types/not_entry.hpp"
 
+#include "../propnet.hpp"
+
 using namespace std;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
@@ -31,4 +33,31 @@ tuple<bool, size_t> NotNode::CodeGen(EntryManager& em, size_t v_stamp)
   }
 
   return entry_ret;
+}
+
+bool NotNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* m_set, size_t* goals)
+{
+  holding_value = !(*in_degree.begin())->InitializeValue(pn, s, m_set, goals);
+  return holding_value;
+}
+
+void NotNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
+{
+#ifdef LIBGDL_DFP_TEST
+  if(holding_value != value)
+  {
+    cout << "Something wrong in DFP" << endl;
+    cout << Name() << endl;
+    exit(1);
+  }
+#endif // LIBGDL_DFP_TEST
+
+  holding_value = !holding_value;
+  for(auto it : out_degree)
+    it->Update(holding_value, base, top, m, m_set, goals);
+}
+
+void NotNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+{
+  pn.AddNotNode(to_reg);
 }

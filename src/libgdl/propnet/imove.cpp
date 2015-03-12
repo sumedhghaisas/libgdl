@@ -9,6 +9,7 @@ void IMove::CodeGen(std::ostream& file)
   file << "#include <libgdl/core/data_types/a_move.hpp>" << endl << endl;
 
   file << "using namespace std;" << endl;
+  file << "using namespace libgdl;" << endl;
   file << "using namespace libgdl::core;" << endl;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +54,7 @@ void IMove::CodeGen(std::ostream& file)
 ////////////////////////////////////////////////////////////////////////////////
 
   //! Overload operator<< for RawMove
-  file << "void RawAMove::Print(std::ostream& stream) const" << endl;
+  file << "extern \"C\" void PrintAMove(std::ostream& stream, const AMove& move)" << endl;
   file << "{" << endl;
   file << "stream << \"Move: \" << std::endl;" << endl;
 
@@ -61,11 +62,11 @@ void IMove::CodeGen(std::ostream& file)
   for(auto it : map_list)
   {
     Map::iterator it2 = it.begin();
-    file << "if(moves[" << index << "] == " << it2->second << ") stream << \"\\t" << it2->first << "\" << std::endl;" << endl;
+    file << "if(move->moves[" << index << "] == " << it2->second << ") stream << \"\\t" << it2->first << "\" << std::endl;" << endl;
     it2++;
     for(it2 = it2;it2 != it.end();it2++)
     {
-      file << "else if(moves[" << index << "] == " << it2->second << ") stream << \"\\t" << it2->first << "\" << std::endl;" << endl;
+      file << "else if(move->moves[" << index << "] == " << it2->second << ") stream << \"\\t" << it2->first << "\" << std::endl;" << endl;
     }
     index++;
   }

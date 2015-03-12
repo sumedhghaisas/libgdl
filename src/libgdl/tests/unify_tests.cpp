@@ -8,6 +8,9 @@
 #include <list>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/argument.hpp>
+#include <libgdl/core/data_types/variable_map.hpp>
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
 #include <libgdl/reasoners/gdlreasoner/logicbase/unify.hpp>
 
 #include <boost/test/unit_test.hpp>

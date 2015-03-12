@@ -5,6 +5,9 @@
  * Test file for Clause data structure.
  */
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/argument.hpp>
+#include <libgdl/core/data_types/clause.hpp>
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
 
 #include <iostream>
 #include <sstream>

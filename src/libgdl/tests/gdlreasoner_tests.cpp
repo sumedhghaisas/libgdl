@@ -21,6 +21,7 @@ using namespace libgdl;
 using namespace libgdl::core;
 using namespace libgdl::gdlparser;
 using namespace libgdl::gdlreasoner;
+using namespace libgdl::util;
 
 /**
  * Check knowledge base construction from KIF.
@@ -127,6 +128,8 @@ BOOST_AUTO_TEST_CASE(RecursiveDependencyTest)
 	  MARK_FAIL;
 	for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
     delete *it;
+	if((result = kb.Ask("(ancestor 1 1)")).size() != 0) 
+	  MARK_FAIL;
 	MARK_END;
 }
 
@@ -226,6 +229,42 @@ BOOST_AUTO_TEST_CASE(Question2Test)
                                     true, TEST_LOG)) MARK_FAIL;
   for(std::list<Argument*>::iterator it = result.begin();it != result.end();it++)
     delete *it;
+  MARK_END;
+}
+
+/**
+ * KnowldgeBase cache test
+ */
+BOOST_AUTO_TEST_CASE(KnowledgeBaseCacheTest)
+{
+  MARK_START;
+  OPEN_LOG;
+  KIF kif(false, 0, TEST_LOG);
+  kif.AddFile("data/argument_test/hash_test1.kif");
+  if(!kif.Parse(true)) MARK_FAIL;
+  
+  KnowledgeBase kb(kif);
+  
+  Argument arg("(base ?x)", kb.GetSymbolTable(), true, TEST_LOG);
+  kb.AddCacheRel(arg.value);
+  
+  list<Argument*> result;
+  size_t start = Timer::microtimer();
+  if((result = kb.Ask("(base ?x)")).size() != 302)
+    MARK_FAIL;
+  size_t f_time = Timer::microtimer() - start;
+    
+  for(auto it : result)
+    delete it;
+    
+  start = Timer::microtimer();
+  if((result = kb.Ask("(base ?x)")).size() != 302)
+    MARK_FAIL;
+  size_t s_time = Timer::microtimer() - start;
+  
+  if(s_time * 2 > f_time)
+    MARK_FAIL;
+    
   MARK_END;
 }
 

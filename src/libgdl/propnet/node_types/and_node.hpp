@@ -26,9 +26,21 @@ struct AndNode : public Node
     return "AND_" + ToString(id);
   }
 
+  bool InitializeValue(const PropNet&, AState& s, std::set<size_t>* m_set, size_t* goals);
+
   std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t v_stamp);
 
+  void Update(bool value, AState& base, AState& top, AMove& m, std::set<size_t>* m_set, size_t* goals);
+
+  Node* GetCopy_only_info()
+  {
+    return new AndNode(name, id);
+  }
+
+  void RegisterToPropnet(PropNet& pn, Node* to_reg);
+
   size_t id;
+  size_t num_false;
 };
 
 }

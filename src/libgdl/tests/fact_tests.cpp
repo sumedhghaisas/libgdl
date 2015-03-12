@@ -5,6 +5,8 @@
  * Test file for Fact data structure.
  */
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/fact.hpp>
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
 
 #include <iostream>
 #include <sstream>

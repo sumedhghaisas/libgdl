@@ -10,6 +10,8 @@
 
 #include <boost/functional/hash.hpp>
 
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;

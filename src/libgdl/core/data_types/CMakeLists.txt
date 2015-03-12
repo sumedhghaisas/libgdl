@@ -8,6 +8,10 @@ set(SOURCES
   clause.hpp
   clause.cpp
   location.hpp
+  a_move.hpp
+  a_move.cpp
+  a_state.hpp
+  a_state.cpp
   b_state.hpp
   b_state.cpp
   b_move.hpp

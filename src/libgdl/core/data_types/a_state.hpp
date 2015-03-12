@@ -4,6 +4,7 @@
 #include <iostream>
 #include <atomic>
 #include <cmath>
+#include <set>
 #include <boost/intrusive_ptr.hpp>
 
 namespace libgdl
@@ -60,14 +61,14 @@ struct RawAState
     else s[buff] = s[buff] & q;
   }
 
-  void Print(std::ostream& stream) const;
-
   char *s;
 
   static size_t arr_size;
 
   size_t ref_count() { return count; }
   std::atomic_size_t count;
+
+
 };
 
 inline void intrusive_ptr_release(RawAState* p)
@@ -80,28 +81,118 @@ inline void intrusive_ptr_add_ref(RawAState* p)
   ++p->count;
 }
 
-inline std::ostream& operator<<(std::ostream& stream, const RawAState& state)
-{
-  state.Print(stream);
-  return stream;
-}
-
 } // namespace core
+
+struct AMove;
 
 struct AState : public boost::intrusive_ptr<core::RawAState>
 {
+  typedef core::RawAState RawType;
+
   AState() : boost::intrusive_ptr<core::RawAState>(NULL) {}
+  AState(const std::string&)
+    : boost::intrusive_ptr<core::RawAState>(new core::RawAState()) {}
   AState(core::RawAState* state) : boost::intrusive_ptr<core::RawAState>(state) {}
 
   AState Clone() const
   {
     return AState(new core::RawAState(*get()));
   }
+
+  void Clear()
+  {
+    for(size_t i = 0;i < get()->arr_size;i++)
+    {
+      get()->s[i] = 0;
+    }
+  }
+
+  //! Set function
+  inline void Set(size_t i, bool val)
+  {
+    get()->Set(i, val);
+  }
+
+  //! Get function
+  inline void Get(size_t i, bool& out) const
+  {
+    get()->Get(i, out);
+  }
+
+  template<typename NodeType>
+  void UpdateNodes(AState& base, AState& top, AState& mask, AMove& m, NodeType** nodes, std::set<size_t>* m_set, size_t* goals) const
+  {
+    for(size_t i = 0;i < get()->arr_size;i++)
+    {
+      char x_or = get()->s[i] ^ base.get()->s[i];
+      x_or = x_or & mask.get()->s[i];
+      if(x_or)
+      {
+        char s_val = get()->s[i];
+        if(x_or & 1)
+          //if(nodes[8*i] != NULL)
+            nodes[8*i]->Update((bool)(s_val & 1), base, top, m, m_set, goals);
+
+        x_or = x_or >> 1;
+        s_val = s_val >> 1;
+        if(x_or & 1)
+          //if(nodes[8*i + 1] != NULL)
+            nodes[8*i + 1]->Update((bool)(s_val & 1), base, top, m, m_set, goals);
+
+        x_or = x_or >> 1;
+        s_val = s_val >> 1;
+        if(x_or & 1)
+          //if(nodes[8*i + 2] != NULL)
+            nodes[8*i + 2]->Update((bool)(s_val & 1), base, top, m, m_set, goals);
+
+        x_or = x_or >> 1;
+        s_val = s_val >> 1;
+        if(x_or & 1)
+          //if(nodes[8*i + 3] != NULL)
+            nodes[8*i + 3]->Update((bool)(s_val & 1), base, top, m, m_set, goals);
+
+        x_or = x_or >> 1;
+        s_val = s_val >> 1;
+        if(x_or & 1)
+          //if(nodes[8*i + 4] != NULL)
+            nodes[8*i + 4]->Update((bool)(s_val & 1), base, top, m, m_set, goals);
+
+        x_or = x_or >> 1;
+        s_val = s_val >> 1;
+        if(x_or & 1)
+          //if(nodes[8*i + 5] != NULL)
+            nodes[8*i + 5]->Update((bool)(s_val & 1), base, top, m, m_set, goals);
+
+        x_or = x_or >> 1;
+        s_val = s_val >> 1;
+        if(x_or & 1)
+          //if(nodes[8*i + 6] != NULL)
+            nodes[8*i + 6]->Update((bool)(s_val & 1), base, top, m, m_set, goals);
+
+        x_or = x_or >> 1;
+        s_val = s_val >> 1;
+        if(x_or & 1)
+          //if(nodes[8*i + 7] != NULL)
+            nodes[8*i + 7]->Update((bool)(s_val & 1), base, top, m, m_set, goals);
+      }
+    }
+  }
+
+  static void InitializePrint(void (*p)(std::ostream&, const AState&))
+  {
+    PrintAState = p;
+    isPrintInitialized = true;
+  }
+
+  static void PrintState(std::ostream& stream, const AState& state);
+
+  static bool isPrintInitialized;
+  static void (*PrintAState)(std::ostream&, const AState&);
 }; // struct AState
 
 inline std::ostream& operator<<(std::ostream& stream, const AState& s)
 {
-  stream << *s;
+  AState::PrintState(stream, s);
   return stream;
 }
 

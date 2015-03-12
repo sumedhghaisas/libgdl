@@ -7,6 +7,8 @@
 #include "../entry_types/save_entry.hpp"
 #include "../entry_types/or_entry.hpp"
 
+#include "../propnet.hpp"
+
 using namespace std;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
@@ -47,4 +49,54 @@ tuple<bool, size_t> NextNode::CodeGen(EntryManager& em, size_t v_stamp)
   }
 
   return entry_ret;
+}
+
+bool NextNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* m_set, size_t* goals)
+{
+  holding_value = false;
+  num_true = 0;
+  for(auto it : in_degree)
+  {
+    bool temp = it->InitializeValue(pn, s, m_set, goals);
+    if(temp) num_true++;
+    holding_value = holding_value || temp;
+  }
+  if(holding_value)
+    s.Set(id, true);
+  return holding_value;
+}
+
+void NextNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
+{
+  if(value)
+  {
+    num_true++;
+    if(holding_value)
+      return;
+    holding_value = true;
+    top.Set(id, true);
+    return;
+  }
+
+  --num_true;
+
+#ifdef LIBGDL_DFP_TEST
+  if(num_true < 0 || !holding_value)
+  {
+    cout << "Something wrong in DFP" << endl;
+    cout << Name() << endl;
+    exit(1);
+  }
+#endif // LIBGDL_DFP_TEST
+
+  if(!num_true)
+  {
+    holding_value = false;
+    top.Set(id, false);
+  }
+}
+
+void NextNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+{
+  pn.AddNextNode(to_reg, id);
 }

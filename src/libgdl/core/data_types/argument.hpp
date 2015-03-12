@@ -260,6 +260,17 @@ struct Argument
                                      bool isRel = true,
                                      Log log = GLOBAL_LOG);
 
+  //! Returns a new argument by deep copying the given argument
+  //! also updates the given Variable 'v_map' with
+  //! 'arg' variables to return argument variables mapping
+  //! o_v_map is used as substitution of 'arg'
+  //!
+  //! \param arg Argument to copy
+  //! \param o_v_map Current substitutions of arg
+  //! \param v_map Updates with 'arg' variable to new variable mapping
+  //! \return Argument* Delete the answer for yourself
+  //!
+  //!
   static Argument* CopyWithMapping(const Argument* arg,
                                    const VariableMap& o_v_map,
                                    VariableMap& v_map);
