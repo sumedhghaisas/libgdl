@@ -93,6 +93,36 @@ void KIFFlattener::Flatten(KIF& kif, bool useCache)
     }
   }
 
+  for(auto it : state_independent)
+  {
+    set<size_t> visited;
+
+    stack<const DGraphNode*> s;
+    s.push(dgraph.find(it)->second);
+
+    bool isRecursive = false;
+
+    while(!s.empty())
+    {
+      const DGraphNode* n = s.top();
+      s.pop();
+
+      if(visited.find(n->id) != visited.end())
+      {
+        isRecursive = true;
+        break;
+      }
+
+      for(auto node : n->in)
+      {
+        s.push(node);
+      }
+    }
+
+    if(!isRecursive)
+      m_kb.AddCacheRel(it);
+  }
+
   // start bottom up dependency flattening
   // start with those relation which are not dependent on other
   // then use dfs to flatten all the relations bottom up
@@ -466,7 +496,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
       Fact f;
       f.arg = *it;
 
-      head_hashes.insert(f.arg->Hash());
+      head_hashes.insert(f.arg->Hash(symbol_table));
 
       fl.push_back(std::move(f));
     }
@@ -579,7 +609,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
     Fact f;
     f.arg = *it;
 
-    size_t h = f.arg->Hash();
+    size_t h = f.arg->Hash(symbol_table);
     if(head_hashes.find(h) == head_hashes.end())
     {
       fl.push_back(std::move(f));

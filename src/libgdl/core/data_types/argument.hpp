@@ -210,9 +210,13 @@ struct Argument
   //! \return size_t
   //!
   //!
-  size_t Hash(size_t seed = 0) const;
-
-  size_t Hash2(size_t seed, const VariableMap& v_map) const;
+  inline size_t Hash(const SymbolTable& sym,
+                     const VariableMap& o_v_map = VariableMap()) const
+  {
+    std::string s_arg = DecodeToString(sym, o_v_map);
+    boost::hash<std::string> string_hasher;
+    return string_hasher(s_arg);
+  }
 
   //! Returns string representation of this argument using the symbol table
   //! This function is used by SymbolDecodeStream to print argument
@@ -222,7 +226,56 @@ struct Argument
   //!
   //! @see SymbolDecodeStream
   //!
-  std::string DecodeToString(const SymbolTable& symbol_table) const;
+  inline std::string DecodeToString(const SymbolTable& symbol_table) const
+  {
+    std::string out = "";
+    if(args.size() == 0 && t != Argument::Var)
+    {
+      return symbol_table.GetCommandName(value);
+    }
+    else if(args.size() == 0)
+    {
+      return "var";
+    }
+    else out = "( " + symbol_table.GetCommandName(value);
+
+    for(size_t i = 0;i < args.size();i++)
+      out += " " + (args[i])->DecodeToString(symbol_table);
+    out += " )";
+    return out;
+  }
+
+  //! Returns string representation of this argument using the symbol table
+  //! This function is used by SymbolDecodeStream to print argument
+  //!
+  //! \param symbol_table const SymbolTable&
+  //! \return std::string
+  //!
+  //! @see SymbolDecodeStream
+  //!
+  inline std::string DecodeToString(const SymbolTable& symbol_table,
+                                    const VariableMap& o_v_map) const
+  {
+    std::string out = "";
+    if(args.size() == 0 && t != Argument::Var)
+    {
+      return symbol_table.GetCommandName(value);
+    }
+    else if(args.size() == 0)
+    {
+      auto it = o_v_map.find(this);
+      if(it != o_v_map.end())
+        return it->second->DecodeToString(symbol_table, o_v_map);
+
+      return "var";
+    }
+    else out = "( " + symbol_table.GetCommandName(value);
+
+    for(size_t i = 0;i < args.size();i++)
+      out += " " + (args[i])->DecodeToString(symbol_table, o_v_map);
+    out += " )";
+    return out;
+  }
 
   //! type of this argument
   Type t;
@@ -324,11 +377,6 @@ inline std::ostream& operator<<(std::ostream& o,
   else if(t == libgdl::core::Argument::Function) o << "Function";
   else o << "Variable";
   return o;
-}
-
-inline size_t hash_value(const Argument& arg)
-{
-  return arg.Hash();
 }
 
 }; // namespace core

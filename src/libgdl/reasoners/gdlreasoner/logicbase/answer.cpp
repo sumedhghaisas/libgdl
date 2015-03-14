@@ -80,7 +80,7 @@ Answer::Answer(const Type& t,
 
   else if(t == CACHE)
   {
-    const tuple<Argument*, list<VariableMap>*>& tup = kb.cached_maps.find(question.Hash2(0, o_v_map))->second;
+    const tuple<Argument*, list<VariableMap>*>& tup = kb.cached_maps.find(question.Hash(kb.GetSymbolTable(), o_v_map))->second;
 
     maps = get<1>(tup);
     sub_struct = get<0>(tup);
@@ -419,7 +419,7 @@ bool Answer::next()
 
         //core::SymbolDecodeStream sds(kb.GetSymbolTable());
         //sds << *cache_q << endl;
-        kb.cached_maps[question.Hash2(0, o_v_map)] = tuple<Argument*, list<VariableMap>*>(cache_q, cache_maps);
+        kb.cached_maps[question.Hash(kb.GetSymbolTable(), o_v_map)] = tuple<Argument*, list<VariableMap>*>(cache_q, cache_maps);
       }
     }
     return res;

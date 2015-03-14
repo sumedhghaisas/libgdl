@@ -8,6 +8,8 @@
 
 #include <sstream>
 
+#include <libgdl/core/util/logid.hpp>
+
 using namespace std;
 using namespace boost;
 using namespace libgdl;
@@ -44,11 +46,13 @@ RawBState& RawBState::operator=(const RawBState& s)
 
 void RawBState::calcHash()
 {
-  hash = 0;
-  for(list<Argument*>::const_iterator it = facts.begin();it != facts.end();it++)
-  {
-    hash ^= (*it)->Hash();
-  }
+  cout << LOGID << "Not yet implemented!" << endl;
+  exit(1);
+//  hash = 0;
+//  for(list<Argument*>::const_iterator it = facts.begin();it != facts.end();it++)
+//  {
+//    hash ^= (*it)->Hash();
+//  }
 }
 
 std::string RawBState::DecodeToString(const core::SymbolTable& symbol_table) const

@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include <libgdl/core/util/logid.hpp>
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
@@ -14,7 +16,7 @@ BMove::BMove(const std::string& str,
   hash = 0;
   for(vector<Argument*>::const_iterator it = moves.begin();it != moves.end();it++)
   {
-    size_t temp = (*it)->Hash();
+    size_t temp = (*it)->Hash(symbol_table, VariableMap());
     boost::hash_combine(hash, temp);
   }
 }
@@ -29,20 +31,22 @@ BMove::BMove(const std::string& str1,
   hash = 0;
   for(vector<Argument*>::const_iterator it = moves.begin();it != moves.end();it++)
   {
-    size_t temp = (*it)->Hash();
+    size_t temp = (*it)->Hash(symbol_table, VariableMap());
     boost::hash_combine(hash, temp);
   }
 }
 
 BMove::BMove(const std::vector<Argument*>& m)
 {
-  hash = 0;
-  for(vector<Argument*>::const_iterator it = m.begin();it != m.end();it++)
-  {
-    moves.push_back(new Argument(**it));
-    size_t temp = (*it)->Hash();
-    boost::hash_combine(hash, temp);
-  }
+  cout << LOGID << "Not yet implemented!!" << std::endl;
+  exit(1);
+//  hash = 0;
+//  for(vector<Argument*>::const_iterator it = m.begin();it != m.end();it++)
+//  {
+//    moves.push_back(new Argument(**it));
+//    size_t temp = (*it)->Hash(symbol_table, VariableMap());
+//    boost::hash_combine(hash, temp);
+//  }
 }
 
 BMove::BMove(const BMove& m) noexcept

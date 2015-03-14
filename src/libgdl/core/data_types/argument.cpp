@@ -300,44 +300,6 @@ Argument* Argument::ConstructArgument(const std::string& str,
   return out;
 }
 
-size_t Argument::Hash(size_t seed) const
-{
-  if(t == Argument::Var) return seed;
-
-  boost::hash_combine(seed, SymbolTable::GetPrime(2 * value));
-
-  for(size_t i = 0;i < args.size();i++)
-  {
-    boost::hash_combine(seed, i);
-    boost::hash_combine(seed, args[i]->Hash(seed));
-  }
-
-  return seed;
-}
-
-size_t Argument::Hash2(size_t seed, const VariableMap& v_map) const
-{
-  if(t == Argument::Var)
-  {
-    auto it = v_map.find(this);
-    if(it != v_map.end())
-    {
-      seed = it->second->Hash2(seed, v_map);
-    }
-    return seed;
-  }
-
-  boost::hash_combine(seed, SymbolTable::GetPrime(2 * value));
-
-  for(size_t i = 0;i < args.size();i++)
-  {
-    boost::hash_combine(seed, i);
-    boost::hash_combine(seed, args[i]->Hash2(seed, v_map));
-  }
-
-  return seed;
-}
-
 bool Argument::operator==(const Argument& arg) const
 {
   if(t != arg.t) return false;
@@ -433,25 +395,6 @@ bool Argument::IsGround() const
       S.push(temp->args[i]);
   }
   return true;
-}
-
-std::string Argument::DecodeToString(const SymbolTable& symbol_table) const
-{
-  string out = "";
-  if(args.size() == 0 && t != Argument::Var)
-  {
-    return symbol_table.GetCommandName(value);
-  }
-  else if(args.size() == 0)
-  {
-    return val;
-  }
-  else out = "( " + symbol_table.GetCommandName(value);
-
-  for(size_t i = 0;i < args.size();i++)
-    out += " " + (args[i])->DecodeToString(symbol_table);
-  out += " )";
-  return out;
 }
 
 set<const Argument*> Argument::GetVariables() const
