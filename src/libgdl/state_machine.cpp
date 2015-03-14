@@ -44,11 +44,8 @@ StateMachine::StateMachine(int argc, char* argv[])
     kif.AddFile(it);
   kif.Parse();
 
-  gdlreasoner::KIFFlattener kf;
-  kf.Flatten(kif);
-
   //! Initialize propnet with the file given
-  initial_pn.Initialize(kf);
+  initial_pn.Initialize(kif);
 
   //! Get base size and role size
   base_size = initial_pn.BaseSize();

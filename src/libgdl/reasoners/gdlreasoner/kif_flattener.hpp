@@ -11,6 +11,7 @@
 #include <set>
 
 #include <libgdl/core.hpp>
+#include <libgdl/core/data_types/variable_map.hpp>
 #include <libgdl/gdlparser/kif.hpp>
 
 #include "knowledgebase.hpp"
@@ -65,15 +66,7 @@ class KIFFlattener
   //!
   //!
   explicit KIFFlattener(Log log = GLOBAL_LOG)
-    : log(log) {}
-
-  //! Flattens the knowledge in given KIF object
-  //!
-  //! \param kif KIF object to flatten
-  //! \return void
-  //!
-  //!
-  void Flatten(gdlparser::KIF& kif, bool useCache = true);
+    : combination_optimization_index(0), log(log) {}
 
   //! Flattens the knowledge in given KIF object
   //!
@@ -84,56 +77,9 @@ class KIFFlattener
   template<typename Collector>
   void Flatten(gdlparser::KIF& kif, Collector& collector, bool useCache = true);
 
-  //! Print the current flattened knowledge to file
-  //! Returns the success state
-  //!
-  //! \param filename Filename
-  //! \return bool
-  //!
-  //!
-  bool PrintToFile(const std::string& filename);
-
-  //! Clears the knowledge inside this flattener object
-  //!
-  //! \return void
-  //!
-  //!
-  void Clear()
-  {
-    flattened_clauses.clear();
-    flattened_clauses.clear();
-
-    symbol_table = NULL;
-  }
-
-  //! Access all the flattened facts(Read)
-  const std::list<Fact>& Facts() const
-  {
-    return flattened_facts;
-  }
-  //! Access all te flattened facts(Write)
-  std::list<Fact>& Facts()
-  {
-    return flattened_facts;
-  }
-  //! Access all the flattened clauses(Read)
-  const std::list<Clause>& Clauses() const
-  {
-    return flattened_clauses;
-  }
-  //! Access all the flattened clauses(Write)
-  std::list<Clause>& Clauses()
-  {
-    return flattened_clauses;
-  }
-
-  //! Get symbol table associated with this flattener
-  SymbolTable GetSymbolTable() const
-  {
-    return symbol_table;
-  }
-
  private:
+  bool IsSelfRecursive(const Clause& c);
+
   std::set<size_t> GetStateIndependentRelations(const KnowledgeBase& all_kb,
                                                 KnowledgeBase& m_kb,
                                                 const std::map<size_t, DGraphNode*>& dgraph);
@@ -142,19 +88,34 @@ class KIFFlattener
                                           const std::map<size_t, DGraphNode*>& dgraph,
                                           KnowledgeBase& m_kb);
 
+  template<typename Collector>
+  void OptimizeClausesForPropnet(std::list<Clause>& opt_clauses,
+                                 Argument* opt_args,
+                                 SymbolTable symbol_table,
+                                 size_t& combination_optimization_index,
+                                 Collector& collector);
+
+  void InitializePropnetOptimizer(const Clause& c,
+                                  Clause* temp,
+                                  std::list<Clause>& opt_clauses,
+                                  Argument* opt_args);
+
+  template<typename Collector>
   void FlattenClause(const Clause& clause,
                      const std::set<size_t>& state_independent,
+                     const SymbolTable& symbol_table,
                      std::list<Argument*>& f_heads,
-                     std::list<Clause>& f_clauses,
-                     std::list<Fact>& f_facts,
+                     Collector& collector,
                      std::list<const Clause*>& rec_clauses,
-                     KnowledgeBase& m_kb);
+                     KnowledgeBase& m_kb,
+                     size_t& combination_optimization_index);
 
+  template<typename Collector>
   void FlattenRecursiveClause(const Clause& clause,
                               const std::set<size_t>& state_independent,
+                              core::SymbolTable& symbol_table,
                               std::list<Argument*>& f_heads,
-                              std::list<Clause>& f_clauses,
-                              std::list<Fact>& f_facts,
+                              Collector& collector,
                               KnowledgeBase& m_kb);
 
   //! Performs simple DFS and returns all the relations traversed
@@ -179,12 +140,12 @@ class KIFFlattener
   //! \return void
   //!
   //!
+  template<typename Collector>
   void FlattenRelation(const DGraphNode* n,
                        const KnowledgeBase& all_kb,
                        const std::set<size_t>& state_independent,
                        KnowledgeBase& m_kb,
-                       std::list<Clause>& f_clauses,
-                       std::list<Fact>& f_facts,
+                       Collector& collector,
                        bool useCache);
 
   //! Preprocesses clause before flattening
@@ -260,17 +221,15 @@ class KIFFlattener
   Argument* SpecialArgCopy2(Argument* arg,
                             core::VariableMap& v_map);
 
-  //! Stores flattened facts
-  std::list<Fact> flattened_facts;
-  //! Stores flattened clauses
-  std::list<Clause> flattened_clauses;
-  //! Symbol table
-  SymbolTable symbol_table;
+  size_t combination_optimization_index;
+
   //! Logging stream
   Log log;
 }; // class KIFFlattener
 
 }; // namespace gdlreasoner
 }; // namespace libgdl
+
+#include "kif_flattener_impl.hpp"
 
 #endif //_LIBGDL_GDLREASONER_KIF_FLATTENER_HPP_INCLUDED

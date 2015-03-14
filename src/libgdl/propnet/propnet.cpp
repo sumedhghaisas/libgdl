@@ -32,17 +32,18 @@ void PropNet::Initialize(const std::string& filename)
   //kif.PrintDependencyGraph("test.dot");
   //exit(1);
 
+  sym = kif.GetSymbolTable();
+
   KIFFlattener kf(log);
-  kf.Flatten(kif);
-
-  kf.PrintToFile("out.kif");
-
-  CreatePropNet(kf);
+  kf.Flatten(kif, *this);
 }
 
-void PropNet::Initialize(gdlreasoner::KIFFlattener& kf)
+void PropNet::Initialize(KIF& kif)
 {
-  CreatePropNet(kf);
+  sym = kif.GetSymbolTable();
+
+  KIFFlattener kf(log);
+  kf.Flatten(kif, *this);
 }
 
 PropNet::~PropNet()
@@ -113,35 +114,27 @@ PropNet::~PropNet()
   }
 }
 
-void PropNet::CreatePropNet(KIFFlattener& kf)
+void PropNet::AddFact(const Fact& f)
 {
-  const list<Fact>& facts = kf.Facts();
-  const list<Clause>& clauses = kf.Clauses();
+  CreateNode(sym, f.arg);
+}
 
-  SymbolTable sym = kf.GetSymbolTable();
+void PropNet::AddClause(const Clause& c)
+{
+  Node* head = CreateNode(sym, c.head);
 
-  for(auto f : facts)
+  Node* a = new AndNode("And", c_and_id++);
+  and_nodes.push_back(a);
+
+  for(auto premiss : c.premisses)
   {
-    CreateNode(sym, f.arg);
+    Node* temp = CreateNode(sym, premiss);
+    a->AddIn(temp);
+    temp->AddOut(a);
   }
 
-  for(auto c : clauses)
-  {
-    Node* head = CreateNode(sym, c.head);
-
-    Node* a = new AndNode("And", c_and_id++);
-    and_nodes.push_back(a);
-
-    for(auto premiss : c.premisses)
-    {
-      Node* temp = CreateNode(sym, premiss);
-      a->AddIn(temp);
-      temp->AddOut(a);
-    }
-
-    head->AddIn(a);
-    a->AddOut(head);
-  }
+  head->AddIn(a);
+  a->AddOut(head);
 }
 
 Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)

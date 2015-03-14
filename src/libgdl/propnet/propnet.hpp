@@ -37,7 +37,10 @@ class PropNet
   explicit PropNet(Log log = GLOBAL_LOG);
 
   void Initialize(const std::string& filename);
-  void Initialize(gdlreasoner::KIFFlattener& kf);
+  void Initialize(gdlparser::KIF& kif);
+
+  void AddFact(const core::Fact& f);
+  void AddClause(const core::Clause& c);
 
   ~PropNet();
 
@@ -166,6 +169,8 @@ class PropNet
   size_t c_not_id;
   size_t c_or_id;
   size_t c_view_id;
+
+  core::SymbolTable sym;
 
   mutable Log log;
 };
