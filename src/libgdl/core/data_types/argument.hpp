@@ -235,7 +235,7 @@ struct Argument
     }
     else if(args.size() == 0)
     {
-      return "var";
+      return val;
     }
     else out = "( " + symbol_table.GetCommandName(value);
 

@@ -21,31 +21,14 @@ using namespace libgdl::gdlreasoner;
 using namespace libgdl::gdlparser;
 using namespace libgdl::gdlreasoner::logicbase;
 
-void KIFFlattener::Flatten(KIF& kif, bool useCache)
+set<size_t> KIFFlattener::GetStateIndependentRelations(const KnowledgeBase& all_kb,
+                                                       KnowledgeBase& m_kb,
+                                                       const map<size_t, DGraphNode*>& dgraph)
 {
-  symbol_table = kif.GetSymbolTable();
-
-  // clear all the lists
-  flattened_facts.clear();
-  flattened_clauses.clear();
-
-  DGraph graph = kif.DependencyGraph();
-
-  // dependency graph
-  const map<size_t, DGraphNode*>& dgraph = graph.GetGraph();
-
-  // construct a knowledge base consisting of entire knowledge
-  KnowledgeBase all_kb(kif);
-
-  // the temporary knowledge base
-  KnowledgeBase m_kb;
-  m_kb.SetSymbolTable(symbol_table);
+  set<size_t> state_independent;
 
   // stores marked relations in Dfs
-  set<size_t> marked;
-
-  // stores data relations(which are also state independent)
-  set<size_t> state_independent;
+  std::set<size_t> marked;
 
   map<size_t, DGraphNode*>::const_iterator it;
   set<size_t>::iterator mit;
@@ -93,6 +76,13 @@ void KIFFlattener::Flatten(KIF& kif, bool useCache)
     }
   }
 
+  return state_independent;
+}
+
+void KIFFlattener::AddStateIndependentRelationToCache(const set<size_t>& state_independent,
+                                                      const map<size_t, DGraphNode*>& dgraph,
+                                                      KnowledgeBase& m_kb)
+{
   for(auto it : state_independent)
   {
     set<size_t> visited;
@@ -122,14 +112,42 @@ void KIFFlattener::Flatten(KIF& kif, bool useCache)
     if(!isRecursive)
       m_kb.AddCacheRel(it);
   }
+}
+
+void KIFFlattener::Flatten(KIF& kif, bool useCache)
+{
+  symbol_table = kif.GetSymbolTable();
+
+  // clear all the lists
+  flattened_facts.clear();
+  flattened_clauses.clear();
+
+  DGraph graph = kif.DependencyGraph();
+
+  // dependency graph
+  const map<size_t, DGraphNode*>& dgraph = graph.GetGraph();
+
+  // construct a knowledge base consisting of entire knowledge
+  KnowledgeBase all_kb(kif);
+
+  // the temporary knowledge base
+  KnowledgeBase m_kb;
+  m_kb.SetSymbolTable(symbol_table);
+
+  // stores data relations(which are also state independent)
+  set<size_t> state_independent = GetStateIndependentRelations(all_kb, m_kb, dgraph);
+
+  if(useCache)
+    AddStateIndependentRelationToCache(state_independent, dgraph, m_kb);
 
   // start bottom up dependency flattening
   // start with those relation which are not dependent on other
   // then use dfs to flatten all the relations bottom up
   set<size_t> relations_done;
-  for(it = dgraph.begin(); it != dgraph.end(); it++)
+  for(auto it = dgraph.begin(); it != dgraph.end(); it++)
   {
-    if((mit = relations_done.find(it->first)) == relations_done.end())
+    auto mit = relations_done.find(it->first);
+    if(mit == relations_done.end())
     {
       stack<const DGraphNode*> S_n;
       stack<size_t> S_i;
@@ -287,6 +305,252 @@ bool IsSelfRecursive(const Clause& c)
   return false;
 }
 
+void KIFFlattener::FlattenClause(const Clause& clause,
+                                 const set<size_t>& state_independent,
+                                 list<Argument*>& f_heads,
+                                 list<Clause>& f_clauses,
+                                 list<Fact>& f_facts,
+                                 list<const Clause*>& rec_clauses,
+                                 KnowledgeBase& m_kb)
+{
+  //SymbolDecodeStream sds(symbol_table);
+
+  //sds << *it << endl;
+
+  // if the clause is already ground add it directly
+  // add its head to heads list
+  if(clause.IsGround())
+  {
+    Clause* to_add = new Clause(clause);
+    f_clauses.push_back(*to_add);
+    f_heads.push_back(to_add->head);
+    to_add->head = NULL;
+    delete to_add;
+    return;
+  }
+
+  if(IsSelfRecursive(clause))
+  {
+    rec_clauses.push_back(&clause);
+    return;
+  }
+
+  // pre-process the clause
+  // adjust the extra variables which are present in body but not head
+  // adjust 'not' relation appropriately
+  Clause* p_clause = ProcessClause(clause, state_independent);
+
+  // add the processed clause temporarily to knowledge base
+  size_t c_index = m_kb.Tell(*p_clause);
+
+  VariableMap h_v_map;
+  Argument* question = SpecialArgCopy2(p_clause->head, h_v_map);
+
+  // after adding the head of the clause will be the question to ask
+  Answer* ans = m_kb.GetAnswer(*question, VariableMap(), set<size_t>());
+
+  Argument opt_args[2];
+  bool is_initialized = false;
+
+  list<Clause> opt_clauses;
+
+  while(ans->next())
+  {
+    VariableMap ans_v_map = ans->GetVariableMap();
+    for(auto va : h_v_map)
+      ans_v_map.insert(va);
+
+    // compute the answer with substitution
+    Clause* to_add = Unify::GetSubstitutedClause(&clause, ans_v_map);
+
+    //sds << *to_add << endl;
+
+    // remove all the occurrences of data relations
+    Clause* temp = RemoveDataFromClause(to_add, state_independent);
+
+    // check whether clause can be converted to fact after data relations removal
+    if(temp == NULL)
+    {
+      Argument* h = to_add->head;
+      to_add->head = NULL;
+      delete to_add;
+      f_facts.push_back(*h);
+      f_facts.back().loc = clause.loc;
+      f_facts.back().isLocation = clause.isLocation;
+      f_heads.push_back(h);
+
+      if(is_initialized)
+      {
+        OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
+        is_initialized = false;
+      }
+    }
+    else
+    {
+      if(temp->premisses.size() > 2)
+      {
+        if(!is_initialized)
+        {
+          InitializePropnetOptimizer(clause, temp, opt_clauses, opt_args);
+          is_initialized = true;
+        }
+
+        if(*temp->premisses[0] == opt_args[0] && *temp->premisses[1] == opt_args[1])
+        {
+          opt_clauses.push_back(*temp);
+          opt_clauses.back().loc = clause.loc;
+          opt_clauses.back().isLocation = clause.isLocation;
+        }
+        else
+        {
+          OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
+
+          opt_clauses.clear();
+
+          InitializePropnetOptimizer(clause, temp, opt_clauses, opt_args);
+        }
+      }
+      else
+      {
+        f_clauses.push_back(*temp);
+        f_clauses.back().loc = clause.loc;
+        f_clauses.back().isLocation = clause.isLocation;
+
+        if(is_initialized)
+        {
+          OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
+
+          opt_clauses.clear();
+          is_initialized = false;
+        }
+      }
+
+      f_heads.push_back(temp->head);
+      temp->head = NULL;
+      delete temp;
+    }
+  }
+
+  if(is_initialized)
+  {
+    OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
+    is_initialized = false;
+  }
+
+  // delete answer
+  delete ans;
+
+  // erase the temporary knowledge from knowledge base
+  m_kb.Erase(*p_clause, c_index);
+
+  // delete the processed clause(without deleting the variables
+  SpecialClauseDelete(p_clause);
+
+  delete question;
+}
+
+void KIFFlattener::FlattenRecursiveClause(const Clause& clause,
+                                          const set<size_t>& state_independent,
+                                          list<Argument*>& rec_f_heads,
+                                          list<Clause>& f_clauses,
+                                          list<Fact>& f_facts,
+                                          KnowledgeBase& m_kb)
+{
+  Clause* p_clause = ProcessClause(clause, state_independent);
+
+  size_t head_id = p_clause->head->value;
+
+  string head_command = symbol_table->GetCommandName(head_id);
+
+  head_command += "_recurse";
+
+  size_t rec_head_id = symbol_table.AddEntry(head_command, core::Location());
+
+  p_clause->head->value = rec_head_id;
+
+  Clause* rec_clause = new Clause(*p_clause);
+  rec_clause->head->value = rec_head_id;
+  for(auto premiss : rec_clause->premisses)
+  {
+    if(premiss->value == SymbolTable::OrID)
+    {
+      for(auto arg : premiss->args)
+      {
+        if(arg->value == head_id)
+          arg->value = rec_head_id;
+      }
+    }
+    else if(premiss->value == head_id)
+      premiss->value = rec_head_id;
+  }
+
+  //sds << *p_clause << endl;
+  //sds << *rec_clause << endl;
+
+  // add the processed clause temporarily to knowledge base
+  size_t c_index = m_kb.Tell(*p_clause);
+  size_t rec_c_index = m_kb.Tell(*rec_clause);
+
+  VariableMap h_v_map;
+  Argument* question = SpecialArgCopy2(p_clause->head, h_v_map);
+
+  // after adding the head of the clause will be the question to ask
+  Answer* ans = m_kb.GetAnswer(*question, VariableMap(), set<size_t>());
+
+  while(ans->next())
+  {
+    VariableMap ans_v_map = ans->GetVariableMap();
+    for(auto va : h_v_map)
+      ans_v_map.insert(va);
+
+    // compute the answer with substitution
+    Clause* to_add = Unify::GetSubstitutedClause(&clause, ans_v_map);
+
+    //sds << *to_add << endl;
+
+    // remove all the occurrences of data relations
+    Clause* temp = RemoveDataFromClause(to_add, state_independent);
+
+    //sds << *temp << endl;
+
+    // check whether clause can be converted to fact after data relations removal
+    if(temp == NULL)
+    {
+      Argument* h = to_add->head;
+      to_add->head = NULL;
+      delete to_add;
+      f_facts.push_back(*h);
+      f_facts.back().loc = clause.loc;
+      f_facts.back().isLocation = clause.isLocation;
+      rec_f_heads.push_back(h);
+    }
+    else
+    {
+      f_clauses.push_back(*temp);
+      f_clauses.back().loc = clause.loc;
+      f_clauses.back().isLocation = clause.isLocation;
+
+      rec_f_heads.push_back(temp->head);
+      temp->head = NULL;
+      delete temp;
+    }
+  }
+
+  // delete answer
+  delete ans;
+
+  // erase the temporary knowledge from knowledge base
+  m_kb.Erase(*rec_clause, rec_c_index);
+  m_kb.Erase(*p_clause, c_index);
+
+  // delete the processed clause(without deleting the variables
+  SpecialClauseDelete(p_clause);
+
+  delete rec_clause;
+
+  delete question;
+}
+
 void KIFFlattener::FlattenRelation(const DGraphNode* n,
                                    const KnowledgeBase& all_kb,
                                    const std::set<size_t>& state_independent,
@@ -327,140 +591,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   // start flattening clauses
   for(list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
   {
-    //SymbolDecodeStream sds(symbol_table);
-
-    //sds << *it << endl;
-
-    // if the clause is already ground add it directly
-    // add its head to heads list
-    if((*it).IsGround())
-    {
-      Clause* to_add = new Clause(*it);
-      f_clauses.push_back(*to_add);
-      f_heads.push_back(to_add->head);
-      to_add->head = NULL;
-      delete to_add;
-      continue;
-    }
-
-    if(IsSelfRecursive(*it))
-    {
-      rec_clauses.push_back(&(*it));
-      continue;
-    }
-
-    // pre-process the clause
-    // adjust the extra variables which are present in body but not head
-    // adjust 'not' relation appropriately
-    Clause* p_clause = ProcessClause(*it, state_independent);
-
-    // add the processed clause temporarily to knowledge base
-    size_t c_index = m_kb.Tell(*p_clause);
-
-    VariableMap h_v_map;
-    Argument* question = SpecialArgCopy2(p_clause->head, h_v_map);
-
-    // after adding the head of the clause will be the question to ask
-    Answer* ans = m_kb.GetAnswer(*question, VariableMap(), set<size_t>());
-
-    Argument opt_args[2];
-    bool is_initialized = false;
-
-    list<Clause> opt_clauses;
-
-    while(ans->next())
-    {
-      VariableMap ans_v_map = ans->GetVariableMap();
-      for(auto va : h_v_map)
-        ans_v_map.insert(va);
-
-      // compute the answer with substitution
-      Clause* to_add = Unify::GetSubstitutedClause(&(*it), ans_v_map);
-
-      //sds << *to_add << endl;
-
-      // remove all the occurrences of data relations
-      Clause* temp = RemoveDataFromClause(to_add, state_independent);
-
-      // check whether clause can be converted to fact after data relations removal
-      if(temp == NULL)
-      {
-        Argument* h = to_add->head;
-        to_add->head = NULL;
-        delete to_add;
-        f_facts.push_back(*h);
-        f_facts.back().loc = (*it).loc;
-        f_facts.back().isLocation = (*it).isLocation;
-        f_heads.push_back(h);
-
-        if(is_initialized)
-        {
-          OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
-          is_initialized = false;
-        }
-      }
-      else
-      {
-        if(temp->premisses.size() > 2)
-        {
-          if(!is_initialized)
-          {
-            InitializePropnetOptimizer(*it, temp, opt_clauses, opt_args);
-            is_initialized = true;
-          }
-
-          if(*temp->premisses[0] == opt_args[0] && *temp->premisses[1] == opt_args[1])
-          {
-            opt_clauses.push_back(*temp);
-            opt_clauses.back().loc = (*it).loc;
-            opt_clauses.back().isLocation = (*it).isLocation;
-          }
-          else
-          {
-            OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
-
-            opt_clauses.clear();
-
-            InitializePropnetOptimizer(*it, temp, opt_clauses, opt_args);
-          }
-        }
-        else
-        {
-          f_clauses.push_back(*temp);
-          f_clauses.back().loc = (*it).loc;
-          f_clauses.back().isLocation = (*it).isLocation;
-
-          if(is_initialized)
-          {
-            OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
-
-            opt_clauses.clear();
-            is_initialized = false;
-          }
-        }
-
-        f_heads.push_back(temp->head);
-        temp->head = NULL;
-        delete temp;
-      }
-    }
-
-    if(is_initialized)
-    {
-      OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, f_clauses);
-      is_initialized = false;
-    }
-
-    // delete answer
-    delete ans;
-
-    // erase the temporary knowledge from knowledge base
-    m_kb.Erase(*p_clause, c_index);
-
-    // delete the processed clause(without deleting the variables
-    SpecialClauseDelete(p_clause);
-
-    delete question;
+    FlattenClause(*it, state_independent, f_heads, f_clauses, f_facts, rec_clauses, m_kb);
   }
 
   // add all the facts related to this relation to knowledge base
@@ -508,99 +639,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
 
   for(auto c_rec : rec_clauses)
   {
-    Clause* p_clause = ProcessClause(*c_rec, state_independent);
-
-    size_t head_id = p_clause->head->value;
-
-    string head_command = symbol_table->GetCommandName(head_id);
-
-    head_command += "_recurse";
-
-    size_t rec_head_id = symbol_table.AddEntry(head_command, core::Location());
-
-    p_clause->head->value = rec_head_id;
-
-    Clause* rec_clause = new Clause(*p_clause);
-    rec_clause->head->value = rec_head_id;
-    for(auto premiss : rec_clause->premisses)
-    {
-      if(premiss->value == SymbolTable::OrID)
-      {
-        for(auto arg : premiss->args)
-        {
-          if(arg->value == head_id)
-            arg->value = rec_head_id;
-        }
-      }
-      else if(premiss->value == head_id)
-        premiss->value = rec_head_id;
-    }
-
-    sds << *p_clause << endl;
-    sds << *rec_clause << endl;
-
-    // add the processed clause temporarily to knowledge base
-    size_t c_index = m_kb.Tell(*p_clause);
-    size_t rec_c_index = m_kb.Tell(*rec_clause);
-
-    VariableMap h_v_map;
-    Argument* question = SpecialArgCopy2(p_clause->head, h_v_map);
-
-    // after adding the head of the clause will be the question to ask
-    Answer* ans = m_kb.GetAnswer(*question, VariableMap(), set<size_t>());
-
-    while(ans->next())
-    {
-      VariableMap ans_v_map = ans->GetVariableMap();
-      for(auto va : h_v_map)
-        ans_v_map.insert(va);
-
-      // compute the answer with substitution
-      Clause* to_add = Unify::GetSubstitutedClause(c_rec, ans_v_map);
-
-      //sds << *to_add << endl;
-
-      // remove all the occurrences of data relations
-      Clause* temp = RemoveDataFromClause(to_add, state_independent);
-
-      sds << *temp << endl;
-
-      // check whether clause can be converted to fact after data relations removal
-      if(temp == NULL)
-      {
-        Argument* h = to_add->head;
-        to_add->head = NULL;
-        delete to_add;
-        f_facts.push_back(*h);
-        f_facts.back().loc = c_rec->loc;
-        f_facts.back().isLocation = c_rec->isLocation;
-        rec_f_heads.push_back(h);
-      }
-      else
-      {
-        f_clauses.push_back(*temp);
-        f_clauses.back().loc = c_rec->loc;
-        f_clauses.back().isLocation = c_rec->isLocation;
-
-        rec_f_heads.push_back(temp->head);
-        temp->head = NULL;
-        delete temp;
-      }
-    }
-
-    // delete answer
-    delete ans;
-
-    // erase the temporary knowledge from knowledge base
-    m_kb.Erase(*rec_clause, rec_c_index);
-    m_kb.Erase(*p_clause, c_index);
-
-    // delete the processed clause(without deleting the variables
-    SpecialClauseDelete(p_clause);
-
-    delete rec_clause;
-
-    delete question;
+    FlattenRecursiveClause(*c_rec, state_independent, rec_f_heads, f_clauses, f_facts, m_kb);
   }
 
   // add heads of all the clauses to knowledge base

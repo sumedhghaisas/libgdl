@@ -73,7 +73,16 @@ class KIFFlattener
   //! \return void
   //!
   //!
-  void Flatten(gdlparser::KIF& kif, bool useCache = false);
+  void Flatten(gdlparser::KIF& kif, bool useCache = true);
+
+  //! Flattens the knowledge in given KIF object
+  //!
+  //! \param kif KIF object to flatten
+  //! \return void
+  //!
+  //!
+  template<typename Collector>
+  void Flatten(gdlparser::KIF& kif, Collector& collector, bool useCache = true);
 
   //! Print the current flattened knowledge to file
   //! Returns the success state
@@ -125,6 +134,29 @@ class KIFFlattener
   }
 
  private:
+  std::set<size_t> GetStateIndependentRelations(const KnowledgeBase& all_kb,
+                                                KnowledgeBase& m_kb,
+                                                const std::map<size_t, DGraphNode*>& dgraph);
+
+  void AddStateIndependentRelationToCache(const std::set<size_t>& state_independent,
+                                          const std::map<size_t, DGraphNode*>& dgraph,
+                                          KnowledgeBase& m_kb);
+
+  void FlattenClause(const Clause& clause,
+                     const std::set<size_t>& state_independent,
+                     std::list<Argument*>& f_heads,
+                     std::list<Clause>& f_clauses,
+                     std::list<Fact>& f_facts,
+                     std::list<const Clause*>& rec_clauses,
+                     KnowledgeBase& m_kb);
+
+  void FlattenRecursiveClause(const Clause& clause,
+                              const std::set<size_t>& state_independent,
+                              std::list<Argument*>& f_heads,
+                              std::list<Clause>& f_clauses,
+                              std::list<Fact>& f_facts,
+                              KnowledgeBase& m_kb);
+
   //! Performs simple DFS and returns all the relations traversed
   //!
   //! \param node Node to start the DFS from
