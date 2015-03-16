@@ -1,3 +1,5 @@
+#include <libgdl/core/symbol_table/symbol_decode_stream.hpp>
+
 namespace libgdl
 {
 namespace gdlreasoner
@@ -114,6 +116,9 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
   // start flattening clauses
   for(std::list<Clause>::const_iterator it = clauses.begin();it != clauses.end();it++)
   {
+    core::SymbolDecodeStream sds(all_kb.GetSymbolTable());
+    sds << *it << std::endl;
+
     FlattenClause(*it, state_independent, all_kb.GetSymbolTable(), f_heads, collector, rec_clauses, m_kb, combination_optimization_index);
   }
 

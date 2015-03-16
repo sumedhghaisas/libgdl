@@ -182,6 +182,8 @@ Answer::~Answer()
 
   else if(t == DECODER)
   {
+    delete cache_q;
+    delete cache_maps;
     delete to_dec;
   }
 }
@@ -419,7 +421,21 @@ bool Answer::next()
 
         //core::SymbolDecodeStream sds(kb.GetSymbolTable());
         //sds << *cache_q << endl;
-        kb.cached_maps[question.Hash(kb.GetSymbolTable(), o_v_map)] = tuple<Argument*, list<VariableMap>*>(cache_q, cache_maps);
+        if(kb.cached_maps.find(question.Hash(kb.GetSymbolTable(), o_v_map)) == kb.cached_maps.end())
+          kb.cached_maps[question.Hash(kb.GetSymbolTable(), o_v_map)] = tuple<Argument*, list<VariableMap>*>(cache_q, cache_maps);
+        else
+        {
+          delete cache_q;
+
+          for(auto it : *cache_maps)
+          {
+            for(auto it2 : it)
+              delete it2.second;
+          }
+          delete cache_maps;
+        }
+        cache_q = NULL;
+        cache_maps = NULL;
       }
     }
     return res;

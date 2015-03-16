@@ -35,7 +35,12 @@ void PropNet::Initialize(const std::string& filename)
   sym = kif.GetSymbolTable();
 
   KIFFlattener kf(log);
+
+  size_t start = util::Timer::microtimer();
   kf.Flatten(kif, *this);
+  size_t end = util::Timer::microtimer();
+
+  cout << end - start << endl;
 }
 
 void PropNet::Initialize(KIF& kif)

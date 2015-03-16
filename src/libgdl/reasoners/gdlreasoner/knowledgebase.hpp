@@ -134,7 +134,8 @@ class KnowledgeBase
   //!
   inline Answer* GetAnswer(const Argument& question,
                            const VariableMap& v_map,
-                           const std::set<size_t>& visited) const;
+                           const std::set<size_t>& visited,
+                           bool toDecode = true) const;
 
   //! Returns true if the question is satisfiable
   //!

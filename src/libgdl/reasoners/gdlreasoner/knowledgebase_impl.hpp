@@ -5,7 +5,8 @@ namespace gdlreasoner
 
 inline logicbase::Answer* KnowledgeBase::GetAnswer(const Argument& question,
                                                    const VariableMap& v_map,
-                                                   const std::set<size_t>& visited) const
+                                                   const std::set<size_t>& visited,
+                                                   bool toDecode) const
 {
   //core::SymbolDecodeStream sds(symbol_table);
   //sds << question << std::endl;
@@ -33,7 +34,9 @@ inline logicbase::Answer* KnowledgeBase::GetAnswer(const Argument& question,
     ans = new Answer(Answer::GROUND, question, v_map, *this, visited, ans);
   }
 
-  return new Answer(Answer::DECODER, question, v_map, *this, visited, ans);
+  if(toDecode)
+    return new Answer(Answer::DECODER, question, v_map, *this, visited, ans);
+  else return ans;
 }
 
 }

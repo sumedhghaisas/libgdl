@@ -18,7 +18,7 @@ namespace node_types
 struct ViewNode : public Node
 {
   ViewNode(const std::string& name, size_t id)
-    : Node(name, Node::Type::VIEW)
+    : Node(name, Node::Type::VIEW), id(id)
   {}
 
   std::string UName() const
