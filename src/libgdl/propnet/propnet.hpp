@@ -110,6 +110,15 @@ class PropNet
     }
   }
 
+  bool InitializeWithDOT(const gdlparser::KIF& kif,
+                         const std::string& dot_filename);
+
+  void ProcessDOTtoken(const std::string& token,
+                       std::list<std::pair<std::string, std::string>>& edges,
+                       std::map<std::string, std::string>& t_edges,
+                       std::map<std::string, Node*>& nodes,
+                       std::map<std::string, Node*>& n_nodes);
+
   void AddAndNode(Node* n) { and_nodes.push_back(n); }
 
   void AddBaseNode(Node* n, size_t id) { base_nodes[id] = n; }

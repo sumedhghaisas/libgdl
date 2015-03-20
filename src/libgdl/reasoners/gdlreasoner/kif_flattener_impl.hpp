@@ -10,6 +10,8 @@ void KIFFlattener::Flatten(gdlparser::KIF& kif,
                            Collector& collector,
                            bool useCache)
 {
+  bool toOptimizeForPropnet = false;
+
   core::SymbolTable symbol_table = kif.GetSymbolTable();
 
   DGraph graph = kif.DependencyGraph();
@@ -60,7 +62,7 @@ void KIFFlattener::Flatten(gdlparser::KIF& kif,
           if(state_independent.find(temp->id) == state_independent.end())
           {
             FlattenRelation(temp, all_kb, state_independent,
-                            m_kb, collector, useCache);
+                            m_kb, collector, useCache, toOptimizeForPropnet);
           }
           continue;
         }
@@ -85,7 +87,8 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
                                    const std::set<size_t>& state_independent,
                                    KnowledgeBase& m_kb,
                                    Collector& collector,
-                                   bool useCache)
+                                   bool useCache,
+                                   bool toOptimizeForPropnet)
 {
   //compute signature of relation
   const size_t& sig = n->id;
@@ -119,7 +122,7 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
     core::SymbolDecodeStream sds(all_kb.GetSymbolTable());
     sds << *it << std::endl;
 
-    FlattenClause(*it, state_independent, all_kb.GetSymbolTable(), f_heads, collector, rec_clauses, m_kb, combination_optimization_index);
+    FlattenClause(*it, state_independent, all_kb.GetSymbolTable(), f_heads, collector, rec_clauses, m_kb, combination_optimization_index, toOptimizeForPropnet);
   }
 
   // add all the facts related to this relation to knowledge base
@@ -137,27 +140,20 @@ void KIFFlattener::FlattenRelation(const DGraphNode* n,
 
   std::set<size_t> head_hashes;
 
-  if(rec_clauses.empty())
+  // add heads of all the clauses to knowledge base
+  for(std::list<Argument*>::iterator it = f_heads.begin();it != f_heads.end();it++)
   {
-    // add heads of all the clauses to knowledge base
-    for(std::list<Argument*>::iterator it = f_heads.begin();it != f_heads.end();it++)
+    //core::SymbolDecodeStream sds(all_kb.GetSymbolTable());
+    //sds << **it << std::endl;
+
+    Fact f;
+    f.arg = *it;
+
+    size_t h_hash = f.arg->Hash(all_kb.GetSymbolTable());
+
+    if(head_hashes.find(h_hash) == head_hashes.end())
     {
-      Fact f;
-      f.arg = *it;
-
-      fl.push_back(std::move(f));
-    }
-  }
-  else
-  {
-    // add heads of all the clauses to knowledge base
-    for(std::list<Argument*>::iterator it = f_heads.begin();it != f_heads.end();it++)
-    {
-      Fact f;
-      f.arg = *it;
-
-      head_hashes.insert(f.arg->Hash(all_kb.GetSymbolTable()));
-
+      head_hashes.insert(h_hash);
       fl.push_back(std::move(f));
     }
   }
@@ -241,6 +237,12 @@ void KIFFlattener::FlattenRecursiveClause(const Clause& clause,
   // after adding the head of the clause will be the question to ask
   logicbase::Answer* ans = m_kb.GetAnswer(*question, core::VariableMap(), std::set<size_t>());
 
+  bool toAdd = false;
+  if(question->value != core::SymbolTable::LegalID &&
+     question->value != core::SymbolTable::NextID &&
+     question->value != core::SymbolTable::InitID)
+    toAdd = true;
+
   while(ans->next())
   {
     core::VariableMap ans_v_map = ans->GetVariableMap();
@@ -260,14 +262,16 @@ void KIFFlattener::FlattenRecursiveClause(const Clause& clause,
     // check whether clause can be converted to fact after data relations removal
     if(temp == NULL)
     {
-      Argument* h = to_add->head;
-      to_add->head = NULL;
+      collector.AddFact(*to_add->head);
+      if(toAdd)
+      {
+        rec_f_heads.push_back(to_add->head);
+        to_add->head = NULL;
+      }
       delete to_add;
 //      f_facts.push_back(*h);
 //      f_facts.back().loc = clause.loc;
 //      f_facts.back().isLocation = clause.isLocation;
-      collector.AddFact(*h);
-      rec_f_heads.push_back(h);
     }
     else
     {
@@ -276,8 +280,11 @@ void KIFFlattener::FlattenRecursiveClause(const Clause& clause,
 //      f_clauses.back().isLocation = clause.isLocation;
       collector.AddClause(*temp);
 
-      rec_f_heads.push_back(temp->head);
-      temp->head = NULL;
+      if(toAdd)
+      {
+        rec_f_heads.push_back(temp->head);
+        temp->head = NULL;
+      }
       delete temp;
     }
   }
@@ -305,9 +312,10 @@ void KIFFlattener::FlattenClause(const Clause& clause,
                                  Collector& collector,
                                  std::list<const Clause*>& rec_clauses,
                                  KnowledgeBase& m_kb,
-                                 size_t& combination_optimization_index)
+                                 size_t& combination_optimization_index,
+                                 bool toOptimizeForPropnet)
 {
-  //SymbolDecodeStream sds(symbol_table);
+  core::SymbolDecodeStream sds(symbol_table);
 
   //sds << *it << endl;
 
@@ -349,6 +357,15 @@ void KIFFlattener::FlattenClause(const Clause& clause,
 
   std::list<Clause> opt_clauses;
 
+  bool toAdd = false;
+  if(question->value != core::SymbolTable::LegalID &&
+     question->value != core::SymbolTable::NextID &&
+     question->value != core::SymbolTable::InitID)
+  {
+    //std::cout << "Adding to knowledge..." << std::endl;
+    toAdd = true;
+  }
+
   while(ans->next())
   {
     core::VariableMap ans_v_map = ans->GetVariableMap();
@@ -358,7 +375,7 @@ void KIFFlattener::FlattenClause(const Clause& clause,
     // compute the answer with substitution
     Clause* to_add = logicbase::Unify::GetSubstitutedClause(&clause, ans_v_map);
 
-    //sds << *to_add << endl;
+    sds << *to_add << std::endl;
 
     // remove all the occurrences of data relations
     Clause* temp = RemoveDataFromClause(to_add, state_independent);
@@ -366,16 +383,16 @@ void KIFFlattener::FlattenClause(const Clause& clause,
     // check whether clause can be converted to fact after data relations removal
     if(temp == NULL)
     {
-      Argument* h = to_add->head;
-      to_add->head = NULL;
+      collector.AddFact(*to_add->head);
+      if(toAdd)
+      {
+        f_heads.push_back(to_add->head);
+        to_add->head = NULL;
+      }
       delete to_add;
 //      f_facts.push_back(*h);
 //      f_facts.back().loc = clause.loc;
 //      f_facts.back().isLocation = clause.isLocation;
-
-      collector.AddFact(*h);
-
-      f_heads.push_back(h);
 
       if(is_initialized)
       {
@@ -385,47 +402,55 @@ void KIFFlattener::FlattenClause(const Clause& clause,
     }
     else
     {
-      if(temp->premisses.size() > 2)
+      if(toOptimizeForPropnet)
       {
-        if(!is_initialized)
+        std::cout << "Optimizing for propnet..." << std::endl;
+        if(temp->premisses.size() > 2)
         {
-          InitializePropnetOptimizer(clause, temp, opt_clauses, opt_args);
-          is_initialized = true;
-        }
+          if(!is_initialized)
+          {
+            InitializePropnetOptimizer(clause, temp, opt_clauses, opt_args);
+            is_initialized = true;
+          }
 
-        if(*temp->premisses[0] == opt_args[0] && *temp->premisses[1] == opt_args[1])
-        {
-          opt_clauses.push_back(*temp);
-          opt_clauses.back().loc = clause.loc;
-          opt_clauses.back().isLocation = clause.isLocation;
+          if(*temp->premisses[0] == opt_args[0] && *temp->premisses[1] == opt_args[1])
+          {
+            opt_clauses.push_back(*temp);
+            opt_clauses.back().loc = clause.loc;
+            opt_clauses.back().isLocation = clause.isLocation;
+          }
+          else
+          {
+            OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, collector);
+
+            opt_clauses.clear();
+
+            InitializePropnetOptimizer(clause, temp, opt_clauses, opt_args);
+          }
         }
         else
         {
-          OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, collector);
+  //        f_clauses.push_back(*temp);
+  //        f_clauses.back().loc = clause.loc;
+  //        f_clauses.back().isLocation = clause.isLocation;
+          collector.AddClause(*temp);
 
-          opt_clauses.clear();
+          if(is_initialized)
+          {
+            OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, collector);
 
-          InitializePropnetOptimizer(clause, temp, opt_clauses, opt_args);
+            opt_clauses.clear();
+            is_initialized = false;
+          }
         }
       }
-      else
+      else collector.AddClause(*temp);
+
+      if(toAdd)
       {
-//        f_clauses.push_back(*temp);
-//        f_clauses.back().loc = clause.loc;
-//        f_clauses.back().isLocation = clause.isLocation;
-        collector.AddClause(*temp);
-
-        if(is_initialized)
-        {
-          OptimizeClausesForPropnet(opt_clauses, opt_args, symbol_table, combination_optimization_index, collector);
-
-          opt_clauses.clear();
-          is_initialized = false;
-        }
+        f_heads.push_back(temp->head);
+        temp->head = NULL;
       }
-
-      f_heads.push_back(temp->head);
-      temp->head = NULL;
       delete temp;
     }
   }

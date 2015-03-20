@@ -10,7 +10,7 @@
 #include <libgdl/core.hpp>
 #include <libgdl/core/data_types/a_state.hpp>
 
-#define LIBGDL_DFP_TEST
+//#define LIBGDL_DFP_TEST
 
 namespace libgdl
 {

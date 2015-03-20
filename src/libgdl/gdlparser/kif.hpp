@@ -143,7 +143,7 @@ class KIF
   }
 
   //! Get generated SymbolTable
-  SymbolTable GetSymbolTable()
+  SymbolTable GetSymbolTable() const
   {
     return symbol_table;
   }

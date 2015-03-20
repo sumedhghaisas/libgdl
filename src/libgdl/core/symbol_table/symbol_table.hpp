@@ -157,6 +157,7 @@ class RawSymbolTable
   //! Represents GDL predefined IDs.
   enum IDS {NotID,
             OrID,
+            AndID,
             DistinctID,
             RoleID,
             BaseID,
@@ -337,6 +338,7 @@ class SymbolTable : public boost::intrusive_ptr<RawSymbolTable>
   //! Represents GDL predefined IDs.
   enum IDS {NotID,
             OrID,
+            AndID,
             DistinctID,
             RoleID,
             BaseID,

@@ -55,18 +55,19 @@ RawSymbolTable::RawSymbolTable(const Log& log)
 
   AddEntry("not", Location(), 0, true); // 0
   AddEntry("or", Location(), 0, true); // 1
-  AddEntry("distinct", Location(), 2, true); // 2
+  AddEntry("and", Location(), 0, true); // 2
+  AddEntry("distinct", Location(), 2, true); // 3
 
-  AddEntry("role", Location(), 1, true); // 3
-  AddEntry("base", Location(), 1, true); // 4
-  AddEntry("input", Location(), 2, true); // 5
-  AddEntry("init", Location(), 1, true); // 6
-  AddEntry("legal", Location(), 2, true); // 7
-  AddEntry("next", Location(), 1, true); // 8
-  AddEntry("does", Location(), 2, true); // 9
-  AddEntry("true", Location(), 1, true); // 10
-  AddEntry("goal", Location(), 2, true); // 11
-  AddEntry("terminal", Location(), 0, true); // 12
+  AddEntry("role", Location(), 1, true); // 4
+  AddEntry("base", Location(), 1, true); // 5
+  AddEntry("input", Location(), 2, true); // 6
+  AddEntry("init", Location(), 1, true); // 7
+  AddEntry("legal", Location(), 2, true); // 8
+  AddEntry("next", Location(), 1, true); // 9
+  AddEntry("does", Location(), 2, true); // 10
+  AddEntry("true", Location(), 1, true); // 11
+  AddEntry("goal", Location(), 2, true); // 12
+  AddEntry("terminal", Location(), 0, true); // 13
 }
 
 RawSymbolTable::~RawSymbolTable()

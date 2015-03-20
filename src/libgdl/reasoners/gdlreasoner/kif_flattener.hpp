@@ -108,7 +108,8 @@ class KIFFlattener
                      Collector& collector,
                      std::list<const Clause*>& rec_clauses,
                      KnowledgeBase& m_kb,
-                     size_t& combination_optimization_index);
+                     size_t& combination_optimization_index,
+                     bool toOptimizeForPropnet);
 
   template<typename Collector>
   void FlattenRecursiveClause(const Clause& clause,
@@ -146,7 +147,8 @@ class KIFFlattener
                        const std::set<size_t>& state_independent,
                        KnowledgeBase& m_kb,
                        Collector& collector,
-                       bool useCache);
+                       bool useCache,
+                       bool toOptimizeForPropnet);
 
   //! Preprocesses clause before flattening
   //! Returns the clause with special substitution

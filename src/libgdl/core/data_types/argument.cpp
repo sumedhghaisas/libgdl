@@ -9,6 +9,7 @@
 #include <stack>
 #include <sstream>
 #include <tuple>
+#include <boost/algorithm/string.hpp>
 
 #include <libgdl/core/data_types/error_type.hpp>
 
@@ -136,7 +137,8 @@ bool Argument::SeparateCommand(const std::string& input,
               << " is not surrounded by braces or not big enough" << std::endl;
     return false;
   }
-  const std::string withoutBraces = input.substr (1, input.length() - 2);
+  std::string withoutBraces = input.substr (1, input.length() - 2);
+  boost::algorithm::trim(withoutBraces);
   size_t sep = withoutBraces.find(' ');
   if (sep == withoutBraces.npos)
   {

@@ -422,7 +422,10 @@ bool Answer::next()
         //core::SymbolDecodeStream sds(kb.GetSymbolTable());
         //sds << *cache_q << endl;
         if(kb.cached_maps.find(question.Hash(kb.GetSymbolTable(), o_v_map)) == kb.cached_maps.end())
+        {
           kb.cached_maps[question.Hash(kb.GetSymbolTable(), o_v_map)] = tuple<Argument*, list<VariableMap>*>(cache_q, cache_maps);
+          //cout << "Added cache for " << question.DecodeToString(kb.GetSymbolTable(), o_v_map) << "..." << endl;
+        }
         else
         {
           delete cache_q;

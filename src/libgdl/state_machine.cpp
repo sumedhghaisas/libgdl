@@ -14,11 +14,15 @@ using namespace boost::program_options;
 StateMachine::StateMachine(int argc, char* argv[])
   : initial_pn(GLOBAL_LOG), goal_pn(GLOBAL_LOG), log(GLOBAL_LOG)
 {
+  bool isDot = false;
+  string dot_file = "";
+
   // Declare the supported options.
   options_description desc("Allowed options");
   desc.add_options()
   ("source-files,c", value<std::vector<std::string> >()->multitoken(),
                      "source files")
+  ("dot-file,d", value<std::string>(), "DOT PropNet file")
   ;
 
   variables_map vm;
@@ -39,13 +43,24 @@ StateMachine::StateMachine(int argc, char* argv[])
     exit(1);
   }
 
+  if(vm.count("dot-file"))
+  {
+    isDot = true;
+    dot_file = vm["dot-file"].as<string>();
+  }
+
   gdlparser::KIF kif(true, 1, log);
   for(auto it : source_files)
     kif.AddFile(it);
   kif.Parse();
 
-  //! Initialize propnet with the file given
-  initial_pn.Initialize(kif);
+  if(!isDot)
+  {
+    //! Initialize propnet with the file given
+    initial_pn.Initialize(kif);
+  }
+  else
+    initial_pn.InitializeWithDOT(kif, dot_file);
 
   //! Get base size and role size
   base_size = initial_pn.BaseSize();
@@ -57,6 +72,8 @@ StateMachine::StateMachine(int argc, char* argv[])
   else
     AState::RawType::arr_size = base_size / 8 + 1;
 
+    cout << "testing" << endl;
+
   //! Initialize AMove with role size
   AMove::RawType::n_roles = initial_pn.RoleSize();
 
@@ -67,11 +84,14 @@ StateMachine::StateMachine(int argc, char* argv[])
   //! Assign enough memory for array which holds goals
   goals = new size_t[role_size];
 
+  cout << "testing" << endl;
+
   SetInitialPropNet();
 
-  //SeparateGoalNet();
+  SeparateGoalNet();
 
-//  goal_net.PrintPropnet("goal_net.dot");
+  goal_pn.PrintPropnet("goal_net.dot");
+  initial_pn.PrintPropnet("initial_pn.dot");
 //
 //  AState test = cache.Clone();
 //
@@ -176,34 +196,42 @@ const size_t* StateMachine::Simulate(const AState& s)
 {
   AState temp = s.Clone();
 
-  bool is_terminal = IsTerminal(temp);
+  temp.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+
+  bool is_terminal = initial_pn.GetTerminalNode()->holding_value;
+
   while(!is_terminal)
   {
-    MoveList<AMove> ml = GetLegalMoves_l(temp);
+    MoveList<AMove> ml = MoveList<AMove>(initial_pn_legals, role_size);
 
-    PrintMoveList(cout, ml);
+    //PrintMoveList(cout, ml);
 
-    size_t rnd = rand() % ml.size();
+    //size_t rnd = rand() % ml.size();
 
-    MoveList<AMove>::iterator it = ml.begin();
-    for(size_t i = 0;i < rnd;i++)
-      it++;
+    //MoveList<AMove>::iterator it = ml.begin();
+    //for(size_t i = 0;i < rnd;i++)
+      //it++;
 
-    AMove m = *it;
+    AMove m = *ml.begin();
 
-    PrintMove(cout, m);
+    //PrintMove(cout, m);
 
-    temp = GetNextState(temp, m);
+    //temp = GetNextState(temp, m);
+    m.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_move, initial_pn_input_nodes, NULL, NULL);
 
-    PrintState(cout, temp);
+    temp = initial_pn_top.Clone();
 
-    is_terminal = IsTerminal(temp);
+    //PrintState(cout, temp);
+
+    temp.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+
+    is_terminal = initial_pn.GetTerminalNode()->holding_value;//IsTerminal(temp);
   }
 
    const size_t* goals = GetGoals(temp);
 
-   for(size_t i = 0;i < role_size;i++)
-    cout << goals[i] << endl;
+   //for(size_t i = 0;i < role_size;i++)
+    //cout << goals[i] << endl;
 
    return goals;
 }
@@ -223,7 +251,14 @@ MoveList<AMove> StateMachine::GetLegalMoves_l_initial_dfp(const AState& s)
 {
   s.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
   //full_pn_base = s.Clone();
+
+  //size_t start = util::Timer::microtimer();
   return MoveList<AMove>(initial_pn_legals, role_size);
+  //size_t end = util::Timer::microtimer();
+
+  //cout << end - start << endl;
+
+  //exit(1);
 }
 
 AState StateMachine::GetNextState_initial_dfp(const AState& s, const AMove& m)

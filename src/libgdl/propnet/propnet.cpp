@@ -5,6 +5,9 @@
 #include <sstream>
 #include <fstream>
 #include <tuple>
+#include <regex>
+#include <boost/tokenizer.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "handlers/code_handler.hpp"
 #include "handlers/file_handler.hpp"
@@ -16,6 +19,10 @@ using namespace libgdl::gdlreasoner;
 using namespace libgdl::gdlparser;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
+
+size_t n_debug = 0;
+
+size_t and_debug = 0;
 
 PropNet::PropNet(Log log)
   : terminal(NULL), c_r_id(0), c_and_id(0), c_not_id(0),
@@ -130,6 +137,10 @@ void PropNet::AddClause(const Clause& c)
 
   Node* a = new AndNode("And", c_and_id++);
   and_nodes.push_back(a);
+
+  //and_debug++;
+  //if(and_debug % 1000 == 0)
+    //cout << "Created " << and_debug << " and nodes..." << endl;
 
   for(auto premiss : c.premisses)
   {
@@ -246,13 +257,27 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
       out->AddIn(temp);
     }
   }
+  else if(arg->value == SymbolTable::AndID)
+  {
+    out = new AndNode(s_arg, c_and_id++);
+    or_nodes.push_back(out);
+    for(auto a : arg->args)
+    {
+      Node* temp = CreateNode(sym, a);
+      temp->AddOut(out);
+      out->AddIn(temp);
+    }
+  }
   else if(arg->value == SymbolTable::NotID)
   {
     out = new NotNode(s_arg, c_not_id++);
     not_nodes.push_back(out);
-    Node* temp = CreateNode(sym, arg->args[0]);
-    temp->AddOut(out);
-    out->AddIn(temp);
+    if(!arg->args.empty())
+    {
+      Node* temp = CreateNode(sym, arg->args[0]);
+      temp->AddOut(out);
+      out->AddIn(temp);
+    }
   }
   else if(arg->value == SymbolTable::InitID)
   {
@@ -266,6 +291,10 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
     auto it = view_nodes.find(s_arg);
     if(it == view_nodes.end())
     {
+      //n_debug++;
+      //if(n_debug % 1000 == 0)
+        //cout << "Created " << n_debug << " nodes..." << endl;
+
       out = new ViewNode(s_arg, c_view_id++);
       view_nodes[s_arg] = out;
     }
@@ -1255,4 +1284,139 @@ void PropNet::SplitGoalNet(PropNet& goal_net)
   for(auto it : goal_nodes)
     for(auto it2 : it)
       it2.second->DeleteIfNotMarked(NULL, del, 1);
+}
+
+void PropNet::ProcessDOTtoken(const string& token,
+                              list<pair<string, string>>& edges,
+                              map<string, string>& t_edges,
+                              map<string, Node*>& nodes,
+                              map<string, Node*>& n_nodes)
+{
+  regex word_regex(".*->.*");
+  if(regex_search(token, word_regex))
+  {
+    regex reg1("@([0-9abcdef])+");
+    auto words_begin = sregex_iterator(token.begin(), token.end(), reg1);
+    auto words_end = sregex_iterator();
+    string from = words_begin->str();
+    string to = (++words_begin)->str();
+    t_edges[from] = to;
+    edges.emplace_back(from, to);
+  }
+  else
+  {
+    regex id_reg("@([0-9abcdef])+");
+    string id = sregex_iterator(token.begin(), token.end(), id_reg)->str();
+
+    regex label_reg("label=\".*\"");
+    string label = sregex_iterator(token.begin(), token.end(), label_reg)->str();
+    label = label.substr(7, label.length() - 8);
+    boost::algorithm::to_lower(label);
+
+    Node* to_add = NULL;
+
+    if(label != "transition" && label != "true")
+    {
+      Argument arg(label, sym, true);
+
+      to_add = CreateNode(sym, &arg);
+
+      if(arg.value == SymbolTable::TrueID)
+      {
+        arg.value = SymbolTable::NextID;
+        Node* t = CreateNode(sym, &arg);
+        n_nodes[id] = t;
+      }
+    }
+    nodes[id] = to_add;
+  }
+}
+
+void ProcessEdges(const list<pair<string, string>>& edges,
+                  const map<string, string>& t_edges,
+                  const map<string, Node*>& nodes,
+                  const map<string, Node*>& n_nodes)
+{
+  for(auto it : edges)
+  {
+    Node* from = nodes.find(it.first)->second;
+    if(from == NULL)
+      continue;
+
+    Node* to = nodes.find(it.second)->second;
+    if(to == NULL)
+    {
+      auto it2 = t_edges.find(it.second);
+      if(it2 == t_edges.end())
+      {
+        cout << LOGID << "Unexpected error!" << endl;
+        exit(1);
+      }
+
+      if(n_nodes.find(it2->second) == n_nodes.end())
+      {
+        cout << LOGID << "Unexpected error" << endl;
+        exit(1);
+      }
+
+      to = n_nodes.find(it2->second)->second;
+    }
+    from->out_degree.push_back(to);
+    to->in_degree.push_back(from);
+  }
+}
+
+bool PropNet::InitializeWithDOT(const KIF& kif,
+                                const std::string& dot_filename)
+{
+  sym = kif.GetSymbolTable();
+
+  for(auto it : kif.Facts())
+  {
+    if(it.arg->value == SymbolTable::RoleID)
+      CreateNode(sym, it.arg);
+  }
+
+  ifstream file(dot_filename);
+  if(!file.is_open())
+  {
+    log.Fatal << "Could not open file " << dot_filename << endl;
+    exit(1);
+  }
+
+  list<pair<string, string>> edges;
+  map<string, string> t_edges;
+
+  map<string, Node*> nodes;
+  map<string, Node*> n_nodes;
+
+  if(!file.is_open())
+  {
+    return false;
+  }
+
+  string line;
+
+  getline(file, line);
+  getline(file, line);
+
+  while(getline(file, line))
+  {
+    boost::char_separator<char> sep(";");
+    boost::tokenizer<boost::char_separator<char>> tokens(line, sep);
+    for(auto it : tokens)
+    {
+      boost::trim(it);
+      if(it != "" && it != "}")
+      {
+        ProcessDOTtoken(it, edges, t_edges, nodes, n_nodes);
+      }
+    }
+  }
+
+  ProcessEdges(edges, t_edges, nodes, n_nodes);
+
+  PrintPropnet("test.dot");
+
+  return true;
 }

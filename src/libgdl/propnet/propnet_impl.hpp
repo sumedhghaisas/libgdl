@@ -6,15 +6,11 @@ namespace propnet
 template<typename StateType>
 void PropNet::InitState(StateType& init)
 {
-  std::cout << StateType::RawType::arr_size << std::endl;
-
   bool temp = true;
 
   init.Clear();
 
   init.Get(0, temp);
-
-  std::cout << temp << std::endl;
 
   for(auto it : init_props)
   {
