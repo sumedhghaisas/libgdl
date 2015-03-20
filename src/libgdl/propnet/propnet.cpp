@@ -1266,7 +1266,7 @@ void PropNet::InitializeRun(AState& s, AState& base_mark, set<size_t>* m_set, si
 
 void PropNet::SplitGoalNet(PropNet& goal_net)
 {
-  map<Node*, Node*> node_map;
+  map<const Node*, Node*> node_map;
 
   for(auto it : goal_nodes)
     for(auto it2 : it)

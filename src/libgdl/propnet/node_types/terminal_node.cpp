@@ -82,7 +82,7 @@ void TerminalNode::Update(bool value, AState& base, AState& top, AMove& m, set<s
   }
 }
 
-void TerminalNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void TerminalNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddTerminalNode(to_reg);
 }

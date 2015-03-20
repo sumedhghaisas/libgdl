@@ -102,7 +102,7 @@ void AndNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t
   }
 }
 
-void AndNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void AndNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddAndNode(to_reg);
 }

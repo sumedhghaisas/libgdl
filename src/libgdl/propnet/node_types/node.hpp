@@ -69,11 +69,11 @@ struct Node
 
   virtual void Update(bool value, AState& base, AState& top, AMove& m, std::set<size_t>* m_set, size_t* goals) = 0;
 
-  virtual Node* GetCopy_only_info() = 0;
+  virtual Node* GetCopy_only_info() const = 0;
 
-  virtual void RegisterToPropnet(PropNet& pn, Node* to_reg) = 0;
+  virtual void RegisterToPropnet(PropNet& pn, Node* to_reg) const = 0;
 
-  Node* CreateCopy(PropNet& pn, Node* parent, std::map<Node*, Node*>& node_map)
+  Node* CreateCopy(PropNet& pn, Node* parent, std::map<const Node*, Node*>& node_map) const
   {
     auto nm_it = node_map.find(this);
     if(nm_it != node_map.end())
@@ -89,10 +89,12 @@ struct Node
     RegisterToPropnet(pn, out);
 
     node_map[this] = out;
-    out->out_degree.push_back(parent);
+
+    if(parent != NULL)
+      out->out_degree.push_back(parent);
 
     for(auto it : in_degree)
-      out->in_degree.push_back(it->CreateCopy(pn, this, node_map));
+      out->in_degree.push_back(it->CreateCopy(pn, out, node_map));
 
     return out;
   }

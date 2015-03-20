@@ -35,12 +35,12 @@ struct BaseNode : public Node
 
   void CreateCopy(PropNet& pn, Node* parent, std::map<Node*, Node*>& node_map);
 
-  Node* GetCopy_only_info()
+  Node* GetCopy_only_info() const
   {
     return new BaseNode(name, id);
   }
 
-  void RegisterToPropnet(PropNet& pn, Node* to_reg);
+  void RegisterToPropnet(PropNet& pn, Node* to_reg) const;
 
   size_t id;
 };

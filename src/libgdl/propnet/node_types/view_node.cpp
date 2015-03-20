@@ -100,7 +100,7 @@ void ViewNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_
   }
 }
 
-void ViewNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void ViewNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddViewNode(to_reg, name);
 }

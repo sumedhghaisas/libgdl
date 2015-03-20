@@ -151,7 +151,7 @@ void StateMachine::SetInitialPropNet()
     initial_pn_base_nodes[it.first] = it.second;
   }
 
-  //! Initialize input nodes for full_pn
+  //! Initialize input nodes for initial_pn
   initial_pn_input_nodes = new node_types::Node**[role_size];
   size_t index = 0;
   for(auto it : initial_pn.InputNodes())
@@ -190,6 +190,19 @@ void StateMachine::SeparateGoalNet()
   //! Initialize goal pn and get base mask
   goal_pn_base_mask = AState("");
   goal_pn.InitializeRun(goal_pn_top, goal_pn_base_mask, NULL, goals);
+
+  //PrintState(cout, goal_pn_base_mask);
+
+  //! Initialize base nodes for goal_pn
+  goal_pn_base_nodes = new node_types::Node*[base_size];
+  for(size_t i = 0;i < base_size;i++)
+    goal_pn_base_nodes[i] = NULL;
+  for(auto it : goal_pn.BaseNodes())
+  {
+    goal_pn_base_nodes[it.first] = it.second;
+  }
+
+  GetGoals = core::template_utils::BindToObject(&StateMachine::GetGoal_goal_dfp, this);
 }
 
 const size_t* StateMachine::Simulate(const AState& s)
@@ -200,9 +213,11 @@ const size_t* StateMachine::Simulate(const AState& s)
 
   bool is_terminal = initial_pn.GetTerminalNode()->holding_value;
 
+  AMove m("");
+
   while(!is_terminal)
   {
-    MoveList<AMove> ml = MoveList<AMove>(initial_pn_legals, role_size);
+    //MoveList<AMove> ml = MoveList<AMove>(initial_pn_legals, role_size);
 
     //PrintMoveList(cout, ml);
 
@@ -212,7 +227,8 @@ const size_t* StateMachine::Simulate(const AState& s)
     //for(size_t i = 0;i < rnd;i++)
       //it++;
 
-    AMove m = *ml.begin();
+    for(size_t i = 0;i < role_size;i++)
+      m->moves[i] = *initial_pn_legals[i].begin();
 
     //PrintMove(cout, m);
 
@@ -228,7 +244,7 @@ const size_t* StateMachine::Simulate(const AState& s)
     is_terminal = initial_pn.GetTerminalNode()->holding_value;//IsTerminal(temp);
   }
 
-   const size_t* goals = GetGoals(temp);
+  const size_t* goals = GetGoals(temp);
 
    //for(size_t i = 0;i < role_size;i++)
     //cout << goals[i] << endl;
@@ -273,5 +289,15 @@ AState StateMachine::GetNextState_initial_dfp(const AState& s, const AMove& m)
 const size_t* StateMachine::GetGoal_initial_dfp(const AState& s)
 {
   s.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+  return goals;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Functions for Goal Net
+////////////////////////////////////////////////////////////////////////////////
+
+const size_t* StateMachine::GetGoal_goal_dfp(const AState& s)
+{
+  s.UpdateNodes(goal_pn_base, goal_pn_top, goal_pn_base_mask, initial_pn_base_move, goal_pn_base_nodes, NULL, goals);
   return goals;
 }

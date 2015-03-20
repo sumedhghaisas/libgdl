@@ -44,10 +44,12 @@ void BaseNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_
   holding_value = value;
   base.Set(id, value);
   for(auto it : out_degree)
+  {
     it->Update(value, base, top, m, m_set, goals);
+  }
 }
 
-void BaseNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void BaseNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddBaseNode(to_reg, id);
 }

@@ -96,7 +96,7 @@ void NextNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_
   }
 }
 
-void NextNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void NextNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddNextNode(to_reg, id);
 }

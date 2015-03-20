@@ -25,12 +25,12 @@ struct TerminalNode : public Node
 
   void Update(bool value, AState& base, AState& top, AMove& m, std::set<size_t>* m_set, size_t* goals);
 
-  Node* GetCopy_only_info()
+  Node* GetCopy_only_info() const
   {
     return new TerminalNode(name);
   }
 
-  void RegisterToPropnet(PropNet& pn, Node* to_reg);
+  void RegisterToPropnet(PropNet& pn, Node* to_reg) const;
 
   size_t num_true;
 };

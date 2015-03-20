@@ -57,7 +57,7 @@ void NotNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t
     it->Update(holding_value, base, top, m, m_set, goals);
 }
 
-void NotNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void NotNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddNotNode(to_reg);
 }

@@ -90,6 +90,10 @@ class StateMachine
   AState goal_pn_base_mask;
   AState goal_pn_top;
   AState goal_pn_base;
+  propnet::node_types::Node** goal_pn_base_nodes;
+
+  //! Functions with goal net
+  const size_t* GetGoal_goal_dfp(const AState& s);
 
    //! Logging stream
   mutable Log log;

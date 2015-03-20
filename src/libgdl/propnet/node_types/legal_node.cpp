@@ -88,7 +88,7 @@ void LegalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size
   }
 }
 
-void LegalNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void LegalNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddLegalNode(to_reg, r_id, id);
 }

@@ -52,7 +52,7 @@ void InputNode::Update(bool value, AState& base, AState& top, AMove& m, set<size
     it->Update(value, base, top, m, m_set, goals);
 }
 
-void InputNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void InputNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddInputNode(to_reg, r_id, in_id);
 }

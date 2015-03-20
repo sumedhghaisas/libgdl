@@ -85,7 +85,7 @@ void GoalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_
   }
 }
 
-void GoalNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void GoalNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddGoalNode(to_reg, r_id, id);
 }

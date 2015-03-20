@@ -99,7 +99,7 @@ void OrNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>
   }
 }
 
-void OrNode::RegisterToPropnet(PropNet& pn, Node* to_reg)
+void OrNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddOrNode(to_reg);
 }
