@@ -181,7 +181,14 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
   }
   else if(arg->value == SymbolTable::InputID || arg->value == SymbolTable::DoesID )
   {
-    size_t r_id = roles_ids[sym.GetCommandName(arg->args[0]->value)];
+    auto r_it = roles_ids.find(sym.GetCommandName(arg->args[0]->value));
+    if(r_it == roles_ids.end())
+    {
+      cout << LOGID << "Unrecognized role " << sym.GetCommandName(arg->args[0]->value) << "." << endl;
+      exit(1);
+    }
+
+    size_t r_id = r_it->second;
     s_arg = arg->args[1]->DecodeToString(sym);
     size_t in_id = imove.AddMove(s_arg, r_id);
 
@@ -1326,6 +1333,11 @@ void PropNet::ProcessDOTtoken(const string& token,
         arg.value = SymbolTable::NextID;
         Node* t = CreateNode(sym, &arg);
         n_nodes[id] = t;
+      }
+      else if(arg.value == SymbolTable::LegalID)
+      {
+        arg.value = SymbolTable::InputID;
+        Node* t = CreateNode(sym, &arg);
       }
     }
     nodes[id] = to_add;

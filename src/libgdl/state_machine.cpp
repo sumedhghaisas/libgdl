@@ -16,6 +16,7 @@ StateMachine::StateMachine(int argc, char* argv[])
 {
   bool isDot = false;
   string dot_file = "";
+  bool separatePropNetForGoals = false;
 
   // Declare the supported options.
   options_description desc("Allowed options");
@@ -23,6 +24,7 @@ StateMachine::StateMachine(int argc, char* argv[])
   ("source-files,c", value<std::vector<std::string> >()->multitoken(),
                      "source files")
   ("dot-file,d", value<std::string>(), "DOT PropNet file")
+  ("separate-goal-net", "Create separate propnet for goals.")
   ;
 
   variables_map vm;
@@ -47,6 +49,11 @@ StateMachine::StateMachine(int argc, char* argv[])
   {
     isDot = true;
     dot_file = vm["dot-file"].as<string>();
+  }
+
+  if(vm.count("separate-goal-net"))
+  {
+    separatePropNetForGoals = true;
   }
 
   gdlparser::KIF kif(true, 1, log);
@@ -75,7 +82,7 @@ StateMachine::StateMachine(int argc, char* argv[])
     cout << "testing" << endl;
 
   //! Initialize AMove with role size
-  AMove::RawType::n_roles = initial_pn.RoleSize();
+  AMove::RawType::n_roles = role_size;
 
   //! Initialize Init State
   init = AState("");
@@ -88,10 +95,9 @@ StateMachine::StateMachine(int argc, char* argv[])
 
   SetInitialPropNet();
 
-  SeparateGoalNet();
+  if(separatePropNetForGoals)
+    SeparateGoalNet();
 
-  goal_pn.PrintPropnet("goal_net.dot");
-  initial_pn.PrintPropnet("initial_pn.dot");
 //
 //  AState test = cache.Clone();
 //
@@ -217,18 +223,22 @@ const size_t* StateMachine::Simulate(const AState& s)
 
   while(!is_terminal)
   {
-    //MoveList<AMove> ml = MoveList<AMove>(initial_pn_legals, role_size);
+    MoveList<AMove> ml = MoveList<AMove>(initial_pn_legals, role_size);
 
     //PrintMoveList(cout, ml);
 
-    //size_t rnd = rand() % ml.size();
+    size_t rnd = rand() % ml.size();
 
-    //MoveList<AMove>::iterator it = ml.begin();
-    //for(size_t i = 0;i < rnd;i++)
-      //it++;
+    MoveList<AMove>::iterator it = ml.begin();
+    for(size_t i = 0;i < rnd;i++)
+      it++;
 
-    for(size_t i = 0;i < role_size;i++)
-      m->moves[i] = *initial_pn_legals[i].begin();
+    //for(size_t i = 0;i < role_size;i++)
+    //{
+      //m->moves[i] = *initial_pn_legals[i].begin();
+    //}
+
+    m = *it;
 
     //PrintMove(cout, m);
 
@@ -244,12 +254,12 @@ const size_t* StateMachine::Simulate(const AState& s)
     is_terminal = initial_pn.GetTerminalNode()->holding_value;//IsTerminal(temp);
   }
 
-  const size_t* goals = GetGoals(temp);
+  return GetGoals(temp);
 
    //for(size_t i = 0;i < role_size;i++)
     //cout << goals[i] << endl;
 
-   return goals;
+   //return goals;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -58,6 +58,11 @@ class StateMachine
     return init.Clone();
   }
 
+  size_t GetRoleNum() const
+  {
+    return role_size;
+  }
+
  private:
   void SetInitialPropNet();
   void SeparateGoalNet();

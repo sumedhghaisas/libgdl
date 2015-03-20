@@ -5,11 +5,11 @@
 ;;; Components
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  (role xPlayer)
-  (role oPlayer)
+  (role xplayer)
+  (role oplayer)
 
-  (sign xPlayer x)
-  (sign oPlayer o)
+  (sign xplayer x)
+  (sign oplayer o)
 
   (<= (base (mark ?i ?j ?k ?l x))
       (index ?i)
@@ -46,45 +46,45 @@
 ;;; init
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  (init (control xPlayer))
+  (init (control xplayer))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; legal
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  (<= (legal xPlayer noop)
-      (true (control oPlayer))) 
+  (<= (legal xplayer noop)
+      (true (control oplayer))) 
 
-  (<= (legal xPlayer (play ?i ?j ?k ?l x))
-      (true (control xPlayer))
+  (<= (legal xplayer (play ?i ?j ?k ?l x))
+      (true (control xplayer))
       firstMove
       (emptyCell ?i ?j ?k ?l))
 
-  (<= (legal xPlayer (play ?i ?j ?k ?l x))
-      (true (control xPlayer))
+  (<= (legal xplayer (play ?i ?j ?k ?l x))
+      (true (control xplayer))
       (true (currentBoard ?i ?j))
       (emptyCell ?i ?j ?k ?l))
 
-  (<= (legal xPlayer (play ?i ?j ?k ?l x))        
-      (true (control xPlayer))
+  (<= (legal xplayer (play ?i ?j ?k ?l x))        
+      (true (control xplayer))
       currentBoardClosed
       (emptyCell ?i ?j ?k ?l))
    
-  (<= (legal oPlayer noop)
-      (true (control xPlayer)))
+  (<= (legal oplayer noop)
+      (true (control xplayer)))
 
-  (<= (legal oPlayer (play ?i ?j ?k ?l o))
-      (true (control oPlayer))
+  (<= (legal oplayer (play ?i ?j ?k ?l o))
+      (true (control oplayer))
       firstMove
       (emptyCell ?i ?j ?k ?l))
 
-  (<= (legal oPlayer (play ?i ?j ?k ?l o))
-      (true (control oPlayer))
+  (<= (legal oplayer (play ?i ?j ?k ?l o))
+      (true (control oplayer))
       (true (currentBoard ?i ?j))
       (emptyCell ?i ?j ?k ?l))
 
-  (<= (legal oPlayer (play ?i ?j ?k ?l o))
-      (true (control oPlayer))
+  (<= (legal oplayer (play ?i ?j ?k ?l o))
+      (true (control oplayer))
       currentBoardClosed
       (emptyCell ?i ?j ?k ?l))
 
@@ -101,46 +101,46 @@
   (<= (next (currentBoard ?k ?l))
       (does ?player (play ?i ?j ?k ?l ?mark)))
 
-  (<= (next (control xPlayer))
-      (true (control oPlayer)))
+  (<= (next (control xplayer))
+      (true (control oplayer)))
 
-  (<= (next (control oPlayer))
-      (true (control xPlayer)))
+  (<= (next (control oplayer))
+      (true (control xplayer)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; goal
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  (<= (goal xPlayer 0)
+  (<= (goal xplayer 0)
       (not (line x))
       (not (line o))
       open)
 
-  (<= (goal xPlayer 100)
+  (<= (goal xplayer 100)
       (line x))
 
-  (<= (goal xPlayer 50)
+  (<= (goal xplayer 50)
       (not (line x))
       (not (line o))
       (not open))
 
-  (<= (goal xPlayer 0)
+  (<= (goal xplayer 0)
       (line o))
 
-  (<= (goal oPlayer 0)
+  (<= (goal oplayer 0)
       (not (line x))
       (not (line o))
       open)
 
-  (<= (goal oPlayer 100)
+  (<= (goal oplayer 100)
       (line o))
 
-  (<= (goal oPlayer 50)
+  (<= (goal oplayer 50)
       (not (line x))
       (not (line o))
       (not open))
 
-  (<= (goal oPlayer 0)
+  (<= (goal oplayer 0)
       (line x))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
