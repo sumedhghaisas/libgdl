@@ -26,12 +26,33 @@ struct CodeHandler
     sig(sig),
     helper_sig(helper_sig),
     helper_call(helper_call),
+    stream(NULL),
     helper(NULL),
-    limit(limit){}
+    limit(limit),
+    toDelStream(true){}
+
+  CodeHandler(const std::string& r_type,
+              const std::string& name,
+              const std::string& sig,
+              const std::string& helper_sig,
+              const std::string& helper_call,
+              std::ostream& stream,
+              size_t limit = 10000)
+    : r_type(r_type),
+    name(name),
+    sig(sig),
+    helper_sig(helper_sig),
+    helper_call(helper_call),
+    stream(&stream),
+    helper(NULL),
+    limit(limit),
+    toDelStream(false){}
 
   ~CodeHandler()
   {
     delete helper;
+    if(toDelStream)
+      delete stream;
   }
 
   void AddEntry(const std::string& str)
@@ -39,7 +60,7 @@ struct CodeHandler
     s_entries.push_back(str);
   }
 
-  void GenerateCode();
+  void GenerateCode(FileHandler& fh = FileHandler::GetMasterFileHandler());
 
   std::string r_type;
   std::string name;
@@ -53,9 +74,12 @@ struct CodeHandler
 
   std::list<std::string> s_entries;
 
+  std::ostream* stream;
+
   CodeHandler* helper;
   size_t limit;
 
+  bool toDelStream;
 };
 
 }

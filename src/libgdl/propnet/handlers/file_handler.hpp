@@ -33,7 +33,7 @@ struct FileHandler
 
   static std::string exec(const std::string& cmd);
 
-  bool GenerateSharedObject();
+  bool GenerateSharedObject(const std::string& shared_object = "state_machine/state_machine.so");
 
   std::list<std::string> p_files;
 

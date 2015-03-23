@@ -54,6 +54,8 @@ class PropNet
 
   void GenerateStateMachine();
 
+  std::string CreateGetGoalMachineCode();
+
   void SplitGoalNet(PropNet& pn);
 
   size_t BaseSize() const

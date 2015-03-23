@@ -22,10 +22,10 @@ std::string FileHandler::exec(const std::string& cmd)
     return result;
 }
 
-bool FileHandler::GenerateSharedObject()
+bool FileHandler::GenerateSharedObject(const std::string& shared_object)
 {
-  std::list<std::future<string> > results;
-  ThreadPool& gtp = ThreadPool::GetGlobalThreadPool();
+  //std::list<std::future<string> > results;
+  //ThreadPool& gtp = ThreadPool::GetGlobalThreadPool();
 
   string com_prefix = "g++ -O3 -std=c++11 -fPIC -Isrc";
 
@@ -33,13 +33,14 @@ bool FileHandler::GenerateSharedObject()
   {
     stringstream stream;
     stream << com_prefix << " -c " << it << ".cpp -o " << it << ".o";
-    results.emplace_back(gtp.Enqueue(exec, stream.str()));
+    //results.emplace_back(gtp.Enqueue(exec, stream.str()));
+    exec(stream.str());
   }
 
-  for(auto&& it : results)
-  {
-    it.get();
-  }
+  //for(auto&& it : results)
+  //{
+    //it.get();
+  //}
 
   std::stringstream stream;
   stream << "g++ -O3 -shared -fPIC";
@@ -48,9 +49,8 @@ bool FileHandler::GenerateSharedObject()
   {
     stream << " " << it << ".o";
   }
-  stream << " -o state_machine/state_machine.so";
+  stream << " -o " << shared_object;
   exec(stream.str());
-  std::cout << "StateMachine shared object created." << std::endl;
 
   return true;
 }

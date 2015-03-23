@@ -15,6 +15,9 @@
 #include <libgdl/propnet/propnet.hpp>
 #include <libgdl/propnet/node_types.hpp>
 
+
+#define D_META_SIM_TIME 2000000
+
 namespace libgdl
 {
 
@@ -24,6 +27,8 @@ class StateMachine
   typedef std::function<MoveList<AMove>(const AState& s)> GetLegalMoves_l_t;
   typedef std::function<AState(const AState&, const AMove&)> GetNextState_t;
   typedef std::function<const size_t*(const AState&)> GetGoals_t;
+
+  typedef void (GetGoals_m_t)(const AState& s, size_t* goals, bool* buff);
 
  public:
   explicit StateMachine(int argc, char* argv[]);
@@ -65,7 +70,11 @@ class StateMachine
 
  private:
   void SetInitialPropNet();
-  void SeparateGoalNet();
+  void SeparateGoalNet(bool compile_goal_net);
+  void MetaGame(size_t simulation_time);
+  void CheckZeroSumGame();
+
+  void MetaGame_multi_player(size_t simulation_time);
 
   size_t base_size;
   size_t role_size;
@@ -96,9 +105,17 @@ class StateMachine
   AState goal_pn_top;
   AState goal_pn_base;
   propnet::node_types::Node** goal_pn_base_nodes;
+  GetGoals_m_t* GetGoals_m;
+  bool* GetGoals_buff;
+
+  bool is_goal_propnet_used;
+  bool is_goal_propnet_compiled;
 
   //! Functions with goal net
   const size_t* GetGoal_goal_dfp(const AState& s);
+  const size_t* GetGoals_goal_m(const AState& s);
+
+  bool isZeroSumGame;
 
    //! Logging stream
   mutable Log log;

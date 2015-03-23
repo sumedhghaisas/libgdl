@@ -1337,7 +1337,7 @@ void PropNet::ProcessDOTtoken(const string& token,
       else if(arg.value == SymbolTable::LegalID)
       {
         arg.value = SymbolTable::InputID;
-        Node* t = CreateNode(sym, &arg);
+        CreateNode(sym, &arg);
       }
     }
     nodes[id] = to_add;
@@ -1431,4 +1431,77 @@ bool PropNet::InitializeWithDOT(const KIF& kif,
   PrintPropnet("test.dot");
 
   return true;
+}
+
+string PropNet::CreateGetGoalMachineCode()
+{
+  FileHandler fh;
+
+  EntryManager gg_em;
+
+  tuple<bool, size_t> out;
+
+  //! Generate entries for goal nodes
+  gg_em.StartNewList();
+  list<size_t> goal_to_get_l;
+  list<list<tuple<size_t, size_t>>> goal_fun_m;
+
+  for(auto role_goals : goal_nodes)
+  {
+    list<tuple<size_t, size_t>> temp;
+    for(auto goal : role_goals)
+    {
+      out = goal.second->CodeGen(gg_em, 1);
+      temp.emplace_back(goal.first, get<1>(out));
+      goal_to_get_l.push_back(get<1>(out));
+    }
+    goal_fun_m.push_back(temp);
+  }
+
+  //! Initialize the entry manager to start
+  gg_em.InitializeIterator();
+
+  CodeHandler GetGoals("void", "GetGoals", "(const AState& s, size_t* goals, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
+
+  //! Add required includes
+  GetGoals.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
+  GetGoals.init_ss << "#include <list>" << endl;
+
+  GetGoals.init_ss << "using namespace std;" << endl;
+  GetGoals.init_ss << "using namespace libgdl;" << endl << endl;
+
+  //! Generate code for GetGoals
+  list<size_t> goals_ret = gg_em.CodeGen(GetGoals, goal_to_get_l);
+
+  auto ret_it = goals_ret.begin();
+
+  size_t r_id = 0;
+  for(auto role : goal_fun_m)
+  {
+    auto it = role.begin();
+    GetGoals.fun_deinit_ss << "if(buff[" << *ret_it << "]) goals[" << r_id << "] = " << get<0>(*it) << ";" << endl;
+    ret_it++;
+    it++;
+    for(it = it;it != role.end();it++)
+    {
+      GetGoals.fun_deinit_ss << "else if(buff[" << *ret_it << "]) goals[" << r_id << "] = " << get<0>(*it) << ";" << endl;
+      ret_it++;
+    }
+    r_id++;
+  }
+
+  GetGoals.GenerateCode(fh);
+
+  CodeHandler GetGoalMemoryRequirement("size_t", "GetGoalsMemoryRequirement", "()", "()", "()");
+
+  GetGoalMemoryRequirement.init_ss << "#include <iostream>" << endl
+                                   << "using namespace std;" << endl;
+
+  GetGoalMemoryRequirement.fun_deinit_ss << "return " << gg_em.GetRequiredMemory() << ";" << endl;
+
+  GetGoalMemoryRequirement.GenerateCode(fh);
+
+  fh.GenerateSharedObject("GetGoals.so");
+
+  return "GetGoals.so";
 }

@@ -3,17 +3,22 @@
 using namespace std;
 using namespace libgdl::propnet;
 
-void CodeHandler::GenerateCode()
+void CodeHandler::GenerateCode(FileHandler& fh)
 {
-  std::ofstream file("state_machine/" + name + ".cpp");
+  if(stream == NULL)
+  {
+    stream = new std::ofstream("state_machine/" + name + ".cpp");
 
-  FileHandler::GetMasterFileHandler().AddFile("state_machine/" + name);
+    fh.AddFile("state_machine/" + name);
+  }
+
+  ostream* file = stream;
 
   stringstream f_stream;
 
   stringstream h_stream;
 
-  file << init_ss.str() << endl << endl;
+  *file << init_ss.str() << endl << endl;
 
   f_stream << "extern \"C\" " << r_type << " " << name << sig << endl;
 
@@ -56,9 +61,7 @@ void CodeHandler::GenerateCode()
 
   f_stream << "}" << endl;
 
-  file << h_stream.str() << endl;
+  *file << h_stream.str() << endl;
 
-  file << f_stream.str() << endl;
-
-  file.close();
+  *file << f_stream.str() << endl;
 }
