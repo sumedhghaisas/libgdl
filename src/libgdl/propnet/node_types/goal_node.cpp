@@ -62,13 +62,13 @@ void GoalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_
 {
   if(value)
   {
-    num_true++;
-    holding_value = true;
+    //num_true++;
+    //holding_value = true;
     goals[r_id] = id;
     return;
   }
 
-  --num_true;
+  //--num_true;
 
 #ifdef LIBGDL_DFP_TEST
   if(num_true < 0 || !holding_value)
@@ -79,10 +79,10 @@ void GoalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_
   }
 #endif // LIBGDL_DFP_TEST
 
-  if(!num_true)
-  {
-    holding_value = false;
-  }
+  //if(!num_true)
+  //{
+    //holding_value = false;
+  //}
 }
 
 void GoalNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const

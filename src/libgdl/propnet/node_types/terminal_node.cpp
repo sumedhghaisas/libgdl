@@ -58,14 +58,9 @@ bool TerminalNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t
 
 void TerminalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
 {
-  if(value)
-  {
-    num_true++;
-    holding_value = true;
-    return;
-  }
+  holding_value = value;
 
-  --num_true;
+  //--num_true;
 
 #ifdef LIBGDL_DFP_TEST
   if(num_true < 0 || !holding_value)
@@ -76,10 +71,10 @@ void TerminalNode::Update(bool value, AState& base, AState& top, AMove& m, set<s
   }
 #endif
 
-  if(!num_true)
-  {
-    holding_value = false;
-  }
+  //if(!num_true)
+  //{
+    //holding_value = false;
+  //}
 }
 
 void TerminalNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const

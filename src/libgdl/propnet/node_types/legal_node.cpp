@@ -60,17 +60,23 @@ bool LegalNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* 
 
 void LegalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
 {
-  if(value)
+  if(value && !holding_value)
   {
-    num_true++;
-    if(holding_value)
-      return;
+    //num_true++;
+    //if(holding_value)
+      //return;
     holding_value = true;
     m_set[r_id].insert(id);
     return;
   }
+  else if(!value)
+  {
+    holding_value = false;
+    m_set[r_id].erase(m_set[r_id].find(id));
+    return;
+  }
 
-  --num_true;
+  //--num_true;
 
 #ifdef LIBGDL_DFP_TEST
   if(num_true < 0 || !holding_value)
@@ -81,11 +87,10 @@ void LegalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size
   }
 #endif // LIBGDL_DFP_TEST
 
-  if(!num_true)
-  {
-    holding_value = false;
-    m_set[r_id].erase(m_set[r_id].find(id));
-  }
+  //if(!num_true)
+  //{
+
+  //}
 }
 
 void LegalNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
