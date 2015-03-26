@@ -56,6 +56,28 @@ bool TerminalNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t
   return holding_value;
 }
 
+bool TerminalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+{
+  if(initialized.find(this) != initialized.end())
+    return holding_value;
+
+  holding_value = false;
+
+  for(auto it : in_degree)
+  {
+    bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
+
+    holding_value = holding_value || temp;
+  }
+
+  if(holding_value)
+    data[id_map.find(this)->second] += 0x0001;
+
+  initialized.insert(this);
+
+  return holding_value;
+}
+
 void TerminalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
 {
   holding_value = value;

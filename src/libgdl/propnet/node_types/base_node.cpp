@@ -39,6 +39,25 @@ bool BaseNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* m
   return holding_value;
 }
 
+bool BaseNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+{
+  if(initialized.find(this) != initialized.end())
+    return holding_value;
+
+  holding_value = true;
+
+  if(pn.IsInitProp(id))
+    holding_value = true;
+  else holding_value = false;
+
+  if(holding_value)
+    data[id_map.find(this)->second] += 0x0001;
+
+  initialized.insert(this);
+
+  return holding_value;
+}
+
 void BaseNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
 {
   holding_value = value;

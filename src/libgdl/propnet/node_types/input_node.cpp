@@ -44,6 +44,27 @@ bool InputNode::InitializeValue(const PropNet&, AState& s, std::set<size_t>* m_s
   return false;
 }
 
+bool InputNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+{
+  if(initialized.find(this) != initialized.end())
+    return holding_value;
+
+  holding_value = false;
+  if(in_id == 0)
+  {
+    holding_value = true;
+  }
+
+  if(holding_value)
+  {
+    data[id_map.find(this)->second] += 0x0001;
+  }
+
+  initialized.insert(this);
+
+  return holding_value;
+}
+
 void InputNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
 {
   holding_value = value;

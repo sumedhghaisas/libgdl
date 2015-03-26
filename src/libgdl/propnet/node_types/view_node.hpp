@@ -31,6 +31,8 @@ struct ViewNode : public Node
 
   bool InitializeValue(const PropNet&, AState& s, std::set<size_t>* m_set, size_t* goals);
 
+  bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized);
+
   void Update(bool value, AState& base, AState& top, AMove& m, std::set<size_t>* m_set, size_t* goals);
 
   Node* GetCopy_only_info() const

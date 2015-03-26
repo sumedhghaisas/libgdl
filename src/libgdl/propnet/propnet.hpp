@@ -26,6 +26,13 @@ class StateMachine;
 namespace propnet
 {
 
+struct CrystalNode
+{
+  bool type;
+  unsigned short offset;
+  unsigned char out_size;
+};
+
 class PropNet
 {
   template<typename T1, typename T2>
@@ -35,6 +42,8 @@ class PropNet
 
  public:
   explicit PropNet(Log log = GLOBAL_LOG);
+
+  PropNet(const PropNet& pn);
 
   void Initialize(const std::string& filename);
   void Initialize(gdlparser::KIF& kif);
@@ -53,6 +62,8 @@ class PropNet
   void GenerateStateCode(std::ostream& stream);
 
   void GenerateStateMachine();
+
+  std::map<const Node*, size_t> Crystallize(AState& top, std::set<size_t>* m_set, size_t* goals);
 
   std::string CreateGetGoalMachineCode();
 
@@ -146,6 +157,10 @@ class PropNet
     return terminal;
   }
 
+  CrystalNode* cry;
+  unsigned short* out_degree;
+  signed short* data_init;
+
  private:
   void CreatePropNet(gdlreasoner::KIFFlattener& kf);
 
@@ -182,6 +197,8 @@ class PropNet
   size_t c_view_id;
 
   core::SymbolTable sym;
+
+  bool isCrystalized = false;
 
   mutable Log log;
 };

@@ -41,6 +41,21 @@ bool NotNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* m_
   return holding_value;
 }
 
+bool NotNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+{
+  if(initialized.find(this) != initialized.end())
+    return holding_value;
+
+  holding_value = !(*in_degree.begin())->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
+
+  if(holding_value)
+    data[id_map.find(this)->second] = 0x7fff;
+
+  initialized.insert(this);
+
+  return holding_value;
+}
+
 void NotNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
 {
 #ifdef LIBGDL_DFP_TEST

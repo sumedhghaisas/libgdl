@@ -58,6 +58,26 @@ bool LegalNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* 
   return holding_value;
 }
 
+bool LegalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+{
+  if(initialized.find(this) != initialized.end())
+    return holding_value;
+
+  holding_value = true;
+  if(!in_degree.empty())
+    holding_value = (*in_degree.begin())->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
+
+  if(holding_value)
+  {
+    m_set[r_id].insert(id);
+    //cout << Name() << endl;
+  }
+
+  initialized.insert(this);
+
+  return holding_value;
+}
+
 void LegalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
 {
   if(value && !holding_value)

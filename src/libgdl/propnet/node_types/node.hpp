@@ -17,6 +17,19 @@ namespace libgdl
 namespace propnet
 {
 
+namespace node_types
+{
+  struct Node;
+}
+
+struct CrystalData
+{
+  char type;
+  size_t id;
+  std::list<size_t> out_degree;
+  const node_types::Node* node;
+};
+
 class PropNet;
 class EntryManager;
 
@@ -67,11 +80,49 @@ struct Node
 
   virtual bool InitializeValue(const PropNet&, AState& s, std::set<size_t>* m_set, size_t* goals) = 0;
 
+  virtual bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized) = 0;
+
   virtual void Update(bool value, AState& base, AState& top, AMove& m, std::set<size_t>* m_set, size_t* goals) = 0;
+
+  virtual void CrystalUpdate(signed short val, AState& top, std::set<size_t>* m_set, size_t* goals) const
+  {
+    std::cout << LOGID << "Unexpected error occured!" << std::endl;
+    exit(1);
+  }
 
   virtual Node* GetCopy_only_info() const = 0;
 
   virtual void RegisterToPropnet(PropNet& pn, Node* to_reg) const = 0;
+
+  size_t Crystallize(std::map<const Node*, size_t>& id_map, std::map<size_t, CrystalData>& data_map, size_t& current_index) const
+  {
+    auto it = id_map.find(this);
+    if(it != id_map.end())
+      return it->second;
+
+    CrystalData cry;
+
+    cry.node = this;
+
+    if(type == Type::AND)
+      cry.type = 0;
+    else if(type == Type::OR || type == Type::VIEW || type == Type::TERMINAL || type == Type::GOAL || type == Type::BASE || type == Type::INPUT)
+      cry.type = 1;
+    else if(type == Type::NOT)
+      cry.type = 2;
+    else cry.type = 3;
+
+    cry.id = current_index;
+    current_index++;
+
+    id_map[this] = cry.id;
+
+    for(auto it : out_degree)
+      cry.out_degree.push_back(it->Crystallize(id_map, data_map, current_index));
+
+    data_map[cry.id] = cry;
+    return cry.id;
+  }
 
   Node* CreateCopy(PropNet& pn, Node* parent, std::map<const Node*, Node*>& node_map) const
   {
@@ -141,6 +192,30 @@ struct Node
       }
     }
     else if(parent != NULL) RemoveOutDegree(parent);
+  }
+
+  Node* Clone(Node* parent, PropNet& pn, std::map<const Node*, Node*>& copy_map) const
+  {
+    auto it = copy_map.find(this);
+
+    if(it != copy_map.end())
+      return it->second;
+
+    Node* out = GetCopy_only_info();
+
+    copy_map[this] = out;
+
+    if(parent != NULL)
+      out->out_degree.push_back(parent);
+
+    RegisterToPropnet(pn, out);
+
+    for(auto it : in_degree)
+    {
+      out->in_degree.push_back(it->Clone(out, pn, copy_map));
+    }
+
+    return out;
   }
 
   std::string name;

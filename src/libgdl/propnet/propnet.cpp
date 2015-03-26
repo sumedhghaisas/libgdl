@@ -12,6 +12,8 @@
 #include "handlers/code_handler.hpp"
 #include "handlers/file_handler.hpp"
 
+#include <libgdl/core/data_types/move_list.hpp>
+
 using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
@@ -28,6 +30,59 @@ PropNet::PropNet(Log log)
   : terminal(NULL), c_r_id(0), c_and_id(0), c_not_id(0),
   c_or_id(0), c_view_id(0), log(log)
 {
+}
+
+PropNet::PropNet(const PropNet& pn)
+{
+  map<const Node*, Node*> copy_map;
+
+  InitializeToRoles(pn.RoleSize());
+
+  roles_ids = pn.roles_ids;
+
+  for(auto it : pn.view_nodes)
+  {
+    it.second->CreateCopy(*this, NULL, copy_map);
+  }
+
+  for(auto it : pn.next_nodes)
+  {
+    it.second->CreateCopy(*this, NULL, copy_map);
+  }
+
+  for(auto it : pn.input_nodes)
+  {
+    for(auto it2 : it)
+    {
+      it2.second->CreateCopy(*this, NULL, copy_map);
+    }
+  }
+
+  for(auto it : pn.legal_nodes)
+  {
+    for(auto it2 : it)
+    {
+      it2.second->CreateCopy(*this, NULL, copy_map);
+    }
+  }
+
+  for(auto it : pn.goal_nodes)
+  {
+    for(auto it2 : it)
+    {
+      if(pn.del.find(it2.second) == pn.del.end())
+        it2.second->CreateCopy(*this, NULL, copy_map);
+    }
+  }
+
+  pn.terminal->CreateCopy(*this, NULL, copy_map);
+
+  for(auto it : pn.base_nodes)
+  {
+    it.second->CreateCopy(*this, NULL, copy_map);
+  }
+
+  init_props = pn.init_props;
 }
 
 void PropNet::Initialize(const std::string& filename)
@@ -1428,8 +1483,6 @@ bool PropNet::InitializeWithDOT(const KIF& kif,
 
   ProcessEdges(edges, t_edges, nodes, n_nodes);
 
-  PrintPropnet("test.dot");
-
   return true;
 }
 
@@ -1505,3 +1558,145 @@ string PropNet::CreateGetGoalMachineCode()
 
   return "GetGoals.so";
 }
+
+map<const Node*, size_t> PropNet::Crystallize(AState& top, set<size_t>* m_set, size_t* goals)
+{
+  map<const Node*, size_t> id_map;
+  map<size_t, CrystalData> data_map;
+
+  size_t current_index = 0;
+
+  for(auto it : base_nodes)
+  {
+    if(del.find(it.second) == del.end())
+      it.second->Crystallize(id_map, data_map, current_index);
+  }
+
+  for(auto it : input_nodes)
+  {
+    for(auto it2 : it)
+    {
+      if(del.find(it2.second) == del.end())
+        it2.second->Crystallize(id_map, data_map, current_index);
+    }
+  }
+
+  for(auto it : legal_nodes)
+  {
+    for(auto it2 : it)
+    {
+      if(del.find(it2.second) == del.end())
+        it2.second->Crystallize(id_map, data_map, current_index);
+    }
+  }
+
+  for(auto it : goal_nodes)
+  {
+    for(auto it2 : it)
+    {
+      if(del.find(it2.second) == del.end())
+        it2.second->Crystallize(id_map, data_map, current_index);
+    }
+  }
+
+  for(auto it : next_nodes)
+  {
+    if(del.find(it.second) == del.end())
+      it.second->Crystallize(id_map, data_map, current_index);
+  }
+
+  terminal->Crystallize(id_map, data_map, current_index);
+
+  list<unsigned short> out_list;
+
+  cry = new CrystalNode[data_map.size()];
+  data_init = new signed short[data_map.size()];
+
+  for(size_t i = 0;i < data_map.size();i++)
+  {
+    CrystalData& cd = data_map.find(i)->second;
+
+    if(cd.type == 0)
+    {
+      data_init[i] = 0x4000;
+      cry[i].type = false;
+    }
+    else if(cd.type == 1)
+    {
+      data_init[i] = 0xbfff;
+      cry[i].type = false;
+    }
+    else if(cd.type == 2)
+    {
+      data_init[i] = 0x8000;
+      cry[i].type = false;
+    }
+    else if(cd.type == 3)
+    {
+      cry[i].type = true;
+      size_t t = (size_t)cd.node;
+      unsigned short* temp = (unsigned short*)&t;
+      cry[i].offset = out_list.size();
+      cry[i].out_size = 4;
+
+      //cout << cry[i].offset << endl;
+      //cout << std::hex << (size_t)cd.node << std::dec << endl;
+
+      out_list.push_back(temp[0]);
+      out_list.push_back(temp[1]);
+      out_list.push_back(temp[2]);
+      out_list.push_back(temp[3]);
+      continue;
+    }
+
+    cry[i].offset = out_list.size();
+    cry[i].out_size = cd.out_degree.size();
+
+    //cout << cry[i].offset << endl;
+
+    for(auto it : cd.out_degree)
+    {
+      if(it > 65536)
+      {
+        cout << "Out of bound while crystallizing." << endl;
+        exit(1);
+      }
+      out_list.push_back((unsigned short)it);
+    }
+  }
+
+  set<const Node*> initialized;
+
+  for(auto it : legal_nodes)
+    for(auto it2 : it)
+      if(del.find(it2.second) == del.end())
+        it2.second->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
+
+  //MoveList<AMove> ml = MoveList<AMove>(m_set, roles_ids.size());
+
+  //PrintMoveList(cout, ml);
+
+  for(auto it : next_nodes)
+    if(del.find(it.second) == del.end())
+      it.second->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
+
+  for(auto it : goal_nodes)
+    for(auto it2 : it)
+      if(del.find(it2.second) == del.end())
+        it2.second->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
+
+  terminal->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
+
+  //PrintState(cout, top);
+
+  out_degree = new unsigned short[out_list.size()];
+  size_t index = 0;
+  for(auto it : out_list)
+  {
+    out_degree[index++] = it;
+  }
+
+  return id_map;
+}
+
+

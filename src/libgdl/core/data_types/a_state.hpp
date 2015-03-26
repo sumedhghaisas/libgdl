@@ -37,6 +37,12 @@ struct RawAState
     }
   }
 
+  void operator&(RawAState&& state) const
+  {
+    for(size_t i = 0;i < arr_size;i++)
+      state.s[i] = state.s[i] & s[i];
+  }
+
   //! Get function
   inline void Get(size_t i, bool& out) const
   {
@@ -97,6 +103,43 @@ struct AState : public boost::intrusive_ptr<core::RawAState>
   AState Clone() const
   {
     return AState(new core::RawAState(*get()));
+  }
+
+  inline void Equate(const AState& s)
+  {
+    for(size_t i = 0;i < core::RawAState::arr_size;i++)
+      get()->s[i] = s->s[i];
+  }
+
+  inline AState operator&(AState&& state) const
+  {
+    get()->operator&(std::move(*state.get()));
+    return state;
+  }
+
+  inline AState operator&(const AState& state) const
+  {
+    AState out = state.Clone();
+    get()->operator&(std::move(*out.get()));
+    return out;
+  }
+
+  inline operator bool() const
+  {
+    for(size_t i = 0;i < core::RawAState::arr_size;i++)
+      if(get()->s[i] != 0)
+        return true;
+    return false;
+  }
+
+  AState operator~()
+  {
+    AState out("");
+    for(size_t i = 0;i < core::RawAState::arr_size;i++)
+    {
+      out->s[i] = ~get()->s[i];
+    }
+    return out;
   }
 
   void Clear()

@@ -31,6 +31,8 @@ struct BaseNode : public Node
 
   bool InitializeValue(const PropNet&, AState& s, std::set<size_t>* m_set, size_t* goals);
 
+  bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized);
+
   void Update(bool value, AState& base, AState& top, AMove& m, std::set<size_t>* m_set, size_t* goals);
 
   void CreateCopy(PropNet& pn, Node* parent, std::map<Node*, Node*>& node_map);
