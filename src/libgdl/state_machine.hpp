@@ -44,7 +44,7 @@ class StateMachine
 
   const size_t* Simulate(const AState& s);
   const size_t* Simulate2(const AState& s);
-  const size_t* Simulate3(const AState& s);
+  inline const size_t* Simulate3(const AState& s);
 
   void PrintMoveList(std::ostream& stream, const MoveList<AMove>& ml)
   {
@@ -76,9 +76,11 @@ class StateMachine
     return role_size;
   }
 
-  void UpdateCrystal_base(const AState& state, const AState& mask, AState& top, AState& base, std::set<size_t>* m_set, size_t* goals);
+  inline void UpdateCrystal_base(const AState& state, const AState& mask, AState& top, AState& base, std::set<size_t>* m_set, size_t* goals);
 
-  void UpdateCrystal_move(const AMove& move, AMove& base, AState& top, std::set<size_t>* m_set, size_t* goals);
+  inline void UpdateCrystal_move(const AMove& move, AMove& base, AState& top, std::set<size_t>* m_set, size_t* goals);
+
+  static size_t stack_time;
 
  private:
   void SetInitialPropNet();
@@ -112,6 +114,8 @@ class StateMachine
 
   std::map<const propnet::node_types::Node*, size_t> id_map;
   size_t terminal_crystal_id = 0;
+  size_t* base_crystal_ids = NULL;
+  size_t** input_crystal_ids = NULL;
 
   //! Function with initial propnet
   bool IsTerminal_initial_dfp(const AState& s);
@@ -152,12 +156,17 @@ class StateMachine
 
   AState* alt_role_masks = NULL;
 
+  size_t* n_stack = new size_t[10000];
+  signed short* v_stack = new signed short[10000];
+
    //! Logging stream
   mutable Log log;
 
 };
 
 }
+
+#include "state_machine_impl.hpp"
 
 
 #endif // LIBGDL_STATE_MACHINE_HPP_INCLUDED
