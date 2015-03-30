@@ -16,6 +16,8 @@
 #include <libgdl/propnet/propnet.hpp>
 #include <libgdl/propnet/node_types.hpp>
 
+#include "../prng_engine.hpp"
+
 
 #define D_META_SIM_TIME 1000000
 
@@ -45,26 +47,7 @@ class StateMachine
   const size_t* Simulate(const AState& s);
   const size_t* Simulate2(const AState& s);
   inline const size_t* Simulate3(const AState& s);
-
-  void PrintMoveList(std::ostream& stream, const MoveList<AMove>& ml)
-  {
-    initial_pn.PrintMoveCollection(stream, ml);
-  }
-
-  void PrintMoveVector(std::ostream& stream, const MoveVector<AMove>& ml)
-  {
-    initial_pn.PrintMoveCollection(stream, ml);
-  }
-
-  void PrintState(std::ostream& stream, const AState& s)
-  {
-    initial_pn.PrintState(stream, s);
-  }
-
-  void PrintMove(std::ostream& stream, const AMove& m)
-  {
-    initial_pn.PrintMove(stream, m);
-  }
+  inline const size_t* Simulate4(const AState& s);
 
   AState InitState() const
   {
@@ -76,11 +59,12 @@ class StateMachine
     return role_size;
   }
 
-  inline void UpdateCrystal_base(const AState& state, const AState& mask, AState& top, AState& base, std::set<size_t>* m_set, size_t* goals);
+  //inline void UpdateCrystal_base(const AState& state, const AState& mask, AState& top, AState& base, std::set<size_t>* m_set, size_t* goals);
 
-  inline void UpdateCrystal_move(const AMove& move, AMove& base, AState& top, std::set<size_t>* m_set, size_t* goals);
+  //inline void UpdateCrystal_move(const AMove& move, AMove& base, AState& top, std::set<size_t>* m_set, size_t* goals);
 
   static size_t stack_time;
+  size_t n_count = 0;
 
  private:
   void SetInitialPropNet();
@@ -104,18 +88,12 @@ class StateMachine
 
   //! Initial propnet
   propnet::PropNet initial_pn;
-  AState initial_pn_base_mask;
   AState initial_pn_base;
   AState initial_pn_top;
   AMove initial_pn_base_move;
   propnet::node_types::Node** initial_pn_base_nodes;
   propnet::node_types::Node*** initial_pn_input_nodes;
   std::set<size_t>* initial_pn_legals;
-
-  std::map<const propnet::node_types::Node*, size_t> id_map;
-  size_t terminal_crystal_id = 0;
-  size_t* base_crystal_ids = NULL;
-  size_t** input_crystal_ids = NULL;
 
   //! Function with initial propnet
   bool IsTerminal_initial_dfp(const AState& s);
@@ -159,9 +137,15 @@ class StateMachine
   size_t* n_stack = new size_t[10000];
   signed short* v_stack = new signed short[10000];
 
+  signed short** role_data;
+  signed short* data_init;
+
+  signed short* goal_net_data;
+
+  static sitmo::prng_engine eng;
+
    //! Logging stream
   mutable Log log;
-
 };
 
 }

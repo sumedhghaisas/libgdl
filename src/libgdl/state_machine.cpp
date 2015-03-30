@@ -19,6 +19,8 @@ using namespace boost::program_options;
 
 size_t StateMachine::stack_time = 0;
 
+sitmo::prng_engine StateMachine::eng;
+
 StateMachine::StateMachine(int argc, char* argv[])
   : log(GLOBAL_LOG)
 {
@@ -98,6 +100,8 @@ StateMachine::StateMachine(int argc, char* argv[])
     kif.AddFile(it);
   kif.Parse();
 
+  log.Info << "Source KIF parsed." << endl;
+
   if(!isDot)
   {
     //! Initialize propnet with the file given
@@ -105,6 +109,8 @@ StateMachine::StateMachine(int argc, char* argv[])
   }
   else
     initial_pn.InitializeWithDOT(kif, dot_file);
+
+  log.Info << "Initial propnet initialized." << endl;
 
   //! Get base size and role size
   base_size = initial_pn.BaseSize();
@@ -128,6 +134,8 @@ StateMachine::StateMachine(int argc, char* argv[])
 
   SetInitialPropNet();
 
+  log.Info << "Initial propnet is configured for a run." << endl;
+
   MetaGame(meta_simulation_time);
 
   if(separatePropNetForGoals)
@@ -138,13 +146,14 @@ StateMachine::StateMachine(int argc, char* argv[])
   if(isAlternatingMoves && role_size > 1 && separate_pn_for_roles)
   {
     SeparateRolePropNets();
+
+    if(!is_goal_propnet_used)
+      SeparateGoalNet(true);
   }
 
   if(crystallize)
   {
-    //PrintState(cout, InitState());
-
-    //PrintState(cout, initial_pn_top);
+    log.Info << "Crystallizing propnets." << endl;
 
     for(size_t i = 0;i < role_size;i++)
       initial_pn_legals[i].clear();
@@ -155,104 +164,36 @@ StateMachine::StateMachine(int argc, char* argv[])
     for(size_t i = 0;i < role_size;i++)
       initial_pn_base_move->moves[i] = 0;
 
-    id_map = initial_pn.Crystallize(initial_pn_top, initial_pn_legals, goals);
+    initial_pn.Crystallize(data_init, initial_pn_top, initial_pn_legals, goals);
 
-    terminal_crystal_id = id_map.find(initial_pn.GetTerminalNode())->second;
-
-    base_crystal_ids = new size_t[initial_pn.BaseSize()];
-
-    for(size_t i = 0;i < initial_pn.BaseSize();i++)
+    if(is_propnet_role_separated)
     {
-      base_crystal_ids[i] = id_map.find(initial_pn_base_nodes[i])->second;
-    }
+      role_data = new signed short*[role_size];
 
-    input_crystal_ids = new size_t*[role_size];
-
-    size_t index = 0;
-    for(auto it : initial_pn.InputNodes())
-    {
-      input_crystal_ids[index] = new size_t[it.size()];
-      for(size_t i = 0;i < it.size();i++)
+      for(size_t i = 0;i < role_size;i++)
       {
-        input_crystal_ids[index][i] = id_map.find(initial_pn_input_nodes[index][i])->second;
+        role_data[i] = new signed short[initial_pn.data_init_size];
+
+        for(size_t j = 0;j < initial_pn.data_init_size;j++)
+          role_data[i][j] = data_init[j];
       }
-      index++;
+
+      for(size_t i = 0;i < role_size;i++)
+      {
+        role_pn_top[i] = initial_pn_top.Clone();
+        role_pn_base[i] = initial_pn_base.Clone();
+
+        for(size_t j = 0;j < role_size;j++)
+        {
+          role_pn_legals[i][j].clear();
+          for(auto it : initial_pn_legals[j])
+            role_pn_legals[i][j].insert(it);
+        }
+
+        role_pn_base_move[i] = initial_pn_base_move.Clone();
+      }
     }
-
-
-    //MoveList<AMove> ml = MoveList<AMove>(initial_pn_legals, role_size);
-
-    //PrintMoveList(cout, ml);
-
-   // ofstream out("out.txt");
-
-    //for(auto it : id_map)
-    //{
-      //out << it.first->UName() << " " << it.second << endl;
-    //}
-    //out.close();
-
-    //MoveList<AMove> ml(initial_pn_legals, role_size);
-    //AMove m = *++ml.begin();
-
-    //PrintMoveList(cout, ml);
-
-    //PrintState(cout, initial_pn_top);
-
-    //PrintMove(cout, m);
-
-    //UpdateCrystal_move(m, initial_pn_base_move, initial_pn_top, initial_pn_legals, goals);
-
-    //PrintState(cout, initial_pn_top);
-
-    //AState temp = initial_pn_top.Clone();
-
-    //PrintState(cout, temp);
-
-    //initial_pn.PrintPropnet("test.dot");
-
-    //UpdateCrystal_base(temp, initial_pn_base_mask, initial_pn_top, initial_pn_base, initial_pn_legals, goals);
-
-    //ml = MoveList<AMove>(initial_pn_legals, role_size);
-
-    //PrintMoveList(cout, ml);
-
-    //m = *ml.begin();
-
-    //UpdateCrystal_move(m, initial_pn_base_move, initial_pn_top, initial_pn_legals, goals);
-
-    //PrintState(cout, initial_pn_top);
   }
-
-  //thread_pool::ThreadPool::GetGlobalThreadPool().Stop();
-
-//
-//  AState test = cache.Clone();
-//
-//  AMove m_cache("");
-//  for(size_t i = 0;i < full_pn.RoleSize();i++)
-//    m_cache->moves[i] = 0;
-//
-//  full_pn.PrintState(cout, test);
-//
-//  m.UpdateNodes(m_cache, input_nodes, cache, m_set, goals);
-//
-//  full_pn.PrintState(cout, cache);
-//
-//  cache.UpdateNodes(init, test, base_nodes, m_set, goals);
-//
-//  ml = MoveList<AMove>(m_set, full_pn.RoleSize());
-//
-//  full_pn.PrintMoveCollection(cout, ml);
-//
-//  full_pn.PrintPropnet("test.dot");
-
-  //AState term = init.Clone();
-  //term.Set(21, true);
-
-  //full_pn.PrintState(cout, term);
-
-  //term.UpdateNodes(init, base_nodes, m_set);
 }
 
 void StateMachine::SeparateRolePropNets()
@@ -262,19 +203,15 @@ void StateMachine::SeparateRolePropNets()
   is_propnet_role_separated = true;
 
   role_propnets = new PropNet*[role_size];
-  role_pn_base_mask = new AState[role_size];
   role_pn_base = new AState[role_size];
   role_pn_top = new AState[role_size];
   role_pn_base_move = new AMove[role_size];
   role_pn_legals = new std::set<size_t>*[role_size];
-  role_pn_base_nodes = new propnet::node_types::Node**[role_size];
-  role_pn_input_nodes = new propnet::node_types::Node***[role_size];
 
   for(size_t i = 0;i < role_size;i++)
   {
     role_propnets[i] = new PropNet(initial_pn);
 
-    role_pn_base_mask[i] = AState("");
     role_pn_base[i] = InitState().Clone();
     role_pn_top[i] = AState("");
 
@@ -284,36 +221,12 @@ void StateMachine::SeparateRolePropNets()
 
     role_pn_legals[i] = new std::set<size_t>[role_size];
 
-    role_propnets[i]->InitializeRun(role_pn_top[i], role_pn_base_mask[i], role_pn_legals[i], goals);
+    role_propnets[i]->PrimaryRun(role_pn_top[i], role_pn_legals[i], goals);
 
     //MoveVector<AMove> ml = MoveVector<AMove>(role_pn_legals[i], role_size);
 
     //PrintMoveVector(cout, ml);
-
-    role_pn_base_nodes[i] = new node_types::Node*[base_size];
-    for(size_t j = 0;j < base_size;j++)
-      role_pn_base_nodes[i][j] = NULL;
-    for(auto it : role_propnets[i]->BaseNodes())
-    {
-      role_pn_base_nodes[i][it.first] = it.second;
-    }
-
-    role_pn_input_nodes[i] = new node_types::Node**[role_size];
-    size_t index = 0;
-    for(auto it : role_propnets[i]->InputNodes())
-    {
-      role_pn_input_nodes[i][index] = new node_types::Node*[it.size()];
-      for(auto it2 : it)
-      {
-        role_pn_input_nodes[i][index][it2.first] = it2.second;
-      }
-      index++;
-    }
   }
-
-  AState state = InitState();
-
-  AState temp = state.Clone();
 }
 
 const size_t* StateMachine::Simulate2(const AState& s)
@@ -331,7 +244,7 @@ const size_t* StateMachine::Simulate2(const AState& s)
     }
   }
 
-  temp.UpdateNodes(role_pn_base[role_id], role_pn_top[role_id], role_pn_base_mask[role_id], role_pn_base_move[role_id], role_pn_base_nodes[role_id], role_pn_legals[role_id], goals);
+  role_propnets[role_id]->UpdateNormal_base(temp, role_pn_base[role_id], role_pn_top[role_id], role_pn_legals[role_id], goals);
 
   bool is_terminal = role_propnets[role_id]->GetTerminalNode()->holding_value;
 
@@ -369,9 +282,9 @@ const size_t* StateMachine::Simulate2(const AState& s)
     //PrintMove(cout, m);
 
     //temp = GetNextState(temp, m);
-    m.UpdateNodes(role_pn_base[role_id], role_pn_top[role_id], role_pn_base_move[role_id], role_pn_input_nodes[role_id], NULL, NULL);
+    role_propnets[role_id]->UpdateNormal_input(m, role_pn_base[role_id], role_pn_top[role_id], role_pn_base_move[role_id], NULL, goals);
 
-    temp = role_pn_top[role_id].Clone();
+    temp.Equate(role_pn_top[role_id]);
 
     //PrintState(cout, temp);
 
@@ -390,7 +303,7 @@ const size_t* StateMachine::Simulate2(const AState& s)
 
     //PrintState(cout, role_pn_base[role_id]);
 
-    temp.UpdateNodes(role_pn_base[role_id], role_pn_top[role_id], role_pn_base_mask[role_id], role_pn_base_move[role_id], role_pn_base_nodes[role_id], role_pn_legals[role_id], goals);
+    role_propnets[role_id]->UpdateNormal_base(temp, role_pn_base[role_id], role_pn_top[role_id], role_pn_legals[role_id], goals);
 
     is_terminal = role_propnets[role_id]->GetTerminalNode()->holding_value;//IsTerminal(temp);
   }
@@ -433,7 +346,7 @@ void StateMachine::MetaGame_multi_player(size_t simulation_time)
   {
     AState temp = InitState().Clone();
 
-    temp.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+    initial_pn.UpdateNormal_base(temp, initial_pn_base, initial_pn_top, initial_pn_legals, goals);
 
     bool is_terminal = initial_pn.GetTerminalNode()->holding_value;
 
@@ -468,11 +381,11 @@ void StateMachine::MetaGame_multi_player(size_t simulation_time)
 
       m = ml[rnd];
 
-      m.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_move, initial_pn_input_nodes, NULL, NULL);
+      initial_pn.UpdateNormal_input(m, initial_pn_base, initial_pn_top, initial_pn_base_move, NULL, goals);
 
       temp = initial_pn_top.Clone();
 
-      temp.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+      initial_pn.UpdateNormal_base(temp, initial_pn_base, initial_pn_top, initial_pn_legals, goals);
 
       is_terminal = initial_pn.GetTerminalNode()->holding_value;
     }
@@ -529,30 +442,7 @@ void StateMachine::SetInitialPropNet()
 
   //! Initialize the nodes in the propnet
   //! Also get the base_mask for this propnet
-  initial_pn_base_mask = AState("");
-  initial_pn.InitializeRun(initial_pn_top, initial_pn_base_mask, initial_pn_legals, goals);
-
-  //! Initialize base nodes for initial_pn
-  initial_pn_base_nodes = new node_types::Node*[base_size];
-  for(size_t i = 0;i < base_size;i++)
-    initial_pn_base_nodes[i] = NULL;
-  for(auto it : initial_pn.BaseNodes())
-  {
-    initial_pn_base_nodes[it.first] = it.second;
-  }
-
-  //! Initialize input nodes for initial_pn
-  initial_pn_input_nodes = new node_types::Node**[role_size];
-  size_t index = 0;
-  for(auto it : initial_pn.InputNodes())
-  {
-    initial_pn_input_nodes[index] = new node_types::Node*[it.size()];
-    for(auto it2 : it)
-    {
-      initial_pn_input_nodes[index][it2.first] = it2.second;
-    }
-    index++;
-  }
+  initial_pn.PrimaryRun(initial_pn_top, initial_pn_legals, goals);
 
   IsTerminal = core::template_utils::BindToObject(&StateMachine::IsTerminal_initial_dfp, this);
 
@@ -581,20 +471,10 @@ void StateMachine::SeparateGoalNet(bool compile_goal_propnet)
   //! Set top for goal pn
   goal_pn_top = AState("");
 
-  //! Initialize goal pn and get base mask
-  goal_pn_base_mask = AState("");
-  goal_pn.InitializeRun(goal_pn_top, goal_pn_base_mask, NULL, goals);
+  //! Initialize goal pn and get base mas
+  goal_pn.PrimaryRun(goal_pn_top, NULL, goals);
 
-  //PrintState(cout, goal_pn_base_mask);
-
-  //! Initialize base nodes for goal_pn
-  goal_pn_base_nodes = new node_types::Node*[base_size];
-  for(size_t i = 0;i < base_size;i++)
-    goal_pn_base_nodes[i] = NULL;
-  for(auto it : goal_pn.BaseNodes())
-  {
-    goal_pn_base_nodes[it.first] = it.second;
-  }
+  goal_pn.Crystallize(goal_net_data, goal_pn_top, NULL, goals);
 
   GetGoals = core::template_utils::BindToObject(&StateMachine::GetGoal_goal_dfp, this);
 
@@ -640,17 +520,19 @@ const size_t* StateMachine::Simulate(const AState& s)
 {
   AState temp = s.Clone();
 
-  temp.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+  initial_pn.UpdateNormal_base(temp, initial_pn_base, initial_pn_top, initial_pn_legals, goals);
 
   bool is_terminal = initial_pn.GetTerminalNode()->holding_value;
 
   AMove m("");
 
+  //size_t t;
+
   while(!is_terminal)
   {
     //MoveVector<AMove> ml = MoveVector<AMove>(initial_pn_legals, role_size);
 
-    //PrintMoveList(cout, ml);
+    //PrintMoveVector(std::cout, ml);
 
     //size_t rnd = rand() % ml.size();
 
@@ -676,23 +558,25 @@ const size_t* StateMachine::Simulate(const AState& s)
       m->moves[i] = *it;
     }
 
-    //PrintMove(cout, m);
+    //PrintMove(std::cout, m);
 
     //temp = GetNextState(temp, m);
-    m.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_move, initial_pn_input_nodes, NULL, NULL);
+    initial_pn.UpdateNormal_input(m, initial_pn_base, initial_pn_top, initial_pn_base_move, NULL, goals);
 
-    temp = initial_pn_top.Clone();
+    temp.Equate(initial_pn_top);
 
-    //PrintState(cout, temp);
+    //PrintState(std::cout, temp);
 
-    temp.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+    //std::cin >> t;
+
+    initial_pn.UpdateNormal_base(temp, initial_pn_base, initial_pn_top, initial_pn_legals, goals);
 
     is_terminal = initial_pn.GetTerminalNode()->holding_value;//IsTerminal(temp);
   }
 
   //PrintState(cout, temp);
 
-  return GetGoals(temp);
+  return goals;//GetGoals(temp);
 
    //for(size_t i = 0;i < role_size;i++)
     //cout << goals[i] << endl;
@@ -706,14 +590,14 @@ const size_t* StateMachine::Simulate(const AState& s)
 
 bool StateMachine::IsTerminal_initial_dfp(const AState& s)
 {
-  s.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+  initial_pn.UpdateNormal_base(s, initial_pn_base, initial_pn_top, initial_pn_legals, goals);
   //full_pn_base = s.Clone();
   return initial_pn.GetTerminalNode()->holding_value;
 }
 
 MoveList<AMove> StateMachine::GetLegalMoves_l_initial_dfp(const AState& s)
 {
-  s.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+  initial_pn.UpdateNormal_base(s, initial_pn_base, initial_pn_top, initial_pn_legals, goals);
   //full_pn_base = s.Clone();
 
   //size_t start = util::Timer::microtimer();
@@ -727,8 +611,8 @@ MoveList<AMove> StateMachine::GetLegalMoves_l_initial_dfp(const AState& s)
 
 AState StateMachine::GetNextState_initial_dfp(const AState& s, const AMove& m)
 {
-  s.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
-  m.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_move, initial_pn_input_nodes, NULL, NULL);
+  initial_pn.UpdateNormal_base(s, initial_pn_base, initial_pn_top, initial_pn_legals, goals);
+  initial_pn.UpdateNormal_input(m, initial_pn_base, initial_pn_top, initial_pn_base_move, NULL, goals);
   //full_pn_base_move = m.Clone();
   //full_pn_base = s.Clone();
   return initial_pn_top.Clone();
@@ -736,7 +620,7 @@ AState StateMachine::GetNextState_initial_dfp(const AState& s, const AMove& m)
 
 const size_t* StateMachine::GetGoal_initial_dfp(const AState& s)
 {
-  s.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
+  initial_pn.UpdateNormal_base(s, initial_pn_base, initial_pn_top, initial_pn_legals, goals);
   return goals;
 }
 
@@ -746,7 +630,7 @@ const size_t* StateMachine::GetGoal_initial_dfp(const AState& s)
 
 const size_t* StateMachine::GetGoal_goal_dfp(const AState& s)
 {
-  s.UpdateNodes(goal_pn_base, goal_pn_top, goal_pn_base_mask, initial_pn_base_move, goal_pn_base_nodes, NULL, goals);
+  goal_pn.CrystalUpdate_base(s, goal_pn_base, goal_pn_top, NULL, goals, goal_net_data, n_stack, v_stack);
   return goals;
 }
 

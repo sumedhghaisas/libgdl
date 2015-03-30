@@ -112,6 +112,7 @@ void ViewNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_
     cout << Name() << endl;
     exit(1);
   }
+  node_count++;
 #endif // LIBGDL_DFP_TEST
 
   if(!num_true)

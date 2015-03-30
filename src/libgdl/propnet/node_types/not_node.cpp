@@ -20,14 +20,15 @@ tuple<bool, size_t> NotNode::CodeGen(EntryManager& em, size_t v_stamp)
 
   if(!isVisited)
   {
-    size_t out = em.GetNewID();
+    //size_t out = em.GetNewID();
 
     tuple<bool, size_t> in = (*in_degree.begin())->CodeGen(em, v_stamp);
-    em.AddStamp(get<1>(in), out);
 
-    em.AddEntry(new NotEntry(out, in));
+    //em.AddStamp(get<1>(in), out);
 
-    entry_ret = tuple<bool, size_t>(true, out);
+    //em.AddEntry(new NotEntry(out, in));
+
+    entry_ret = tuple<bool, size_t>(!std::get<0>(in), std::get<1>(in));
 
     isVisited = true;
   }
@@ -65,6 +66,7 @@ void NotNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t
     cout << Name() << endl;
     exit(1);
   }
+  node_count++;
 #endif // LIBGDL_DFP_TEST
 
   holding_value = !holding_value;

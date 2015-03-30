@@ -71,6 +71,10 @@ void InputNode::Update(bool value, AState& base, AState& top, AMove& m, set<size
   m.Set(r_id, in_id);
   for(auto it : out_degree)
     it->Update(value, base, top, m, m_set, goals);
+
+#ifdef LIBGDL_DFP_TEST
+  node_count++;
+#endif // LIBGDL_DFP_TEST
 }
 
 void InputNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const

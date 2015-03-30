@@ -91,6 +91,7 @@ void TerminalNode::Update(bool value, AState& base, AState& top, AMove& m, set<s
     cout << Name() << endl;
     exit(1);
   }
+  node_count++;
 #endif
 
   //if(!num_true)

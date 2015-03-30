@@ -66,6 +66,10 @@ void BaseNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_
   {
     it->Update(value, base, top, m, m_set, goals);
   }
+
+#ifdef LIBGDL_DFP_TEST
+  node_count++;
+#endif // LIBGDL_DFP_TEST
 }
 
 void BaseNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const

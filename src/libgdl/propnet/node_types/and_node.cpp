@@ -14,6 +14,8 @@ using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
 using namespace libgdl::propnet::entry_types;
 
+size_t Node::node_count = 0;
+
 tuple<bool, size_t> AndNode::CodeGen(EntryManager& em, size_t v_stamp)
 {
   if(visit_stamp != v_stamp)
@@ -113,6 +115,7 @@ void AndNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t
     cout << Name() << endl;
     exit(1);
   }
+  node_count++;
 #endif // LIBGDL_DFP_TEST
 
   if(!num_false)

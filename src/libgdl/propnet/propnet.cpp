@@ -28,7 +28,7 @@ size_t and_debug = 0;
 
 PropNet::PropNet(Log log)
   : terminal(NULL), c_r_id(0), c_and_id(0), c_not_id(0),
-  c_or_id(0), c_view_id(0), log(log)
+  c_or_id(0), c_view_id(0), base_mask(""), log(log)
 {
 }
 
@@ -83,6 +83,11 @@ PropNet::PropNet(const PropNet& pn)
   }
 
   init_props = pn.init_props;
+
+  base_size = pn.base_size;
+  role_size = pn.role_size;
+
+  base_mask = pn.base_mask;
 }
 
 void PropNet::Initialize(const std::string& filename)
@@ -115,6 +120,8 @@ void PropNet::Initialize(KIF& kif)
 
 PropNet::~PropNet()
 {
+  PrintPropnet("test.dot");
+
   for(auto it : view_nodes)
   {
     if(del.find(it.second) == del.end())
@@ -216,7 +223,8 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
   if(arg->value == SymbolTable::RoleID)
   {
     roles_ids[sym.GetCommandName(arg->args[0]->value)] = c_r_id++;
-    imove.AddRole();
+    str_input_nodes.emplace_back();
+    c_input_id.emplace_back();
     input_nodes.emplace_back();
     goal_nodes.emplace_back();
     legal_nodes.emplace_back();
@@ -224,7 +232,16 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
   else if(arg->value == SymbolTable::BaseID || arg->value == SymbolTable::TrueID)
   {
     s_arg = arg->args[0]->DecodeToString(sym);
-    size_t p_id = istate.AddProp(s_arg);
+
+    size_t p_id = 0;
+    auto str_b_it = str_base_nodes.find(s_arg);
+    if(str_b_it != str_base_nodes.end())
+      p_id = str_b_it->second;
+    else
+    {
+      p_id = c_base_id++;
+      str_base_nodes[s_arg] = p_id;
+    }
 
     auto it = base_nodes.find(p_id);
     if(it == base_nodes.end())
@@ -245,7 +262,18 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
 
     size_t r_id = r_it->second;
     s_arg = arg->args[1]->DecodeToString(sym);
-    size_t in_id = imove.AddMove(s_arg, r_id);
+
+    size_t in_id = 0;
+
+    auto str_in_it = str_input_nodes[r_id].find(s_arg);
+
+    if(str_in_it != str_input_nodes[r_id].end())
+      in_id = str_in_it->second;
+    else
+    {
+      in_id = c_input_id[r_id]++;
+      str_input_nodes[r_id][s_arg] = in_id;
+    }
 
     auto it = input_nodes[r_id].find(in_id);
     if(it == input_nodes[r_id].end())
@@ -258,7 +286,16 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
   else if(arg->value == SymbolTable::NextID)
   {
     s_arg = arg->args[0]->DecodeToString(sym);
-    size_t p_id = istate.AddProp(s_arg);
+
+    size_t p_id = 0;
+    auto str_b_it = str_base_nodes.find(s_arg);
+    if(str_b_it != str_base_nodes.end())
+      p_id = str_b_it->second;
+    else
+    {
+      p_id = c_base_id++;
+      str_base_nodes[s_arg] = p_id;
+    }
 
     auto it = next_nodes.find(p_id);
     if(it == next_nodes.end())
@@ -272,7 +309,18 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
   {
     size_t r_id = roles_ids[sym.GetCommandName(arg->args[0]->value)];
     s_arg = arg->args[1]->DecodeToString(sym);
-    size_t in_id = imove.AddMove(s_arg, r_id);
+
+    size_t in_id = 0;
+
+    auto str_in_it = str_input_nodes[r_id].find(s_arg);
+
+    if(str_in_it != str_input_nodes[r_id].end())
+      in_id = str_in_it->second;
+    else
+    {
+      in_id = c_input_id[r_id]++;
+      str_input_nodes[r_id][s_arg] = in_id;
+    }
 
     auto it = legal_nodes[r_id].find(in_id);
     if(it == legal_nodes[r_id].end())
@@ -344,7 +392,16 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
   else if(arg->value == SymbolTable::InitID)
   {
     s_arg = arg->args[0]->DecodeToString(sym);
-    size_t p_id = istate.AddProp(s_arg);
+
+    size_t p_id = 0;
+    auto str_b_it = str_base_nodes.find(s_arg);
+    if(str_b_it != str_base_nodes.end())
+      p_id = str_b_it->second;
+    else
+    {
+      p_id = c_base_id++;
+      str_base_nodes[s_arg] = p_id;
+    }
 
     init_props.push_back(p_id);
   }
@@ -1006,16 +1063,6 @@ void PropNet::GenerateSeriesFunctions(size_t mark_index)
   }
 }
 
-void PropNet::GenerateMoveCode(std::ostream& stream)
-{
-  imove.CodeGen(stream);
-}
-
-void PropNet::GenerateStateCode(std::ostream& stream)
-{
-  istate.CodeGen(stream);
-}
-
 void PropNet::GenerateStateMachine()
 {
 ////////////////////////////////////////////////////////////////////////////////
@@ -1287,20 +1334,12 @@ void PropNet::GenerateStateMachine()
 
   CreateMove.GenerateCode();
 
-  ofstream s_stream("state_machine/a_state.cpp");
-  GenerateStateCode(s_stream);
-
-  FileHandler::GetMasterFileHandler().AddFile("state_machine/a_state");
-
-  ofstream m_stream("state_machine/a_move.cpp");
-  GenerateMoveCode(m_stream);
-
   FileHandler::GetMasterFileHandler().AddFile("state_machine/a_move");
 
   FileHandler::GetMasterFileHandler().GenerateSharedObject();
 }
 
-void PropNet::InitializeRun(AState& s, AState& base_mark, set<size_t>* m_set, size_t* goals)
+void PropNet::PrimaryRun(AState& s, set<size_t>* m_set, size_t* goals)
 {
   if(terminal != NULL)
     terminal->InitializeValue(*this, s, m_set, goals);
@@ -1319,11 +1358,33 @@ void PropNet::InitializeRun(AState& s, AState& base_mark, set<size_t>* m_set, si
     if(del.find(it.second) == del.end())
       it.second->InitializeValue(*this, s, m_set, goals);
 
-  base_mark.Clear();
+  base_mask = AState("");
 
-  for(auto it : base_nodes)
+  //! Initialize base nodes for initial_pn
+  arr_base_nodes = new Node*[base_size];
+  for(size_t i = 0;i < base_size;i++)
+    arr_base_nodes[i] = NULL;
+  for(auto it : BaseNodes())
+  {
     if(del.find(it.second) == del.end())
-      base_mark.Set(it.first, true);
+    {
+      arr_base_nodes[it.first] = it.second;
+      base_mask.Set(it.first, true);
+    }
+  }
+
+  //! Initialize input nodes for initial_pn
+  arr_input_nodes = new Node**[role_size];
+  size_t index = 0;
+  for(auto it : InputNodes())
+  {
+    arr_input_nodes[index] = new Node*[it.size()];
+    for(auto it2 : it)
+    {
+      arr_input_nodes[index][it2.first] = it2.second;
+    }
+    index++;
+  }
 }
 
 void PropNet::SplitGoalNet(PropNet& goal_net)
@@ -1346,6 +1407,9 @@ void PropNet::SplitGoalNet(PropNet& goal_net)
   for(auto it : goal_nodes)
     for(auto it2 : it)
       it2.second->DeleteIfNotMarked(NULL, del, 1);
+
+  goal_net.base_size = base_size;
+  goal_net.role_size = role_size;
 }
 
 void PropNet::ProcessDOTtoken(const string& token,
@@ -1483,6 +1547,12 @@ bool PropNet::InitializeWithDOT(const KIF& kif,
 
   ProcessEdges(edges, t_edges, nodes, n_nodes);
 
+  base_size = base_nodes.size();
+
+  role_size = roles_ids.size();
+
+  InitializePrintFunctions();
+
   return true;
 }
 
@@ -1559,7 +1629,7 @@ string PropNet::CreateGetGoalMachineCode()
   return "GetGoals.so";
 }
 
-map<const Node*, size_t> PropNet::Crystallize(AState& top, set<size_t>* m_set, size_t* goals)
+map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& top, set<size_t>* m_set, size_t* goals)
 {
   map<const Node*, size_t> id_map;
   map<size_t, CrystalData> data_map;
@@ -1605,7 +1675,8 @@ map<const Node*, size_t> PropNet::Crystallize(AState& top, set<size_t>* m_set, s
       it.second->Crystallize(id_map, data_map, current_index);
   }
 
-  terminal->Crystallize(id_map, data_map, current_index);
+  if(terminal != NULL)
+    terminal->Crystallize(id_map, data_map, current_index);
 
   list<unsigned short> out_list;
 
@@ -1685,7 +1756,8 @@ map<const Node*, size_t> PropNet::Crystallize(AState& top, set<size_t>* m_set, s
       if(del.find(it2.second) == del.end())
         it2.second->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
 
-  terminal->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
+  if(terminal != NULL)
+    terminal->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
 
   //PrintState(cout, top);
 
@@ -1696,7 +1768,57 @@ map<const Node*, size_t> PropNet::Crystallize(AState& top, set<size_t>* m_set, s
     out_degree[index++] = it;
   }
 
+  data_init_size = out_list.size();
+
+  terminal_crystal_id = id_map.find(GetTerminalNode())->second;
+
+  base_crystal_ids = new size_t[BaseSize()];
+  for(size_t i = 0;i < BaseSize();i++)
+    base_crystal_ids[i] = 0;
+  for(auto it : base_nodes)
+  {
+    base_crystal_ids[it.first] = id_map.find(it.second)->second;
+  }
+
+  input_crystal_ids = new size_t*[roles_ids.size()];
+
+  index = 0;
+  for(auto it : input_nodes)
+  {
+    input_crystal_ids[index] = new size_t[it.size()];
+    for(size_t i = 0;i < it.size();i++)
+    {
+      input_crystal_ids[index][i] = id_map.find(input_nodes[index].find(i)->second)->second;
+    }
+    index++;
+  }
+
+  base_mask = AState("");
+
+  for(auto it : base_nodes)
+    if(del.find(it.second) == del.end())
+      base_mask.Set(it.first, true);
+
   return id_map;
 }
 
+void PropNet::InitializePrintFunctions() const
+{
+  vector<string> str_base_props;
+  for(size_t i = 0;i < base_size;i++)
+  {
+    str_base_props.push_back(base_nodes.find(i)->second->Name());
+  }
+  AState::InitializePrint(str_base_props);
 
+  vector<vector<string>> str_input_props;
+  for(auto it : input_nodes)
+  {
+    vector<string> temp;
+    for(size_t i = 0;i < it.size();i++)
+      temp.push_back(it.find(i)->second->name);
+
+    str_input_props.push_back(temp);
+  }
+  AMove::InitializePrint(str_input_props);
+}

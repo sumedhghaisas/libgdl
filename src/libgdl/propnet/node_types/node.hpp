@@ -190,6 +190,7 @@ struct Node
       {
         RemoveOutDegree(parent);
       }
+      else std::cout << "skvosfowuwbwbvoubwiubwuvbwuvbkvb" << std::endl;
     }
     else if(parent != NULL) RemoveOutDegree(parent);
   }
@@ -230,6 +231,8 @@ struct Node
 
   size_t run_stamp;
   bool holding_value;
+
+  static size_t node_count;
 
   size_t mark;
 };

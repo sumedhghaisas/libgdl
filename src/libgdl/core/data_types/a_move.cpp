@@ -14,7 +14,7 @@ bool AMove::isCreateMoveInitialized = false;
 AMove (*AMove::CreateMove)(const list<string>&) = NULL;
 
 bool AMove::isPrintInitialized = false;
-void (*AMove::Print)(ostream&, const AMove&) = NULL;
+vector<vector<string>> AMove::str_input_props;
 
 size_t RawAMove::n_roles = 0;
 
@@ -50,5 +50,8 @@ void AMove::PrintMove(ostream& stream, const AMove& move)
     return;
   }
 
-  Print(stream, move);
+  stream << "AMove:" << endl;
+
+  for(size_t i = 0;i < RawAMove::n_roles;i++)
+    stream << "\t" << str_input_props[i][move->moves[i]] << endl;
 }

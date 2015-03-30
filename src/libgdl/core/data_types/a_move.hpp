@@ -6,6 +6,8 @@
 #include <atomic>
 #include <list>
 #include <set>
+#include <vector>
+#include <string>
 #include <boost/intrusive_ptr.hpp>
 
 #include <libgdl/core/util/logid.hpp>
@@ -113,6 +115,12 @@ struct AMove : public boost::intrusive_ptr<core::RawAMove>
   AMove(size_t i)
     : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove(i)) {}
 
+  void Clear()
+  {
+    for(size_t i = 0;i < core::RawAMove::n_roles;i++)
+      get()->moves[i] = 0;
+  }
+
   AMove Clone() const
   {
     return AMove(new core::RawAMove(*get()));
@@ -128,19 +136,6 @@ struct AMove : public boost::intrusive_ptr<core::RawAMove>
     return get()->GetMove(r_id);
   }
 
-  template<typename NodeType>
-  void UpdateNodes(AState& base, AState& top, AMove& m, NodeType*** input_nodes, std::set<size_t>* m_set, size_t* goals) const
-  {
-    for(size_t i = 0;i < get()->n_roles;i++)
-    {
-      if(get()->moves[i] != m->moves[i])
-      {
-        input_nodes[i][m->moves[i]]->Update(false, base, top, m, m_set, goals);
-        input_nodes[i][get()->moves[i]]->Update(true, base, top, m, m_set, goals);
-      }
-    }
-  }
-
   void Set(size_t r_id, size_t m_id)
   {
     get()->Set(r_id, m_id);
@@ -152,9 +147,9 @@ struct AMove : public boost::intrusive_ptr<core::RawAMove>
     isCreateMoveInitialized = true;
   }
 
-  static void InitializePrint(void (*p)(std::ostream&, const AMove&))
+  static void InitializePrint(const std::vector<std::vector<std::string>>& input_props)
   {
-    Print = p;
+    str_input_props = input_props;
     isPrintInitialized = true;
   }
 
@@ -166,7 +161,7 @@ struct AMove : public boost::intrusive_ptr<core::RawAMove>
   static AMove(*CreateMove)(const std::list<std::string>&);
 
   static bool isPrintInitialized;
-  static void (*Print)(std::ostream&, const AMove&);
+  static std::vector<std::vector<std::string>> str_input_props;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const AMove& m)

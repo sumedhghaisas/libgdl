@@ -105,6 +105,7 @@ void LegalNode::Update(bool value, AState& base, AState& top, AMove& m, set<size
     cout << Name() << endl;
     exit(1);
   }
+  node_count++;
 #endif // LIBGDL_DFP_TEST
 
   //if(!num_true)

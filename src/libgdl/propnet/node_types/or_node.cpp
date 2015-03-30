@@ -110,6 +110,7 @@ void OrNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>
     cout << Name() << endl;
     exit(1);
   }
+  node_count++;
 #endif // LIBGDL_DFP_TEST
 
   if(!num_true)
