@@ -362,7 +362,7 @@ void StateMachine::MetaGame_multi_player(size_t simulation_time)
         {
           if(initial_pn_legals[i].size() > 1)
           {
-            if(current_control_r_id > 0)
+            if(current_control_r_id > -1)
             {
               isAlternatingMoves = false;
               break;

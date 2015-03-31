@@ -29,8 +29,8 @@ namespace propnet
 struct CrystalNode
 {
   bool type;
-  unsigned short offset;
   unsigned char out_size;
+  unsigned short offset;
 };
 
 class PropNet
