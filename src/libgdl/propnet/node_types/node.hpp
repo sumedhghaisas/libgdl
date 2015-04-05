@@ -10,6 +10,8 @@
 #include <libgdl/core.hpp>
 #include <libgdl/core/data_types/a_state.hpp>
 
+#include <boost/unordered_set.hpp>
+
 //#define LIBGDL_DFP_TEST
 
 namespace libgdl
@@ -38,6 +40,9 @@ namespace node_types
 
 struct Node
 {
+  template<typename T>
+  using Set = boost::unordered::unordered_set<T>;
+
   enum class Type{BASE, INPUT, VIEW, OR, NEXT, LEGAL, TERMINAL, GOAL, AND, NOT};
   Node(const std::string& name,
        const Type& type)
@@ -46,6 +51,13 @@ struct Node
   {}
 
   virtual ~Node() {}
+
+  bool IsLegal() const
+  {
+    if(type == Type::LEGAL)
+      return true;
+    return false;
+  }
 
   void AddIn(Node* n)
   {
@@ -78,13 +90,19 @@ struct Node
 
   //virtual Update(bool value) = 0;
 
-  virtual bool InitializeValue(const PropNet&, AState& s, std::set<size_t>* m_set, size_t* goals) = 0;
+  virtual bool InitializeValue(const PropNet&, AState& s, Set<size_t>* m_set, size_t* goals) = 0;
 
-  virtual bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized) = 0;
+  virtual bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized) = 0;
 
-  virtual void Update(bool value, AState& base, AState& top, AMove& m, std::set<size_t>* m_set, size_t* goals) = 0;
+  virtual void Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals) = 0;
 
-  virtual void CrystalUpdate(signed short val, AState& top, std::set<size_t>* m_set, size_t* goals) const
+  virtual void CrystalUpdate(signed short val, AState& top, Set<size_t>* m_set, size_t* goals) const
+  {
+    std::cout << LOGID << "Unexpected error occured!" << std::endl;
+    exit(1);
+  }
+
+  virtual void CrystalUpdate(signed short val, AState& top, bool** m_set, size_t* legal_size, size_t* goals) const
   {
     std::cout << LOGID << "Unexpected error occured!" << std::endl;
     exit(1);

@@ -51,7 +51,7 @@ tuple<bool, size_t> NextNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool NextNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* m_set, size_t* goals)
+bool NextNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set, size_t* goals)
 {
   holding_value = false;
   num_true = 0;
@@ -66,7 +66,7 @@ bool NextNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* m
   return holding_value;
 }
 
-bool NextNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+bool NextNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
@@ -89,7 +89,7 @@ bool NextNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, 
   return holding_value;
 }
 
-void NextNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
+void NextNode::Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals)
 {
   if(value && !holding_value)
   {

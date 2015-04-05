@@ -59,7 +59,7 @@ tuple<bool, size_t> AndNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool AndNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* m_set, size_t* goals)
+bool AndNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set, size_t* goals)
 {
   holding_value = true;
   num_false = 0;
@@ -72,7 +72,7 @@ bool AndNode::InitializeValue(const PropNet& pn, AState& s, std::set<size_t>* m_
   return holding_value;
 }
 
-bool AndNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+bool AndNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
@@ -93,7 +93,7 @@ bool AndNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, s
   return holding_value;
 }
 
-void AndNode::Update(bool value, AState& base, AState& top, AMove& m, set<size_t>* m_set, size_t* goals)
+void AndNode::Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals)
 {
   if(!value)
   {

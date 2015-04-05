@@ -31,19 +31,33 @@ struct LegalNode : public Node
 
   std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t visit_map);
 
-  bool InitializeValue(const PropNet&, AState& s, std::set<size_t>* m_set, size_t* goals);
+  bool InitializeValue(const PropNet&, AState& s, Set<size_t>* m_set, size_t* goals);
 
-  bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, std::set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized);
+  bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized);
 
-  void Update(bool value, AState& base, AState& top, AMove& m, std::set<size_t>* m_set, size_t* goals);
+  void Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals);
 
-  void CrystalUpdate(signed short val, AState& top, std::set<size_t>* m_set, size_t* goals) const
+  void CrystalUpdate(signed short val, AState& top, Set<size_t>* m_set, size_t* goals) const
   {
     if(val == 0x0001)
     {
       m_set[r_id].insert(id);
     }
     else m_set[r_id].erase(m_set[r_id].find(id));
+  }
+
+  void CrystalUpdate(signed short val, AState& top, bool** m_set, size_t* legal_size, size_t* goals) const
+  {
+    if(val == 0x0001)
+    {
+      m_set[r_id][id] = true;
+      legal_size[r_id]++;
+    }
+    else
+    {
+      m_set[r_id][id] = false;
+      legal_size[r_id]--;
+    }
   }
 
   Node* GetCopy_only_info() const

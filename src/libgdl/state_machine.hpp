@@ -18,6 +18,8 @@
 
 #include "../prng_engine.hpp"
 
+#include <boost/unordered_set.hpp>
+
 
 #define D_META_SIM_TIME 1000000
 
@@ -26,6 +28,9 @@ namespace libgdl
 
 class StateMachine
 {
+  template<typename T>
+  using Set = boost::unordered::unordered_set<T>;
+
   typedef std::function<bool(const AState&)> IsTerminal_t;
   typedef std::function<MoveList<AMove>(const AState& s)> GetLegalMoves_l_t;
   typedef std::function<AState(const AState&, const AMove&)> GetNextState_t;
@@ -48,6 +53,8 @@ class StateMachine
   const size_t* Simulate2(const AState& s);
   inline const size_t* Simulate3(const AState& s);
   inline const size_t* Simulate4(const AState& s);
+  inline const size_t* Simulate5(const AState& s);
+  inline const size_t* Simulate6(const AState& s);
 
   AState InitState() const
   {
@@ -93,7 +100,7 @@ class StateMachine
   AMove initial_pn_base_move;
   propnet::node_types::Node** initial_pn_base_nodes;
   propnet::node_types::Node*** initial_pn_input_nodes;
-  std::set<size_t>* initial_pn_legals;
+  Set<size_t>* initial_pn_legals;
 
   //! Function with initial propnet
   bool IsTerminal_initial_dfp(const AState& s);
@@ -123,7 +130,9 @@ class StateMachine
   AMove* role_pn_base_move = NULL;
   propnet::node_types::Node*** role_pn_base_nodes = NULL;
   propnet::node_types::Node**** role_pn_input_nodes = NULL;
-  std::set<size_t>** role_pn_legals = NULL;
+  Set<size_t>** role_pn_legals = NULL;
+  bool*** role_pn_m_arr;
+  size_t** role_pn_m_legal_size;
 
   bool is_goal_propnet_used = false;
   bool is_goal_propnet_compiled = false;
@@ -134,13 +143,16 @@ class StateMachine
 
   AState* alt_role_masks = NULL;
 
-  size_t* n_stack = new size_t[10000];
+  unsigned short* n_stack = new unsigned short[10000];
   signed short* v_stack = new signed short[10000];
 
   signed short** role_data;
   signed short* data_init;
 
   signed short* goal_net_data;
+
+  bool** initial_pn_m_arr;
+  size_t* initial_pn_m_legal_size;
 
   static sitmo::prng_engine eng;
 

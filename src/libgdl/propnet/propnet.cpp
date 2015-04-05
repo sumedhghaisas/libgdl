@@ -8,6 +8,7 @@
 #include <regex>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/unordered_map.hpp>
 
 #include "handlers/code_handler.hpp"
 #include "handlers/file_handler.hpp"
@@ -26,10 +27,14 @@ size_t n_debug = 0;
 
 size_t and_debug = 0;
 
+size_t PropNet::n_count = 0;
+
 PropNet::PropNet(Log log)
   : terminal(NULL), c_r_id(0), c_and_id(0), c_not_id(0),
   c_or_id(0), c_view_id(0), base_mask(""), log(log)
 {
+  for(size_t i = 0;i < 10000;i++)
+    t_data[i] = (unsigned short)-1;
 }
 
 PropNet::PropNet(const PropNet& pn)
@@ -1339,7 +1344,7 @@ void PropNet::GenerateStateMachine()
   FileHandler::GetMasterFileHandler().GenerateSharedObject();
 }
 
-void PropNet::PrimaryRun(AState& s, set<size_t>* m_set, size_t* goals)
+void PropNet::PrimaryRun(AState& s, Set<size_t>* m_set, size_t* goals)
 {
   if(terminal != NULL)
     terminal->InitializeValue(*this, s, m_set, goals);
@@ -1629,7 +1634,7 @@ string PropNet::CreateGetGoalMachineCode()
   return "GetGoals.so";
 }
 
-map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& top, set<size_t>* m_set, size_t* goals)
+map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& top, Set<size_t>* m_set, size_t* goals)
 {
   map<const Node*, size_t> id_map;
   map<size_t, CrystalData> data_map;
@@ -1708,7 +1713,7 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
       size_t t = (size_t)cd.node;
       unsigned short* temp = (unsigned short*)&t;
       cry[i].offset = out_list.size();
-      cry[i].out_size = 4;
+      cry[i].out_size = 0;
 
       //cout << cry[i].offset << endl;
       //cout << std::hex << (size_t)cd.node << std::dec << endl;
@@ -1724,6 +1729,11 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
     cry[i].out_size = cd.out_degree.size();
 
     //cout << cry[i].offset << endl;
+
+    if(cd.out_degree.size() > 127)
+    {
+      cout << "Out of bounds while crystallizing." << endl;
+    }
 
     for(auto it : cd.out_degree)
     {

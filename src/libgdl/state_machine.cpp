@@ -166,9 +166,33 @@ StateMachine::StateMachine(int argc, char* argv[])
 
     initial_pn.Crystallize(data_init, initial_pn_top, initial_pn_legals, goals);
 
+    initial_pn_m_arr = new bool*[role_size];
+    initial_pn_m_legal_size = new size_t[role_size];
+    for(size_t i = 0;i < role_size;i++)
+    {
+      initial_pn_m_arr[i] = new bool[initial_pn.InputNodes()[i].size()];
+      for(size_t j = 0;j < initial_pn.InputNodes()[i].size();j++)
+        initial_pn_m_arr[i][j] = false;
+
+      initial_pn_m_legal_size[i] = 0;
+      for(auto it : initial_pn_legals[i])
+      {
+        cout << it << endl;
+        initial_pn_m_legal_size[i]++;
+        initial_pn_m_arr[i][it] = true;
+      }
+    }
+
+    for(size_t i = 0;i < initial_pn.InputNodes()[0].size();i++)
+      cout << initial_pn_m_arr[0][i] << " ";
+    cout << endl;
+
     if(is_propnet_role_separated)
     {
       role_data = new signed short*[role_size];
+
+      role_pn_m_arr = new bool**[role_size];
+      role_pn_m_legal_size = new size_t*[role_size];
 
       for(size_t i = 0;i < role_size;i++)
       {
@@ -176,10 +200,7 @@ StateMachine::StateMachine(int argc, char* argv[])
 
         for(size_t j = 0;j < initial_pn.data_init_size;j++)
           role_data[i][j] = data_init[j];
-      }
 
-      for(size_t i = 0;i < role_size;i++)
-      {
         role_pn_top[i] = initial_pn_top.Clone();
         role_pn_base[i] = initial_pn_base.Clone();
 
@@ -191,9 +212,31 @@ StateMachine::StateMachine(int argc, char* argv[])
         }
 
         role_pn_base_move[i] = initial_pn_base_move.Clone();
+
+        role_pn_m_arr[i] = new bool*[role_size];
+        role_pn_m_legal_size[i] = new size_t[role_size];
+        for(size_t j = 0;j < role_size;j++)
+        {
+          role_pn_m_arr[i][j] = new bool[role_propnets[i]->InputNodes()[j].size()];
+          for(size_t k = 0;k < role_propnets[i]->InputNodes()[j].size();k++)
+            role_pn_m_arr[i][j][k] = false;
+
+          role_pn_m_legal_size[i][j] = 0;
+          for(auto it : role_pn_legals[i][j])
+          {
+            role_pn_m_legal_size[i][j]++;
+            role_pn_m_arr[i][j][it] = true;
+          }
+        }
       }
     }
   }
+
+  cout << "testing" << endl;
+
+  cout << initial_pn.GetNumComponents() << endl;
+  cout << goal_pn.GetNumComponents() << endl;
+  cout << initial_pn.ViewNodes().size() << endl;
 }
 
 void StateMachine::SeparateRolePropNets()
@@ -206,7 +249,7 @@ void StateMachine::SeparateRolePropNets()
   role_pn_base = new AState[role_size];
   role_pn_top = new AState[role_size];
   role_pn_base_move = new AMove[role_size];
-  role_pn_legals = new std::set<size_t>*[role_size];
+  role_pn_legals = new Set<size_t>*[role_size];
 
   for(size_t i = 0;i < role_size;i++)
   {
@@ -219,7 +262,7 @@ void StateMachine::SeparateRolePropNets()
     for(size_t j = 0;j < role_size;j++)
       role_pn_base_move[i]->moves[j] = 0;
 
-    role_pn_legals[i] = new std::set<size_t>[role_size];
+    role_pn_legals[i] = new Set<size_t>[role_size];
 
     role_propnets[i]->PrimaryRun(role_pn_top[i], role_pn_legals[i], goals);
 
@@ -438,7 +481,7 @@ void StateMachine::SetInitialPropNet()
     initial_pn_base_move->moves[i] = 0;
 
   //! Assign memory for sets which holds legal moves
-  initial_pn_legals = new set<size_t>[role_size];
+  initial_pn_legals = new Set<size_t>[role_size];
 
   //! Initialize the nodes in the propnet
   //! Also get the base_mask for this propnet

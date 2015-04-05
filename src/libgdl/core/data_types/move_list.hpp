@@ -5,6 +5,7 @@
 #include <list>
 #include <vector>
 #include <boost/intrusive_ptr.hpp>
+#include <boost/unordered_set.hpp>
 
 #include "intrusive_wrapper.hpp"
 
@@ -142,12 +143,14 @@ class MoveList<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std::
     }
   }
 
-  MoveList(const std::set<size_t>* result, size_t n_roles)
+  MoveList(const boost::unordered::unordered_set<size_t>* result, size_t n_roles)
     : boost::intrusive_ptr<IntrusiveList<AMove>>(new IntrusiveList<AMove>())
   {
-    std::set<size_t>::const_iterator* it = new std::set<size_t>::const_iterator[n_roles];
+    boost::unordered::unordered_set<size_t>::const_iterator* it = new boost::unordered::unordered_set<size_t>::const_iterator[n_roles];
     for(size_t i = 0;i < n_roles;i++)
       it[i] = result[i].begin();
+
+    boost::unordered::unordered_set<size_t>::const_iterator temp;
 
     while(true)
     {
@@ -166,13 +169,15 @@ class MoveList<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std::
 
         while(true)
         {
+          temp = it[index];
+
           if(index == n_roles ||
-            (it[index] == (--result[index].end()) && index == n_roles - 1))
+            (++temp == result[index].end() && index == n_roles - 1))
           {
             delete[] it;
             return;
           }
-          else if(it[index] == (--result[index].end()))
+          else if(++temp == result[index].end())
           {
             it[index] = result[index].begin();
             index++;

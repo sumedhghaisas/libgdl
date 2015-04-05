@@ -19,6 +19,8 @@
 
 #include <libgdl/core.hpp>
 
+#include <boost/unordered_set.hpp>
+
 namespace libgdl
 {
 class StateMachine;
@@ -35,6 +37,9 @@ struct CrystalNode
 
 class PropNet
 {
+  template<typename T>
+  using Set = boost::unordered::unordered_set<T>;
+
   template<typename T1, typename T2>
   using Map = std::map<T1, T2>;
 
@@ -53,7 +58,7 @@ class PropNet
   bool InitializeWithDOT(const gdlparser::KIF& kif,
                          const std::string& dot_filename);
 
-  void PrimaryRun(AState& s, std::set<size_t>* m_set, size_t* goals);
+  void PrimaryRun(AState& s, Set<size_t>* m_set, size_t* goals);
 
   void AddFact(const core::Fact& f);
   void AddClause(const core::Clause& c);
@@ -68,7 +73,7 @@ class PropNet
 
   void GenerateStateMachine();
 
-  std::map<const Node*, size_t> Crystallize(signed short*& data_init, AState& top, std::set<size_t>* m_set, size_t* goals);
+  std::map<const Node*, size_t> Crystallize(signed short*& data_init, AState& top, Set<size_t>* m_set, size_t* goals);
 
   std::string CreateGetGoalMachineCode();
 
@@ -102,9 +107,14 @@ class PropNet
     return base_nodes;
   }
 
-  std::vector<Map<size_t, Node*>>& InputNodes()
+  const std::vector<Map<size_t, Node*>>& InputNodes() const
   {
     return input_nodes;
+  }
+
+  const Map<std::string, Node*>& ViewNodes() const
+  {
+    return view_nodes;
   }
 
   void InitializeToRoles(size_t num_roles)
@@ -148,13 +158,17 @@ class PropNet
     return terminal;
   }
 
-  inline void CrystalUpdate_base(const AState& state, AState& base, AState& top, std::set<size_t>* m_set, size_t* goals, signed short* data, size_t* n_stack, signed short* v_stack) const;
+  inline void CrystalUpdate_base(const AState& state, AState& base, AState& top, Set<size_t>* m_set, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
 
-  inline void CrystalUpdate_input(const AMove& move, AMove& base, AState& top, std::set<size_t>* m_set, size_t* goals, signed short* data, size_t* n_stack, signed short* v_stack) const;
+  inline void CrystalUpdate_input(const AMove& move, AMove& base, AState& top, Set<size_t>* m_set, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
 
-  inline void UpdateNormal_base(const AState& state, AState& base, AState& top, std::set<size_t>* m_set, size_t* goals) const;
+  inline void CrystalUpdate_input2(const AMove& move, AMove& base, AState& top, bool** m_set, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
 
-  inline void UpdateNormal_input(const AMove& move, AState& base, AState& top, AMove& m, std::set<size_t>* m_set, size_t* goals) const;
+  inline void CrystalUpdate_base2(const AState& state, AState& base, AState& top, bool** m_set, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
+
+  inline void UpdateNormal_base(const AState& state, AState& base, AState& top, Set<size_t>* m_set, size_t* goals) const;
+
+  inline void UpdateNormal_input(const AMove& move, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals) const;
 
   size_t terminal_crystal_id = 0;
 
@@ -207,6 +221,8 @@ class PropNet
 
     return out;
   }
+
+  static size_t n_count;
 
  private:
   void GenerateSeriesFunctions(size_t mark_index);
@@ -282,6 +298,8 @@ class PropNet
   size_t base_size;
   size_t role_size;
   bool isCrystalized = false;
+
+  unsigned short* t_data = new unsigned short[10000];
 
   mutable Log log;
 };
