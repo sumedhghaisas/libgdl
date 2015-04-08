@@ -1730,11 +1730,6 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
 
     //cout << cry[i].offset << endl;
 
-    if(cd.out_degree.size() > 127)
-    {
-      cout << "Out of bounds while crystallizing." << endl;
-    }
-
     for(auto it : cd.out_degree)
     {
       if(it > 65536)
@@ -1745,6 +1740,10 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
       out_list.push_back((unsigned short)it);
     }
   }
+
+  cout << out_list.size() << endl;
+  size_t temp;
+  cin >> temp;
 
   set<const Node*> initialized;
 
@@ -1782,7 +1781,7 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
 
   terminal_crystal_id = id_map.find(GetTerminalNode())->second;
 
-  base_crystal_ids = new size_t[BaseSize()];
+  base_crystal_ids = new unsigned short[BaseSize()];
   for(size_t i = 0;i < BaseSize();i++)
     base_crystal_ids[i] = 0;
   for(auto it : base_nodes)

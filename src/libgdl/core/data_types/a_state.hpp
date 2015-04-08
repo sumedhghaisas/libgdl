@@ -69,6 +69,17 @@ struct RawAState
     else s[buff] = s[buff] & q;
   }
 
+  //! Set function
+  inline void Set(size_t i, signed short val)
+  {
+    size_t buff = i / 8;
+    size_t p = pow(2, i % 8);
+    size_t q = 255 & ~p;
+
+    if(val == 0x0001) s[buff] = s[buff] | p;
+    else s[buff] = s[buff] & q;
+  }
+
   char *s;
 
   static size_t arr_size;

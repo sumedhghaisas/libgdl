@@ -213,7 +213,7 @@ inline const size_t* StateMachine::Simulate5(const AState& s)
   bool is_terminal = data_init[initial_pn.terminal_crystal_id] & 0x4000;//initial_pn.GetTerminalNode()->holding_value;
 
   AMove m("");
-
+  size_t* m_arr = m->moves;
   while(!is_terminal)
   {
     //MoveList<AMove> ml = MoveList<AMove>(initial_pn_legals, role_size);
@@ -245,7 +245,7 @@ inline const size_t* StateMachine::Simulate5(const AState& s)
         if(!rnd)
         {
           //cout << i << endl;
-          m->moves[i] = index;
+          m_arr[i] = index;
           break;
         }
         index++;
@@ -263,6 +263,8 @@ inline const size_t* StateMachine::Simulate5(const AState& s)
     //std::cin >> t;
 
     //std::cin >> t;
+
+    //std::cout << temp << std::endl;
 
     //temp.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_mask, initial_pn_base_move, initial_pn_base_nodes, initial_pn_legals, goals);
     initial_pn.CrystalUpdate_base2(temp, initial_pn_base, initial_pn_top, initial_pn_m_arr, initial_pn_m_legal_size, goals, data_init, n_stack, v_stack);

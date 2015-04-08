@@ -52,7 +52,7 @@ struct Node
 
   virtual ~Node() {}
 
-  bool IsLegal() const
+  inline bool IsLegal() const
   {
     if(type == Type::LEGAL)
       return true;
@@ -114,6 +114,11 @@ struct Node
 
   size_t Crystallize(std::map<const Node*, size_t>& id_map, std::map<size_t, CrystalData>& data_map, size_t& current_index) const
   {
+    if(out_degree.size() > 256)
+    {
+      std::cout << "Out of bounds while crystallizing." << std::endl;
+    }
+
     auto it = id_map.find(this);
     if(it != id_map.end())
       return it->second;

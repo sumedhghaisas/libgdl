@@ -287,7 +287,7 @@ class PropNet
   std::map<const propnet::node_types::Node*, size_t> id_map;
   CrystalNode* cry = NULL;
   unsigned short* out_degree = NULL;
-  size_t* base_crystal_ids = NULL;
+  unsigned short* base_crystal_ids = NULL;
   size_t** input_crystal_ids = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////

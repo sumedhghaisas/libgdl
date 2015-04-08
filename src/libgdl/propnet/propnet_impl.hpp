@@ -377,7 +377,7 @@ inline void PropNet::CrystalUpdate_input2(const AMove& move, AMove& base, AState
 
     if(cn.type)
     {
-      propnet::node_types::NextNode* n = (propnet::node_types::NextNode*)*(size_t*)(out_degree + cn.offset);
+      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)(out_degree + cn.offset);
 
       //size_t start = util::Timer::microtimer();
       n->CrystalUpdate(val, top, m_set, m_set_size, goals);
