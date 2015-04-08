@@ -350,17 +350,6 @@ class SymbolTable : public boost::intrusive_ptr<RawSymbolTable>
             TrueID,
             GoalID,
             TerminalID};
-
-  static bool LoadPrimes();
-
-  static size_t GetPrime(size_t index)
-  {
-    return primes[index];
-  }
-
-  static size_t primes[10000];
-
-  static bool loader;
 };
 
 }; // namespace core

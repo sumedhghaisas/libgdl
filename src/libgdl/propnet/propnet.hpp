@@ -32,7 +32,8 @@ struct CrystalNode
 {
   bool type;
   unsigned char out_size;
-  unsigned short offset;
+  unsigned short data_id;
+  unsigned short out_edges[0];
 };
 
 class PropNet
@@ -285,10 +286,11 @@ class PropNet
 ////////////////////////////////////////////////////////////////////////////////
 
   std::map<const propnet::node_types::Node*, size_t> id_map;
-  CrystalNode* cry = NULL;
-  unsigned short* out_degree = NULL;
+
+  unsigned short* arr_propnet = NULL;
+
   unsigned short* base_crystal_ids = NULL;
-  size_t** input_crystal_ids = NULL;
+  unsigned short** input_crystal_ids = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Configuration parameters and common important variables

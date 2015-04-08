@@ -252,6 +252,8 @@ inline const size_t* StateMachine::Simulate5(const AState& s)
       }
     }
 
+    //std::cout << m << std::endl;
+
     //temp = GetNextState(temp, m);
     //m.UpdateNodes(initial_pn_base, initial_pn_top, initial_pn_base_move, initial_pn_input_nodes, NULL, NULL);
     //size_t start = util::Timer::microtimer();

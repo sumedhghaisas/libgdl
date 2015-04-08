@@ -59,21 +59,13 @@ inline void PropNet::CrystalUpdate_input(const AMove& move, AMove& base, AState&
     unsigned short n_id = n_stack[--n_stack_index];
     signed short val = v_stack[--v_stack_index];
 
-    propnet::CrystalNode& cn = cry[n_id];
-    signed short& n_val = data[n_id];
+    propnet::CrystalNode* cn = (propnet::CrystalNode*)(arr_propnet + n_id);
+    signed short& n_val = data[cn[0].data_id];
 
-    //size_t start = util::Timer::microtimer();
-    //n_stack.pop();
-    //v_stack.pop();
-    //stack_time += util::Timer::microtimer() - start;
-
-    if(cn.type)
+    if(cn[0].type)
     {
-      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)(out_degree + cn.offset);
-
-      //size_t start = util::Timer::microtimer();
+      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
       n->CrystalUpdate(val, top, m_set, goals);
-      //n_count += util::Timer::microtimer() - start;
     }
     else
     {
@@ -86,14 +78,10 @@ inline void PropNet::CrystalUpdate_input(const AMove& move, AMove& base, AState&
           p_val = 0x0001;
         else p_val = 0xffff;
 
-        unsigned short* o_start = out_degree + cn.offset;
-
-        for(size_t i = 0;i < cn.out_size;i++)
+        for(size_t i = 0;i < cn[0].out_size;i++)
         {
-          //size_t start = util::Timer::microtimer();
-          n_stack[n_stack_index++] = o_start[i];
+          n_stack[n_stack_index++] = cn[0].out_edges[i];
           v_stack[v_stack_index++] = p_val;
-          //stack_time += util::Timer::microtimer() - start;
         }
       }
       n_val = t_val;
@@ -199,43 +187,22 @@ inline void PropNet::CrystalUpdate_base(const AState& state, AState& base, AStat
     }
   }
 
-  while(n_stack_index)
+  while(n_stack_index)//!n_stack.empty())
   {
     unsigned short n_id = n_stack[--n_stack_index];
     signed short val = v_stack[--v_stack_index];
 
-    //cout << n_id << " " << std::hex << val << std::dec << endl;
+    propnet::CrystalNode* cn = (propnet::CrystalNode*)(arr_propnet + n_id);
+    signed short& n_val = data[cn[0].data_id];
 
-    //if(n_id == 164)
-    //{
-      //cout << "lol" << endl;
-    //}
-
-    //std::cout << n_id << std::endl;
-
-    propnet::CrystalNode& cn = cry[n_id];
-    signed short& n_val = data[n_id];
-
-    //n_stack.pop();
-    //v_stack.pop();
-
-    if(cn.type)
+    if(cn[0].type)
     {
-      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)(out_degree + cn.offset);
-
-      //cout << cn.offset << endl;
-
-      //cout << std::hex << *(initial_pn.out_degree + cn.offset) << std::dec << endl;
-      //size_t start = util::Timer::microtimer();
+      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
       n->CrystalUpdate(val, top, m_set, goals);
-      //n_count += util::Timer::microtimer() - start;
     }
     else
     {
       signed short t_val = val + n_val;
-
-      //cout << std::hex << n_val << endl;
-      //cout << std::hex << t_val << std::dec << endl;
 
       if((t_val ^ n_val) & 0x4000)
       {
@@ -244,14 +211,9 @@ inline void PropNet::CrystalUpdate_base(const AState& state, AState& base, AStat
           p_val = 0x0001;
         else p_val = 0xffff;
 
-        unsigned short* o_start = out_degree + cn.offset;
-
-        //cout << (size_t)cn.out_size << " " << cn.offset << endl;
-
-        for(size_t i = 0;i < cn.out_size;i++)
+        for(size_t i = 0;i < cn[0].out_size;i++)
         {
-          //std::cout << "\t" << o_start[i] << std::endl;
-          n_stack[n_stack_index++] = o_start[i];
+          n_stack[n_stack_index++] = cn[0].out_edges[i];
           v_stack[v_stack_index++] = p_val;
         }
       }
@@ -367,21 +329,14 @@ inline void PropNet::CrystalUpdate_input2(const AMove& move, AMove& base, AState
     unsigned short n_id = n_stack[--n_stack_index];
     signed short val = v_stack[--v_stack_index];
 
-    propnet::CrystalNode& cn = cry[n_id];
-    signed short& n_val = data[n_id];
+    propnet::CrystalNode* cn = (propnet::CrystalNode*)(arr_propnet + n_id);
+    signed short& n_val = data[cn[0].data_id];
 
-    //size_t start = util::Timer::microtimer();
-    //n_stack.pop();
-    //v_stack.pop();
-    //stack_time += util::Timer::microtimer() - start;
-
-    if(cn.type)
+    if(cn[0].type)
     {
-      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)(out_degree + cn.offset);
-
-      //size_t start = util::Timer::microtimer();
+      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
+      //std::cout << n_id << " " << std::hex << n << std::dec << std::endl;
       n->CrystalUpdate(val, top, m_set, m_set_size, goals);
-      //n_count += util::Timer::microtimer() - start;
     }
     else
     {
@@ -394,14 +349,10 @@ inline void PropNet::CrystalUpdate_input2(const AMove& move, AMove& base, AState
           p_val = 0x0001;
         else p_val = 0xffff;
 
-        unsigned short* o_start = out_degree + cn.offset;
-
-        for(size_t i = 0;i < cn.out_size;i++)
+        for(size_t i = 0;i < cn[0].out_size;i++)
         {
-          //size_t start = util::Timer::microtimer();
-          n_stack[n_stack_index++] = o_start[i];
+          n_stack[n_stack_index++] = cn[0].out_edges[i];
           v_stack[v_stack_index++] = p_val;
-          //stack_time += util::Timer::microtimer() - start;
         }
       }
       n_val = t_val;
@@ -512,21 +463,14 @@ inline void PropNet::CrystalUpdate_base2(const AState& state, AState& base, ASta
     unsigned short n_id = n_stack[--n_stack_index];
     signed short val = v_stack[--v_stack_index];
 
-    propnet::CrystalNode& cn = cry[n_id];
-    signed short& n_val = data[n_id];
+    propnet::CrystalNode* cn = (propnet::CrystalNode*)(arr_propnet + n_id);
+    signed short& n_val = data[cn[0].data_id];
 
-    //size_t start = util::Timer::microtimer();
-    //n_stack.pop();
-    //v_stack.pop();
-    //stack_time += util::Timer::microtimer() - start;
-
-    if(cn.type)
+    if(cn[0].type)
     {
-      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)(out_degree + cn.offset);
-
-      //size_t start = util::Timer::microtimer();
+      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
+      //std::cout << n_id << " " << std::hex << n << std::dec << std::endl;
       n->CrystalUpdate(val, top, m_set, m_set_size, goals);
-      //n_count += util::Timer::microtimer() - start;
     }
     else
     {
@@ -539,14 +483,10 @@ inline void PropNet::CrystalUpdate_base2(const AState& state, AState& base, ASta
           p_val = 0x0001;
         else p_val = 0xffff;
 
-        unsigned short* o_start = out_degree + cn.offset;
-
-        for(size_t i = 0;i < cn.out_size;i++)
+        for(size_t i = 0;i < cn[0].out_size;i++)
         {
-          //size_t start = util::Timer::microtimer();
-          n_stack[n_stack_index++] = o_start[i];
+          n_stack[n_stack_index++] = cn[0].out_edges[i];
           v_stack[v_stack_index++] = p_val;
-          //stack_time += util::Timer::microtimer() - start;
         }
       }
       n_val = t_val;

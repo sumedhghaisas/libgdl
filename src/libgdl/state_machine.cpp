@@ -234,7 +234,9 @@ StateMachine::StateMachine(int argc, char* argv[])
 
   cout << "testing" << endl;
 
-  cout << initial_pn.GetNumComponents() << endl;
+  cout << "Comps: " << initial_pn.GetNumComponents() << endl;
+  cout << "Data size: " << initial_pn.data_init_size << endl;
+  cout << "Base comps: " << initial_pn.BaseNodes().size() << endl;
   cout << goal_pn.GetNumComponents() << endl;
   cout << initial_pn.ViewNodes().size() << endl;
 }
