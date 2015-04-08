@@ -19,8 +19,6 @@ using namespace boost::program_options;
 
 size_t StateMachine::stack_time = 0;
 
-sitmo::prng_engine StateMachine::eng;
-
 StateMachine::StateMachine(int argc, char* argv[])
   : log(GLOBAL_LOG)
 {
@@ -164,41 +162,33 @@ StateMachine::StateMachine(int argc, char* argv[])
     for(size_t i = 0;i < role_size;i++)
       initial_pn_base_move->moves[i] = 0;
 
-    initial_pn.Crystallize(data_init, initial_pn_top, initial_pn_legals, goals);
+    map<const propnet::node_types::Node*, size_t> mem_map = initial_pn.Crystallize(data_init, initial_pn_top, initial_pn_legals, goals);
 
-    initial_pn_m_arr = new bool*[role_size];
+    move_crystal_ids = new unsigned short*[role_size];
     initial_pn_m_legal_size = new size_t[role_size];
     for(size_t i = 0;i < role_size;i++)
     {
-      initial_pn_m_arr[i] = new bool[initial_pn.InputNodes()[i].size()];
-      for(size_t j = 0;j < initial_pn.InputNodes()[i].size();j++)
-        initial_pn_m_arr[i][j] = false;
-
+      move_crystal_ids[i] = new unsigned short[initial_pn.LegalNodes()[i].size()];
       initial_pn_m_legal_size[i] = 0;
-      for(auto it : initial_pn_legals[i])
+      for(size_t j = 0;j < initial_pn.LegalNodes()[i].size();j++)
       {
-        cout << it << endl;
-        initial_pn_m_legal_size[i]++;
-        initial_pn_m_arr[i][it] = true;
+        move_crystal_ids[i][j] = mem_map.find(initial_pn.LegalNodes()[i].find(j)->second)->second;
+        if(data_init[move_crystal_ids[i][j]] & 0x4000)
+          initial_pn_m_legal_size[i]++;
       }
     }
-
-    for(size_t i = 0;i < initial_pn.InputNodes()[0].size();i++)
-      cout << initial_pn_m_arr[0][i] << " ";
-    cout << endl;
 
     if(is_propnet_role_separated)
     {
       role_data = new signed short*[role_size];
 
-      role_pn_m_arr = new bool**[role_size];
       role_pn_m_legal_size = new size_t*[role_size];
 
       for(size_t i = 0;i < role_size;i++)
       {
-        role_data[i] = new signed short[initial_pn.data_init_size];
+        role_data[i] = new signed short[initial_pn.GetCrystalDataSize()];
 
-        for(size_t j = 0;j < initial_pn.data_init_size;j++)
+        for(size_t j = 0;j < initial_pn.GetCrystalDataSize();j++)
           role_data[i][j] = data_init[j];
 
         role_pn_top[i] = initial_pn_top.Clone();
@@ -213,19 +203,13 @@ StateMachine::StateMachine(int argc, char* argv[])
 
         role_pn_base_move[i] = initial_pn_base_move.Clone();
 
-        role_pn_m_arr[i] = new bool*[role_size];
         role_pn_m_legal_size[i] = new size_t[role_size];
         for(size_t j = 0;j < role_size;j++)
         {
-          role_pn_m_arr[i][j] = new bool[role_propnets[i]->InputNodes()[j].size()];
-          for(size_t k = 0;k < role_propnets[i]->InputNodes()[j].size();k++)
-            role_pn_m_arr[i][j][k] = false;
-
           role_pn_m_legal_size[i][j] = 0;
           for(auto it : role_pn_legals[i][j])
           {
             role_pn_m_legal_size[i][j]++;
-            role_pn_m_arr[i][j][it] = true;
           }
         }
       }
@@ -235,10 +219,31 @@ StateMachine::StateMachine(int argc, char* argv[])
   cout << "testing" << endl;
 
   cout << "Comps: " << initial_pn.GetNumComponents() << endl;
-  cout << "Data size: " << initial_pn.data_init_size << endl;
+  cout << "Data size: " << initial_pn.GetCrystalDataSize() << endl;
   cout << "Base comps: " << initial_pn.BaseNodes().size() << endl;
   cout << "And components: " << initial_pn.GetNumAndComponents() << endl;
   cout << "Or components: " << initial_pn.GetNumOrComponents() << endl;
+}
+
+StateMachine::~StateMachine()
+{
+  if(role_propnets != NULL)
+  {
+    for(size_t i = 0;i < role_size;i++)
+    {
+      if(role_data != NULL)
+        delete[] role_data[i];
+      delete role_propnets[i];
+      delete[] role_pn_legals[i];
+      delete[] role_pn_m_legal_size[i];
+    }
+    delete[] role_propnets;
+    delete[] role_pn_base;
+    delete[] role_pn_top;
+    delete[] role_pn_base_move;
+    delete[] alt_role_masks;
+    delete[] role_pn_m_legal_size;
+  }
 }
 
 void StateMachine::SeparateRolePropNets()

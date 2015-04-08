@@ -23,20 +23,6 @@ using namespace libgdl::gdlparser;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
 
-size_t n_debug = 0;
-
-size_t and_debug = 0;
-
-size_t PropNet::n_count = 0;
-
-PropNet::PropNet(Log log)
-  : terminal(NULL), c_r_id(0), c_and_id(0), c_not_id(0),
-  c_or_id(0), c_view_id(0), base_mask(""), log(log)
-{
-  for(size_t i = 0;i < 10000;i++)
-    t_data[i] = (unsigned short)-1;
-}
-
 PropNet::PropNet(const PropNet& pn)
 {
   map<const Node*, Node*> copy_map;
@@ -95,38 +81,8 @@ PropNet::PropNet(const PropNet& pn)
   base_mask = pn.base_mask;
 }
 
-void PropNet::Initialize(const std::string& filename)
-{
-  KIF kif(true, 1, log);
-  kif.AddFile(filename);
-  kif.Parse();
-
-  //kif.PrintDependencyGraph("test.dot");
-  //exit(1);
-
-  sym = kif.GetSymbolTable();
-
-  KIFFlattener kf(log);
-
-  size_t start = util::Timer::microtimer();
-  kf.Flatten(kif, *this);
-  size_t end = util::Timer::microtimer();
-
-  cout << end - start << endl;
-}
-
-void PropNet::Initialize(KIF& kif)
-{
-  sym = kif.GetSymbolTable();
-
-  KIFFlattener kf(log);
-  kf.Flatten(kif, *this);
-}
-
 PropNet::~PropNet()
 {
-  PrintPropnet("test.dot");
-
   for(auto it : view_nodes)
   {
     if(del.find(it.second) == del.end())
@@ -191,6 +147,48 @@ PropNet::~PropNet()
     if(del.find(it) == del.end())
       delete it;
   }
+
+  if(arr_base_nodes != NULL)
+    delete[] arr_base_nodes;
+  if(arr_input_nodes != NULL)
+    for(size_t i = 0;i < roles_ids.size();i++)
+      delete[] arr_input_nodes[i];
+  delete[] arr_input_nodes;
+
+  delete[] arr_propnet;
+  delete[] base_crystal_ids;
+  if(input_crystal_ids != NULL)
+    for(size_t i = 0;i < roles_ids.size();i++)
+    delete[] input_crystal_ids[i];
+  delete[] input_crystal_ids;
+}
+
+void PropNet::Initialize(const std::string& filename)
+{
+  KIF kif(true, 1, log);
+  kif.AddFile(filename);
+  kif.Parse();
+
+  //kif.PrintDependencyGraph("test.dot");
+  //exit(1);
+
+  sym = kif.GetSymbolTable();
+
+  KIFFlattener kf(log);
+
+  size_t start = util::Timer::microtimer();
+  kf.Flatten(kif, *this);
+  size_t end = util::Timer::microtimer();
+
+  cout << end - start << endl;
+}
+
+void PropNet::Initialize(KIF& kif)
+{
+  sym = kif.GetSymbolTable();
+
+  KIFFlattener kf(log);
+  kf.Flatten(kif, *this);
 }
 
 void PropNet::AddFact(const Fact& f)
@@ -599,753 +597,6 @@ bool PropNet::PrintPropnet(const std::string& filename) const
   return true;
 }
 
-void PropNet::GenerateStateMachineCode()
-{
-//////////////////////////////////////////////////////////////////////////////////
-///// START FILE print_functions.cpp
-//////////////////////////////////////////////////////////////////////////////////
-//
-//  m_file.open("state_machine/print_functions.cpp");
-//
-//  //! Add required includes
-//  m_file << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
-//  m_file << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
-//  m_file << "#include <libgdl/core/data_types/move_vector.hpp>" << endl;
-//  m_file << "#include <libgdl/core/data_types/move_list.hpp>" << endl << endl;
-//
-//  m_file << "using namespace std;" << endl;
-//  m_file << "using namespace libgdl;" << endl << endl;
-//
-//////////////////////////////////////////////////////////////////////////////////
-///// Generate Print Functions
-//////////////////////////////////////////////////////////////////////////////////
-//
-//  m_file << "extern \"C\" void PrintState(std::ostream& stream, const AState& s)" << endl;
-//  m_file << "{" << endl;
-//  m_file << "stream << s;" << endl;
-//  m_file << "}" << endl << endl;
-//
-//  m_file << "extern \"C\" void PrintMove(std::ostream& stream, const AMove& m)" << endl;
-//  m_file << "{" << endl;
-//  m_file << "stream << m;" << endl;
-//  m_file << "}" << endl << endl;
-//
-//  m_file << "extern \"C\" void PrintMoveList(std::ostream& stream, const MoveList<AMove>& ml)" << endl;
-//  m_file << "{" << endl;
-//  m_file << "stream << ml;" << endl;
-//  m_file << "}" << endl << endl;
-
-////////////////////////////////////////////////////////////////////////////////
-/// END FILE print_functions.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////
-///// IsTerminal Function Generation
-//////////////////////////////////////////////////////////////////////////////////
-//  {
-//    EntryManager is_terminal_em;
-//    is_terminal_em.StartNewList();
-//
-//    //! Generate entries for IsTerminal function
-//    tuple<bool, size_t> is_terminal_out = terminal->CodeGen(is_terminal_em, 2);
-//
-//    std::stringstream is_terminal_ss1;
-//    std::stringstream is_terminal_ss2;
-//
-//    //! This list is used to receive memory locations of the entries required
-//    list<size_t> is_terminal_to_get_l;
-//    is_terminal_to_get_l.push_back(get<1>(is_terminal_out));
-//
-//    //! Initialize the entry manager to start
-//    is_terminal_em.InitializeIterator();
-//
-//    //! Generate code from generated entries
-//    list<size_t> is_terminal_ret = is_terminal_em.CodeGen(is_terminal_ss1, is_terminal_ss2, is_terminal_to_get_l);
-//
-////    m_file << "template<typename BType, typename SType>" << std::endl;
-////    m_file << "static void IsTerminal(const SType& s, BType* buff, BType* ret)" << endl;
-////    m_file << "{" << endl;
-////
-////    m_file << ss2.str() << endl;
-////
-////    m_file << "*ret = buff[" << *ret.begin() << "];" << endl;
-////    m_file << "}" << endl;
-//
-//    //! Generate code for the function
-//    m_file << "static void IsTerminal(const State& s, bool* buff, bool* ret)" << endl;
-//    m_file << "{" << endl;
-//
-//    m_file << is_terminal_ss1.str() << endl;
-//
-//    is_terminal_to_get_l.push_back(get<1>(is_terminal_out));
-//
-//    m_file << "*ret = buff[" << *is_terminal_ret.begin() << "];" << endl;
-//
-//    m_file << "}" << endl;
-//  }
-
-//  //! Generate GetGoals function
-//  EntryManager em2;
-//  em2.StartNewList();
-//  std::list<size_t> to_get_l;
-//  to_get_l.clear();
-//
-//  list<list<tuple<size_t, size_t>>> goal_fun_m;
-//
-//  std::tuple<bool, size_t> out;
-//
-//  for(auto role_goals : goal_nodes)
-//  {
-//    list<tuple<size_t, size_t>> temp;
-//    for(auto goal : role_goals)
-//    {
-//      out = goal.second->CodeGen(em2, 2);
-//      temp.emplace_back(goal.first, get<1>(out));
-//      to_get_l.push_back(get<1>(out));
-//    }
-//    goal_fun_m.push_back(temp);
-//  }
-//
-//  std::stringstream getgoal_ss1;
-//  std::stringstream getgoal_ss2;
-//
-//  em2.InitializeIterator();
-//  std::list<size_t> ret = em2.CodeGen(getgoal_ss1, getgoal_ss2, to_get_l);
-//
-//  m_file << "static void GetGoals(const State& s, bool* buff, std::list<size_t>& out)" << endl;
-//  m_file << "{" << endl;
-//
-//  m_file << getgoal_ss1.str() << std::endl;
-//
-//  m_file << "out.clear();" << endl;
-//
-//  auto ret_it = ret.begin();
-//
-//  for(auto role : goal_fun_m)
-//  {
-//    auto it = role.begin();
-//    m_file << "if(buff[" << *ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
-//    ret_it++;
-//    it++;
-//    for(it = it;it != role.end();it++)
-//    {
-//      m_file << "else if(buff[" << *ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
-//      ret_it++;
-//    }
-//  }
-//
-//  m_file << "}" << endl << endl;
-//
-//  //! generate the simulation function
-//  EntryManager em3;
-//
-//  to_get_l.clear();
-//
-//  list<list<tuple<size_t, size_t>>> sim_legal_fun_m;
-//
-//  //! Generate entries for legal nodes
-//  em3.StartNewList();
-//  for(auto role_legals : legal_nodes)
-//  {
-//    list<tuple<size_t, size_t>> temp;
-//    for(auto legal : role_legals)
-//    {
-//      out = legal.second->CodeGen(em3, 2);
-//      temp.emplace_back(legal.first, get<1>(out));
-//      to_get_l.push_back(get<1>(out));
-//    }
-//    sim_legal_fun_m.push_back(temp);
-//  }
-//
-//  //! Generate entries for next nodes and terminal
-//  em3.StartNewList();
-//  for(auto nn : next_nodes)
-//  {
-//    out = nn.second->CodeGen(em3, 2);
-//  }
-//  tuple<bool, size_t> terminal_entry_id = terminal->CodeGen(em3, 2);
-//
-//  //! Generate entries for goal nodes
-//  em3.StartNewList();
-//  std::list<size_t> sim_goal_to_get_l;
-//  list<list<tuple<size_t, size_t>>> sim_goal_fun_m;
-//
-//  for(auto role_goals : goal_nodes)
-//  {
-//    list<tuple<size_t, size_t>> temp;
-//    for(auto goal : role_goals)
-//    {
-//      out = goal.second->CodeGen(em3, 2);
-//      temp.emplace_back(goal.first, get<1>(out));
-//      sim_goal_to_get_l.push_back(get<1>(out));
-//    }
-//    sim_goal_fun_m.push_back(temp);
-//  }
-//
-//  stringstream sim_legal_ss1;
-//  stringstream sim_legal_ss2;
-//
-//  em3.InitializeIterator();
-//
-//  //! generate code to compute legal moves
-//  std::list<size_t> legal_ret = em3.CodeGen(sim_legal_ss1, sim_legal_ss2, to_get_l);
-//
-//  std::stringstream sim_next_t_ss1;
-//  std::stringstream sim_next_t_ss2;
-//
-//  to_get_l.clear();
-//  to_get_l.push_back(std::get<1>(terminal_entry_id));
-//
-//  //! Generate code for next nodes and terminal
-//  std::list<size_t> terminal_ret = em3.CodeGen(sim_next_t_ss1, sim_next_t_ss2, to_get_l);
-//
-//  stringstream sim_goals_ss1;
-//  stringstream sim_goals_ss2;
-//
-//  //! Generate code for goal nodes
-//  std::list<size_t> sim_goals_ret = em3.CodeGen(sim_goals_ss1, sim_goals_ss2, sim_goal_to_get_l);
-//
-//  //! Random Move taker
-//  m_file << "static size_t RandomActionTaker(size_t role_id, size_t* actions, size_t count)" << endl;
-//  m_file << "{" << endl;
-//  m_file << "size_t ran = rand() % count;" << endl;
-//  m_file << "return actions[ran];" << endl;
-//  m_file << "}" << endl;
-//
-//  //! simulation function
-//  m_file << "static void RunSimulation(const State& in_s, bool* buff, size_t* l_move_buff, const std::function<size_t(size_t,size_t*, size_t)>& action_taker, std::list<size_t>& out)" << endl;
-//  m_file << "{" << endl;
-//
-//  m_file << "State s = in_s;" << std::endl;
-//  m_file << "bool isTerminal = false;" << std::endl;
-//  m_file << "while(!isTerminal) {" << endl << endl;
-//
-//  //! print the legal move generator code
-//  m_file << sim_legal_ss1.str() << endl;
-//
-//  //! Create a move based on ActionTaker function
-//  m_file << "Move move(new RawMove());" << endl;
-//  m_file << "size_t index = 0;" << endl;
-//
-//  m_file << "size_t m_buffer_index = 0;" << endl;
-//
-//  ret_it = legal_ret.begin();
-//
-//  for(auto role : sim_legal_fun_m)
-//  {
-//    for(auto it : role)
-//    {
-//      m_file << "if(buff[" << *ret_it << "]) l_move_buff[m_buffer_index++] = " << get<0>(it) << ";" << endl;
-//      ret_it++;
-//    }
-//    m_file << "move.SetMove(index++, action_taker(index, l_move_buff, m_buffer_index));" << endl;
-//    m_file << "m_buffer_index = 0;" << endl;
-//  }
-//
-//  //m_file << "std::cout << move << std::endl;" << endl;
-//
-//  m_file << "State s_out(new RawState());" << endl;
-//
-//  m_file << sim_next_t_ss1.str() << endl;
-//
-//  //m_file << "std::cout << s_out << std::endl;" << endl;
-//  m_file << "s = s_out;" << std::endl;
-//
-//  m_file << "isTerminal = buff[" << *terminal_ret.begin() << "];" << endl;
-//  //m_file << "std::cout << isTerminal << std::endl;" << endl;
-//
-//  m_file << "}//while loop" << endl;
-//
-//  m_file << sim_goals_ss1.str() << endl;
-//
-//  m_file << "out.clear();" << endl;
-//
-//  auto sim_ret_it = sim_goals_ret.begin();
-//
-//  for(auto role : sim_goal_fun_m)
-//  {
-//    auto it = role.begin();
-//    m_file << "if(buff[" << *sim_ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
-//    sim_ret_it++;
-//    it++;
-//    for(it = it;it != role.end();it++)
-//    {
-//      m_file << "else if(buff[" << *sim_ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
-//      sim_ret_it++;
-//    }
-//  }
-//
-//  m_file << "}" << endl;
-//
-}
-
-void PropNet::GenerateSeriesFunctions(size_t mark_index)
-{
-////////////////////////////////////////////////////////////////////////////////
-/// Scenario 1
-/// IsTerminal -> GetLegalMoves -> NextState
-////////////////////////////////////////////////////////////////////////////////
-
-  {
-    tuple<bool, size_t> out;
-
-    EntryManager global_em;
-
-    //! Generate entries for terminal node
-    global_em.StartNewList();
-    tuple<bool, size_t> terminal_entry_id = terminal->CodeGen(global_em, mark_index);
-
-    //! Generate entries for legal nodes
-    list<list<tuple<size_t, size_t>>> legal_fun_m;
-    list<size_t> legal_to_get_l;
-
-    global_em.StartNewList();
-    for(auto role_legals : legal_nodes)
-    {
-      list<tuple<size_t, size_t>> temp;
-      for(auto legal : role_legals)
-      {
-        out = legal.second->CodeGen(global_em, mark_index);
-        temp.emplace_back(legal.first, get<1>(out));
-        legal_to_get_l.push_back(get<1>(out));
-      }
-      legal_fun_m.push_back(temp);
-    }
-
-    //! Generate entries for next nodes
-    global_em.StartNewList();
-    for(auto nn : next_nodes)
-    {
-      out = nn.second->CodeGen(global_em, mark_index);
-    }
-
-    //! Initialize entry manager
-    global_em.InitializeIterator();
-
-////////////////////////////////////////////////////////////////////////////////
-/// START FILE IsTerminal.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-    CodeHandler is_terminal_ch("bool", "IsTerminal", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
-
-    is_terminal_ch.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl << endl;
-
-    is_terminal_ch.init_ss << "using namespace std;" << endl;
-    is_terminal_ch.init_ss << "using namespace libgdl;" << endl << endl;
-
-    //! Generate code for is terminal
-    list<size_t> terminal_ret;
-    {
-      list<size_t> temp;
-      temp.push_back(get<1>(terminal_entry_id));
-      terminal_ret = global_em.CodeGen(is_terminal_ch, temp);
-    }
-
-    is_terminal_ch.fun_deinit_ss << "return buff[" << *terminal_ret.begin() << "];" << endl;
-
-    is_terminal_ch.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// END OF FILE IsTerminal.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-/// START FILE GetLegalMoves_l_sci.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-    CodeHandler get_legal_moves_l_sc1("MoveList<AMove>", "GetLegalMoves_l_sc1", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
-
-    get_legal_moves_l_sc1.init_ss << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
-    get_legal_moves_l_sc1.init_ss << "#include <libgdl/core/data_types/move_list.hpp>" << endl;
-    get_legal_moves_l_sc1.init_ss << "#include <libgdl/core/data_types/move_vector.hpp>" << endl;
-    get_legal_moves_l_sc1.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl << endl;
-
-    get_legal_moves_l_sc1.init_ss << "using namespace std;" << endl;
-    get_legal_moves_l_sc1.init_ss << "using namespace libgdl;" << endl << endl;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// Create a series GetLegalMoves function
-  //////////////////////////////////////////////////////////////////////////////
-
-    //! print the legal move generator code
-    //! Generate code for legal moves
-    list<size_t> legal_ret = global_em.CodeGen(get_legal_moves_l_sc1, legal_to_get_l);
-
-    get_legal_moves_l_sc1.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
-
-    auto legal_ret_it = legal_ret.begin();
-
-    size_t r_index = 0;
-    for(auto role : legal_fun_m)
-    {
-      for(auto it : role)
-      {
-        get_legal_moves_l_sc1.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
-        legal_ret_it++;
-      }
-      r_index++;
-    }
-
-    get_legal_moves_l_sc1.fun_deinit_ss << "return MoveList<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
-
-    //get_legal_moves_l_sc1.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// END FILE GetLegalMoves_l_sci.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-/// START FILE GetLegalMoves_v_sci.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-    CodeHandler get_legal_moves_v_sc1("MoveVector<AMove>", "GetLegalMoves_v_sc1", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
-
-    get_legal_moves_v_sc1.s_entries = get_legal_moves_l_sc1.s_entries;
-    get_legal_moves_v_sc1.init_ss << get_legal_moves_l_sc1.init_ss.str();
-
-    get_legal_moves_v_sc1.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
-
-    legal_ret_it = legal_ret.begin();
-
-    r_index = 0;
-    for(auto role : legal_fun_m)
-    {
-      for(auto it : role)
-      {
-        get_legal_moves_v_sc1.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
-        legal_ret_it++;
-      }
-      r_index++;
-    }
-
-    get_legal_moves_v_sc1.fun_deinit_ss << "return MoveVector<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
-
-    //get_legal_moves_v_sc1.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// END OF FILE GetLegalMoves_v_sc1.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-/// START FILE GetNextState_sc1.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-    CodeHandler get_next_state_sc1("AState", "GetNextState_sc1", "(const AState& s, const AMove& move, bool* buff)", "(const AState& s, const AMove& move, bool* buff, AState& s_out)", "(s, move, buff, s_out)");
-
-    get_next_state_sc1.init_ss << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
-    get_next_state_sc1.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl << endl;
-
-    get_next_state_sc1.init_ss << "using namespace std;" << endl;
-    get_next_state_sc1.init_ss << "using namespace libgdl;" << endl << endl;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// Create series GetNextState function
-  //////////////////////////////////////////////////////////////////////////////
-
-    get_next_state_sc1.fun_init_ss << "AState s_out(new core::RawAState());" << endl;
-
-    //! Generate code for next state
-    global_em.CodeGen(get_next_state_sc1, legal_to_get_l);
-
-    get_next_state_sc1.fun_deinit_ss << "return s_out;" << endl;
-
-    //get_next_state_sc1.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// END OF FILE get_next_state_sci.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-/// Save buffer space requirements
-////////////////////////////////////////////////////////////////////////////////
-
-    CodeHandler GetSeriesMemoryRequirement("size_t", "GetSeriesMemoryRequirement", "()", "()", "()");
-
-    GetSeriesMemoryRequirement.init_ss << "#include <iostream>" << endl
-                                       << "using namespace std;" << endl;
-
-    GetSeriesMemoryRequirement.fun_deinit_ss << "return " << global_em.GetRequiredMemory() << ";" << endl;
-
-    //GetSeriesMemoryRequirement.GenerateCode();
-  }
-}
-
-void PropNet::GenerateStateMachine()
-{
-////////////////////////////////////////////////////////////////////////////////
-/// Generate init_state.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-  CodeHandler init_state("AState", "InitState", "()", "()", "()");
-
-  init_state.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
-
-  init_state.init_ss << "using namespace std;" << endl;
-  init_state.init_ss << "using namespace libgdl;" << endl << endl;
-
-  init_state.fun_init_ss << "AState init(new core::RawAState());" << endl;
-
-  for(auto i_prop : init_props)
-  {
-    stringstream ss;
-    ss << "init->Set(" << i_prop << ", true);";
-    init_state.AddEntry(ss.str());
-  }
-
-  init_state.fun_deinit_ss << "return init;" << std::endl;
-  init_state.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// Series Functions generation
-////////////////////////////////////////////////////////////////////////////////
-
-  GenerateSeriesFunctions(0);
-
-////////////////////////////////////////////////////////////////////////////////
-/// GetGoals function
-////////////////////////////////////////////////////////////////////////////////
-
-  EntryManager gg_em;
-
-  tuple<bool, size_t> out;
-
-  //! Generate entries for goal nodes
-  gg_em.StartNewList();
-  list<size_t> goal_to_get_l;
-  list<list<tuple<size_t, size_t>>> goal_fun_m;
-
-  for(auto role_goals : goal_nodes)
-  {
-    list<tuple<size_t, size_t>> temp;
-    for(auto goal : role_goals)
-    {
-      out = goal.second->CodeGen(gg_em, 1);
-      temp.emplace_back(goal.first, get<1>(out));
-      goal_to_get_l.push_back(get<1>(out));
-    }
-    goal_fun_m.push_back(temp);
-  }
-
-  //! Initialize the entry manager to start
-  gg_em.InitializeIterator();
-
-////////////////////////////////////////////////////////////////////////////////
-/// START FILE GetGoals.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-  CodeHandler GetGoals("std::list<size_t>", "GetGoals", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
-
-  //! Add required includes
-  GetGoals.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
-  GetGoals.init_ss << "#include <list>" << endl;
-
-  GetGoals.init_ss << "using namespace std;" << endl;
-  GetGoals.init_ss << "using namespace libgdl;" << endl << endl;
-
-  //! Generate code for GetGoals
-  list<size_t> goals_ret = gg_em.CodeGen(GetGoals, goal_to_get_l);
-
-  auto ret_it = goals_ret.begin();
-
-  GetGoals.fun_deinit_ss << "std::list<size_t> out;" << endl;
-
-  for(auto role : goal_fun_m)
-  {
-    auto it = role.begin();
-    GetGoals.fun_deinit_ss << "if(buff[" << *ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
-    ret_it++;
-    it++;
-    for(it = it;it != role.end();it++)
-    {
-      GetGoals.fun_deinit_ss << "else if(buff[" << *ret_it << "]) out.push_back(" << get<0>(*it) << ");" << endl;
-      ret_it++;
-    }
-  }
-
-  GetGoals.fun_deinit_ss << "return out;" << endl;
-
-  GetGoals.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// END FILE GetGoals.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-/// START FILE GetGoalMemoryRequirement.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-  CodeHandler GetGoalMemoryRequirement("size_t", "GetGoalMemoryRequirement", "()", "()", "()");
-
-  GetGoalMemoryRequirement.init_ss << "#include <iostream>" << endl
-                                   << "using namespace std;" << endl;
-
-  GetGoalMemoryRequirement.fun_deinit_ss << "return " << gg_em.GetRequiredMemory() << ";" << endl;
-
-  GetGoalMemoryRequirement.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// END FILE GetGoalMemoryRequirement.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-/// Generate GetNextState function
-////////////////////////////////////////////////////////////////////////////////
-
-  EntryManager gns_em;
-
-  //! Generate entries for next nodes
-  gns_em.StartNewList();
-  for(auto nn : next_nodes)
-  {
-    out = nn.second->CodeGen(gns_em, 2);
-  }
-
-  //! Initialize entry manager
-  gns_em.InitializeIterator();
-
-////////////////////////////////////////////////////////////////////////////////
-/// START FILE GetNextState.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-  CodeHandler GetNextState("AState", "GetNextState", "(const AState& s, const AMove& move, bool* buff)", "(const AState& s, const AMove& move, bool* buff, AState& s_out)", "(s, move, buff, s_out)");
-
-  //! Add required includes
-  GetNextState.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
-  GetNextState.init_ss << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
-
-  GetNextState.init_ss << "using namespace std;" << endl;
-  GetNextState.init_ss << "using namespace libgdl;" << endl << endl;
-
-  GetNextState.fun_init_ss << "AState s_out(new core::RawAState());" << endl;
-
-  std::list<size_t> next_temp;
-
-  //! Generate code for next state
-  gns_em.CodeGen(GetNextState, next_temp);
-
-  GetNextState.fun_deinit_ss << "return s_out;" << endl;
-
-  //GetNextState.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// END FILE GetNextState.cpp
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-/// Generate GetLegalMoves functions
-////////////////////////////////////////////////////////////////////////////////
-
-  EntryManager glm_em;
-
-  //! Generate entries for legal nodes
-  list<list<tuple<size_t, size_t>>> legal_fun_m;
-  list<size_t> legal_to_get_l;
-
-  glm_em.StartNewList();
-  for(auto role_legals : legal_nodes)
-  {
-    list<tuple<size_t, size_t>> temp;
-    for(auto legal : role_legals)
-    {
-      out = legal.second->CodeGen(glm_em, 3);
-      temp.emplace_back(legal.first, get<1>(out));
-      legal_to_get_l.push_back(get<1>(out));
-    }
-    legal_fun_m.push_back(temp);
-  }
-
-  //! Initialize entry manager
-  glm_em.InitializeIterator();
-
-////////////////////////////////////////////////////////////////////////////////
-/// START FILE GetLegalMoves_l
-////////////////////////////////////////////////////////////////////////////////
-
-  CodeHandler GetLegalMoves_l("MoveList<AMove>", "GetLegalMoves_l", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
-
-  //! Add required includes
-  GetLegalMoves_l.init_ss << "#include <libgdl/core/data_types/a_state.hpp>" << endl;
-  GetLegalMoves_l.init_ss << "#include <libgdl/core/data_types/a_move.hpp>" << endl;
-  GetLegalMoves_l.init_ss << "#include <libgdl/core/data_types/move_vector.hpp>" << endl;
-  GetLegalMoves_l.init_ss << "#include <libgdl/core/data_types/move_list.hpp>" << endl << endl;
-
-  GetLegalMoves_l.init_ss << "using namespace std;" << endl;
-  GetLegalMoves_l.init_ss << "using namespace libgdl;" << endl << endl;
-
-  //! print the legal move generator code
-  //! Generate code for legal moves
-  list<size_t> legal_ret = glm_em.CodeGen(GetLegalMoves_l, legal_to_get_l);
-
-  GetLegalMoves_l.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
-
-  auto legal_ret_it = legal_ret.begin();
-
-  size_t r_index = 0;
-  for(auto role : legal_fun_m)
-  {
-    for(auto it : role)
-    {
-      GetLegalMoves_l.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
-      legal_ret_it++;
-    }
-    r_index++;
-  }
-
-  GetLegalMoves_l.fun_deinit_ss << "return MoveList<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
-
-  GetLegalMoves_l.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// END FILE GetLegalMoves_l
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-/// START FILE GetLegalMoves_l
-////////////////////////////////////////////////////////////////////////////////
-
-  CodeHandler GetLegalMoves_v("MoveVector<AMove>", "GetLegalMoves_v", "(const AState& s, bool* buff)", "(const AState& s, bool* buff)", "(s, buff)");
-  GetLegalMoves_v.s_entries = GetLegalMoves_l.s_entries;
-  GetLegalMoves_v.init_ss << GetLegalMoves_l.init_ss.str();
-
-  GetLegalMoves_v.fun_deinit_ss << "std::list<size_t> legal_moves[" << roles_ids.size() << "];" << endl;
-
-  legal_ret_it = legal_ret.begin();
-
-  r_index = 0;
-  for(auto role : legal_fun_m)
-  {
-    for(auto it : role)
-    {
-      GetLegalMoves_v.fun_deinit_ss << "if(buff[" << *legal_ret_it << "]) legal_moves[" << r_index << "].push_back(" << get<0>(it) << ");" << endl;
-      legal_ret_it++;
-    }
-    r_index++;
-  }
-
-  GetLegalMoves_v.fun_deinit_ss << "return MoveVector<AMove>(legal_moves, " << roles_ids.size() << ");" << endl;
-
-  GetLegalMoves_v.GenerateCode();
-
-////////////////////////////////////////////////////////////////////////////////
-/// END FILE GetLegalMoves_l
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-/// Generate Move Creator
-////////////////////////////////////////////////////////////////////////////////
-
-  CodeHandler CreateMove("AMove", "CreateMove", "(const std::list<std::string>& s_moves)", "(const std::list<std::string>& s_moves)", "(s_moves)");
-  CreateMove.init_ss << GetLegalMoves_l.init_ss.str();
-
-  CreateMove.fun_deinit_ss << "return AMove(s_moves);" << endl;
-
-  CreateMove.GenerateCode();
-
-  FileHandler::GetMasterFileHandler().AddFile("state_machine/a_move");
-
-  FileHandler::GetMasterFileHandler().GenerateSharedObject();
-}
-
 void PropNet::PrimaryRun(AState& s, Set<size_t>* m_set, size_t* goals)
 {
   if(terminal != NULL)
@@ -1640,22 +891,24 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
 {
   map<const Node*, size_t> id_map;
   map<size_t, CrystalData> data_map;
+  map<size_t, size_t> init_map;
 
   size_t current_index = 0;
+  size_t current_m_index = 0;
 
   for(auto it : input_nodes)
   {
     for(auto it2 : it)
     {
       if(del.find(it2.second) == del.end())
-        it2.second->Crystallize(id_map, data_map, current_index);
+        it2.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
     }
   }
 
   for(auto it : base_nodes)
   {
     if(del.find(it.second) == del.end())
-      it.second->Crystallize(id_map, data_map, current_index);
+      it.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
   }
 
   for(auto it : legal_nodes)
@@ -1663,7 +916,7 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
     for(auto it2 : it)
     {
       if(del.find(it2.second) == del.end())
-        it2.second->Crystallize(id_map, data_map, current_index);
+        it2.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
     }
   }
 
@@ -1672,21 +925,21 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
     for(auto it2 : it)
     {
       if(del.find(it2.second) == del.end())
-        it2.second->Crystallize(id_map, data_map, current_index);
+        it2.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
     }
   }
 
   for(auto it : next_nodes)
   {
     if(del.find(it.second) == del.end())
-      it.second->Crystallize(id_map, data_map, current_index);
+      it.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
   }
 
   if(terminal != NULL)
-    terminal->Crystallize(id_map, data_map, current_index);
+    terminal->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
 
   list<unsigned short> out_list;
-  data_init = new signed short[data_map.size()];
+  data_init = new signed short[init_map.size()];
 
   map<unsigned short, unsigned short> temp_to_o;
 
@@ -1695,21 +948,23 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
     CrystalData& cd = data_map.find(i)->second;
 
     CrystalNode t_cn;
-    t_cn.data_id = i;
+    auto m_it = init_map.find(i);
+    if(m_it != init_map.end())
+      t_cn.data_id = m_it->second;
 
     if(cd.type == 0)
     {
-      data_init[i] = 0x4000;
+      data_init[t_cn.data_id] = 0x4000;
       t_cn.type = false;
     }
     else if(cd.type == 1)
     {
-      data_init[i] = 0xbfff;
+      data_init[t_cn.data_id] = 0xbfff;
       t_cn.type = false;
     }
     else if(cd.type == 2)
     {
-      data_init[i] = 0x8000;
+      data_init[t_cn.data_id] = 0x8000;
       t_cn.type = false;
     }
     else if(cd.type == 3)
@@ -1794,10 +1049,18 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
 
   set<const Node*> initialized;
 
+  map<const Node*, size_t> memory_map;
+  for(auto it : id_map)
+  {
+    auto it2 = init_map.find(it.second);
+    if(it2 != init_map.end())
+      memory_map[it.first] = it2->second;
+  }
+
   for(auto it : legal_nodes)
     for(auto it2 : it)
       if(del.find(it2.second) == del.end())
-        it2.second->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
+        it2.second->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
 
   //MoveList<AMove> ml = MoveList<AMove>(m_set, roles_ids.size());
 
@@ -1805,21 +1068,21 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
 
   for(auto it : next_nodes)
     if(del.find(it.second) == del.end())
-      it.second->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
+      it.second->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
 
   for(auto it : goal_nodes)
     for(auto it2 : it)
       if(del.find(it2.second) == del.end())
-        it2.second->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
+        it2.second->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
 
   if(terminal != NULL)
-    terminal->CrystalInitialize(*this, id_map, data_init, top, m_set, goals, initialized);
+    terminal->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
 
   //PrintState(cout, top);
 
-  data_init_size = data_map.size();
+  data_init_size = init_map.size();
 
-  terminal_crystal_id = id_map.find(GetTerminalNode())->second;
+  terminal_crystal_id = init_map.find(id_map.find(GetTerminalNode())->second)->second;
 
   base_crystal_ids = new unsigned short[BaseSize()];
   for(size_t i = 0;i < BaseSize();i++)
@@ -1848,7 +1111,7 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
     if(del.find(it.second) == del.end())
       base_mask.Set(it.first, true);
 
-  return id_map;
+  return memory_map;
 }
 
 void PropNet::InitializePrintFunctions() const

@@ -37,6 +37,14 @@ struct GoalNode : public Node
 
   void Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals);
 
+  void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals) const
+  {
+    if(val == 0x0001)
+    {
+      goals[r_id] = id;
+    }
+  }
+
   Node* GetCopy_only_info() const
   {
     return new GoalNode(name, r_id, id);

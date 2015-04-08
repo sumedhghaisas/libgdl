@@ -16,10 +16,7 @@
 #include <libgdl/propnet/propnet.hpp>
 #include <libgdl/propnet/node_types.hpp>
 
-#include "../prng_engine.hpp"
-
 #include <boost/unordered_set.hpp>
-
 
 #define D_META_SIM_TIME 1000000
 
@@ -40,6 +37,8 @@ class StateMachine
 
  public:
   explicit StateMachine(int argc, char* argv[]);
+
+  ~StateMachine();
 
   IsTerminal_t IsTerminal;
 
@@ -93,14 +92,20 @@ class StateMachine
 
   size_t* goals;
 
+  unsigned short** move_crystal_ids = NULL;
+
   //! Initial propnet
   propnet::PropNet initial_pn;
   AState initial_pn_base;
   AState initial_pn_top;
   AMove initial_pn_base_move;
-  propnet::node_types::Node** initial_pn_base_nodes;
-  propnet::node_types::Node*** initial_pn_input_nodes;
-  Set<size_t>* initial_pn_legals;
+  propnet::node_types::Node** initial_pn_base_nodes = NULL;
+  propnet::node_types::Node*** initial_pn_input_nodes = NULL;
+  Set<size_t>* initial_pn_legals = NULL;
+
+  signed short* data_init;
+
+  size_t* initial_pn_m_legal_size = NULL;
 
   //! Function with initial propnet
   bool IsTerminal_initial_dfp(const AState& s);
@@ -118,43 +123,50 @@ class StateMachine
   GetGoals_m_t* GetGoals_m = NULL;
   bool* GetGoals_buff = NULL;
 
+  signed short* goal_net_data;
+
   //! Functions with goal net
   const size_t* GetGoal_goal_dfp(const AState& s);
   const size_t* GetGoals_goal_m(const AState& s);
 
-  //! Role propnets
+////////////////////////////////////////////////////////////////////////////////
+/// Role propnets
+////////////////////////////////////////////////////////////////////////////////
+  //! BASIC
   propnet::PropNet** role_propnets = NULL;
-  AState* role_pn_base_mask = NULL;
   AState* role_pn_base = NULL;
   AState* role_pn_top = NULL;
   AMove* role_pn_base_move = NULL;
-  propnet::node_types::Node*** role_pn_base_nodes = NULL;
-  propnet::node_types::Node**** role_pn_input_nodes = NULL;
+  AState* alt_role_masks = NULL;
+
+  //! NORMAL sim
   Set<size_t>** role_pn_legals = NULL;
-  bool*** role_pn_m_arr;
-  size_t** role_pn_m_legal_size;
+
+  //! CRYSTAL sim
+  size_t** role_pn_m_legal_size = NULL;
+  signed short** role_data = NULL;
+
+////////////////////////////////////////////////////////////////////////////////
+/// Propnet Characteristics
+////////////////////////////////////////////////////////////////////////////////
 
   bool is_goal_propnet_used = false;
   bool is_goal_propnet_compiled = false;
   bool is_propnet_role_separated = false;
 
+////////////////////////////////////////////////////////////////////////////////
+/// Game characteristics
+////////////////////////////////////////////////////////////////////////////////
+
   bool isZeroSumGame = false;
   bool isAlternatingMoves = false;
 
-  AState* alt_role_masks = NULL;
+////////////////////////////////////////////////////////////////////////////////
+/// Stack which are used for simulations
+////////////////////////////////////////////////////////////////////////////////
 
   unsigned short* n_stack = new unsigned short[10000];
   signed short* v_stack = new signed short[10000];
-
-  signed short** role_data;
-  signed short* data_init;
-
-  signed short* goal_net_data;
-
-  bool** initial_pn_m_arr;
-  size_t* initial_pn_m_legal_size;
-
-  static sitmo::prng_engine eng;
 
    //! Logging stream
   mutable Log log;

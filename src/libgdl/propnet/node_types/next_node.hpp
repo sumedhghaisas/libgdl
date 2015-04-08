@@ -45,7 +45,7 @@ struct NextNode : public Node
     else top.Set(id, false);
   }
 
-  void CrystalUpdate(signed short val, AState& top, bool** m_set, size_t* m_set_size, size_t* goals) const
+  void CrystalUpdate(signed short val, AState& top, signed short& n_val, size_t* m_set_size, size_t* goals) const
   {
     if(val == 0x0001)
     {

@@ -70,8 +70,10 @@ bool LegalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*,
   if(holding_value)
   {
     m_set[r_id].insert(id);
-    //cout << Name() << endl;
+    data[id_map.find(this)->second] = 0x4000;
   }
+  else
+    data[id_map.find(this)->second] = 0x3fff;
 
   initialized.insert(this);
 

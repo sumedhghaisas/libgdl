@@ -47,7 +47,7 @@ class PropNet
   typedef node_types::Node Node;
 
  public:
-  explicit PropNet(Log log = GLOBAL_LOG);
+  explicit PropNet(Log log = GLOBAL_LOG) : log(log) {}
 
   PropNet(const PropNet& pn);
 
@@ -66,29 +66,11 @@ class PropNet
 
   bool PrintPropnet(const std::string& filename) const;
 
-  void GenerateStateMachineCode();
-
-  void GenerateMoveCode(std::ostream& stream);
-
-  void GenerateStateCode(std::ostream& stream);
-
-  void GenerateStateMachine();
-
   std::map<const Node*, size_t> Crystallize(signed short*& data_init, AState& top, Set<size_t>* m_set, size_t* goals);
 
   std::string CreateGetGoalMachineCode();
 
   void SplitGoalNet(PropNet& pn);
-
-  size_t BaseSize() const
-  {
-    return base_size;
-  }
-
-  size_t RoleSize() const
-  {
-    return role_size;
-  }
 
   template<typename StateType>
   void InitState(StateType& init);
@@ -101,21 +83,6 @@ class PropNet
     for(auto it : init_props)
       if(it == id) return true;
     return false;
-  }
-
-  Map<size_t, Node*>& BaseNodes()
-  {
-    return base_nodes;
-  }
-
-  const std::vector<Map<size_t, Node*>>& InputNodes() const
-  {
-    return input_nodes;
-  }
-
-  const Map<std::string, Node*>& ViewNodes() const
-  {
-    return view_nodes;
   }
 
   void InitializeToRoles(size_t num_roles)
@@ -154,46 +121,83 @@ class PropNet
 
   void AddViewNode(Node* n, const std::string& name) { view_nodes[name] = n; }
 
-  Node* GetTerminalNode()
-  {
-    return terminal;
-  }
+////////////////////////////////////////////////////////////////////////////////
+/// Propnet simulation functions
+////////////////////////////////////////////////////////////////////////////////
 
-  inline void CrystalUpdate_base(const AState& state, AState& base, AState& top, Set<size_t>* m_set, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
+  inline void CrystalUpdate_input(const AMove& move, AMove& base, AState& top, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
 
-  inline void CrystalUpdate_input(const AMove& move, AMove& base, AState& top, Set<size_t>* m_set, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
-
-  inline void CrystalUpdate_input2(const AMove& move, AMove& base, AState& top, bool** m_set, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
-
-  inline void CrystalUpdate_base2(const AState& state, AState& base, AState& top, bool** m_set, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
+  inline void CrystalUpdate_base(const AState& state, AState& base, AState& top, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
 
   inline void UpdateNormal_base(const AState& state, AState& base, AState& top, Set<size_t>* m_set, size_t* goals) const;
 
   inline void UpdateNormal_input(const AMove& move, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals) const;
 
-  size_t terminal_crystal_id = 0;
 
-  size_t data_init_size = 0;
+////////////////////////////////////////////////////////////////////////////////
+/// Getter-setter functions
+////////////////////////////////////////////////////////////////////////////////
 
   size_t GetNumComponents() const;
   size_t GetNumAndComponents() const;
   size_t GetNumOrComponents() const;
 
-  static size_t n_count;
+  size_t GetCrystalDataSize() const
+  {
+    return data_init_size;
+  }
+
+  inline size_t GetCrystalTerminalID() const
+  {
+    return terminal_crystal_id;
+  }
+
+  Node* GetTerminalNode()
+  {
+    return terminal;
+  }
+
+  const Map<size_t, Node*>& BaseNodes() const
+  {
+    return base_nodes;
+  }
+
+  const std::vector<Map<size_t, Node*>>& InputNodes() const
+  {
+    return input_nodes;
+  }
+
+  const std::vector<Map<size_t, Node*>>& LegalNodes() const
+  {
+    return legal_nodes;
+  }
+
+  const Map<std::string, Node*>& ViewNodes() const
+  {
+    return view_nodes;
+  }
+
+  size_t BaseSize() const
+  {
+    return base_size;
+  }
+
+  size_t RoleSize() const
+  {
+    return role_size;
+  }
+
+  bool IsCrystallized() const
+  {
+    return isCrystalized;
+  }
 
  private:
-  void GenerateSeriesFunctions(size_t mark_index);
-
   void InitializePrintFunctions() const;
 
-
 ////////////////////////////////////////////////////////////////////////////////
-/// Helpers for propnet creation and storage
+/// Store propnet as node graph
 ////////////////////////////////////////////////////////////////////////////////
-
-  void CreatePropNet(gdlreasoner::KIFFlattener& kf);
-
-  node_types::Node* CreateNode(core::SymbolTable sym, const core::Argument* arg);
 
   std::map<std::string, size_t> roles_ids;
 
@@ -218,6 +222,14 @@ class PropNet
 
   std::set<Node*> del;
 
+////////////////////////////////////////////////////////////////////////////////
+/// Helpers for propnet creation and storage
+////////////////////////////////////////////////////////////////////////////////
+
+  void CreatePropNet(gdlreasoner::KIFFlattener& kf);
+
+  node_types::Node* CreateNode(core::SymbolTable sym, const core::Argument* arg);
+
   size_t c_r_id = 0;
   size_t c_and_id = 0;
   size_t c_not_id = 0;
@@ -228,8 +240,6 @@ class PropNet
 
   core::SymbolTable sym;
 
-  signed short** role_data_init;
-
 ////////////////////////////////////////////////////////////////////////////////
 /// Normal simulator data
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,26 +248,26 @@ class PropNet
   Node*** arr_input_nodes = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Crystallization DATA
+/// CRYSTAL Simulator data
 ////////////////////////////////////////////////////////////////////////////////
-
-  std::map<const propnet::node_types::Node*, size_t> id_map;
 
   unsigned short* arr_propnet = NULL;
 
   unsigned short* base_crystal_ids = NULL;
   unsigned short** input_crystal_ids = NULL;
 
+  size_t data_init_size = 0;
+
+  size_t terminal_crystal_id = 0;
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Configuration parameters and common important variables
 ////////////////////////////////////////////////////////////////////////////////
 
-  AState base_mask;
+  AState base_mask = AState("");
   size_t base_size;
   size_t role_size;
   bool isCrystalized = false;
-
-  unsigned short* t_data = new unsigned short[10000];
 
   mutable Log log;
 };

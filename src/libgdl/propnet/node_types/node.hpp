@@ -102,7 +102,7 @@ struct Node
     exit(1);
   }
 
-  virtual void CrystalUpdate(signed short val, AState& top, bool** m_set, size_t* legal_size, size_t* goals) const
+  virtual void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals) const
   {
     std::cout << LOGID << "Unexpected error occured!" << std::endl;
     exit(1);
@@ -112,7 +112,7 @@ struct Node
 
   virtual void RegisterToPropnet(PropNet& pn, Node* to_reg) const = 0;
 
-  size_t Crystallize(std::map<const Node*, size_t>& id_map, std::map<size_t, CrystalData>& data_map, size_t& current_index) const
+  size_t Crystallize(std::map<const Node*, size_t>& id_map, std::map<size_t, CrystalData>& data_map, std::map<size_t, size_t>& init_map, size_t& current_index, size_t& current_m_index) const
   {
     if(out_degree.size() > 256)
     {
@@ -129,22 +129,29 @@ struct Node
 
     if(type == Type::AND)
       cry.type = 0;
-    else if(type == Type::OR || type == Type::VIEW || type == Type::TERMINAL || type == Type::GOAL || type == Type::BASE || type == Type::INPUT)
+    else if(type == Type::OR || type == Type::VIEW || type == Type::TERMINAL || type == Type::BASE || type == Type::INPUT)
       cry.type = 1;
     else if(type == Type::NOT)
       cry.type = 2;
     else cry.type = 3;
 
     cry.id = current_index;
+    if(type != Type::NEXT)
+      init_map[current_index] = current_m_index++;
+
+
+    if(type == Type::LEGAL)
+      std::cout << UName() << " " << current_m_index - 1 << std::endl;
+
     current_index++;
 
     id_map[this] = cry.id;
 
     for(auto it : out_degree)
-      cry.out_degree.push_back(it->Crystallize(id_map, data_map, current_index));
+      cry.out_degree.push_back(it->Crystallize(id_map, data_map, init_map, current_index, current_m_index));
 
     data_map[cry.id] = cry;
-    //node_count++;
+
     return cry.id;
   }
 

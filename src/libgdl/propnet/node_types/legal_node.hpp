@@ -46,16 +46,15 @@ struct LegalNode : public Node
     else m_set[r_id].erase(m_set[r_id].find(id));
   }
 
-  void CrystalUpdate(signed short val, AState& top, bool** m_set, size_t* legal_size, size_t* goals) const
+  void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals) const
   {
+    mem += val;
     if(val == 0x0001)
     {
-      m_set[r_id][id] = true;
       legal_size[r_id]++;
     }
     else
     {
-      m_set[r_id][id] = false;
       legal_size[r_id]--;
     }
   }
