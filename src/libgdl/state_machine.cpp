@@ -237,8 +237,8 @@ StateMachine::StateMachine(int argc, char* argv[])
   cout << "Comps: " << initial_pn.GetNumComponents() << endl;
   cout << "Data size: " << initial_pn.data_init_size << endl;
   cout << "Base comps: " << initial_pn.BaseNodes().size() << endl;
-  cout << goal_pn.GetNumComponents() << endl;
-  cout << initial_pn.ViewNodes().size() << endl;
+  cout << "And components: " << initial_pn.GetNumAndComponents() << endl;
+  cout << "Or components: " << initial_pn.GetNumOrComponents() << endl;
 }
 
 void StateMachine::SeparateRolePropNets()

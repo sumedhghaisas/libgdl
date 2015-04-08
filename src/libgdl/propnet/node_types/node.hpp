@@ -144,6 +144,7 @@ struct Node
       cry.out_degree.push_back(it->Crystallize(id_map, data_map, current_index));
 
     data_map[cry.id] = cry;
+    //node_count++;
     return cry.id;
   }
 

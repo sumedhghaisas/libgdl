@@ -375,7 +375,7 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
   else if(arg->value == SymbolTable::AndID)
   {
     out = new AndNode(s_arg, c_and_id++);
-    or_nodes.push_back(out);
+    and_nodes.push_back(out);
     for(auto a : arg->args)
     {
       Node* temp = CreateNode(sym, a);
@@ -412,6 +412,8 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
   }
   else
   {
+    if(s_arg == "init")
+      return NULL;
     auto it = view_nodes.find(s_arg);
     if(it == view_nodes.end())
     {
@@ -1868,4 +1870,79 @@ void PropNet::InitializePrintFunctions() const
     str_input_props.push_back(temp);
   }
   AMove::InitializePrint(str_input_props);
+}
+
+size_t PropNet::GetNumComponents() const
+{
+  size_t out = 0;
+
+  for(auto it : base_nodes)
+    if(del.find(it.second) == del.end())
+      out++;
+
+  for(auto it : input_nodes)
+    for(auto it2 : it)
+      if(del.find(it2.second) == del.end())
+        out++;
+
+  for(auto it : goal_nodes)
+    for(auto it2 : it)
+      if(del.find(it2.second) == del.end())
+        out++;
+
+  for(auto it : legal_nodes)
+    for(auto it2 : it)
+      if(del.find(it2.second) == del.end())
+        out++;
+
+  for(auto it : and_nodes)
+    if(del.find(it) == del.end())
+      out++;
+
+  for(auto it : or_nodes)
+    if(del.find(it) == del.end())
+      out++;
+
+  for(auto it : not_nodes)
+    if(del.find(it) == del.end())
+      out++;
+
+  for(auto it : view_nodes)
+    if(del.find(it.second) == del.end())
+    {
+      cout << it.second->UName() << endl;
+      out++;
+    }
+
+  cout << out << endl;
+
+  for(auto it : next_nodes)
+    if(del.find(it.second) == del.end())
+      out++;
+
+  out++;
+
+  return out;
+}
+
+size_t PropNet::GetNumOrComponents() const
+{
+  size_t out = 0;
+
+  for(auto it : or_nodes)
+    if(del.find(it) == del.end())
+      out++;
+
+  return out;
+}
+
+size_t PropNet::GetNumAndComponents() const
+{
+  size_t out = 0;
+
+  for(auto it : and_nodes)
+    if(del.find(it) == del.end())
+      out++;
+
+  return out;
 }

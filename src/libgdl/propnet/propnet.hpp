@@ -175,53 +175,9 @@ class PropNet
 
   size_t data_init_size = 0;
 
-  size_t GetNumComponents() const
-  {
-    size_t out = 0;
-
-    for(auto it : base_nodes)
-      if(del.find(it.second) == del.end())
-        out++;
-
-    for(auto it : input_nodes)
-      for(auto it2 : it)
-        if(del.find(it2.second) != del.end())
-          out++;
-
-    for(auto it : goal_nodes)
-      for(auto it2 : it)
-        if(del.find(it2.second) == del.end())
-          out++;
-
-    for(auto it : legal_nodes)
-      for(auto it2 : it)
-        if(del.find(it2.second) != del.end())
-          out++;
-
-    for(auto it : and_nodes)
-      if(del.find(it) == del.end())
-        out++;
-
-    for(auto it : or_nodes)
-      if(del.find(it) == del.end())
-        out++;
-
-    for(auto it : not_nodes)
-      if(del.find(it) == del.end())
-        out++;
-
-    for(auto it : view_nodes)
-      if(del.find(it.second) == del.end())
-        out++;
-
-    for(auto it : next_nodes)
-      if(del.find(it.second) == del.end())
-        out++;
-
-    out++;
-
-    return out;
-  }
+  size_t GetNumComponents() const;
+  size_t GetNumAndComponents() const;
+  size_t GetNumOrComponents() const;
 
   static size_t n_count;
 
