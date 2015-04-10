@@ -24,7 +24,7 @@ struct NotEntry : public Entry
 
     std::stringstream ss;
 
-    ss << "buff[" << ml << "] = !";
+    ss << "buff[" << ml << "] = ";
     PrintAccess(in, mm, ss);
     ss << ";";
 

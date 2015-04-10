@@ -47,6 +47,9 @@ class PropNet
   typedef node_types::Node Node;
 
  public:
+  typedef AState StateType;
+  typedef AMove MoveType;
+
   explicit PropNet(Log log = GLOBAL_LOG) : log(log) {}
 
   PropNet(const PropNet& pn);
@@ -59,23 +62,21 @@ class PropNet
   bool InitializeWithDOT(const gdlparser::KIF& kif,
                          const std::string& dot_filename);
 
-  void PrimaryRun(AState& s, Set<size_t>* m_set, size_t* goals);
+  void InitState(StateType& init);
+
+  void SplitGoalNet(PropNet& pn);
+
+  std::map<const Node*, size_t> Crystallize(signed short*& data_init, StateType& top, Set<size_t>* m_set, size_t* goals);
+
+  std::string CreateGetGoalMachineCode();
+
+  void PrimaryRun(StateType& s, Set<size_t>* m_set, size_t* goals);
 
   void AddFact(const core::Fact& f);
   void AddClause(const core::Clause& c);
 
   bool PrintPropnet(const std::string& filename) const;
 
-  std::map<const Node*, size_t> Crystallize(signed short*& data_init, AState& top, Set<size_t>* m_set, size_t* goals);
-
-  std::string CreateGetGoalMachineCode();
-
-  void SplitGoalNet(PropNet& pn);
-
-  template<typename StateType>
-  void InitState(StateType& init);
-
-  template<typename StateType>
   void GetPropNetBaseMask(StateType& s);
 
   bool IsInitProp(size_t id) const
@@ -125,13 +126,13 @@ class PropNet
 /// Propnet simulation functions
 ////////////////////////////////////////////////////////////////////////////////
 
-  inline void CrystalUpdate_input(const AMove& move, AMove& base, AState& top, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
+  inline void CrystalUpdate_input(const MoveType& move, MoveType& base, StateType& top, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
 
-  inline void CrystalUpdate_base(const AState& state, AState& base, AState& top, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
+  inline void CrystalUpdate_base(const StateType& state, StateType& base, StateType& top, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
 
-  inline void UpdateNormal_base(const AState& state, AState& base, AState& top, Set<size_t>* m_set, size_t* goals) const;
+  inline void UpdateNormal_base(const StateType& state, StateType& base, StateType& top, Set<size_t>* m_set, size_t* goals) const;
 
-  inline void UpdateNormal_input(const AMove& move, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals) const;
+  inline void UpdateNormal_input(const MoveType& move, StateType& base, StateType& top, AMove& m, Set<size_t>* m_set, size_t* goals) const;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -264,7 +265,7 @@ class PropNet
 /// Configuration parameters and common important variables
 ////////////////////////////////////////////////////////////////////////////////
 
-  AState base_mask = AState("");
+  StateType base_mask = StateType("");
   size_t base_size;
   size_t role_size;
   bool isCrystalized = false;

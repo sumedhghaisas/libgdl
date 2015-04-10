@@ -191,6 +191,28 @@ void PropNet::Initialize(KIF& kif)
   kf.Flatten(kif, *this);
 }
 
+void PropNet::InitState(StateType& init)
+{
+  bool temp = true;
+
+  init.Clear();
+
+  init.Get(0, temp);
+
+  for(auto it : init_props)
+  {
+    init.Set(it, true);
+  }
+}
+
+void PropNet::GetPropNetBaseMask(StateType& s)
+{
+  s.Clear();
+  for(auto it : base_nodes)
+    if(del.find(it.second) == del.end())
+      s.Set(it.first, true);
+}
+
 void PropNet::AddFact(const Fact& f)
 {
   CreateNode(sym, f.arg);

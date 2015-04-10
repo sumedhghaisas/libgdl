@@ -3,30 +3,6 @@ namespace libgdl
 namespace propnet
 {
 
-template<typename StateType>
-void PropNet::InitState(StateType& init)
-{
-  bool temp = true;
-
-  init.Clear();
-
-  init.Get(0, temp);
-
-  for(auto it : init_props)
-  {
-    init.Set(it, true);
-  }
-}
-
-template<typename StateType>
-void PropNet::GetPropNetBaseMask(StateType& s)
-{
-  s.Clear();
-  for(auto it : base_nodes)
-    if(del.find(it.second) == del.end())
-      s.Set(it.first);
-}
-
 inline void PropNet::UpdateNormal_base(const AState& state, AState& base, AState& top, Set<size_t>* m_set, size_t* goals) const
 {
   AMove m;
@@ -137,7 +113,7 @@ inline void PropNet::CrystalUpdate_input(const AMove& move, AMove& base, AState&
 
     if(cn[0].type)
     {
-      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
+      propnet::node_types::NextNode* n = (propnet::node_types::NextNode*)*(size_t*)cn[0].out_edges;
       //std::cout << n_id << " " << std::hex << n << std::dec << std::endl;
       n->CrystalUpdate(val, top, n_val, m_set_size, goals);
     }

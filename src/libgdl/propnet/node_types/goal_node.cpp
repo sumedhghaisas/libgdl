@@ -5,6 +5,7 @@
 
 #include "../entry_manager.hpp"
 #include "../entry_types/or_entry.hpp"
+#include "../entry_types/not_entry.hpp"
 
 #include "../propnet.hpp"
 
@@ -23,14 +24,20 @@ tuple<bool, size_t> GoalNode::CodeGen(EntryManager& em, size_t v_stamp)
 
   if(!isVisited)
   {
-    //size_t out = em.GetNewID();
-
     list<tuple<bool, size_t>> in_ids;
 
     entry_ret = (*in_degree.begin())->CodeGen(em, v_stamp);
+    if(!get<0>(entry_ret))
+    {
+      size_t out = em.GetNewID();
+      em.AddStamp(get<1>(entry_ret), out);
+
+      em.AddEntry(new NotEntry(out, entry_ret));
+
+      entry_ret = tuple<bool, size_t>(true, out);
+    }
     em.AddStamp(get<1>(entry_ret), (size_t)-1);
 
-    //em.AddEntry(new OrEntry(out, in_ids));
     isVisited = true;
   }
 
