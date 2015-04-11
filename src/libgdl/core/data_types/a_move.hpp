@@ -2,13 +2,16 @@
 #define LIBGDL_CORE_DATA_TYPES_AMOVE_HPP_INCLUDED
 
 #include <iostream>
-#include <string>
 #include <atomic>
-#include <list>
+#include <cmath>
 #include <set>
 #include <vector>
 #include <string>
-#include <boost/intrusive_ptr.hpp>
+#include <memory>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <list>
 
 #include <libgdl/core/util/logid.hpp>
 
@@ -22,7 +25,11 @@ namespace core
 struct RawAMove
 {
   RawAMove()
-    : moves(new size_t[n_roles]), count(0u) {}
+    : moves(new size_t[n_roles])
+  {
+    for(size_t i = 0;i < n_roles;i++)
+      moves[i] = 0;
+  }
 
   ~RawAMove()
   {
@@ -30,7 +37,7 @@ struct RawAMove
   }
 
   RawAMove(const RawAMove& rm)
-    : moves(new size_t[n_roles]), count(0u)
+    : moves(new size_t[n_roles])
   {
     for(size_t i = 0;i < n_roles;i++)
     {
@@ -39,7 +46,7 @@ struct RawAMove
   }
 
   RawAMove(const std::list<size_t>& m)
-    : moves(new size_t[n_roles]), count(0u)
+    : moves(new size_t[n_roles])
   {
     auto it = m.begin();
     for(size_t i = 0;i < n_roles;i++)
@@ -52,7 +59,7 @@ struct RawAMove
   RawAMove(const std::list<std::string>& s_moves);
 
   RawAMove(size_t i)
-    : moves(new size_t[n_roles]), count(0u)
+    : moves(new size_t[n_roles])
   {
     moves[0] = i;
   }
@@ -81,39 +88,26 @@ struct RawAMove
   size_t* moves;
 
   static size_t n_roles;
-
-  size_t ref_count() { return count; }
-  std::atomic_size_t count;
 }; // struct RawAMove
-
-inline void intrusive_ptr_release(RawAMove* p)
-{
-  if(--p->count == 0u) delete p;
-}
-
-inline void intrusive_ptr_add_ref(RawAMove* p)
-{
-  ++p->count;
-}
 
 } // namespace core
 
-struct AMove : public boost::intrusive_ptr<core::RawAMove>
+struct AMove : public std::shared_ptr<core::RawAMove>
 {
   typedef core::RawAMove RawType;
 
-  AMove(core::RawAMove* rm = NULL) : boost::intrusive_ptr<core::RawAMove>(rm) {}
+  AMove(core::RawAMove* rm = NULL) : std::shared_ptr<core::RawAMove>(rm) {}
 
-  AMove(const std::string&) : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove()) {}
+  AMove(const std::string&) : std::shared_ptr<core::RawAMove>(new core::RawAMove()) {}
 
   AMove(const std::list<size_t>& l)
-    : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove(l)) {}
+    : std::shared_ptr<core::RawAMove>(new core::RawAMove(l)) {}
 
   AMove(const std::list<std::string>& s_moves)
-    : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove(s_moves)) {}
+    : std::shared_ptr<core::RawAMove>(new core::RawAMove(s_moves)) {}
 
   AMove(size_t i)
-    : boost::intrusive_ptr<core::RawAMove>(new core::RawAMove(i)) {}
+    : std::shared_ptr<core::RawAMove>(new core::RawAMove(i)) {}
 
   void Clear()
   {

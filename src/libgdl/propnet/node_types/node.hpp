@@ -9,6 +9,7 @@
 
 #include <libgdl/core.hpp>
 #include <libgdl/core/data_types/a_state.hpp>
+#include <libgdl/core/data_types/a_move.hpp>
 
 #include <boost/unordered_set.hpp>
 

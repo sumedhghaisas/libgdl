@@ -7,7 +7,10 @@
 #include <set>
 #include <vector>
 #include <string>
-#include <boost/intrusive_ptr.hpp>
+#include <memory>
+#include <thread>
+#include <chrono>
+#include <mutex>
 
 namespace libgdl
 {
@@ -17,7 +20,7 @@ namespace core
 struct RawAState
 {
   RawAState()
-    : s(new char[arr_size]), count(0u)
+    : s(new char[arr_size])
   {
     for(size_t i = 0;i < arr_size;i++)
     {
@@ -31,7 +34,7 @@ struct RawAState
   }
 
   RawAState(const RawAState& state)
-    : s(new char[arr_size]), count(0u)
+    : s(new char[arr_size])
   {
     for(size_t i = 0;i < arr_size;i++)
     {
@@ -83,35 +86,18 @@ struct RawAState
   char *s;
 
   static size_t arr_size;
-
-  size_t ref_count() { return count; }
-  std::atomic_size_t count;
-
-
 };
-
-inline void intrusive_ptr_release(RawAState* p)
-{
-  if(--p->count == 0u) delete p;
-}
-
-inline void intrusive_ptr_add_ref(RawAState* p)
-{
-  ++p->count;
-}
 
 } // namespace core
 
-struct AMove;
-
-struct AState : public boost::intrusive_ptr<core::RawAState>
+struct AState : public std::shared_ptr<core::RawAState>
 {
   typedef core::RawAState RawType;
 
-  AState() : boost::intrusive_ptr<core::RawAState>(NULL) {}
+  AState() : std::shared_ptr<core::RawAState>(NULL) {}
   AState(const std::string&)
-    : boost::intrusive_ptr<core::RawAState>(new core::RawAState()) {}
-  AState(core::RawAState* state) : boost::intrusive_ptr<core::RawAState>(state) {}
+    : std::shared_ptr<core::RawAState>(new core::RawAState()) {}
+  AState(core::RawAState* state) : std::shared_ptr<core::RawAState>(state) {}
 
   AState Clone() const
   {

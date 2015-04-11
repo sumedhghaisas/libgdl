@@ -46,9 +46,25 @@ class PropNet
 
   typedef node_types::Node Node;
 
+  const static size_t PayloadStackSize = 10000;
+
  public:
   typedef AState StateType;
   typedef AMove MoveType;
+
+  struct PropNetPayLoad
+  {
+    StateType top;
+    StateType base;
+    MoveType base_move;
+    size_t* legal_size;
+    size_t* goals;
+    signed short* data;
+    unsigned short* n_stack;
+    signed short* v_stack;
+  };
+
+  typedef PropNetPayLoad PayLoadType;
 
   explicit PropNet(Log log = GLOBAL_LOG) : log(log) {}
 
@@ -68,9 +84,15 @@ class PropNet
 
   std::map<const Node*, size_t> Crystallize(signed short*& data_init, StateType& top, Set<size_t>* m_set, size_t* goals);
 
+  void Finalize();
+
   std::string CreateGetGoalMachineCode();
 
   void PrimaryRun(StateType& s, Set<size_t>* m_set, size_t* goals);
+
+  PayLoadType* GetPayLoadInstance() const;
+
+  inline void GetRandomLegalMove(const PayLoadType& payload, AMove& m) const;
 
   void AddFact(const core::Fact& f);
   void AddClause(const core::Clause& c);
@@ -126,14 +148,9 @@ class PropNet
 /// Propnet simulation functions
 ////////////////////////////////////////////////////////////////////////////////
 
-  inline void CrystalUpdate_input(const MoveType& move, MoveType& base, StateType& top, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
+  inline void CrystalUpdate_input(const MoveType& move, PayLoadType& payload) const;
 
-  inline void CrystalUpdate_base(const StateType& state, StateType& base, StateType& top, size_t* legal_size, size_t* goals, signed short* data, unsigned short* n_stack, signed short* v_stack) const;
-
-  inline void UpdateNormal_base(const StateType& state, StateType& base, StateType& top, Set<size_t>* m_set, size_t* goals) const;
-
-  inline void UpdateNormal_input(const MoveType& move, StateType& base, StateType& top, AMove& m, Set<size_t>* m_set, size_t* goals) const;
-
+  inline void CrystalUpdate_base(const StateType& state, PayLoadType& payload) const;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Getter-setter functions
@@ -242,13 +259,6 @@ class PropNet
   core::SymbolTable sym;
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Normal simulator data
-////////////////////////////////////////////////////////////////////////////////
-
-  Node** arr_base_nodes = NULL;
-  Node*** arr_input_nodes = NULL;
-
-////////////////////////////////////////////////////////////////////////////////
 /// CRYSTAL Simulator data
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -256,6 +266,7 @@ class PropNet
 
   unsigned short* base_crystal_ids = NULL;
   unsigned short** input_crystal_ids = NULL;
+  unsigned short** legal_memory_ids = NULL;
 
   size_t data_init_size = 0;
 
@@ -269,6 +280,7 @@ class PropNet
   size_t base_size;
   size_t role_size;
   bool isCrystalized = false;
+  PayLoadType default_payload;
 
   mutable Log log;
 };

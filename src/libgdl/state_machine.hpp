@@ -40,8 +40,6 @@ class StateMachine
 
   ~StateMachine();
 
-  IsTerminal_t IsTerminal;
-
   GetLegalMoves_l_t GetLegalMoves_l;
 
   GetNextState_t GetNextState;
@@ -73,7 +71,7 @@ class StateMachine
   size_t n_count = 0;
 
  private:
-  void SetInitialPropNet();
+  void FinalizeInitialPropNet();
 
   void SeparateGoalNet(bool compile_goal_net);
 
@@ -90,22 +88,9 @@ class StateMachine
 
   AState init;
 
-  size_t* goals;
-
-  unsigned short** move_crystal_ids = NULL;
-
   //! Initial propnet
   propnet::PropNet initial_pn;
-  AState initial_pn_base;
-  AState initial_pn_top;
-  AMove initial_pn_base_move;
-  propnet::node_types::Node** initial_pn_base_nodes = NULL;
-  propnet::node_types::Node*** initial_pn_input_nodes = NULL;
-  Set<size_t>* initial_pn_legals = NULL;
-
-  signed short* data_init;
-
-  size_t* initial_pn_m_legal_size = NULL;
+  propnet::PropNet::PayLoadType* initial_pn_payload = NULL;
 
   //! Function with initial propnet
   bool IsTerminal_initial_dfp(const AState& s);
@@ -115,15 +100,11 @@ class StateMachine
 
   //! Goal propnet
   propnet::PropNet goal_pn;
-  AState goal_pn_base_mask;
-  AState goal_pn_top;
-  AState goal_pn_base;
+  propnet::PropNet::PayLoadType* goal_pn_payload;
 
-  propnet::node_types::Node** goal_pn_base_nodes = NULL;
   GetGoals_m_t* GetGoals_m = NULL;
-  bool* GetGoals_buff = NULL;
 
-  signed short* goal_net_data;
+  bool* GetGoals_buff = NULL;
 
   //! Functions with goal net
   const size_t* GetGoal_goal_dfp(const AState& s);
@@ -134,17 +115,7 @@ class StateMachine
 ////////////////////////////////////////////////////////////////////////////////
   //! BASIC
   propnet::PropNet** role_propnets = NULL;
-  AState* role_pn_base = NULL;
-  AState* role_pn_top = NULL;
-  AMove* role_pn_base_move = NULL;
-  AState* alt_role_masks = NULL;
-
-  //! NORMAL sim
-  Set<size_t>** role_pn_legals = NULL;
-
-  //! CRYSTAL sim
-  size_t** role_pn_m_legal_size = NULL;
-  signed short** role_data = NULL;
+  propnet::PropNet::PayLoadType** role_propnet_payloads = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Propnet Characteristics
@@ -167,6 +138,9 @@ class StateMachine
 
   unsigned short* n_stack = new unsigned short[10000];
   signed short* v_stack = new signed short[10000];
+
+  AState temp = AState("");
+  AMove m = AMove("");
 
    //! Logging stream
   mutable Log log;
