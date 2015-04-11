@@ -47,7 +47,7 @@ inline void PropNet::CrystalUpdate_input(const MoveType& move, PayLoadType& payl
     {
       propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
       //std::cout << n_id << " " << std::hex << n << std::dec << std::endl;
-      n->CrystalUpdate(val, top, n_val, m_set_size, goals);
+      n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
     }
     else
     {
@@ -189,7 +189,7 @@ inline void PropNet::CrystalUpdate_base(const StateType& state, PayLoadType& pay
     {
       propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
       //std::cout << n_id << " " << std::hex << n << std::dec << std::endl;
-      n->CrystalUpdate(val, top, n_val, m_set_size, goals);
+      n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
     }
     else
     {

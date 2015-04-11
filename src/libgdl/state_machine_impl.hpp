@@ -9,9 +9,7 @@ inline const size_t* StateMachine::Simulate5(const AState& s)
 
   initial_pn.CrystalUpdate_base(temp, *initial_pn_payload);
 
-  bool is_terminal = initial_pn_payload->data[initial_pn.GetCrystalTerminalID()] & 0x4000;//initial_pn.GetTerminalNode()->holding_value;
-
-  while(!is_terminal)
+  while(!initial_pn_payload->terminal)
   {
     initial_pn.GetRandomLegalMove(*initial_pn_payload, m);
 
@@ -20,8 +18,6 @@ inline const size_t* StateMachine::Simulate5(const AState& s)
     temp.Equate(initial_pn_payload->top);
 
     initial_pn.CrystalUpdate_base(temp, *initial_pn_payload);
-
-    is_terminal = initial_pn_payload->data[initial_pn.GetCrystalTerminalID()] & 0x4000;//initial_pn.GetTerminalNode()->holding_value;//IsTerminal(temp);
   }
 
   return GetGoals(temp);

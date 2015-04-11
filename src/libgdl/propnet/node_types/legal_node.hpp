@@ -37,16 +37,7 @@ struct LegalNode : public Node
 
   void Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals);
 
-  void CrystalUpdate(signed short val, AState& top, Set<size_t>* m_set, size_t* goals) const
-  {
-    if(val == 0x0001)
-    {
-      m_set[r_id].insert(id);
-    }
-    else m_set[r_id].erase(m_set[r_id].find(id));
-  }
-
-  void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals) const
+  void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals, bool& terminal) const
   {
     mem += val;
     if(val == 0x0001)

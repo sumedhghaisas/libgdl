@@ -1389,6 +1389,8 @@ void PropNet::Finalize()
       base_mask.Set(it.first, true);
     }
   }
+
+  default_payload.terminal = false;
 }
 
 PropNet::PayLoadType* PropNet::GetPayLoadInstance() const
@@ -1409,6 +1411,7 @@ PropNet::PayLoadType* PropNet::GetPayLoadInstance() const
   out->data = new signed short[data_init_size];
   for(size_t i = 0;i < data_init_size;i++)
     out->data[i] = default_payload.data[i];
+  out->terminal = default_payload.terminal;
   return out;
 }
 

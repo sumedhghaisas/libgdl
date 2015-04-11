@@ -97,13 +97,7 @@ struct Node
 
   virtual void Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals) = 0;
 
-  virtual void CrystalUpdate(signed short val, AState& top, Set<size_t>* m_set, size_t* goals) const
-  {
-    std::cout << LOGID << "Unexpected error occured!" << std::endl;
-    exit(1);
-  }
-
-  virtual void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals) const
+  virtual void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals, bool& terminal) const
   {
     std::cout << LOGID << "Unexpected error occured!" << std::endl;
     exit(1);
@@ -130,7 +124,7 @@ struct Node
 
     if(type == Type::AND)
       cry.type = 0;
-    else if(type == Type::OR || type == Type::VIEW || type == Type::TERMINAL || type == Type::BASE || type == Type::INPUT)
+    else if(type == Type::OR || type == Type::VIEW || type == Type::BASE || type == Type::INPUT)
       cry.type = 1;
     else if(type == Type::NOT)
       cry.type = 2;

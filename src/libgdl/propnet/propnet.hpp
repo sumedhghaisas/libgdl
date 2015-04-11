@@ -60,6 +60,7 @@ class PropNet
     size_t* legal_size;
     size_t* goals;
     signed short* data;
+    bool terminal;
     unsigned short* n_stack;
     signed short* v_stack;
   };
