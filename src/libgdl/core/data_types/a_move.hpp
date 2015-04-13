@@ -24,6 +24,8 @@ namespace core
 
 struct RawAMove
 {
+  typedef size_t BuffType;
+
   RawAMove()
     : moves(new size_t[n_roles])
   {
@@ -64,6 +66,14 @@ struct RawAMove
     moves[0] = i;
   }
 
+  void Relocate(size_t* mem)
+  {
+    for(size_t i = 0;i < n_roles;i++)
+      mem[i] = moves[i];
+    delete[] moves;
+    moves = mem;
+  }
+
   inline void Get(size_t r_id, size_t in_id, bool& out) const
   {
     if(moves[r_id] == in_id) out = true;
@@ -85,7 +95,7 @@ struct RawAMove
     moves[r_id] = m_id;
   }
 
-  size_t* moves;
+  size_t* moves = NULL;
 
   static size_t n_roles;
 }; // struct RawAMove
@@ -118,6 +128,11 @@ struct AMove : public std::shared_ptr<core::RawAMove>
   AMove Clone() const
   {
     return AMove(new core::RawAMove(*get()));
+  }
+
+  void Relocate(size_t* mem)
+  {
+    get()->Relocate(mem);
   }
 
   void Get(size_t r_id, size_t in_id, bool& out) const

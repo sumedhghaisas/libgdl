@@ -42,6 +42,14 @@ struct RawAState
     }
   }
 
+  void Relocate(char* mem)
+  {
+    for(size_t i = 0;i < arr_size;i++)
+      mem[i] = s[i];
+    delete[] s;
+    s = mem;
+  }
+
   void operator&(RawAState&& state) const
   {
     for(size_t i = 0;i < arr_size;i++)
@@ -102,6 +110,11 @@ struct AState : public std::shared_ptr<core::RawAState>
   AState Clone() const
   {
     return AState(new core::RawAState(*get()));
+  }
+
+  void Relocate(char* mem)
+  {
+    get()->Relocate(mem);
   }
 
   inline void Equate(const AState& s)

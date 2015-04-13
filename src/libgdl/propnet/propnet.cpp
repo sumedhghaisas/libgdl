@@ -23,6 +23,113 @@ using namespace libgdl::gdlparser;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
 
+PropNet::PropNetPayLoad::~PropNetPayLoad()
+{
+  if(isCrystallized)
+  {
+    base->s = NULL;
+    top->s = NULL;
+    base_move->moves = NULL;
+    delete crystal_buffer;
+  }
+  else
+  {
+    delete[] legal_size;
+    delete[] goals;
+    delete[] data;
+    delete[] n_stack;
+    delete[] v_stack;
+  }
+}
+
+void PropNet::PropNetPayLoad::Crystallize(size_t data_init_size, size_t stack_size)
+{
+  size_t mem_size_in_bytes = 0;
+
+  size_t state_size = StateType::RawType::arr_size * sizeof(char);
+  size_t move_size = MoveType::RawType::n_roles * sizeof(MoveType::RawType::BuffType);
+  size_t legal_size_size = MoveType::RawType::n_roles * sizeof(size_t);
+  size_t goal_size = MoveType::RawType::n_roles * sizeof(size_t);
+  size_t data_size = data_init_size * sizeof(signed short);
+  size_t n_stack_size = stack_size * sizeof(unsigned short);
+  size_t v_stack_size = stack_size * sizeof(signed short);
+
+  //! Add the memory required for base
+  mem_size_in_bytes += state_size;
+  //! Add the memory required for top
+  mem_size_in_bytes += state_size;
+  //! Add the memory required for base_move
+  mem_size_in_bytes += move_size;
+  //! Add the memory required for legal_size
+  mem_size_in_bytes += legal_size_size;
+  //! Add the memory required for goals
+  mem_size_in_bytes += goal_size;
+  //! Add the memory required for data
+  mem_size_in_bytes += data_size;
+  //! Add the memory required for n_stack
+  mem_size_in_bytes += n_stack_size;
+  //! Add the memory required for v_stack
+  mem_size_in_bytes += v_stack_size;
+
+  crystal_buffer = new char[mem_size_in_bytes];
+
+  char* current = crystal_buffer;
+
+  //! Relocate base to crystal
+  base.Relocate(current);
+  current = current + state_size;
+
+  //! Relocate top to crystal
+  top.Relocate(current);
+  current = current + state_size;
+
+  //! Relocate base_move to crystal
+  base_move.Relocate((size_t*)current);
+  current = current + move_size;
+
+  //! Relocate data to crystal
+  signed short* data_t = (signed short*)current;
+  for(size_t i = 0;i < data_init_size;i++)
+    data_t[i] = data[i];
+  delete[] data;
+  data = data_t;
+  current = current + data_size;
+
+  //! Relocate n_stack to crystal
+  unsigned short* n_stack_t = (unsigned short*)current;
+  for(size_t i = 0;i < stack_size;i++)
+    n_stack_t[i] = n_stack[i];
+  delete[] n_stack;
+  n_stack = n_stack_t;
+  current = current + n_stack_size;
+
+  //! Relocate v_stack to crystal
+  signed short* v_stack_t = (signed short*)current;
+  for(size_t i = 0;i < stack_size;i++)
+    v_stack_t[i] = v_stack[i];
+  delete[] v_stack;
+  v_stack = v_stack_t;
+  current = current + v_stack_size;
+
+  //! Relocate legal_size to crystal
+  size_t* legal_size_t = (size_t*)current;
+  for(size_t i = 0;i < MoveType::RawType::n_roles;i++)
+    legal_size_t[i] = legal_size[i];
+  delete[] legal_size;
+  legal_size = legal_size_t;
+  current = current + legal_size_size;
+
+  //! Relocate goals to crystal
+  size_t* goals_t = (size_t*)current;
+  for(size_t i = 0;i < MoveType::RawType::n_roles;i++)
+    goals_t[i] = goals[i];
+  delete[] goals;
+  goals = goals_t;
+  current = current + goal_size;
+
+  isCrystallized = true;
+}
+
 PropNet::PropNet(const PropNet& pn)
 {
   map<const Node*, Node*> copy_map;
@@ -147,13 +254,6 @@ PropNet::~PropNet()
     if(del.find(it) == del.end())
       delete it;
   }
-
-//  if(arr_base_nodes != NULL)
-//    delete[] arr_base_nodes;
-//  if(arr_input_nodes != NULL)
-//    for(size_t i = 0;i < roles_ids.size();i++)
-//      delete[] arr_input_nodes[i];
-//  delete[] arr_input_nodes;
 
   delete[] arr_propnet;
   delete[] base_crystal_ids;
@@ -617,53 +717,6 @@ bool PropNet::PrintPropnet(const std::string& filename) const
   stream << "}";
   stream.close();
   return true;
-}
-
-void PropNet::PrimaryRun(AState& s, Set<size_t>* m_set, size_t* goals)
-{
-  if(terminal != NULL)
-    terminal->InitializeValue(*this, s, m_set, goals);
-
-  for(auto it : goal_nodes)
-    for(auto it2 : it)
-      if(del.find(it2.second) == del.end())
-        it2.second->InitializeValue(*this, s, m_set, goals);
-
-  for(auto it : legal_nodes)
-    for(auto it2 : it)
-      if(del.find(it2.second) == del.end())
-        it2.second->InitializeValue(*this, s, m_set, goals);
-
-  for(auto it : next_nodes)
-    if(del.find(it.second) == del.end())
-      it.second->InitializeValue(*this, s, m_set, goals);
-
-  base_mask = AState("");
-
-//  arr_base_nodes = new Node*[base_size];
-//  for(size_t i = 0;i < base_size;i++)
-//    arr_base_nodes[i] = NULL;
-  for(auto it : BaseNodes())
-  {
-    if(del.find(it.second) == del.end())
-    {
-      //arr_base_nodes[it.first] = it.second;
-      base_mask.Set(it.first, true);
-    }
-  }
-
-//  //! Initialize input nodes for initial_pn
-//  arr_input_nodes = new Node**[role_size];
-//  size_t index = 0;
-//  for(auto it : InputNodes())
-//  {
-//    arr_input_nodes[index] = new Node*[it.size()];
-//    for(auto it2 : it)
-//    {
-//      arr_input_nodes[index][it2.first] = it2.second;
-//    }
-//    index++;
-//  }
 }
 
 void PropNet::SplitGoalNet(PropNet& goal_net)
@@ -1378,19 +1431,17 @@ void PropNet::Finalize()
 
   base_mask = AState("");
 
-//  arr_base_nodes = new Node*[base_size];
-//  for(size_t i = 0;i < base_size;i++)
-//    arr_base_nodes[i] = NULL;
   for(auto it : BaseNodes())
   {
     if(del.find(it.second) == del.end())
     {
-      //arr_base_nodes[it.first] = it.second;
       base_mask.Set(it.first, true);
     }
   }
 
   default_payload.terminal = false;
+
+  default_payload.Crystallize(data_init_size, PayloadStackSize);
 }
 
 PropNet::PayLoadType* PropNet::GetPayLoadInstance() const
@@ -1412,6 +1463,9 @@ PropNet::PayLoadType* PropNet::GetPayLoadInstance() const
   for(size_t i = 0;i < data_init_size;i++)
     out->data[i] = default_payload.data[i];
   out->terminal = default_payload.terminal;
+
+  out->Crystallize(data_init_size, PayloadStackSize);
+
   return out;
 }
 

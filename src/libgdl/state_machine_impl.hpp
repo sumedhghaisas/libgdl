@@ -7,17 +7,13 @@ inline const size_t* StateMachine::Simulate5(const AState& s)
 {
   temp.Equate(s);
 
-  initial_pn.CrystalUpdate_base(temp, *initial_pn_payload);
-
-  while(!initial_pn_payload->terminal)
+  while(!initial_pn.CrystalUpdate_base(temp, *initial_pn_payload))
   {
     initial_pn.GetRandomLegalMove(*initial_pn_payload, m);
 
     initial_pn.CrystalUpdate_input(m, *initial_pn_payload);
 
-    temp.Equate(initial_pn_payload->top);
-
-    initial_pn.CrystalUpdate_base(temp, *initial_pn_payload);
+    temp.Equate(initial_pn_payload->GetState());
   }
 
   return GetGoals(temp);
@@ -25,92 +21,31 @@ inline const size_t* StateMachine::Simulate5(const AState& s)
 
 const size_t* StateMachine::Simulate6(const AState& s)
 {
-//  AState temp = s.Clone();
-//
-//  size_t role_id = 0;
-//
-//  for(size_t i = 0;i < role_size;i++)
-//  {
-//    if(alt_role_masks[i] & temp)
-//    {
-//      role_id = i;
-//      break;
-//    }
-//  }
-//
-//  initial_pn.CrystalUpdate_base(temp, *role_propnet_payloads[role_id]);
-//
-//  bool is_terminal = role_data[role_id][initial_pn.GetCrystalTerminalID()] & 0x4000;
-//
-//  AMove m("");
-//
-//  size_t t;
-//
-//  while(!is_terminal)
-//  {
-//    //MoveVector<AMove> ml = MoveVector<AMove>(role_pn_legals[role_id], role_size);
-//
-//    //PrintMoveVector(std::cout, ml);
-//
-//    //std::cin >> t;
-//
-//    //size_t rnd = rand() % ml.size();
-//
-//    //MoveList<AMove>::iterator it = ml.begin();
-//    //for(size_t i = 0;i < rnd;i++)
-//      //it++;
-//
-//    //for(size_t i = 0;i < role_size;i++)
-//    //{
-//      //m->moves[i] = *initial_pn_legals[i].begin();
-//    //}
-//
-//    //m = ml[rnd];
-//
-//    for(size_t i = 0;i < role_size;i++)
-//    {
-//      size_t rnd = (rand() % role_pn_m_legal_size[role_id][i]) + 1;
-//      size_t index = 0;
-//      while(true)
-//      {
-//        if(role_data[role_id][move_crystal_ids[i][index]] & 0x4000)
-//          rnd--;
-//        if(!rnd)
-//        {
-//          //cout << i << endl;
-//          m->moves[i] = index;
-//          break;
-//        }
-//        index++;
-//      }
-//    }
-//
-//    //std::cout << m << std::endl;
-//
-//    //PrintMove(std::cout, m);
-//
-//    //temp = GetNextState(temp, m);
-//    initial_pn.CrystalUpdate_input(m, *role_propnet_payloads[role_id]);
-//
-//    temp.Equate(role_pn_top[role_id]);
-//
-//    //std::cout << temp << std::endl;
-//
-//    //std::cin >> t;
-//
-//    role_id = ++role_id % role_size;
-//
-//
-//    initial_pn.CrystalUpdate_base(temp, *role_propnet_payloads[role_id]);
-//
-//    is_terminal = role_data[role_id][initial_pn.GetCrystalTerminalID()] & 0x4000;//IsTerminal(temp);
-//  }
-//
-//  //PrintState(cout, temp);
-//
-//  return GetGoals(temp);
-  //GetGoals_m(temp, goals, GetGoals_buff);
-  //return goals;
+  temp.Equate(s);
+
+  size_t role_id = 0;
+
+  for(size_t i = 0;i < role_size;i++)
+  {
+    if(alt_role_masks[i] & temp)
+    {
+      role_id = i;
+      break;
+    }
+  }
+
+  while(!initial_pn.CrystalUpdate_base(temp, *role_propnet_payloads[role_id]))
+  {
+    initial_pn.GetRandomLegalMove(*role_propnet_payloads[role_id], m);
+
+    initial_pn.CrystalUpdate_input(m, *role_propnet_payloads[role_id]);
+
+    temp.Equate(role_propnet_payloads[role_id]->GetState());
+
+    role_id = ++role_id % role_size;
+  }
+
+  return GetGoals(temp);
 }
 
 //const size_t* StateMachine::Simulate7(const AState& s)

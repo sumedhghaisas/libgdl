@@ -142,6 +142,8 @@ class StateMachine
   AState temp = AState("");
   AMove m = AMove("");
 
+  AState* alt_role_masks = NULL;
+
    //! Logging stream
   mutable Log log;
 };

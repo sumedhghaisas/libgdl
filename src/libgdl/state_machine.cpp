@@ -28,7 +28,6 @@ StateMachine::StateMachine(int argc, char* argv[])
   bool separatePropNetForGoals = false;
   bool compile_goal_net = false;
   bool separate_pn_for_roles = false;
-  bool crystallize = false;
 
   size_t meta_simulation_time = D_META_SIM_TIME;
 
@@ -42,7 +41,6 @@ StateMachine::StateMachine(int argc, char* argv[])
   ("compile-goal-net", "Compile the goal net.")
   ("meta-simulation-time", value<size_t>(), "Assign time for meta-game simulation(in micro seconds).")
   ("separate-propnet-for-roles", "Use separate propnets for different roles.")
-  ("crystallize", "Crystallize uncompiled propnets.")
   ;
 
   variables_map vm;
@@ -88,11 +86,6 @@ StateMachine::StateMachine(int argc, char* argv[])
     separate_pn_for_roles = true;
   }
 
-  if(vm.count("crystallize"))
-  {
-    crystallize = true;
-  }
-
   gdlparser::KIF kif(true, 1, log);
   for(auto it : source_files)
     kif.AddFile(it);
@@ -127,6 +120,8 @@ StateMachine::StateMachine(int argc, char* argv[])
   init = AState("");
   initial_pn.InitState(init);
 
+  cout << init << endl;
+
   if(separatePropNetForGoals)
   {
     SeparateGoalNet(compile_goal_net);
@@ -136,7 +131,7 @@ StateMachine::StateMachine(int argc, char* argv[])
 
   log.Info << "Initial propnet is configured for a run." << endl;
 
-  //MetaGame(meta_simulation_time);
+  MetaGame(meta_simulation_time);
 
   if(isAlternatingMoves && role_size > 1 && separate_pn_for_roles)
   {
@@ -182,13 +177,10 @@ void StateMachine::SeparateRolePropNets()
 
   is_propnet_role_separated = true;
 
-  role_propnets = new PropNet*[role_size];
   role_propnet_payloads = new PropNet::PayLoadType*[role_size];
   for(size_t i = 0;i < role_size;i++)
   {
-    role_propnets[i] = new PropNet(initial_pn);
-    role_propnets[i]->Finalize();
-    role_propnet_payloads[i] = role_propnets[i]->GetPayLoadInstance();
+    role_propnet_payloads[i] = initial_pn.GetPayLoadInstance();
   }
 }
 
@@ -301,7 +293,7 @@ void StateMachine::MetaGame_multi_player(size_t simulation_time)
   for(size_t i = 0;i < core::RawAState::arr_size;i++)
     temp->s[i] = 255;
 
-  AState* alt_role_masks = new AState[role_size];
+  alt_role_masks = new AState[role_size];
   for(size_t i = 0;i < role_size;i++)
     alt_role_masks[i] = temp.Clone();
 
@@ -309,13 +301,9 @@ void StateMachine::MetaGame_multi_player(size_t simulation_time)
   {
     AState temp = InitState().Clone();
 
-    initial_pn.CrystalUpdate_base(temp, *initial_pn_payload);
-
-    bool is_terminal = initial_pn.GetTerminalNode()->holding_value;
-
     AMove m("");
 
-    while(!is_terminal)
+    while(!initial_pn.CrystalUpdate_base(temp, *initial_pn_payload))
     {
       if(isAlternatingMoves)
       {
@@ -343,10 +331,6 @@ void StateMachine::MetaGame_multi_player(size_t simulation_time)
       initial_pn.CrystalUpdate_input(m, *initial_pn_payload);
 
       temp.Equate(initial_pn_payload->top);
-
-      initial_pn.CrystalUpdate_base(temp, *initial_pn_payload);
-
-      is_terminal = initial_pn.GetTerminalNode()->holding_value;
     }
 
     if(isZeroSumGame)

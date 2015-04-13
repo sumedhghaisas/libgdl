@@ -8,8 +8,7 @@ inline void PropNet::CrystalUpdate_input(const MoveType& move, PayLoadType& payl
   //std::stack<size_t, std::deque<size_t>> n_stack;
   //std::stack<signed short, std::deque<size_t>> v_stack;
 
-  size_t n_stack_index = 0;
-  size_t v_stack_index = 0;
+  size_t stack_index = 0;
 
   unsigned short*& n_stack = payload.n_stack;
   signed short*& v_stack = payload.v_stack;
@@ -23,22 +22,28 @@ inline void PropNet::CrystalUpdate_input(const MoveType& move, PayLoadType& payl
   {
     if(move->moves[i] != base->moves[i])
     {
-      n_stack[n_stack_index++] = input_crystal_ids[i][base->moves[i]];
+      n_stack[stack_index] = input_crystal_ids[i][base->moves[i]];
 
-      v_stack[v_stack_index++] = 0xffff;
+      v_stack[stack_index] = 0xffff;
 
-      n_stack[n_stack_index++] = input_crystal_ids[i][move->moves[i]];
+      stack_index++;
 
-      v_stack[v_stack_index++] = 0x0001;
+      n_stack[stack_index] = input_crystal_ids[i][move->moves[i]];
+
+      v_stack[stack_index] = 0x0001;
+
+      stack_index++;
 
       base->moves[i] = move->moves[i];
     }
   }
 
-  while(n_stack_index)//!n_stack.empty())
+  while(stack_index)//!n_stack.empty())
   {
-    unsigned short n_id = n_stack[--n_stack_index];
-    signed short val = v_stack[--v_stack_index];
+    stack_index--;
+
+    unsigned short n_id = n_stack[stack_index];
+    signed short val = v_stack[stack_index];
 
     propnet::CrystalNode* cn = (propnet::CrystalNode*)(arr_propnet + n_id);
     signed short& n_val = data[cn[0].data_id];
@@ -62,8 +67,10 @@ inline void PropNet::CrystalUpdate_input(const MoveType& move, PayLoadType& payl
 
         for(size_t i = 0;i < cn[0].out_size;i++)
         {
-          n_stack[n_stack_index++] = cn[0].out_edges[i];
-          v_stack[v_stack_index++] = p_val;
+          n_stack[stack_index] = cn[0].out_edges[i];
+          v_stack[stack_index] = p_val;
+
+          stack_index++;
         }
       }
       n_val = t_val;
@@ -71,13 +78,12 @@ inline void PropNet::CrystalUpdate_input(const MoveType& move, PayLoadType& payl
   }
 }
 
-inline void PropNet::CrystalUpdate_base(const StateType& state, PayLoadType& payload) const
+inline bool PropNet::CrystalUpdate_base(const StateType& state, PayLoadType& payload) const
 {
   //std::stack<size_t, std::deque<size_t>> n_stack;
   //std::stack<signed short, std::deque<size_t>> v_stack;
 
-  size_t n_stack_index = 0;
-  size_t v_stack_index = 0;
+  size_t stack_index = 0;
 
   unsigned short*& n_stack = payload.n_stack;
   signed short*& v_stack = payload.v_stack;
@@ -97,90 +103,100 @@ inline void PropNet::CrystalUpdate_base(const StateType& state, PayLoadType& pay
       if(x_or & 1)
       {
         //n_stack.push(base_crystal_ids[8*i]);
-        n_stack[n_stack_index++] = base_crystal_ids[8*i];
+        n_stack[stack_index] = base_crystal_ids[8*i];
         if((bool)(s_val & 1))
         {
-          v_stack[v_stack_index++] = 0x0001;
+          v_stack[stack_index] = 0x0001;
         }
-        else v_stack[v_stack_index++] = 0xffff;
+        else v_stack[stack_index] = 0xffff;
+        stack_index++;
       }
 
       //x_or = x_or >> 1;
       //s_val = s_val >> 1;
       if(x_or & 2)
       {
-        n_stack[n_stack_index++] = base_crystal_ids[8*i + 1];
+        n_stack[stack_index] = base_crystal_ids[8*i + 1];
         if((bool)(s_val & 2))
-          v_stack[v_stack_index++] = 0x0001;
-        else v_stack[v_stack_index++] = 0xffff;
+          v_stack[stack_index] = 0x0001;
+        else v_stack[stack_index] = 0xffff;
+        stack_index++;
       }
 
       //x_or = x_or >> 1;
       //s_val = s_val >> 1;
       if(x_or & 4)
       {
-        n_stack[n_stack_index++] = base_crystal_ids[8*i + 2];
+        n_stack[stack_index] = base_crystal_ids[8*i + 2];
         if((bool)(s_val & 4))
-          v_stack[v_stack_index++] = 0x0001;
-        else v_stack[v_stack_index++] = 0xffff;
+          v_stack[stack_index] = 0x0001;
+        else v_stack[stack_index] = 0xffff;
+        stack_index++;
       }
 
       //x_or = x_or >> 1;
       //s_val = s_val >> 1;
       if(x_or & 8)
       {
-        n_stack[n_stack_index++] = base_crystal_ids[8*i + 3];
+        n_stack[stack_index] = base_crystal_ids[8*i + 3];
         if((bool)(s_val & 8))
-          v_stack[v_stack_index++] = 0x0001;
-        else v_stack[v_stack_index++] = 0xffff;
+          v_stack[stack_index] = 0x0001;
+        else v_stack[stack_index] = 0xffff;
+        stack_index++;
       }
 
       //x_or = x_or >> 1;
       //s_val = s_val >> 1;
       if(x_or & 16)
       {
-        n_stack[n_stack_index++] = base_crystal_ids[8*i + 4];
+        n_stack[stack_index] = base_crystal_ids[8*i + 4];
         if((bool)(s_val & 16))
-          v_stack[v_stack_index++] = 0x0001;
-        else v_stack[v_stack_index++] = 0xffff;
+          v_stack[stack_index] = 0x0001;
+        else v_stack[stack_index] = 0xffff;
+        stack_index++;
       }
 
       //x_or = x_or >> 1;
       //s_val = s_val >> 1;
       if(x_or & 32)
       {
-        n_stack[n_stack_index++] = base_crystal_ids[8*i + 5];
+        n_stack[stack_index] = base_crystal_ids[8*i + 5];
         if((bool)(s_val & 32))
-          v_stack[v_stack_index++] = 0x0001;
-        else v_stack[v_stack_index++] = 0xffff;
+          v_stack[stack_index] = 0x0001;
+        else v_stack[stack_index] = 0xffff;
+        stack_index++;
       }
 
       //x_or = x_or >> 1;
       //s_val = s_val >> 1;
       if(x_or & 64)
       {
-        n_stack[n_stack_index++] = base_crystal_ids[8*i + 6];
+        n_stack[stack_index] = base_crystal_ids[8*i + 6];
         if((bool)(s_val & 64))
-          v_stack[v_stack_index++] = 0x0001;
-        else v_stack[v_stack_index++] = 0xffff;
+          v_stack[stack_index] = 0x0001;
+        else v_stack[stack_index] = 0xffff;
+        stack_index++;
       }
 
       //x_or = x_or >> 1;
       //s_val = s_val >> 1;
       if(x_or & 128)
       {
-        n_stack[n_stack_index++] = base_crystal_ids[8*i + 7];
+        n_stack[stack_index] = base_crystal_ids[8*i + 7];
         if((bool)(s_val & 128))
-          v_stack[v_stack_index++] = 0x0001;
-        else v_stack[v_stack_index++] = 0xffff;
+          v_stack[stack_index] = 0x0001;
+        else v_stack[stack_index] = 0xffff;
+        stack_index++;
       }
     }
   }
 
-  while(n_stack_index)//!n_stack.empty())
+  while(stack_index)//!n_stack.empty())
   {
-    unsigned short n_id = n_stack[--n_stack_index];
-    signed short val = v_stack[--v_stack_index];
+    stack_index--;
+
+    unsigned short n_id = n_stack[stack_index];
+    signed short val = v_stack[stack_index];
 
     propnet::CrystalNode* cn = (propnet::CrystalNode*)(arr_propnet + n_id);
     signed short& n_val = data[cn[0].data_id];
@@ -204,14 +220,18 @@ inline void PropNet::CrystalUpdate_base(const StateType& state, PayLoadType& pay
 
         for(size_t i = 0;i < cn[0].out_size;i++)
         {
-          n_stack[n_stack_index++] = cn[0].out_edges[i];
-          v_stack[v_stack_index++] = p_val;
+          n_stack[stack_index] = cn[0].out_edges[i];
+          v_stack[stack_index] = p_val;
+
+          stack_index++;
         }
       }
       n_val = t_val;
     }
   }
   base.Equate(state);
+
+  return payload.terminal;
 }
 
 inline void PropNet::GetRandomLegalMove(const PayLoadType& payload, MoveType& m) const

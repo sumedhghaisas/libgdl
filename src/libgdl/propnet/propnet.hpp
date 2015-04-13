@@ -46,7 +46,7 @@ class PropNet
 
   typedef node_types::Node Node;
 
-  const static size_t PayloadStackSize = 10000;
+  const static size_t PayloadStackSize = 1000;
 
  public:
   typedef AState StateType;
@@ -54,15 +54,27 @@ class PropNet
 
   struct PropNetPayLoad
   {
+    ~PropNetPayLoad();
+
     StateType top;
     StateType base;
     MoveType base_move;
-    size_t* legal_size;
-    size_t* goals;
-    signed short* data;
+    size_t* legal_size = NULL;
+    size_t* goals = NULL;
+    signed short* data = NULL;
+    unsigned short* n_stack = NULL;
+    signed short* v_stack = NULL;
     bool terminal;
-    unsigned short* n_stack;
-    signed short* v_stack;
+
+    char* crystal_buffer = NULL;
+    bool isCrystallized = false;
+
+    inline const StateType& GetState() const
+    {
+      return top;
+    }
+
+    void Crystallize(size_t data_init_size, size_t stack_size);
   };
 
   typedef PropNetPayLoad PayLoadType;
@@ -88,8 +100,6 @@ class PropNet
   void Finalize();
 
   std::string CreateGetGoalMachineCode();
-
-  void PrimaryRun(StateType& s, Set<size_t>* m_set, size_t* goals);
 
   PayLoadType* GetPayLoadInstance() const;
 
@@ -151,7 +161,7 @@ class PropNet
 
   inline void CrystalUpdate_input(const MoveType& move, PayLoadType& payload) const;
 
-  inline void CrystalUpdate_base(const StateType& state, PayLoadType& payload) const;
+  inline bool CrystalUpdate_base(const StateType& state, PayLoadType& payload) const;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Getter-setter functions
