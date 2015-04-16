@@ -143,14 +143,14 @@ class MoveList<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std::
     }
   }
 
-  MoveList(const boost::unordered::unordered_set<size_t>* result, size_t n_roles)
+  MoveList(const std::set<size_t>* result, size_t n_roles)
     : boost::intrusive_ptr<IntrusiveList<AMove>>(new IntrusiveList<AMove>())
   {
-    boost::unordered::unordered_set<size_t>::const_iterator* it = new boost::unordered::unordered_set<size_t>::const_iterator[n_roles];
+    std::set<size_t>::const_iterator* it = new std::set<size_t>::const_iterator[n_roles];
     for(size_t i = 0;i < n_roles;i++)
       it[i] = result[i].begin();
 
-    boost::unordered::unordered_set<size_t>::const_iterator temp;
+    std::set<size_t>::const_iterator temp;
 
     while(true)
     {

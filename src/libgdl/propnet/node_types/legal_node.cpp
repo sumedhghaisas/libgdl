@@ -43,7 +43,7 @@ tuple<bool, size_t> LegalNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool LegalNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set, size_t* goals)
+bool LegalNode::InitializeValue(const PropNet& pn, AState& s, MoveSet* m_set, size_t* goals)
 {
   holding_value = true;
   num_true = 0;
@@ -58,7 +58,7 @@ bool LegalNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set
   return holding_value;
 }
 
-bool LegalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+bool LegalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
@@ -80,7 +80,7 @@ bool LegalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*,
   return holding_value;
 }
 
-void LegalNode::Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals)
+void LegalNode::Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals)
 {
   if(value && !holding_value)
   {

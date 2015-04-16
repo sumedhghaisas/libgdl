@@ -23,7 +23,6 @@
 
 namespace libgdl
 {
-class StateMachine;
 
 namespace propnet
 {
@@ -38,8 +37,7 @@ struct CrystalNode
 
 class PropNet
 {
-  template<typename T>
-  using Set = boost::unordered::unordered_set<T>;
+  typedef boost::unordered_set<char> MoveSet;
 
   template<typename T1, typename T2>
   using Map = std::map<T1, T2>;
@@ -62,8 +60,7 @@ class PropNet
     size_t* legal_size = NULL;
     size_t* goals = NULL;
     signed short* data = NULL;
-    unsigned short* n_stack = NULL;
-    signed short* v_stack = NULL;
+    int* t_stack = NULL;
     bool terminal;
 
     char* crystal_buffer = NULL;
@@ -74,10 +71,28 @@ class PropNet
       return top;
     }
 
+    inline size_t* GetGoals()
+    {
+      return goals;
+    }
+
     void Crystallize(size_t data_init_size, size_t stack_size);
   };
 
+  struct PropNetPayLoad2
+  {
+    StateType top;
+    StateType base;
+    MoveType base_move;
+    MoveSet* m_set = NULL;
+    size_t* goals = NULL;
+    signed short* data = NULL;
+    int* t_stack = NULL;
+    bool terminal;
+  };
+
   typedef PropNetPayLoad PayLoadType;
+  typedef PropNetPayLoad2 PayLoadType2;
 
   explicit PropNet(Log log = GLOBAL_LOG) : log(log) {}
 
@@ -95,13 +110,17 @@ class PropNet
 
   void SplitGoalNet(PropNet& pn);
 
-  std::map<const Node*, size_t> Crystallize(signed short*& data_init, StateType& top, Set<size_t>* m_set, size_t* goals);
+  void SplitTerminalNet(PropNet& pn);
+
+  std::map<const Node*, size_t> Crystallize(signed short*& data_init, StateType& top, MoveSet* m_set, size_t* goals);
 
   void Finalize();
 
   std::string CreateGetGoalMachineCode();
+  std::string CreateIsTerminalMachineCode();
 
   PayLoadType* GetPayLoadInstance() const;
+  PayLoadType2* GetPayLoadInstance2() const;
 
   inline void GetRandomLegalMove(const PayLoadType& payload, AMove& m) const;
 
@@ -151,7 +170,10 @@ class PropNet
 
   void AddOrNode(Node* n) { or_nodes.push_back(n); }
 
-  void AddTerminalNode(Node* n) { terminal = n; }
+  void AddTerminalNode(Node* n)
+  {
+    terminal = n;
+  }
 
   void AddViewNode(Node* n, const std::string& name) { view_nodes[name] = n; }
 
@@ -159,9 +181,15 @@ class PropNet
 /// Propnet simulation functions
 ////////////////////////////////////////////////////////////////////////////////
 
-  inline void CrystalUpdate_input(const MoveType& move, PayLoadType& payload) const;
+  inline void Update(const MoveType& move, PayLoadType& payload) const;
 
-  inline bool CrystalUpdate_base(const StateType& state, PayLoadType& payload) const;
+  inline bool Update(const StateType& state, PayLoadType& payload) const;
+
+  inline void Update2(const MoveType& move, PayLoadType2& payload) const;
+
+  inline bool Update2(const StateType& state, PayLoadType2& payload) const;
+
+  inline void Update3(MoveSet::const_iterator* move, PayLoadType2& payload) const;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Getter-setter functions
@@ -292,6 +320,7 @@ class PropNet
   size_t role_size;
   bool isCrystalized = false;
   PayLoadType default_payload;
+  PayLoadType2 default_payload2;
 
   mutable Log log;
 };

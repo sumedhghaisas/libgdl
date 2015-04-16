@@ -36,13 +36,13 @@ tuple<bool, size_t> NotNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool NotNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set, size_t* goals)
+bool NotNode::InitializeValue(const PropNet& pn, AState& s, MoveSet* m_set, size_t* goals)
 {
   holding_value = !(*in_degree.begin())->InitializeValue(pn, s, m_set, goals);
   return holding_value;
 }
 
-bool NotNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+bool NotNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
@@ -57,7 +57,7 @@ bool NotNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, s
   return holding_value;
 }
 
-void NotNode::Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals)
+void NotNode::Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals)
 {
 #ifdef LIBGDL_DFP_TEST
   if(holding_value != value)

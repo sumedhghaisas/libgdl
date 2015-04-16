@@ -24,8 +24,6 @@ tuple<bool, size_t> GoalNode::CodeGen(EntryManager& em, size_t v_stamp)
 
   if(!isVisited)
   {
-    list<tuple<bool, size_t>> in_ids;
-
     entry_ret = (*in_degree.begin())->CodeGen(em, v_stamp);
     if(!get<0>(entry_ret))
     {
@@ -44,7 +42,7 @@ tuple<bool, size_t> GoalNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool GoalNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set, size_t* goals)
+bool GoalNode::InitializeValue(const PropNet& pn, AState& s, MoveSet* m_set, size_t* goals)
 {
   holding_value = false;
   num_true = 0;
@@ -59,7 +57,7 @@ bool GoalNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set,
   return holding_value;
 }
 
-bool GoalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+bool GoalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
@@ -74,7 +72,7 @@ bool GoalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, 
   return holding_value;
 }
 
-void GoalNode::Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals)
+void GoalNode::Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals)
 {
   if(value)
   {

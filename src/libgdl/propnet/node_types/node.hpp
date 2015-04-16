@@ -41,8 +41,7 @@ namespace node_types
 
 struct Node
 {
-  template<typename T>
-  using Set = boost::unordered::unordered_set<T>;
+  typedef boost::unordered_set<char> MoveSet;
 
   enum class Type{BASE, INPUT, VIEW, OR, NEXT, LEGAL, TERMINAL, GOAL, AND, NOT};
   Node(const std::string& name,
@@ -91,13 +90,19 @@ struct Node
 
   //virtual Update(bool value) = 0;
 
-  virtual bool InitializeValue(const PropNet&, AState& s, Set<size_t>* m_set, size_t* goals) = 0;
+  virtual bool InitializeValue(const PropNet&, AState& s, MoveSet* m_set, size_t* goals) = 0;
 
-  virtual bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized) = 0;
+  virtual bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized) = 0;
 
-  virtual void Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals) = 0;
+  virtual void Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals) = 0;
 
   virtual void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals, bool& terminal) const
+  {
+    std::cout << LOGID << "Unexpected error occured!" << std::endl;
+    exit(1);
+  }
+
+  virtual void CrystalUpdate(signed short val, AState& top, signed short& mem, MoveSet* m_set, size_t* goals, bool& terminal) const
   {
     std::cout << LOGID << "Unexpected error occured!" << std::endl;
     exit(1);

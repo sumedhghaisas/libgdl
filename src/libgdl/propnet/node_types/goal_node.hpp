@@ -31,11 +31,11 @@ struct GoalNode : public Node
 
   std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t visit_map);
 
-  bool InitializeValue(const PropNet&, AState& s, Set<size_t>* m_set, size_t* goals);
+  bool InitializeValue(const PropNet&, AState& s, MoveSet* m_set, size_t* goals);
 
-  bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized);
+  bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized);
 
-  void Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals);
+  void Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals);
 
   void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals) const
   {

@@ -5,6 +5,7 @@
 
 #include "../entry_manager.hpp"
 #include "../entry_types/or_entry.hpp"
+#include "../entry_types/not_entry.hpp"
 
 #include "../propnet.hpp"
 
@@ -23,27 +24,25 @@ tuple<bool, size_t> TerminalNode::CodeGen(EntryManager& em, size_t v_stamp)
 
   if(!isVisited)
   {
-    size_t out = em.GetNewID();
-
-    list<tuple<bool, size_t>> in_ids;
-
-    for(auto n : in_degree)
+    entry_ret = (*in_degree.begin())->CodeGen(em, v_stamp);
+    if(!get<0>(entry_ret))
     {
-      auto t_entry = n->CodeGen(em, v_stamp);
-      em.AddStamp(get<1>(t_entry), out);
-      in_ids.push_back(t_entry);
+      size_t out = em.GetNewID();
+      em.AddStamp(get<1>(entry_ret), out);
+
+      em.AddEntry(new NotEntry(out, entry_ret));
+
+      entry_ret = tuple<bool, size_t>(true, out);
     }
+    em.AddStamp(get<1>(entry_ret), (size_t)-1);
 
-    em.AddEntry(new OrEntry(out, in_ids));
-
-    entry_ret = tuple<bool, size_t>(true, out);
     isVisited = true;
   }
 
   return entry_ret;
 }
 
-bool TerminalNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set, size_t* goals)
+bool TerminalNode::InitializeValue(const PropNet& pn, AState& s, MoveSet* m_set, size_t* goals)
 {
   holding_value = false;
   num_true = 0;
@@ -56,7 +55,7 @@ bool TerminalNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_
   return holding_value;
 }
 
-bool TerminalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+bool TerminalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
@@ -79,7 +78,7 @@ bool TerminalNode::CrystalInitialize(const PropNet& pn, const std::map<const Nod
   return holding_value;
 }
 
-void TerminalNode::Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals)
+void TerminalNode::Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals)
 {
   holding_value = value;
 

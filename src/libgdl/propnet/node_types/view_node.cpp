@@ -55,7 +55,7 @@ tuple<bool, size_t> ViewNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool ViewNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set, size_t* goals)
+bool ViewNode::InitializeValue(const PropNet& pn, AState& s, MoveSet* m_set, size_t* goals)
 {
   holding_value = false;
   num_true = 0;
@@ -68,7 +68,7 @@ bool ViewNode::InitializeValue(const PropNet& pn, AState& s, Set<size_t>* m_set,
   return holding_value;
 }
 
-bool ViewNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, Set<size_t>* m_set, size_t* goals, std::set<const Node*>& initialized)
+bool ViewNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
@@ -90,7 +90,7 @@ bool ViewNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, 
   return holding_value;
 }
 
-void ViewNode::Update(bool value, AState& base, AState& top, AMove& m, Set<size_t>* m_set, size_t* goals)
+void ViewNode::Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals)
 {
   if(value)
   {
