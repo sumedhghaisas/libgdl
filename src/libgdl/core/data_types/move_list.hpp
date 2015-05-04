@@ -192,11 +192,9 @@ class MoveList<AMove> : public boost::intrusive_ptr<core::IntrusiveWrapper<std::
     }
   }
 
-  template<typename... Args>
-  bool ForwardToEmplaceBack(Args... args)
+  void push_back(const AMove& m)
   {
-    (*this)->emplace_back(args...);
-    return true;
+    get()->push_back(m);
   }
 
   //! implements its own iterator

@@ -139,17 +139,19 @@ bool Argument::SeparateCommand(const std::string& input,
   }
   std::string withoutBraces = input.substr (1, input.length() - 2);
   boost::algorithm::trim(withoutBraces);
-  size_t sep = withoutBraces.find(' ');
-  if (sep == withoutBraces.npos)
-  {
-    // no arguments in string
-    cmd = withoutBraces;
-    return true;
-  }
-  cmd = withoutBraces.substr (0, sep);
 
-  sep++;
+//  size_t sep = withoutBraces.find(' ');
+//  if (sep == withoutBraces.npos)
+//  {
+//    // no arguments in string
+//    cmd = withoutBraces;
+//    return true;
+//  }
+//  cmd = withoutBraces.substr (0, sep);
+
+  size_t sep = 0;
   int depth = 0;
+  bool isCmd = false;
   // parsing parameters
   std::ostringstream* o = new std::ostringstream();
   while (sep < withoutBraces.length())
@@ -167,7 +169,12 @@ bool Argument::SeparateCommand(const std::string& input,
     }
     else if ((c == ' ') && (depth == 0))
     {
-      args.push_back (o->str());
+      if(!isCmd)
+      {
+        cmd = o->str();
+        isCmd = true;
+      }
+      else args.push_back (o->str());
       delete o;
       o = new std::ostringstream();
     }
@@ -180,7 +187,12 @@ bool Argument::SeparateCommand(const std::string& input,
     delete o;
     return false;
   }
-  if (o->str() != "") args.push_back (o->str());
+  if (o->str() != "")
+  {
+    if(!isCmd)
+      cmd = o->str();
+    else args.push_back (o->str());
+  }
   delete o;
   return true;
 }

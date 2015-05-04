@@ -119,6 +119,20 @@ struct AMove : public std::shared_ptr<core::RawAMove>
   AMove(size_t i)
     : std::shared_ptr<core::RawAMove>(new core::RawAMove(i)) {}
 
+  inline bool operator==(const AMove& m)
+  {
+    //std::cout << "testing" << std::endl;
+    for(size_t i = 0;i < core::RawAMove::n_roles;i++)
+      if(get()->moves[i] != m->moves[i])
+        return false;
+    return true;
+  }
+
+  inline bool operator!=(const AMove& m)
+  {
+    return !(*this == m);
+  }
+
   void Clear()
   {
     for(size_t i = 0;i < core::RawAMove::n_roles;i++)
@@ -150,11 +164,7 @@ struct AMove : public std::shared_ptr<core::RawAMove>
     get()->Set(r_id, m_id);
   }
 
-  static void InitializeCreateMove(AMove (*cm)(const std::list<std::string>&))
-  {
-    CreateMove = cm;
-    isCreateMoveInitialized = true;
-  }
+  std::string GetStringRep(size_t role_id) const;
 
   static void InitializePrint(const std::vector<std::vector<std::string>>& input_props)
   {
@@ -164,14 +174,19 @@ struct AMove : public std::shared_ptr<core::RawAMove>
 
   static void PrintMove(std::ostream&, const AMove& move);
 
-  static AMove ParseString(const std::string& str_moves);
-
-  static bool isCreateMoveInitialized;
-  static AMove(*CreateMove)(const std::list<std::string>&);
+  static AMove Create(const std::list<std::string>& str_moves);
 
   static bool isPrintInitialized;
   static std::vector<std::vector<std::string>> str_input_props;
 };
+
+inline bool operator==(const AMove& m1, const AMove& m2)
+{
+  for(size_t i = 0;i < core::RawAMove::n_roles;i++)
+    if(m1->moves[i] != m2->moves[i])
+      return false;
+  return true;
+}
 
 inline std::ostream& operator<<(std::ostream& stream, const AMove& m)
 {

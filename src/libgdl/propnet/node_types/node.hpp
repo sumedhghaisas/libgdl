@@ -41,7 +41,7 @@ namespace node_types
 
 struct Node
 {
-  typedef boost::unordered_set<char> MoveSet;
+  typedef boost::unordered_set<unsigned short> MoveSet;
 
   enum class Type{BASE, INPUT, VIEW, OR, NEXT, LEGAL, TERMINAL, GOAL, AND, NOT};
   Node(const std::string& name,

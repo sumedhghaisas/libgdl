@@ -10,36 +10,62 @@ using namespace std;
 using namespace libgdl;
 using namespace libgdl::core;
 
-bool AMove::isCreateMoveInitialized = false;
-AMove (*AMove::CreateMove)(const list<string>&) = NULL;
-
 bool AMove::isPrintInitialized = false;
 vector<vector<string>> AMove::str_input_props;
 
 size_t RawAMove::n_roles = 0;
 
-AMove AMove::ParseString(const std::string& str_moves)
+AMove AMove::Create(const list<string>& str_moves)
 {
-  if(!isCreateMoveInitialized)
+  if(!isPrintInitialized)
   {
-    cerr << LOGID << "CreateMove function for AMove is not initialized. This function is created and initialized by StateMachine." << endl;
+    cerr << LOGID << "CreateMove function for AMove is not initialized. This function should be initialized by StateMachine." << endl;
     exit(1);
   }
 
-  SymbolTable sym;
-  Argument arg(str_moves, sym, true);
-
-  list<string> s_moves;
-  for(auto it : arg.args)
+  if(str_moves.size() != RawAMove::n_roles)
   {
-    stringstream stream;
-    SymbolDecodeStream sds(sym, stream);
-    sds << *it;
-    cout << stream.str() << endl;
-    s_moves.push_back(stream.str());
+    cerr << LOGID << "Incorrect size of list passed." << std::endl;
+    cerr << LOGID << "Size: " << str_moves.size() << endl;
+    cerr << LOGID << "Expected Size: " << RawAMove::n_roles << endl;
+    return AMove("");
   }
 
-  return CreateMove(s_moves);
+  AMove out("");
+  size_t r_index = 0;
+  SymbolTable sym;
+  for(auto it : str_moves)
+  {
+    size_t i_index = 0;
+    Argument arg(it, sym, true);
+    stringstream temp;
+    SymbolDecodeStream temp2(sym, temp);
+    temp2 << arg;
+    string move_rep = temp.str();
+    for(auto it2 : str_input_props[r_index])
+    {
+      if(it2 == move_rep)
+        break;
+      i_index++;
+    }
+    out->moves[r_index] = i_index;
+    r_index++;
+  }
+
+  return out;
+}
+
+string AMove::GetStringRep(size_t role_id) const
+{
+  if(!isPrintInitialized)
+  {
+    GLOBAL_WARN << LOGID << "String representation of moves not initialized. \
+            This representation is created and initialized by StateMachine."
+           << endl;
+    return "";
+  }
+
+  return str_input_props[role_id][get()->moves[role_id]] + " ";
 }
 
 void AMove::PrintMove(ostream& stream, const AMove& move)

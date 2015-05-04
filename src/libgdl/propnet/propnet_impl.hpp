@@ -382,8 +382,6 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
   return payload.terminal;
 }
 
-
-
 inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) const
 {
   //std::stack<size_t, std::deque<size_t>> n_stack;

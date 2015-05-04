@@ -37,8 +37,6 @@ struct CrystalNode
 
 class PropNet
 {
-  typedef boost::unordered_set<char> MoveSet;
-
   template<typename T1, typename T2>
   using Map = std::map<T1, T2>;
 
@@ -49,6 +47,7 @@ class PropNet
  public:
   typedef AState StateType;
   typedef AMove MoveType;
+  typedef boost::unordered_set<unsigned short> MoveSet;
 
   struct PropNetPayLoad
   {
@@ -247,6 +246,11 @@ class PropNet
   bool IsCrystallized() const
   {
     return isCrystalized;
+  }
+
+  size_t GetRoleID(const std::string& role) const
+  {
+    return roles_ids.find(role)->second;
   }
 
  private:
