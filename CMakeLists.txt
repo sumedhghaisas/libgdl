@@ -50,8 +50,6 @@ find_package(Boost
 )
 include_directories(${Boost_INCLUDE_DIRS})
 
-find_package(Manak)
-
 # Save the actual link paths (because they will get overwritten if we discover
 # we need to find Boost.Random too).
 set(Boost_BACKUP_LIBRARIES ${Boost_LIBRARIES})
