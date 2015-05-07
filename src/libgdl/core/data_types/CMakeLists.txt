@@ -1,27 +1,27 @@
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
-  argument.hpp
-  argument.cpp
-  fact.hpp
-  fact.cpp
-  clause.hpp
-  clause.cpp
-  location.hpp
-  a_move.hpp
   a_move.cpp
-  a_state.hpp
+  a_move.hpp
+  argument.cpp
+  argument.hpp
   a_state.cpp
-  b_state.hpp
-  b_state.cpp
-  b_move.hpp
+  a_state.hpp
   b_move.cpp
+  b_move.hpp
+  b_state.cpp
+  b_state.hpp
+  clause.cpp
+  clause.hpp
+  error_type.hpp
+  fact.cpp
+  fact.hpp
+  intrusive_wrapper.hpp
+  location.hpp
   move_list.hpp
   move_vector.hpp
-  intrusive_wrapper.hpp
   str_var_map.hpp
   str_var_map.cpp
-  error_type.hpp
   variable_map.hpp
 )
 

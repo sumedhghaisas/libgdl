@@ -28,16 +28,16 @@ endforeach()
 # the parent scope).
 set(GDL_SRCS ${GDL_SRCS} ${DIR_SRCS} PARENT_SCOPE)
 
-add_executable(flatten
-  kif_flattener_main.cpp
-)
+#add_executable(flatten
+#  kif_flattener_main.cpp
+#)
 
-target_link_libraries(flatten
-  gdl
-  boost_program_options
-  pthread
-)
+#target_link_libraries(flatten
+#  gdl
+#  boost_program_options
+#  pthread
+#)
 
-set_target_properties(flatten PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+#set_target_properties(flatten PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-install(TARGETS flatten RUNTIME DESTINATION bin)
+#install(TARGETS flatten RUNTIME DESTINATION bin)

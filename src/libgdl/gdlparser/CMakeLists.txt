@@ -23,16 +23,16 @@ endforeach()
 # the parent scope).
 set(GDL_SRCS ${GDL_SRCS} ${DIR_SRCS} PARENT_SCOPE)
 
-add_executable(kif
-  kif_main.cpp
-)
+#add_executable(kif
+  #kif_main.cpp
+#)
 
-target_link_libraries(kif
-  gdl
-  boost_program_options
-  pthread
-)
+#target_link_libraries(kif
+  #gdl
+  #boost_program_options
+  #pthread
+#)
 
-set_target_properties(kif PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+#set_target_properties(kif PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-install(TARGETS kif RUNTIME DESTINATION bin)
+#install(TARGETS kif RUNTIME DESTINATION bin)

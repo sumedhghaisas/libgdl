@@ -22,6 +22,7 @@ set(SOURCES
   node_types.hpp
   propnet.cpp
   propnet.hpp
+  propnet_impl.hpp
 )
 
 # add directory name to sources

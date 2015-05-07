@@ -1,21 +1,11 @@
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
-  gdl_stream.hpp
-  log.hpp
-  logid.hpp
-  nulloutstream.hpp
-  prefixedoutstream.cpp
-  prefixedoutstream.hpp
-  prefixedoutstream_impl.hpp
-  preprocessor.hpp
-  setop.hpp
-  sfinae_utility.hpp
-  system_setup.hpp
-  template_utils.hpp
-  timer.hpp
-  to_string.hpp
-  version.hpp
+  game_connection.cpp
+  game_connection.hpp
+  http_server.cpp
+  http_server.hpp
+  request.hpp
 )
 
 # add directory name to sources

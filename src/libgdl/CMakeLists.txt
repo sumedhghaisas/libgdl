@@ -4,15 +4,19 @@ include_directories(..) # <libgdl/[whatever]>
 set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/core.hpp")
 set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/gdl.hpp")
 set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/gdl_impl.hpp")
+set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/player_runner.hpp")
+set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/player_runner_impl.hpp")
 
 ## Recurse into both gdlparser/ and gdlreasoner/.
 set(DIRS
-  gdlparser
-  tests
-  reasoners
+  connection
   core
+  gdlparser
+  player
   propnet
-  #benchmarks
+  reasoners
+  state_machine
+  tests
 )
 
 foreach(dir ${DIRS})

@@ -1,21 +1,20 @@
+## Recurse parser
+set(DIRS
+  mcts
+  mcts_with_ols
+)
+
+foreach(dir ${DIRS})
+    add_subdirectory(${dir})
+endforeach()
+
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
-  gdl_stream.hpp
-  log.hpp
-  logid.hpp
-  nulloutstream.hpp
-  prefixedoutstream.cpp
-  prefixedoutstream.hpp
-  prefixedoutstream_impl.hpp
-  preprocessor.hpp
-  setop.hpp
-  sfinae_utility.hpp
-  system_setup.hpp
-  template_utils.hpp
-  timer.hpp
-  to_string.hpp
-  version.hpp
+  default_player_config.hpp
+  game_player.hpp
+  random_player.cpp
+  random_player.hpp
 )
 
 # add directory name to sources
