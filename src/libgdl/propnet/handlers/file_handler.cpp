@@ -18,7 +18,7 @@ std::string FileHandler::exec(const std::string& cmd)
         result += buffer;
     }
     pclose(pipe);
-    cout << "Done command " << cmd << endl;
+    log.Info << "Done command " << cmd << endl;
     return result;
 }
 

@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <iostream>
 
+#include <libgdl/core.hpp>
+
 namespace libgdl
 {
 namespace propnet
@@ -14,8 +16,11 @@ namespace propnet
 
 struct FileHandler
 {
-  FileHandler(bool optimize_for_time = false)
-    : optimize_for_time(optimize_for_time), is_primary(true) {}
+  FileHandler(bool optimize_for_time = false,
+              Log log = GLOBAL_EMPTY_LOG)
+    : optimize_for_time(optimize_for_time),
+    is_primary(true),
+    log(log) {}
 
   static FileHandler& GetMasterFileHandler()
   {
@@ -31,7 +36,7 @@ struct FileHandler
       s_files.push_back(file);
   }
 
-  static std::string exec(const std::string& cmd);
+  std::string exec(const std::string& cmd);
 
   bool GenerateSharedObject(const std::string& shared_object = "state_machine/state_machine.so");
 
@@ -41,6 +46,8 @@ struct FileHandler
 
   bool optimize_for_time;
   bool is_primary;
+
+  Log log;
 };
 
 }

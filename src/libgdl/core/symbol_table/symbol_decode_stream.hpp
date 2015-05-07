@@ -17,7 +17,7 @@
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits.hpp>
 
-#include <libgdl/core/util/sfinae_utility.hpp>
+#include <libgdl/core/util/preprocessor.hpp>
 #include <libgdl/core/util/prefixedoutstream.hpp>
 
 #include "symbol_table.hpp"
@@ -57,7 +57,7 @@ class SymbolDecodeStream
   using Sig_DecodeToString =
                       std::string (T::*)(const SymbolTable& symbol_table) const;
 
-  HAS_MEM_FUNC(DecodeToString, Has_DecodeToString);
+  LIBGDL_PP_HAS_MEM_FUNC(DecodeToString, Has_DecodeToString);
 
   //! typedef to be used by boost::enable_if and disable_if
   template<typename T>

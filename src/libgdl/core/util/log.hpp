@@ -91,46 +91,38 @@ class Log
   //!
   Log(std::ostream& stream = std::cout,
       bool timestamp = false,
-      bool addColor = false)
+      bool addColor = false,
+      bool ignore_input = false)
   {
+    std::string cyan_color = "";
+    std::string green_color = "";
+    std::string yellow_color = "";
+    std::string red_color = "";
+
     if(addColor)
     {
-      Debug = util::PrefixedOutStream(stream,
-                                      BASH_CYAN "[DEBUG] " BASH_CLEAR,
-                                      false,
-                                      timestamp);
-      Info = util::PrefixedOutStream(stream,
-                                     BASH_GREEN "[INFO ] " BASH_CLEAR,
-                                     false /* unless --verbose */,
-                                     timestamp);
-      Warn = util::PrefixedOutStream(stream,
-                                     BASH_YELLOW "[WARN ] " BASH_CLEAR,
-                                     false,
-                                     timestamp);
-      Fatal = util::PrefixedOutStream(stream,
-                                      BASH_RED "[FATAL] " BASH_CLEAR,
-                                      false,
-                                      timestamp);
+      cyan_color = BASH_CYAN "[DEBUG] " BASH_CLEAR;
+      green_color = BASH_GREEN "[INFO ] " BASH_CLEAR;
+      yellow_color = BASH_YELLOW "[WARN ] " BASH_CLEAR;
+      red_color = BASH_RED "[FATAL] " BASH_CLEAR;
     }
-    else
-    {
-      Debug = util::PrefixedOutStream(stream,
-                                      "[DEBUG] ",
-                                      false,
-                                      timestamp);
-      Info = util::PrefixedOutStream(stream,
-                                     "[INFO ] ",
-                                     false /* unless --verbose */,
-                                     timestamp);
-      Warn = util::PrefixedOutStream(stream,
-                                     "[WARN ] ",
-                                     false,
-                                     timestamp);
-      Fatal = util::PrefixedOutStream(stream,
-                                      "[FATAL] ",
-                                      false,
-                                      timestamp);
-    }
+
+    Debug = util::PrefixedOutStream(stream,
+                                    cyan_color,
+                                    ignore_input,
+                                    timestamp);
+    Info = util::PrefixedOutStream(stream,
+                                   green_color,
+                                   ignore_input,
+                                   timestamp);
+    Warn = util::PrefixedOutStream(stream,
+                                   green_color,
+                                   ignore_input,
+                                   timestamp);
+    Fatal = util::PrefixedOutStream(stream,
+                                    green_color,
+                                    ignore_input,
+                                    timestamp);
   }
 
   //! Checks if the specified condition is true.
@@ -223,6 +215,12 @@ class Log
     return singleton;
   }
 
+  static Log& GetGlobalEmptyLogger()
+  {
+    static Log singleton(std::cout, false, false, true);
+    return singleton;
+  }
+
   //! Prints debug output with the appropriate tag: [DEBUG].
   util::PrefixedOutStream Debug;
 
@@ -241,6 +239,9 @@ class Log
 
 //! Get the instance of global logger
 #define GLOBAL_LOG libgdl::Log::GetGlobalLogger()
+
+//! Get no printing logger
+#define GLOBAL_EMPTY_LOG libgdl::Log::GetGlobalEmptyLogger()
 
 //! Get the debugging stream of the global logger
 #define GLOBAL_DEBUG libgdl::Log::GetGlobalLogger().Debug

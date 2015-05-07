@@ -139,10 +139,6 @@ struct Node
     if(type != Type::NEXT)
       init_map[current_index] = current_m_index++;
 
-
-    if(type == Type::LEGAL)
-      std::cout << UName() << " " << current_m_index - 1 << std::endl;
-
     current_index++;
 
     id_map[this] = cry.id;

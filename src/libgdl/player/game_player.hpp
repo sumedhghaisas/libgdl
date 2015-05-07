@@ -15,7 +15,6 @@ class GamePlayer
   typedef SMT StateMachineType;
   typedef typename StateMachineType::StateType StateType;
   typedef typename StateMachineType::MoveType MoveType;
-  typedef CT Config;
 
   template<typename... Args>
   GamePlayer(Args... args)
@@ -35,6 +34,11 @@ class GamePlayer
   inline StateMachineType& GetStateMachine()
   {
     return state_machine;
+  }
+
+  CT& Config() const
+  {
+    return CT::Global();
   }
 
  private:

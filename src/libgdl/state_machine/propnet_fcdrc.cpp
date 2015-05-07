@@ -105,8 +105,6 @@ PropnetFCDRC::PropnetFCDRC(int argc, char* argv[])
   init = StateType("");
   initial_pn.InitState(init);
 
-  cout << init << endl;
-
   if(separatePropNetForGoals)
   {
     SeparateGoalNet(true);

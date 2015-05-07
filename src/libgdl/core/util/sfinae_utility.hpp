@@ -8,8 +8,12 @@
 #define _LIBGDL_CORE_UTIL_SFINAE_UTILITY_HPP_INCLUDED
 
 #include <array>
+#include <iostream>
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/mpl/range_c.hpp>
+#include <boost/mpl/for_each.hpp>
+#include <boost/bind.hpp>
 
 namespace libgdl
 {
@@ -33,25 +37,87 @@ struct SupportsStringOperator
   static const bool value = (sizeof(string_test((T*)0)) == 1);
 }; // class SupportsStringOperator
 
+// A helper metafunction for adding const to a type
+template<class M, class T>
+struct make_const
+{
+    typedef T type;
+};
+
+template<class M, class T>
+struct make_const<const M, T>
+{
+    typedef typename boost::add_const<T>::type type;
+};
+
+namespace reflection
+{
+
+struct SimpleFieldPrint
+{
+  static SimpleFieldPrint& GetGlobalObject()
+  {
+    static SimpleFieldPrint singleton;
+    return singleton;
+  }
+
+  template<typename T>
+  void PrintField(const std::string& name, const T& t)
+  {
+    std::cout << name << " = " << t << std::endl;
+  }
+};
+
+struct Reflector
+{
+  //Get field_data at index N
+  template<int N, class T>
+  static typename T::template field_data<N, T> GetFieldData(T& x)
+  {
+    return typename T::template field_data<N, T>(x);
+  }
+
+  // Get the number of fields
+  template<class T>
+  struct NumFields
+  {
+    static const int value = T::fields_n;
+  };
+
+  struct FieldVisitor
+  {
+    template<class C, class Visitor, class T, class PrintClass>
+    void operator()(C& c, Visitor v, T, PrintClass& pc)
+    {
+      v(GetFieldData<T::value>(c), pc);
+    }
+  };
+
+  template<class C, class Visitor, class PrintClass>
+  static void VisitEach(C & c, Visitor v, PrintClass& pc)
+  {
+    typedef boost::mpl::range_c<int,0, NumFields<C>::value> range;
+    boost::mpl::for_each<range>(boost::bind<void>(FieldVisitor(), boost::ref(c), v, _1, pc));
+  }
+
+  struct PrintVisitor
+  {
+    template<class FieldData, class PrintClass>
+    void operator()(FieldData f, PrintClass& pc)
+    {
+      pc.PrintField(f.name(), f.get());
+    }
+  };
+
+  template<class T, class PrintClass = SimpleFieldPrint>
+  static void PrintFields(T & x, PrintClass& pc = SimpleFieldPrint::GetGlobalObject())
+  {
+    VisitEach(x, PrintVisitor(), pc);
+  }
+};
+
+}; // namespace reflection
 }; // namespace sfinae
 }; // namespace libgdl
-
-/**
- * This implements uses advance SFIANE techniques to detect certain member
- * functions. his type of technique is described in the following StackOverflow
- * question
- *
- * <a href="http://stackoverflow.com/questions/257288/is-it-possible-to-write-a-c-template-to-check-for-a-functions-existence">Detection of class member function</a>
- */
-#define HAS_MEM_FUNC(FUNC, NAME)                                               \
-template<typename T, typename sig>                                             \
-struct NAME {                                                                  \
-  typedef char yes[1];                                                         \
-  typedef char no [2];                                                         \
-  template<typename U, U> struct type_check;                                   \
-  template<typename _1> static yes &chk(type_check<sig, &_1::FUNC> *);         \
-  template<typename   > static no  &chk(...);                                  \
-  static bool const value = sizeof(chk<T>(0)) == sizeof(yes);                  \
-};
 
 #endif // _LIBGDL_CORE_UTIL_SFINAE_UTILITY_HPP_INCLUDED
