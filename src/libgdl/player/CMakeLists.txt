@@ -93,8 +93,6 @@ while( advanced )
   )
   
   set(add_flag PLAYER_INCLUDE="${player_include}")
-  
-  message(${add_flag})
 
   set_target_properties(${name} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
   set_target_properties(${name} PROPERTIES COMPILE_DEFINITIONS PLAYER_INCLUDE=${player_include})
