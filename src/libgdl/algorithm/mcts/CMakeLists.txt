@@ -1,10 +1,11 @@
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
-  player.cpp
-  player.hpp
-  player_config.hpp
-  player_include.hpp
+  config.hpp
+  default_node.hpp
+  mcts_alternate.hpp
+  mcts_alternate_impl.hpp
+  node.hpp
 )
 
 # add directory name to sources

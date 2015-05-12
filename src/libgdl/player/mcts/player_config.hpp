@@ -16,12 +16,28 @@ LIBGDL_PLAYER_CONFIG
 
   LIBGDL_PLAYER_CONFIG_PARAMS
   (
-    (size_t)(exploration_parameter)(= 40);
+    (size_t)(exploration_parameter)(= 40),
+    (size_t)(role_size)(= 0)
   )
 
-  size_t ExplorationParameter()
+  size_t& ExplorationParameter()
   {
     return exploration_parameter;
+  }
+
+  const size_t& ExplorationParameter() const
+  {
+    return exploration_parameter;
+  }
+
+  size_t& RoleSize()
+  {
+    return role_size;
+  }
+
+  const size_t& RoleSize() const
+  {
+    return role_size;
   }
 )
 

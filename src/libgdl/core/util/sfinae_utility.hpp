@@ -25,17 +25,61 @@ namespace sfinae
  *
  * /tparam T Class to check
  */
-template <class T>
+//namespace supports
+//{
+//    namespace details
+//    {
+//        struct return_t { };
+//    }
+//
+//    template<typename T>
+//    details::return_t operator std::string(T const&);
+//
+//    template<typename T>
+//    struct StringOperator : std::integral_constant<
+//        bool,
+//        !std::is_same<
+//            decltype(std::string(std::declval<T>())),
+//            details::return_t
+//        >::value
+//    > { };
+//}
+//
+//template<typename T>
+//using SupportsStringOperator = supports::StringOperator<T>;
+
+//template <class T>
+//struct SupportsStringOperator
+//{
+//  template <class U>
+//  static decltype(std::string(*(U*)0)) string_test(const U* u)
+//  { }
+//
+//  template<typename T>
+//  static std::array<char, 2> string_test(...) { return std::array<char, 2>(); }
+//
+//  static const bool value = (sizeof(string_test<T>((T*)0)) == sizeof(std::string));
+//}; // class SupportsStringOperator
+
+template<typename T>
 struct SupportsStringOperator
 {
-  template <class U>
-  static auto string_test(const U* u) -> decltype(std::string(*u), char(0))
-  { }
+  typedef char Yes;
+  typedef Yes No[2];
 
-  static std::array<char, 2> string_test(...) { return std::array<char, 2>(); }
+  template <typename U, U> struct has;
 
-  static const bool value = (sizeof(string_test((T*)0)) == 1);
-}; // class SupportsStringOperator
+  template <typename Fun>
+  static Yes& fun_test(has<std::string (Fun::*)() const, &Fun::operator std::string>*);
+
+  template <typename Fun>
+  static Yes& fun_test(has<std::string (Fun::*)(), &Fun::operator std::string>*);
+
+  template<typename>
+  static No& fun_test(...);
+
+  static const bool value = (sizeof(fun_test<T>(0)) == sizeof(Yes));
+};
 
 // A helper metafunction for adding const to a type
 template<class M, class T>

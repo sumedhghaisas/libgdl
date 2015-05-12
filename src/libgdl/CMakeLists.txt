@@ -9,6 +9,7 @@ set(GDL_SRCS ${GDL_SRCS} "${CMAKE_CURRENT_SOURCE_DIR}/player_runner_impl.hpp")
 
 ## Recurse into both gdlparser/ and gdlreasoner/.
 set(DIRS
+  algorithm
   connection
   core
   gdlparser

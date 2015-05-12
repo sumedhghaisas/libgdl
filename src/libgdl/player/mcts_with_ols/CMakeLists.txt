@@ -1,8 +1,8 @@
 # Define the files we need to compile.
 # Anything not in this list will not be compiled into libGDL.
 set(SOURCES
-  mcts_with_ols_player.cpp
-  mcts_with_ols_player.hpp
+  player.cpp
+  player.hpp
   player_config.hpp
 )
 

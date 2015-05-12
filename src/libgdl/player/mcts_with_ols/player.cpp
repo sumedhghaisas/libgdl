@@ -1,4 +1,4 @@
-#include "mcts_with_ols_player.hpp"
+#include "player.hpp"
 
 using namespace std;
 using namespace libgdl;
