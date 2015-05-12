@@ -12,6 +12,8 @@ set(LIBGDL_VERSION_NAME "master")
 # We default to debugging mode for developers.
 option(DEBUG "Compile with debugging information" OFF)
 option(PROFILE "Compile with profiling information" OFF)
+option(USE_STATIC_BOOST "Compile with linking boost statically" OFF)
+option(USE_STATIC_LIBGDL "Compile executables with static libgdl" OFF)
 
 # Set the CFLAGS and CXXFLAGS depending on the options the user specified.
 # Only GCC-like compilers support -Wextra, and other compilers give tons of
@@ -41,6 +43,10 @@ endif(PROFILE)
 
 # set path right
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake")
+
+if(USE_STATIC_BOOST)
+  set(Boost_USE_STATIC_LIBS   ON)
+endif()
 
 find_package(Boost
     COMPONENTS

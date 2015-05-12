@@ -39,13 +39,25 @@ SET(CMAKE_INSTALL_RPATH "")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
 
 # LIBGDL_SRCS is set in the subdirectories.
+
+#Add shared object library
 add_library(gdl SHARED ${GDL_SRCS})
 
 add_dependencies(gdl copy_includes)
 
-target_link_libraries(gdl
-  ${Boost_LIBRARIES}
-)
+
+if(USE_STATIC_BOOST)
+  target_link_libraries(gdl
+    pthread
+    dl
+  )
+else()
+  target_link_libraries(gdl
+    ${Boost_LIBRARIES}
+    pthread
+    dl
+  )
+endif()
 
 set_target_properties(gdl
   PROPERTIES
@@ -56,6 +68,29 @@ set_target_properties(gdl
 # Make sure the linker can find the needed library.
 # rt: clock_gettime()
 target_link_libraries(gdl rt)
+
+#Add static object library
+add_library(gdl_static STATIC ${GDL_SRCS})
+
+add_dependencies(gdl_static copy_includes)
+
+target_link_libraries(gdl_static
+  ${Boost_LIBRARIES}
+  pthread
+  dl
+)
+
+set_target_properties(gdl_static
+  PROPERTIES
+  VERSION ${LIBGDL_MAJOR_VERSION}
+  SOVERSION ${LIBGDL_MINOR_VERSION}
+)
+
+set_target_properties(gdl_static PROPERTIES OUTPUT_NAME gdl)
+
+# Make sure the linker can find the needed library.
+# rt: clock_gettime()
+target_link_libraries(gdl_static rt)
 
 # Collect all header files in the library.
 file(GLOB_RECURSE INCLUDE_H_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h)
@@ -93,6 +128,13 @@ install(TARGETS gdl
   ARCHIVE DESTINATION lib)
   
 add_dependencies(gdl libgdl_headers)
+
+install(TARGETS gdl_static
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+  
+add_dependencies(gdl_static libgdl_headers)
 
 add_custom_target(libgdl_data)
 # Copy test data into right place.

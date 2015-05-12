@@ -12,9 +12,11 @@ add_executable(libgdl_test
   b_state_tests.cpp
   gdl_tests.cpp
 )
+
 # Link dependencies of test executable.
 target_link_libraries(libgdl_test
   gdl
   boost_unit_test_framework
+  ${Boost_LIBRARIES}
   dl
 )

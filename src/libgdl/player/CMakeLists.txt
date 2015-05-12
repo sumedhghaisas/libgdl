@@ -84,13 +84,22 @@ while( advanced )
  	add_executable(${name}
     player_runner_main.cpp
   )
-
-  target_link_libraries(${name}
-    gdl
-    boost_program_options
-    pthread
-    dl
-  )
+  
+  if(USE_STATIC_LIBGDL)
+    target_link_libraries(${name}
+      gdl_static
+      boost_program_options
+      pthread
+      dl
+    )
+  else()
+    target_link_libraries(${name}
+      gdl
+      boost_program_options
+      pthread
+      dl
+    )
+  endif()
   
   set(add_flag PLAYER_INCLUDE="${player_include}")
 
