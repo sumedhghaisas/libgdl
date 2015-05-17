@@ -97,14 +97,15 @@ class PropnetFCDRC
   size_t base_size;
   size_t role_size;
 
-  AState init;
+  StateType init;
 
   //! Initial propnet
   ReasonerType initial_pn;
-  ReasonerType* without_terminal_pn;
-  ReasonerType::PayLoadType* initial_pn_payload = NULL;
 
+  ReasonerType::PayLoadType* initial_pn_payload = NULL;
   ReasonerType::PayLoadType2* initial_pn_payload2 = NULL;
+
+  ReasonerType* without_terminal_pn = NULL;
   ReasonerType::PayLoadType2* without_terminal_payload = NULL;
 
   //! Function with initial propnet
@@ -116,12 +117,12 @@ class PropnetFCDRC
 
   //! Goal propnet
   ReasonerType goal_pn;
-  ReasonerType::PayLoadType* goal_pn_payload;
+  ReasonerType::PayLoadType* goal_pn_payload = NULL;
 
   GetGoals_m_t* GetGoals_m = NULL;
 
   bool* GetGoals_buff = NULL;
-  bool* IsTerminal_buff;
+  bool* IsTerminal_buff = NULL;
 
   //! Functions with goal net
   const size_t* GetGoal_goal_dfp(const StateType& s);
@@ -152,14 +153,9 @@ class PropnetFCDRC
 /// Stack which are used for simulations
 ////////////////////////////////////////////////////////////////////////////////
 
-  StateType temp = StateType("");
-  StateType temp1 = StateType("");
-  StateType temp2 = StateType("");
-  MoveType m = MoveType("");
-
   StateType* alt_role_masks = NULL;
 
-  MoveSet::const_iterator* simulate2_it;
+  MoveSet::const_iterator* simulate2_it = NULL;
   StateType* simulate2_state_arr = new StateType[100];
 
    //! Logging stream

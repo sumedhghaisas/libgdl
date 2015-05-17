@@ -116,7 +116,7 @@ PropnetFCDRC::PropnetFCDRC(int argc, char* argv[])
 
   MetaGame(meta_simulation_time);
 
-  if(isAlternatingMoves && role_size > 1 && separate_pn_for_roles)
+  if(isAlternatingMoves && (role_size > 1) && separate_pn_for_roles)
   {
     SeparateRolePropNets();
 
@@ -169,10 +169,27 @@ PropnetFCDRC::PropnetFCDRC(int argc, char* argv[])
 
 PropnetFCDRC::~PropnetFCDRC()
 {
-  delete[] alt_role_masks;
-  delete initial_pn_payload;
-  delete goal_pn_payload;
-  delete[] role_propnet_payloads;
+//  delete without_terminal_pn;
+//  delete without_terminal_payload;
+//
+//  delete goal_pn_payload;
+//  delete[] GetGoals_buff;
+//
+//  delete[] IsTerminal_buff;
+//
+//  delete[] alt_role_masks;
+//  delete initial_pn_payload;
+//
+//  if(is_propnet_role_separated)
+//    for(size_t i = 0;i < role_size;i++)
+//      delete role_propnet_payloads[i];
+//
+//  delete[] role_propnet_payloads;
+//  delete[] simulate2_state_arr;
+//  delete[] simulate2_it;
+//
+  //init = AState("");
+  //temp = AState("");
 }
 
 PropnetFCDRC::MoveType PropnetFCDRC::GetRandomLegalMove(const StateType& s)
@@ -185,6 +202,8 @@ PropnetFCDRC::MoveType PropnetFCDRC::GetRandomLegalMove(const StateType& s)
 
 const size_t* PropnetFCDRC::Simulate5(const StateType& s)
 {
+  StateType temp = StateType("");
+  MoveType m = MoveType("");
   temp.Equate(s);
 
   while(!initial_pn.Update(temp, *initial_pn_payload))
@@ -201,6 +220,8 @@ const size_t* PropnetFCDRC::Simulate5(const StateType& s)
 
 const size_t* PropnetFCDRC::Simulate6(const StateType& s)
 {
+  StateType temp = StateType("");
+  MoveType m = MoveType("");
   temp.Equate(s);
 
   size_t role_id = 0;
@@ -262,11 +283,11 @@ void PropnetFCDRC::MetaGame_multi_player(size_t simulation_time)
 
   size_t stop = util::Timer::microtimer() + simulation_time;
 
-  AState temp("");
+  StateType temp("");
   for(size_t i = 0;i < core::RawAState::arr_size;i++)
     temp->s[i] = 255;
 
-  alt_role_masks = new AState[role_size];
+  alt_role_masks = new StateType[role_size];
   for(size_t i = 0;i < role_size;i++)
     alt_role_masks[i] = temp.Clone();
 
@@ -409,6 +430,7 @@ void PropnetFCDRC::SeparateGoalNet(bool compile_goal_propnet)
 
 const size_t* PropnetFCDRC::Simulate2(const StateType& s)
 {
+  StateType temp = StateType("");
   temp.Equate(s);
 
   size_t state_index = 0;

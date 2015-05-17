@@ -375,7 +375,9 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
     auto r_it = roles_ids.find(sym.GetCommandName(arg->args[0]->value));
     if(r_it == roles_ids.end())
     {
-      cout << LOGID << "Unrecognized role " << sym.GetCommandName(arg->args[0]->value) << "." << endl;
+      log.Fatal << LOGID << "Unrecognized role " << sym.GetCommandName(arg->args[0]->value) << " in token .";
+      SymbolDecodeStream sds(sym, cout);
+      sds << *arg << endl;
       exit(1);
     }
 
@@ -426,7 +428,15 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
   }
   else if(arg->value == SymbolTable::LegalID)
   {
-    size_t r_id = roles_ids[sym.GetCommandName(arg->args[0]->value)];
+    auto r_it = roles_ids.find(sym.GetCommandName(arg->args[0]->value));
+    if(r_it == roles_ids.end())
+    {
+      log.Fatal << LOGID << "Unrecognized role " << sym.GetCommandName(arg->args[0]->value) << " in token .";
+      SymbolDecodeStream sds(sym, cout);
+      sds << *arg << endl;
+      exit(1);
+    }
+    size_t r_id = r_it->second;
     s_arg = arg->args[1]->DecodeToString(sym);
 
     size_t in_id = 0;
@@ -521,6 +531,16 @@ Node* PropNet::CreateNode(SymbolTable sym, const Argument* arg)
       p_id = c_base_id++;
       str_base_nodes[s_arg] = p_id;
     }
+
+    auto it = base_nodes.find(p_id);
+    if(it == base_nodes.end())
+    {
+      out = new BaseNode(s_arg, p_id);
+      base_nodes[p_id] = out;
+    }
+    else out = it->second;
+
+    out = NULL;
 
     init_props.push_back(p_id);
   }
@@ -1482,6 +1502,7 @@ void PropNet::Finalize()
   for(size_t i = 0;i < role_size;i++)
     legal_memory_ids[i] = NULL;
   default_payload.legal_size = new size_t[role_size];
+
   for(size_t i = 0;i < role_size;i++)
   {
     legal_memory_ids[i] = new unsigned short[LegalNodes()[i].size()];
