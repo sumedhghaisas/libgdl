@@ -42,7 +42,7 @@ class PropNet
 
   typedef node_types::Node Node;
 
-  const static size_t PayloadStackSize = 1000;
+  const static size_t PayloadStackSize = 70;
 
  public:
   typedef AState StateType;
@@ -253,6 +253,10 @@ class PropNet
     return roles_ids.find(role)->second;
   }
 
+  PropNet* OptimizeWithRoleMask(const StateType& mask);
+
+  static size_t debug_time;
+
  private:
   void InitializePrintFunctions() const;
 
@@ -319,7 +323,7 @@ class PropNet
 /// Configuration parameters and common important variables
 ////////////////////////////////////////////////////////////////////////////////
 
-  StateType base_mask = StateType("");
+  StateType base_mask;
   size_t base_size;
   size_t role_size;
   bool isCrystalized = false;

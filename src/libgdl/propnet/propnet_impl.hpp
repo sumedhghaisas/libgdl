@@ -38,6 +38,7 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
     }
   }
 
+
   while(t_stack != pay_stack)//!n_stack.empty())
   {
     t_stack--;
@@ -241,6 +242,7 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
   size_t*& m_set_size = payload.legal_size;
   size_t*& goals = payload.goals;
 
+  size_t start = util::Timer::microtimer();
   for(size_t i = 0;i < StateType::RawType::arr_size;i++)
   {
     char x_or = state.get()->s[i] ^ base.get()->s[i];
@@ -248,11 +250,12 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
     if(x_or)
     {
       char s_val = state.get()->s[i];
+      //char t_val = s_val & x_or;
       if(x_or & 1)
       {
         //n_stack.push(base_crystal_ids[8*i]);
         *((unsigned short*)t_stack) = base_crystal_ids[8*i];
-        if((bool)(s_val & 1))
+        if(s_val & 1)
         {
           *(((signed short*)t_stack) + 1) = 0x0001;
         }
@@ -265,7 +268,7 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       if(x_or & 2)
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 1];
-        if((bool)(s_val & 2))
+        if(s_val & 2)
           *(((signed short*)t_stack) + 1) = 0x0001;
         else *(((signed short*)t_stack) + 1) = 0xffff;
         t_stack++;
@@ -276,7 +279,7 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       if(x_or & 4)
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 2];
-        if((bool)(s_val & 4))
+        if(s_val & 4)
           *(((signed short*)t_stack) + 1) = 0x0001;
         else *(((signed short*)t_stack) + 1) = 0xffff;
         t_stack++;
@@ -287,7 +290,7 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       if(x_or & 8)
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 3];
-        if((bool)(s_val & 8))
+        if(s_val & 8)
           *(((signed short*)t_stack) + 1) = 0x0001;
         else *(((signed short*)t_stack) + 1) = 0xffff;
         t_stack++;
@@ -298,7 +301,7 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       if(x_or & 16)
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 4];
-        if((bool)(s_val & 16))
+        if(s_val & 16)
           *(((signed short*)t_stack) + 1) = 0x0001;
         else *(((signed short*)t_stack) + 1) = 0xffff;
         t_stack++;
@@ -309,7 +312,7 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       if(x_or & 32)
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 5];
-        if((bool)(s_val & 32))
+        if(s_val & 32)
           *(((signed short*)t_stack) + 1) = 0x0001;
         else *(((signed short*)t_stack) + 1) = 0xffff;
         t_stack++;
@@ -320,7 +323,7 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       if(x_or & 64)
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 6];
-        if((bool)(s_val & 64))
+        if(s_val & 64)
           *(((signed short*)t_stack) + 1) = 0x0001;
         else *(((signed short*)t_stack) + 1) = 0xffff;
         t_stack++;
@@ -331,13 +334,14 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       if(x_or & 128)
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 7];
-        if((bool)(s_val & 128))
+        if(s_val & 128)
           *(((signed short*)t_stack) + 1) = 0x0001;
         else *(((signed short*)t_stack) + 1) = 0xffff;
         t_stack++;
       }
     }
   }
+  debug_time += util::Timer::microtimer() - start;
 
   while(t_stack != pay_stack)//!n_stack.empty())
   {

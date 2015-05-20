@@ -38,7 +38,7 @@ void PlayerRunner<Player>::Run()
   bool isGameOn = true;
   string match_id = start_request->MatchID();
   player.SetRole(start_request->Role());
-  player.MetaGame(start_request->MetaTime());
+  player.MetaGame(start_request->GameDesc(), start_request->MetaTime());
   current_request = game_connection.GetNextRequest();
   while(isGameOn)
   {

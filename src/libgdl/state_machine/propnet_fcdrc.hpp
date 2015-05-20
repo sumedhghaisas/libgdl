@@ -17,7 +17,10 @@ namespace libgdl
 namespace state_machine
 {
 
-class PropnetFCDRC
+/**
+ * Forward Dead Reckoning Propnet State Machine
+ */
+class ForwardDeadReckoningPropnetStateMachine
 {
  public:
   typedef propnet::PropNet ReasonerType;
@@ -36,9 +39,14 @@ class PropnetFCDRC
   typedef void (GetGoals_m_t)(const StateType& s, size_t* goals, bool* buff);
 
  public:
-  explicit PropnetFCDRC(int argc, char* argv[]);
+  explicit ForwardDeadReckoningPropnetStateMachine(int argc, char* argv[]);
 
-  ~PropnetFCDRC();
+  template<typename ConfigType>
+  void Init(const gdlparser::KIF& kif, const ConfigType& config, size_t timeout);
+
+  ~ForwardDeadReckoningPropnetStateMachine();
+
+  bool Init();
 
   GetLegalMoves_l_t GetLegalMoves_l;
 

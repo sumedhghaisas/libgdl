@@ -3,8 +3,16 @@ namespace libgdl
 namespace state_machine
 {
 
+template<class ConfigType>
+void ForwardDeadReckoningPropnetStateMachine::Init(const gdlparser::KIF& kif,
+                                                   const ConfigType& config,
+                                                   size_t timeout)
+{
+
+}
+
 template<class CollectionType>
-void PropnetFCDRC::GetLegalMoves(const StateType& s,
+void ForwardDeadReckoningPropnetStateMachine::GetLegalMoves(const StateType& s,
                                  CollectionType& collection,
                                  size_t& turn_role,
                                  bool& is_terminal)
@@ -27,7 +35,7 @@ void PropnetFCDRC::GetLegalMoves(const StateType& s,
   bool isLoop = true;
   while(isLoop)
   {
-    AMove m("");
+    AMove m;
     for(size_t i = 0;i < role_size;i++)
     {
       m->moves[i] = *it[i];

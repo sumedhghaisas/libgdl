@@ -36,8 +36,6 @@ struct FileHandler
       s_files.push_back(file);
   }
 
-  std::string exec(const std::string& cmd);
-
   bool GenerateSharedObject(const std::string& shared_object = "state_machine/state_machine.so");
 
   std::list<std::string> p_files;

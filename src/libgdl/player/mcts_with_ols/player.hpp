@@ -14,7 +14,7 @@ namespace player
 namespace mcts_with_ols
 {
 
-class Player : public GamePlayer<state_machine::PropnetFCDRC, PlayerConfig>
+class Player : public GamePlayer<Player, state_machine::ForwardDeadReckoningPropnetStateMachine, PlayerConfig>
 {
 private:
   struct MCTSNode

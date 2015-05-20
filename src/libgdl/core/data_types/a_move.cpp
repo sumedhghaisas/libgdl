@@ -28,10 +28,10 @@ AMove AMove::Create(const list<string>& str_moves)
     cerr << LOGID << "Incorrect size of list passed." << std::endl;
     cerr << LOGID << "Size: " << str_moves.size() << endl;
     cerr << LOGID << "Expected Size: " << RawAMove::n_roles << endl;
-    return AMove("");
+    return AMove();
   }
 
-  AMove out("");
+  AMove out;
   size_t r_index = 0;
   SymbolTable sym;
   for(auto it : str_moves)

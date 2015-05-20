@@ -2,25 +2,11 @@
 
 #include <libgdl/core/thread_pool/thread_pool.hpp>
 
+#include <libgdl/core/util/system_ni.hpp>
+
 using namespace std;
 using namespace libgdl::propnet;
 using namespace libgdl::thread_pool;
-
-std::string FileHandler::exec(const std::string& cmd)
-{
-    FILE* pipe = popen(cmd.c_str(), "r");
-    if (!pipe) return "ERROR";
-    char buffer[128];
-    string result = "";
-    while(!feof(pipe))
-    {
-      if(fgets(buffer, 128, pipe) != NULL)
-        result += buffer;
-    }
-    pclose(pipe);
-    log.Info << "Done command " << cmd << endl;
-    return result;
-}
 
 bool FileHandler::GenerateSharedObject(const std::string& shared_object)
 {
@@ -34,7 +20,7 @@ bool FileHandler::GenerateSharedObject(const std::string& shared_object)
     stringstream stream;
     stream << com_prefix << " -c " << it << ".cpp -o " << it << ".o";
     //results.emplace_back(gtp.Enqueue(exec, stream.str()));
-    exec(stream.str());
+    util::SystemNI::exec(stream.str());
   }
 
   //for(auto&& it : results)
@@ -50,7 +36,7 @@ bool FileHandler::GenerateSharedObject(const std::string& shared_object)
     stream << " " << it << ".o";
   }
   stream << " -o " << shared_object;
-  exec(stream.str());
+  util::SystemNI::exec(stream.str());
 
   return true;
 }

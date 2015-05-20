@@ -23,6 +23,8 @@ using namespace libgdl::gdlparser;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
 
+size_t PropNet::debug_time = 0;
+
 PropNet::PropNetPayLoad::~PropNetPayLoad()
 {
   if(isCrystallized)
@@ -279,10 +281,7 @@ void PropNet::Initialize(const std::string& filename)
 
 void PropNet::Initialize(KIF& kif)
 {
-  sym = kif.GetSymbolTable();
 
-  KIFFlattener kf(log);
-  kf.Flatten(kif, *this);
 }
 
 void PropNet::InitState(StateType& init)
@@ -1261,7 +1260,7 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
     index++;
   }
 
-  base_mask = AState("");
+  base_mask = AState();
 
   for(auto it : base_nodes)
     if(del.find(it.second) == del.end())
@@ -1441,14 +1440,14 @@ void PropNet::Finalize()
 
   default_payload2.m_set = new MoveSet[role_size];
 
-  default_payload.top = StateType("");
+  default_payload.top = StateType();
   default_payload.goals = new size_t[role_size];
-  default_payload.base = StateType("");
+  default_payload.base = StateType();
   InitState(default_payload.base);
 
-  default_payload2.top = StateType("");
+  default_payload2.top = StateType();
   default_payload2.goals = new size_t[role_size];
-  default_payload2.base = StateType("");
+  default_payload2.base = StateType();
   InitState(default_payload2.base);
   default_payload2.data = new signed short[data_init_size];
 
@@ -1516,12 +1515,12 @@ void PropNet::Finalize()
   }
 
   default_payload.t_stack = new int[PayloadStackSize];
-  default_payload.base_move = MoveType("");
+  default_payload.base_move = MoveType();
 
   default_payload2.t_stack = new int[PayloadStackSize];
-  default_payload2.base_move = MoveType("");
+  default_payload2.base_move = MoveType();
 
-  base_mask = AState("");
+  base_mask = AState();
 
   for(auto it : BaseNodes())
   {
@@ -1677,4 +1676,23 @@ size_t PropNet::GetNumAndComponents() const
       out++;
 
   return out;
+}
+
+PropNet* PropNet::OptimizeWithRoleMask(const StateType& mask)
+{
+  for(size_t i = 0;i < StateType::RawType::arr_size;i++)
+  {
+    if(mask.get()->s[i])
+    {
+      for(size_t j = 0;j < 8;j++)
+      {
+        char t_mask = 1 << j;
+        if(mask.get()->s[i] & t_mask)
+        {
+          Node* n = base_nodes.find(8*i + j);
+
+        }
+      }
+    }
+  }
 }

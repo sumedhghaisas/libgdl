@@ -8,27 +8,36 @@ namespace libgdl
 namespace player
 {
 
-template<class SMT, class CT = DefaultPlayerConfig>
+template<class PT, class SMT, class CT = DefaultPlayerConfig>
 class GamePlayer
 {
  public:
+  typedef PT PlayerType;
   typedef SMT StateMachineType;
   typedef typename StateMachineType::StateType StateType;
   typedef typename StateMachineType::MoveType MoveType;
 
   template<typename... Args>
   GamePlayer(Args... args)
-    : state_machine(args...) {}
+    : state_machine(args...)
+  {
+
+  }
+
+  void MetaGame(std::string game_desc, size_t metaGame)
+  {
+    static_cast<PlayerType*>(this)->MetaGame(metaGame);
+  }
 
   void SetRole(const std::string& r)
   {
-    role = r;
-    role_id = state_machine.GetRoleID(role);
+    current_role = r;
+    current_role_id = state_machine.GetRoleID(current_role);
   }
 
   const size_t RoleID() const
   {
-    return role_id;
+    return current_role_id;
   }
 
   inline StateMachineType& GetStateMachine()
@@ -43,9 +52,10 @@ class GamePlayer
 
  private:
   StateMachineType state_machine;
+  StateType state;
 
-  std::string role;
-  size_t role_id;
+  std::string current_role;
+  size_t current_role_id;
 };
 
 }

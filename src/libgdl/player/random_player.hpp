@@ -13,7 +13,7 @@ namespace libgdl
 namespace player
 {
 
-class RandomPlayer : public GamePlayer<state_machine::PropnetFCDRC>
+class RandomPlayer : public GamePlayer<RandomPlayer, state_machine::ForwardDeadReckoningPropnetStateMachine>
 {
  public:
   RandomPlayer(int argc, char* argv[]);

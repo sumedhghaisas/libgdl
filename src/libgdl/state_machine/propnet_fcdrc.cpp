@@ -10,7 +10,7 @@ using namespace boost::program_options;
 using namespace libgdl;
 using namespace libgdl::state_machine;
 
-PropnetFCDRC::PropnetFCDRC(int argc, char* argv[])
+ForwardDeadReckoningPropnetStateMachine::ForwardDeadReckoningPropnetStateMachine(int argc, char* argv[])
   : log(GLOBAL_LOG)
 {
   bool isDot = false;
@@ -46,7 +46,7 @@ PropnetFCDRC::PropnetFCDRC(int argc, char* argv[])
   else
   {
     log.Fatal << "ERROR: at least one source file has to be mentioned." << endl;
-    log.Fatal << "USAGE : PropnetFCDRC -c SOURCE_FILES" << endl;
+    log.Fatal << "USAGE : ForwardDeadReckoningPropnetStateMachine -c SOURCE_FILES" << endl;
     exit(1);
   }
 
@@ -102,7 +102,7 @@ PropnetFCDRC::PropnetFCDRC(int argc, char* argv[])
   MoveType::RawType::n_roles = role_size;
 
   //! Initialize Init State
-  init = StateType("");
+  init = StateType();
   initial_pn.InitState(init);
 
   if(separatePropNetForGoals)
@@ -164,10 +164,10 @@ PropnetFCDRC::PropnetFCDRC(int argc, char* argv[])
   IsTerminal_buff = new bool[mem];
   simulate2_it = new MoveSet::const_iterator[role_size];
   for(size_t i = 0;i < 100;i++)
-    simulate2_state_arr[i] = StateType("");
+    simulate2_state_arr[i] = StateType();
 }
 
-PropnetFCDRC::~PropnetFCDRC()
+ForwardDeadReckoningPropnetStateMachine::~ForwardDeadReckoningPropnetStateMachine()
 {
 //  delete without_terminal_pn;
 //  delete without_terminal_payload;
@@ -192,18 +192,18 @@ PropnetFCDRC::~PropnetFCDRC()
   //temp = AState("");
 }
 
-PropnetFCDRC::MoveType PropnetFCDRC::GetRandomLegalMove(const StateType& s)
+ForwardDeadReckoningPropnetStateMachine::MoveType ForwardDeadReckoningPropnetStateMachine::GetRandomLegalMove(const StateType& s)
 {
   initial_pn.Update(s, *initial_pn_payload);
-  AMove out("");
+  AMove out;
   initial_pn.GetRandomLegalMove(*initial_pn_payload, out);
   return out;
 }
 
-const size_t* PropnetFCDRC::Simulate5(const StateType& s)
+const size_t* ForwardDeadReckoningPropnetStateMachine::Simulate5(const StateType& s)
 {
-  StateType temp = StateType("");
-  MoveType m = MoveType("");
+  StateType temp;
+  MoveType m;
   temp.Equate(s);
 
   while(!initial_pn.Update(temp, *initial_pn_payload))
@@ -218,10 +218,10 @@ const size_t* PropnetFCDRC::Simulate5(const StateType& s)
   return GetGoals(temp);
 }
 
-const size_t* PropnetFCDRC::Simulate6(const StateType& s)
+const size_t* ForwardDeadReckoningPropnetStateMachine::Simulate6(const StateType& s)
 {
-  StateType temp = StateType("");
-  MoveType m = MoveType("");
+  StateType temp = StateType();
+  MoveType m = MoveType();
   temp.Equate(s);
 
   size_t role_id = 0;
@@ -249,7 +249,7 @@ const size_t* PropnetFCDRC::Simulate6(const StateType& s)
   return GetGoals(temp);
 }
 
-void PropnetFCDRC::SeparateRolePropNets()
+void ForwardDeadReckoningPropnetStateMachine::SeparateRolePropNets()
 {
   log.Info << "Creating separate propnets for each role." << std::endl;
 
@@ -262,7 +262,7 @@ void PropnetFCDRC::SeparateRolePropNets()
   }
 }
 
-void PropnetFCDRC::MetaGame(size_t simulation_time)
+void ForwardDeadReckoningPropnetStateMachine::MetaGame(size_t simulation_time)
 {
   if(role_size > 1)
   {
@@ -274,7 +274,7 @@ void PropnetFCDRC::MetaGame(size_t simulation_time)
   }
 }
 
-void PropnetFCDRC::MetaGame_multi_player(size_t simulation_time)
+void ForwardDeadReckoningPropnetStateMachine::MetaGame_multi_player(size_t simulation_time)
 {
   isZeroSumGame = true;
   isAlternatingMoves = true;
@@ -283,7 +283,7 @@ void PropnetFCDRC::MetaGame_multi_player(size_t simulation_time)
 
   size_t stop = util::Timer::microtimer() + simulation_time;
 
-  StateType temp("");
+  StateType temp;
   for(size_t i = 0;i < core::RawAState::arr_size;i++)
     temp->s[i] = 255;
 
@@ -295,7 +295,7 @@ void PropnetFCDRC::MetaGame_multi_player(size_t simulation_time)
   {
     StateType temp = InitState().Clone();
 
-    MoveType m("");
+    MoveType m;
 
     while(!initial_pn.Update(temp, *initial_pn_payload))
     {
@@ -351,7 +351,7 @@ void PropnetFCDRC::MetaGame_multi_player(size_t simulation_time)
   }
 }
 
-void PropnetFCDRC::CheckZeroSumGame()
+void ForwardDeadReckoningPropnetStateMachine::CheckZeroSumGame()
 {
   size_t sum = 0;
   for(size_t i = 0;i < role_size;i++)
@@ -361,18 +361,18 @@ void PropnetFCDRC::CheckZeroSumGame()
     isZeroSumGame = false;
 }
 
-void PropnetFCDRC::FinalizeInitialPropNet()
+void ForwardDeadReckoningPropnetStateMachine::FinalizeInitialPropNet()
 {
   initial_pn.Finalize();
   initial_pn_payload = initial_pn.GetPayLoadInstance();
   initial_pn_payload2 = initial_pn.GetPayLoadInstance2();
 
-  GetLegalMoves_l = core::template_utils::BindToObject(&PropnetFCDRC::GetLegalMoves_l_initial_dfp, this);
+  GetLegalMoves_l = core::template_utils::BindToObject(&ForwardDeadReckoningPropnetStateMachine::GetLegalMoves_l_initial_dfp, this);
 
-  //GetNextState = core::template_utils::BindToObject(&PropnetFCDRC::GetNextState_initial_dfp, this);
+  //GetNextState = core::template_utils::BindToObject(&ForwardDeadReckoningPropnetStateMachine::GetNextState_initial_dfp, this);
 }
 
-void PropnetFCDRC::SeparateGoalNet(bool compile_goal_propnet)
+void ForwardDeadReckoningPropnetStateMachine::SeparateGoalNet(bool compile_goal_propnet)
 {
   log.Info << "Creating separate propnet for goals." << std::endl;
 
@@ -388,7 +388,7 @@ void PropnetFCDRC::SeparateGoalNet(bool compile_goal_propnet)
   goal_pn.Finalize();
   goal_pn_payload = goal_pn.GetPayLoadInstance();
 
-  GetGoals = core::template_utils::BindToObject(&PropnetFCDRC::GetGoal_goal_dfp, this);
+  GetGoals = core::template_utils::BindToObject(&ForwardDeadReckoningPropnetStateMachine::GetGoal_goal_dfp, this);
 
   if(compile_goal_propnet)
   {
@@ -422,15 +422,15 @@ void PropnetFCDRC::SeparateGoalNet(bool compile_goal_propnet)
     GetGoals_buff = new bool[mem];
 
     is_goal_propnet_compiled = true;
-    GetGoals = core::template_utils::BindToObject(&PropnetFCDRC::GetGoals_goal_m, this);
+    GetGoals = core::template_utils::BindToObject(&ForwardDeadReckoningPropnetStateMachine::GetGoals_goal_m, this);
 
     log.Info << "Goal propnet successfully compiled." << std::endl;
   }
 }
 
-const size_t* PropnetFCDRC::Simulate2(const StateType& s)
+const size_t* ForwardDeadReckoningPropnetStateMachine::Simulate2(const StateType& s)
 {
-  StateType temp = StateType("");
+  StateType temp;
   temp.Equate(s);
 
   size_t state_index = 0;
@@ -518,7 +518,7 @@ const size_t* PropnetFCDRC::Simulate2(const StateType& s)
   return GetGoals(temp);
 }
 
-PropnetFCDRC::StateType PropnetFCDRC::GetNextState(const StateType& s,
+ForwardDeadReckoningPropnetStateMachine::StateType ForwardDeadReckoningPropnetStateMachine::GetNextState(const StateType& s,
                                                    const MoveType& m)
 {
   initial_pn.Update2(s, *initial_pn_payload2);
@@ -531,8 +531,8 @@ PropnetFCDRC::StateType PropnetFCDRC::GetNextState(const StateType& s,
 /// Functions for initial propnet
 ////////////////////////////////////////////////////////////////////////////////
 
-MoveList<PropnetFCDRC::MoveType>
-  PropnetFCDRC::GetLegalMoves_l_initial_dfp(const StateType& s)
+MoveList<ForwardDeadReckoningPropnetStateMachine::MoveType>
+  ForwardDeadReckoningPropnetStateMachine::GetLegalMoves_l_initial_dfp(const StateType& s)
 {
 //  initial_pn.Update(s, *initial_pn_payload);
 //
@@ -583,8 +583,8 @@ MoveList<PropnetFCDRC::MoveType>
 //  }
 }
 
-PropnetFCDRC::StateType
-  PropnetFCDRC::GetNextState_initial_dfp(const StateType& s,
+ForwardDeadReckoningPropnetStateMachine::StateType
+  ForwardDeadReckoningPropnetStateMachine::GetNextState_initial_dfp(const StateType& s,
                                          const MoveType& m)
 {
   initial_pn.Update(s, *initial_pn_payload);
@@ -594,7 +594,7 @@ PropnetFCDRC::StateType
   return initial_pn_payload->top.Clone();
 }
 
-bool PropnetFCDRC::CompiledIsTerminal(const StateType& state) const
+bool ForwardDeadReckoningPropnetStateMachine::CompiledIsTerminal(const StateType& state) const
 {
   return IsTerminal_compiled(state, IsTerminal_buff);
 }
@@ -603,13 +603,13 @@ bool PropnetFCDRC::CompiledIsTerminal(const StateType& state) const
 /// Functions for Goal Net
 ////////////////////////////////////////////////////////////////////////////////
 
-const size_t* PropnetFCDRC::GetGoal_goal_dfp(const StateType& s)
+const size_t* ForwardDeadReckoningPropnetStateMachine::GetGoal_goal_dfp(const StateType& s)
 {
   goal_pn.Update(s, *goal_pn_payload);
   return initial_pn_payload->GetGoals();
 }
 
-const size_t* PropnetFCDRC::GetGoals_goal_m(const StateType& s)
+const size_t* ForwardDeadReckoningPropnetStateMachine::GetGoals_goal_m(const StateType& s)
 {
   GetGoals_m(s, initial_pn_payload->goals, GetGoals_buff);
   return initial_pn_payload->GetGoals();

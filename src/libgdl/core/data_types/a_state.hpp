@@ -102,9 +102,8 @@ struct AState : public std::shared_ptr<core::RawAState>
 {
   typedef core::RawAState RawType;
 
-  AState() : std::shared_ptr<core::RawAState>(NULL) {}
-  AState(const std::string&)
-    : std::shared_ptr<core::RawAState>(new core::RawAState()) {}
+  AState() : std::shared_ptr<core::RawAState>(new core::RawAState()) {}
+
   AState(core::RawAState* state) : std::shared_ptr<core::RawAState>(state) {}
 
   AState Clone() const
@@ -146,7 +145,7 @@ struct AState : public std::shared_ptr<core::RawAState>
 
   AState operator~()
   {
-    AState out("");
+    AState out;
     for(size_t i = 0;i < core::RawAState::arr_size;i++)
     {
       out->s[i] = ~get()->s[i];

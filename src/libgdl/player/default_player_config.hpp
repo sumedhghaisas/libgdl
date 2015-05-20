@@ -5,6 +5,7 @@
 #include <libgdl/core/util/preprocessor.hpp>
 #include <libgdl/core/util/sfinae_utility.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <boost/program_options.hpp>
 
 namespace libgdl
 {
@@ -38,6 +39,25 @@ struct DefaultPlayerConfig
     (size_t)(MetaGame_safety_time)(= 500000)
   )
 
+  void Configure(int argc, char* argv[])
+  {
+    boost::program_options::options_description desc("Allowed options");
+    AddOptions(desc);
+    boost::program_options::store(boost::program_options::command_line_parser(argc, argv).
+        options(desc).run(), vm);
+    boost::program_options::notify(vm);
+  }
+
+  virtual void AddOptions(boost::program_options::options_description& desc)
+  {
+    using namespace boost::program_options;
+
+    desc.add_options()
+    ("SelectMove-safety-time", value<size_t>(), "Set select move safety time.")
+    ("MetaGame-safety-time", value<size_t>(), "Set meta game safety time.")
+    ;
+  }
+
   size_t SelectMoveSafetyTime()
   {
     return SelectMove_safety_time;
@@ -64,6 +84,8 @@ struct DefaultPlayerConfig
     static DefaultPlayerConfig singleton;
     return singleton;
   }
+
+  boost::program_options::variables_map vm;
 };
 
 }
@@ -98,5 +120,13 @@ struct PlayerConfig : public SUPERCLASS                                       \
     return singleton;                                                         \
   }                                                                           \
 };
+
+#define LIBGDL_PLAYER_CONFIG_CL_PARAMS(...)                                   \
+virtual void AddOptions(boost::program_options::options_description& desc)    \
+{                                                                             \
+  SuperClass.AddOptions(desc);                                                \
+  desc.add_options()                                                          \
+  __VA_ARGS__                                                                 \
+}
 
 #endif // LIBGDL_PLAYER_DEFAULT_PLAYER_CONFIG_HPP_INCLUDED

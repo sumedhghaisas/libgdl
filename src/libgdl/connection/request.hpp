@@ -58,6 +58,11 @@ struct StartRequest : public Request
   {
   }
 
+  std::string GameDesc() const
+  {
+    return game_desc;
+  }
+
   size_t MetaTime() const
   {
     return meta_time;
