@@ -1337,17 +1337,17 @@ void PropNet::Finalize()
 
     if(cd.type == 0)
     {
-      default_payload.data[t_cn.data_id] = 0x4000;
+      default_payload.data[t_cn.data_id] = 0x8000;
       t_cn.type = false;
     }
     else if(cd.type == 1)
     {
-      default_payload.data[t_cn.data_id] = 0xbfff;
+      default_payload.data[t_cn.data_id] = 0x7fff;
       t_cn.type = false;
     }
     else if(cd.type == 2)
     {
-      default_payload.data[t_cn.data_id] = 0x8000;
+      default_payload.data[t_cn.data_id] = 0x0000;
       t_cn.type = false;
     }
     else if(cd.type == 3)
@@ -1509,7 +1509,7 @@ void PropNet::Finalize()
     for(size_t j = 0;j < LegalNodes()[i].size();j++)
     {
       legal_memory_ids[i][j] = memory_map.find(LegalNodes()[i].find(j)->second)->second;
-      if(default_payload.data[legal_memory_ids[i][j]] & 0x4000)
+      if(default_payload.data[legal_memory_ids[i][j]] & 0x8000)
         default_payload.legal_size[i]++;
     }
   }
@@ -1689,7 +1689,7 @@ PropNet* PropNet::OptimizeWithRoleMask(const StateType& mask)
         char t_mask = 1 << j;
         if(mask.get()->s[i] & t_mask)
         {
-          Node* n = base_nodes.find(8*i + j);
+          Node* n = base_nodes.find(8*i + j)->second;
 
         }
       }

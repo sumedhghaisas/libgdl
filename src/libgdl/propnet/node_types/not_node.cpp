@@ -50,7 +50,7 @@ bool NotNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, s
   holding_value = !(*in_degree.begin())->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
 
   if(holding_value)
-    data[id_map.find(this)->second] = 0x7fff;
+    data[id_map.find(this)->second] = 0xffff;
 
   initialized.insert(this);
 

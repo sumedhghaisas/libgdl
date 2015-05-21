@@ -59,10 +59,10 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
     {
       signed short t_val = val + n_val;
 
-      if((t_val ^ n_val) & 0x4000)
+      if((t_val ^ n_val) & 0x8000)
       {
         signed short p_val = 0;
-        if(t_val & 0x4000)
+        if(t_val & 0x8000)
           p_val = 0x0001;
         else p_val = 0xffff;
 
@@ -363,10 +363,10 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
     {
       signed short t_val = val + n_val;
 
-      if((t_val ^ n_val) & 0x4000)
+      if((t_val ^ n_val) & 0x8000)
       {
         signed short p_val = 0;
-        if(t_val & 0x4000)
+        if(t_val & 0x8000)
           p_val = 0x0001;
         else p_val = 0xffff;
 
@@ -550,7 +550,7 @@ inline void PropNet::GetRandomLegalMove(const PayLoadType& payload, MoveType& m)
     size_t index = 0;
     while(true)
     {
-      if(payload.data[legal_memory_ids[i][index]] & 0x4000)
+      if(payload.data[legal_memory_ids[i][index]] & 0x8000)
         rnd--;
       if(!rnd)
       {

@@ -165,6 +165,7 @@ ForwardDeadReckoningPropnetStateMachine::ForwardDeadReckoningPropnetStateMachine
   simulate2_it = new MoveSet::const_iterator[role_size];
   for(size_t i = 0;i < 100;i++)
     simulate2_state_arr[i] = StateType();
+  exit(0);
 }
 
 ForwardDeadReckoningPropnetStateMachine::~ForwardDeadReckoningPropnetStateMachine()
