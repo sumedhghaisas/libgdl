@@ -65,7 +65,11 @@ bool GoalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, 
   holding_value = (*in_degree.begin())->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
 
   if(holding_value)
-    data[id_map.find(this)->second] += 0x0001;
+  {
+    goals[r_id] = id;
+    data[id_map.find(this)->second] += 0x8000;
+  }
+  else data[id_map.find(this)->second] += 0x7fff;
 
   initialized.insert(this);
 

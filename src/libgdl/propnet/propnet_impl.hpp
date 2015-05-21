@@ -49,17 +49,15 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
     propnet::CrystalNode* cn = (propnet::CrystalNode*)(arr_propnet + n_id);
     signed short& n_val = data[cn[0].data_id];
 
-    if(cn[0].type)
+    signed short t_val = val + n_val;
+    if((t_val ^ n_val) & 0x8000)
     {
-      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
-      //std::cout << n_id << " " << std::hex << n << std::dec << std::endl;
-      n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
-    }
-    else
-    {
-      signed short t_val = val + n_val;
-
-      if((t_val ^ n_val) & 0x8000)
+      if(cn[0].type)
+      {
+        propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
+        n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
+      }
+      else
       {
         signed short p_val = 0;
         if(t_val & 0x8000)
@@ -74,8 +72,36 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
           t_stack++;
         }
       }
-      n_val = t_val;
     }
+
+    n_val = t_val;
+//    if(cn[0].type)
+//    {
+//      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
+//      //std::cout << n_id << " " << std::hex << n << std::dec << std::endl;
+//      n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
+//    }
+//    else
+//    {
+//      signed short t_val = val + n_val;
+//
+//      if((t_val ^ n_val) & 0x8000)
+//      {
+//        signed short p_val = 0;
+//        if(t_val & 0x8000)
+//          p_val = 0x0001;
+//        else p_val = 0xffff;
+//
+//        for(size_t i = 0;i < cn[0].out_size;i++)
+//        {
+//          *((unsigned short*)t_stack) = cn[0].out_edges[i];
+//          *(((signed short*)t_stack) + 1) = p_val;
+//
+//          t_stack++;
+//        }
+//      }
+//      n_val = t_val;
+//    }
   }
 }
 
@@ -353,17 +379,15 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
     propnet::CrystalNode* cn = (propnet::CrystalNode*)(arr_propnet + n_id);
     signed short& n_val = data[cn[0].data_id];
 
-    if(cn[0].type)
+    signed short t_val = val + n_val;
+    if((t_val ^ n_val) & 0x8000)
     {
-      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
-      //std::cout << n_id << " " << std::hex << n << std::dec << std::endl;
-      n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
-    }
-    else
-    {
-      signed short t_val = val + n_val;
-
-      if((t_val ^ n_val) & 0x8000)
+      if(cn[0].type)
+      {
+        propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
+        n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
+      }
+      else
       {
         signed short p_val = 0;
         if(t_val & 0x8000)
@@ -378,8 +402,37 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
           t_stack++;
         }
       }
-      n_val = t_val;
     }
+
+    n_val = t_val;
+
+//    if(cn[0].type)
+//    {
+//      propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
+//      //std::cout << n_id << " " << std::hex << n << std::dec << std::endl;
+//      n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
+//    }
+//    else
+//    {
+//      signed short t_val = val + n_val;
+//
+//      if((t_val ^ n_val) & 0x8000)
+//      {
+//        signed short p_val = 0;
+//        if(t_val & 0x8000)
+//          p_val = 0x0001;
+//        else p_val = 0xffff;
+//
+//        for(size_t i = 0;i < cn[0].out_size;i++)
+//        {
+//          *((unsigned short*)t_stack) = cn[0].out_edges[i];
+//          *(((signed short*)t_stack) + 1) = p_val;
+//
+//          t_stack++;
+//        }
+//      }
+//      n_val = t_val;
+//    }
   }
   base.Equate(state);
 

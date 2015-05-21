@@ -136,8 +136,7 @@ struct Node
     else cry.type = 3;
 
     cry.id = current_index;
-    if(type != Type::NEXT)
-      init_map[current_index] = current_m_index++;
+    init_map[current_index] = current_m_index++;
 
     current_index++;
 

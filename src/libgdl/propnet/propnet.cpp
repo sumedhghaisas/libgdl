@@ -1334,6 +1334,11 @@ void PropNet::Finalize()
     auto m_it = init_map.find(i);
     if(m_it != init_map.end())
       t_cn.data_id = m_it->second;
+    else
+    {
+      cout << "lol" << endl;
+      exit(1);
+    }
 
     if(cd.type == 0)
     {

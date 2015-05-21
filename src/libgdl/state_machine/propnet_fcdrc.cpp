@@ -326,6 +326,12 @@ void ForwardDeadReckoningPropnetStateMachine::MetaGame_multi_player(size_t simul
       initial_pn.Update(m, *initial_pn_payload);
 
       temp.Equate(initial_pn_payload->top);
+
+      cout << m << endl;
+      cout << temp << endl;
+
+      size_t t;
+      cin >> t;
     }
 
     if(isZeroSumGame)

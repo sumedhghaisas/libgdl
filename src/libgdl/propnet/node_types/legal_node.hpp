@@ -39,7 +39,7 @@ struct LegalNode : public Node
 
   void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals, bool& terminal) const
   {
-    mem += val;
+    //mem += val;
     if(val == 0x0001)
     {
       legal_size[r_id]++;

@@ -70,8 +70,8 @@ bool TerminalNode::CrystalInitialize(const PropNet& pn, const std::map<const Nod
   }
 
   if(holding_value)
-    data[id_map.find(this)->second] = 0x4000;
-  else data[id_map.find(this)->second] = 0x3fff;
+    data[id_map.find(this)->second] = 0x8000;
+  else data[id_map.find(this)->second] = 0x7fff;
 
   initialized.insert(this);
 
