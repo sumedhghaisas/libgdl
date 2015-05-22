@@ -34,17 +34,6 @@ tuple<bool, size_t> InputNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool InputNode::InitializeValue(const PropNet&, AState& s, MoveSet* m_set, size_t* goals)
-{
-  if(in_id == 0)
-  {
-    holding_value = true;
-    return true;
-  }
-  holding_value = false;
-  return false;
-}
-
 bool InputNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
@@ -64,18 +53,6 @@ bool InputNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*,
   initialized.insert(this);
 
   return holding_value;
-}
-
-void InputNode::Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals)
-{
-  holding_value = value;
-  m.Set(r_id, in_id);
-  for(auto it : out_degree)
-    it->Update(value, base, top, m, m_set, goals);
-
-#ifdef LIBGDL_DFP_TEST
-  node_count++;
-#endif // LIBGDL_DFP_TEST
 }
 
 void InputNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const

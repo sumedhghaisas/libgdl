@@ -49,11 +49,6 @@ struct Node
   virtual std::tuple<bool, size_t> CodeGen(EntryManager& em,
                                            size_t visit_stamp) = 0;
 
-  virtual bool InitializeValue(const PropNet&,
-                               AState& s,
-                               MoveSet* m_set,
-                               size_t* goals) = 0;
-
   virtual bool CrystalInitialize(const PropNet& pn,
                                  const std::map<const Node*, size_t>& id_map,
                                  signed short* data,
@@ -61,13 +56,6 @@ struct Node
                                  MoveSet* m_set,
                                  size_t* goals,
                                  std::set<const Node*>& initialized) = 0;
-
-  virtual void Update(bool value,
-                      AState& base,
-                      AState& top,
-                      AMove& m,
-                      MoveSet* m_set,
-                      size_t* goals) = 0;
 
   virtual Node* GetCopy_only_info() const = 0;
 

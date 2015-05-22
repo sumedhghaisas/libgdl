@@ -67,21 +67,6 @@ tuple<bool, size_t> LegalNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool LegalNode::InitializeValue(const PropNet& pn, AState& s, MoveSet* m_set, size_t* goals)
-{
-  holding_value = true;
-  num_true = 0;
-  if(!in_degree.empty())
-  {
-    bool temp = (*in_degree.begin())->InitializeValue(pn, s, m_set, goals);
-    if(temp) num_true++;
-    holding_value = temp;
-  }
-  if(holding_value)
-    m_set[r_id].insert(id);
-  return holding_value;
-}
-
 bool LegalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
@@ -109,42 +94,6 @@ bool LegalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*,
   initialized.insert(this);
 
   return holding_value;
-}
-
-void LegalNode::Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals)
-{
-  if(value && !holding_value)
-  {
-    //num_true++;
-    //if(holding_value)
-      //return;
-    holding_value = true;
-    m_set[r_id].insert(id);
-    return;
-  }
-  else if(!value)
-  {
-    holding_value = false;
-    m_set[r_id].erase(m_set[r_id].find(id));
-    return;
-  }
-
-  //--num_true;
-
-#ifdef LIBGDL_DFP_TEST
-  if(num_true < 0 || !holding_value)
-  {
-    cout << "Something wrong in DFP" << endl;
-    cout << Name() << endl;
-    exit(1);
-  }
-  node_count++;
-#endif // LIBGDL_DFP_TEST
-
-  //if(!num_true)
-  //{
-
-  //}
 }
 
 void LegalNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const

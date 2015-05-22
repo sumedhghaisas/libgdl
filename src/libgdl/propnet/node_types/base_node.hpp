@@ -29,8 +29,6 @@ struct BaseNode : public Node
 
   std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t v_stamp);
 
-  bool InitializeValue(const PropNet&, AState& s, MoveSet* m_set, size_t* goals);
-
   bool CrystalInitialize(const PropNet& pn,
                          const std::map<const Node*, size_t>& id_map,
                          signed short* data,
@@ -38,13 +36,6 @@ struct BaseNode : public Node
                          MoveSet* m_set,
                          size_t* goals,
                          std::set<const Node*>& initialized);
-
-  void Update(bool value,
-              AState& base,
-              AState& top,
-              AMove& m,
-              MoveSet* m_set,
-              size_t* goals);
 
   void CreateCopy(PropNet& pn, Node* parent, std::map<Node*, Node*>& node_map);
 

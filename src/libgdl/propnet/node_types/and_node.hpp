@@ -26,8 +26,6 @@ struct AndNode : public Node
     return "AND_" + ToString(id);
   }
 
-  bool InitializeValue(const PropNet&, AState& s, MoveSet* m_set, size_t* goals);
-
   bool CrystalInitialize(const PropNet& pn,
                          const std::map<const Node*, size_t>& id_map,
                          signed short* data,
@@ -37,13 +35,6 @@ struct AndNode : public Node
                          std::set<const Node*>& initialized);
 
   std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t v_stamp);
-
-  void Update(bool value,
-              AState& base,
-              AState& top,
-              AMove& m,
-              MoveSet* m_set,
-              size_t* goals);
 
   Node* GetCopy_only_info() const
   {
