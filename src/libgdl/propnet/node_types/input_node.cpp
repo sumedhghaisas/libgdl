@@ -45,10 +45,7 @@ bool InputNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*,
     holding_value = true;
   }
 
-  if(holding_value)
-  {
-    data[id_map.find(this)->second] += CrystalConfig::CrystalIncrementVal;
-  }
+  CrystalConfig::OrPolicyCrystalInitialize(holding_value, data[id_map.find(this)->second]);
 
   initialized.insert(this);
 

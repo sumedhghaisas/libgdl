@@ -64,8 +64,7 @@ bool OrNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, si
   for(auto it : in_degree)
   {
     bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
-    if(temp)
-      data[id_map.find(this)->second] += 0x0001;
+    CrystalConfig::OrPolicyCrystalInitialize(temp, data[id_map.find(this)->second]);
 
     holding_value = holding_value || temp;
   }

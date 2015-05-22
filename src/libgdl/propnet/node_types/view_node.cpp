@@ -67,8 +67,7 @@ bool ViewNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, 
   {
     bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
 
-    if(temp)
-      data[id_map.find(this)->second] += CrystalConfig::CrystalIncrementVal;
+    CrystalConfig::OrPolicyCrystalInitialize(temp, data[id_map.find(this)->second]);
 
     holding_value = holding_value || temp;
   }

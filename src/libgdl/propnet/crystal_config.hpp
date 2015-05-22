@@ -32,6 +32,12 @@ struct CrystalConfig
       to_up += CrystalDecrementVal;
   }
 
+  static void OrPolicyCrystalInitialize(bool result, signed short& to_up)
+  {
+    if(result)
+      to_up += CrystalIncrementVal;
+  }
+
   static const signed short CrystalSignMask = 0x8000;
 
   static const signed short CrystalIncrementVal = 0x0001;
