@@ -33,14 +33,29 @@ struct LegalNode : public Node
 
   bool InitializeValue(const PropNet&, AState& s, MoveSet* m_set, size_t* goals);
 
-  bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized);
+  bool CrystalInitialize(const PropNet& pn,
+                         const std::map<const Node*, size_t>& id_map,
+                         signed short* data,
+                         AState& s,
+                         MoveSet* m_set,
+                         size_t* goals,
+                         std::set<const Node*>& initialized);
 
-  void Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals);
+  void Update(bool value,
+              AState& base,
+              AState& top,
+              AMove& m,
+              MoveSet* m_set,
+              size_t* goals);
 
-  void CrystalUpdate(signed short val, AState& top, signed short& mem, size_t* legal_size, size_t* goals, bool& terminal) const
+  void CrystalUpdate(signed short val,
+                     AState& top,
+                     signed short& mem,
+                     size_t* legal_size,
+                     size_t* goals,
+                     bool& terminal) const
   {
-    //mem += val;
-    if(val == 0x0001)
+    if(val == CrystalData::CrystalIncrementVal)
     {
       legal_size[r_id]++;
     }
@@ -50,9 +65,14 @@ struct LegalNode : public Node
     }
   }
 
-  void CrystalUpdate(signed short val, AState& top, signed short& mem, MoveSet* m_set, size_t* goals, bool& terminal) const
+  void CrystalUpdate(signed short val,
+                     AState& top,
+                     signed short& mem,
+                     MoveSet* m_set,
+                     size_t* goals,
+                     bool& terminal) const
   {
-    if(val == 0x0001)
+    if(val == CrystalData::CrystalIncrementVal)
     {
       m_set[r_id].insert(id);
     }

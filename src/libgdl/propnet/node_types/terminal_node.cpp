@@ -65,13 +65,10 @@ bool TerminalNode::CrystalInitialize(const PropNet& pn, const std::map<const Nod
   for(auto it : in_degree)
   {
     bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
-
+    if(temp)
+      data[id_map.find(this)->second] = CrystalData::CrystalIncrementVal;
     holding_value = holding_value || temp;
   }
-
-  if(holding_value)
-    data[id_map.find(this)->second] = 0x8000;
-  else data[id_map.find(this)->second] = 0x7fff;
 
   initialized.insert(this);
 

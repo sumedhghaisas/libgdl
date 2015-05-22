@@ -13,6 +13,7 @@ using namespace libgdl;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
 using namespace libgdl::propnet::entry_types;
+using namespace libgdl::propnet::crystallization;
 
 size_t Node::node_count = 0;
 
@@ -59,7 +60,10 @@ tuple<bool, size_t> AndNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool AndNode::InitializeValue(const PropNet& pn, AState& s, MoveSet* m_set, size_t* goals)
+bool AndNode::InitializeValue(const PropNet& pn,
+                              AState& s,
+                              MoveSet* m_set,
+                              size_t* goals)
 {
   holding_value = true;
   num_false = 0;
@@ -72,7 +76,13 @@ bool AndNode::InitializeValue(const PropNet& pn, AState& s, MoveSet* m_set, size
   return holding_value;
 }
 
-bool AndNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized)
+bool AndNode::CrystalInitialize(const PropNet& pn,
+                                const std::map<const Node*, size_t>& id_map,
+                                signed short* data,
+                                AState& s,
+                                MoveSet* m_set,
+                                size_t* goals,
+                                std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
@@ -83,7 +93,7 @@ bool AndNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, s
     bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
     if(!temp)
     {
-      data[id_map.find(this)->second] += 0xffff;
+      data[id_map.find(this)->second] += CrystalData::CrystalDecrementVal;
     }
     holding_value = holding_value & temp;
   }
@@ -93,7 +103,9 @@ bool AndNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, s
   return holding_value;
 }
 
-void AndNode::Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals)
+void AndNode::Update(bool value,
+                     AState& base,
+                     AState& top, AMove& m, MoveSet* m_set, size_t* goals)
 {
   if(!value)
   {

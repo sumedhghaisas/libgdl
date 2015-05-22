@@ -8,6 +8,8 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
   //std::stack<size_t, std::deque<size_t>> n_stack;
   //std::stack<signed short, std::deque<size_t>> v_stack;
 
+  using namespace crystallization;
+
   int* pay_stack = payload.t_stack;
   int* t_stack = pay_stack;
   MoveType& base = payload.base_move;
@@ -23,14 +25,14 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
       //n_stack[stack_index] = input_crystal_ids[i][base->moves[i]];
       *((unsigned short*)t_stack) = input_crystal_ids[i][base->moves[i]];
 
-      //v_stack[stack_index] = 0xffff;
-      *(((signed short*)t_stack) + 1) = 0xffff;
+      //v_stack[stack_index] = CrystalData::CrystalDecrementVal;
+      *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
 
       t_stack++;
 
       *((unsigned short*)t_stack) = input_crystal_ids[i][move->moves[i]];
 
-      *(((signed short*)t_stack) + 1) = 0x0001;
+      *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
 
       t_stack++;
 
@@ -50,7 +52,7 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
     signed short& n_val = data[cn[0].data_id];
 
     signed short t_val = val + n_val;
-    if((t_val ^ n_val) & 0x8000)
+    if((t_val ^ n_val) & CrystalData::CrystalSignMask)
     {
       if(cn[0].type)
       {
@@ -60,9 +62,9 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
       else
       {
         signed short p_val = 0;
-        if(t_val & 0x8000)
-          p_val = 0x0001;
-        else p_val = 0xffff;
+        if(t_val & CrystalData::CrystalSignMask)
+          p_val = CrystalData::CrystalIncrementVal;
+        else p_val = CrystalData::CrystalDecrementVal;
 
         for(size_t i = 0;i < cn[0].out_size;i++)
         {
@@ -85,12 +87,12 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
 //    {
 //      signed short t_val = val + n_val;
 //
-//      if((t_val ^ n_val) & 0x8000)
+//      if((t_val ^ n_val) & CrystalData::CrystalSignMask)
 //      {
 //        signed short p_val = 0;
-//        if(t_val & 0x8000)
-//          p_val = 0x0001;
-//        else p_val = 0xffff;
+//        if(t_val & CrystalData::CrystalSignMask)
+//          p_val = CrystalData::CrystalIncrementVal;
+//        else p_val = CrystalData::CrystalDecrementVal;
 //
 //        for(size_t i = 0;i < cn[0].out_size;i++)
 //        {
@@ -110,6 +112,8 @@ inline void PropNet::Update2(const MoveType& move, PayLoadType2& payload) const
   //std::stack<size_t, std::deque<size_t>> n_stack;
   //std::stack<signed short, std::deque<size_t>> v_stack;
 
+  using namespace crystallization;
+
   int* pay_stack = payload.t_stack;
   int* t_stack = pay_stack;
   MoveType& base = payload.base_move;
@@ -125,13 +129,13 @@ inline void PropNet::Update2(const MoveType& move, PayLoadType2& payload) const
       //n_stack[stack_index] = input_crystal_ids[i][base->moves[i]];
       *((unsigned short*)t_stack) = input_crystal_ids[i][base->moves[i]];
 
-      //v_stack[stack_index] = 0xffff;
-      *(((signed short*)t_stack) + 1) = 0xffff;
+      //v_stack[stack_index] = CrystalData::CrystalDecrementVal;
+      *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
 
       t_stack++;
 
       *((unsigned short*)t_stack) = input_crystal_ids[i][move->moves[i]];
-      *(((signed short*)t_stack) + 1) = 0x0001;
+      *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
 
       t_stack++;
 
@@ -159,12 +163,12 @@ inline void PropNet::Update2(const MoveType& move, PayLoadType2& payload) const
     {
       signed short t_val = val + n_val;
 
-      if((t_val ^ n_val) & 0x4000)
+      if((t_val ^ n_val) & CrystalData::CrystalSignMask)
       {
         signed short p_val = 0;
-        if(t_val & 0x4000)
-          p_val = 0x0001;
-        else p_val = 0xffff;
+        if(t_val & CrystalData::CrystalSignMask)
+          p_val = CrystalData::CrystalIncrementVal;
+        else p_val = CrystalData::CrystalDecrementVal;
 
         for(size_t i = 0;i < cn[0].out_size;i++)
         {
@@ -184,6 +188,8 @@ inline void PropNet::Update3(MoveSet::const_iterator* move, PayLoadType2& payloa
   //std::stack<size_t, std::deque<size_t>> n_stack;
   //std::stack<signed short, std::deque<size_t>> v_stack;
 
+  using namespace crystallization;
+
   int* pay_stack = payload.t_stack;
   int* t_stack = pay_stack;
   MoveType& base = payload.base_move;
@@ -199,13 +205,13 @@ inline void PropNet::Update3(MoveSet::const_iterator* move, PayLoadType2& payloa
       //n_stack[stack_index] = input_crystal_ids[i][base->moves[i]];
       *((unsigned short*)t_stack) = input_crystal_ids[i][base->moves[i]];
 
-      //v_stack[stack_index] = 0xffff;
-      *(((signed short*)t_stack) + 1) = 0xffff;
+      //v_stack[stack_index] = CrystalData::CrystalDecrementVal;
+      *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
 
       t_stack++;
 
       *((unsigned short*)t_stack) = input_crystal_ids[i][*move[i]];
-      *(((signed short*)t_stack) + 1) = 0x0001;
+      *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
 
       t_stack++;
 
@@ -233,12 +239,12 @@ inline void PropNet::Update3(MoveSet::const_iterator* move, PayLoadType2& payloa
     {
       signed short t_val = val + n_val;
 
-      if((t_val ^ n_val) & 0x4000)
+      if((t_val ^ n_val) & CrystalData::CrystalSignMask)
       {
         signed short p_val = 0;
-        if(t_val & 0x4000)
-          p_val = 0x0001;
-        else p_val = 0xffff;
+        if(t_val & CrystalData::CrystalSignMask)
+          p_val = CrystalData::CrystalIncrementVal;
+        else p_val = CrystalData::CrystalDecrementVal;
 
         for(size_t i = 0;i < cn[0].out_size;i++)
         {
@@ -260,6 +266,8 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
 
   //unsigned short*& n_stack = payload.n_stack;
   //signed short*& v_stack = payload.v_stack;
+  using namespace crystallization;
+
   int* pay_stack = payload.t_stack;
   int* t_stack = pay_stack;
   StateType& base = payload.base;
@@ -283,9 +291,9 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
         *((unsigned short*)t_stack) = base_crystal_ids[8*i];
         if(s_val & 1)
         {
-          *(((signed short*)t_stack) + 1) = 0x0001;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
         }
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -295,8 +303,8 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 1];
         if(s_val & 2)
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -306,8 +314,8 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 2];
         if(s_val & 4)
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -317,8 +325,8 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 3];
         if(s_val & 8)
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -328,8 +336,8 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 4];
         if(s_val & 16)
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -339,8 +347,8 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 5];
         if(s_val & 32)
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -350,8 +358,8 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 6];
         if(s_val & 64)
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -361,8 +369,8 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 7];
         if(s_val & 128)
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
     }
@@ -380,7 +388,7 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
     signed short& n_val = data[cn[0].data_id];
 
     signed short t_val = val + n_val;
-    if((t_val ^ n_val) & 0x8000)
+    if((t_val ^ n_val) & CrystalData::CrystalSignMask)
     {
       if(cn[0].type)
       {
@@ -390,9 +398,9 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       else
       {
         signed short p_val = 0;
-        if(t_val & 0x8000)
-          p_val = 0x0001;
-        else p_val = 0xffff;
+        if(t_val & CrystalData::CrystalSignMask)
+          p_val = CrystalData::CrystalIncrementVal;
+        else p_val = CrystalData::CrystalDecrementVal;
 
         for(size_t i = 0;i < cn[0].out_size;i++)
         {
@@ -416,12 +424,12 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
 //    {
 //      signed short t_val = val + n_val;
 //
-//      if((t_val ^ n_val) & 0x8000)
+//      if((t_val ^ n_val) & CrystalData::CrystalSignMask)
 //      {
 //        signed short p_val = 0;
-//        if(t_val & 0x8000)
-//          p_val = 0x0001;
-//        else p_val = 0xffff;
+//        if(t_val & CrystalData::CrystalSignMask)
+//          p_val = CrystalData::CrystalIncrementVal;
+//        else p_val = CrystalData::CrystalDecrementVal;
 //
 //        for(size_t i = 0;i < cn[0].out_size;i++)
 //        {
@@ -446,6 +454,8 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
 
   //unsigned short*& n_stack = payload.n_stack;
   //signed short*& v_stack = payload.v_stack;
+  using namespace crystallization;
+
   int* pay_stack = payload.t_stack;
   int* t_stack = pay_stack;
   StateType& base = payload.base;
@@ -467,9 +477,9 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
         *((unsigned short*)t_stack) = base_crystal_ids[8*i];
         if((bool)(s_val & 1))
         {
-          *(((signed short*)t_stack) + 1) = 0x0001;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
         }
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -479,8 +489,8 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 1];
         if((bool)(s_val & 2))
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -490,8 +500,8 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 2];
         if((bool)(s_val & 4))
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -501,8 +511,8 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 3];
         if((bool)(s_val & 8))
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -512,8 +522,8 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 4];
         if((bool)(s_val & 16))
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -523,8 +533,8 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 5];
         if((bool)(s_val & 32))
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -534,8 +544,8 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 6];
         if((bool)(s_val & 64))
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
 
@@ -545,8 +555,8 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
       {
         *((unsigned short*)t_stack) = base_crystal_ids[8*i + 7];
         if((bool)(s_val & 128))
-          *(((signed short*)t_stack) + 1) = 0x0001;
-        else *(((signed short*)t_stack) + 1) = 0xffff;
+          *(((signed short*)t_stack) + 1) = CrystalData::CrystalIncrementVal;
+        else *(((signed short*)t_stack) + 1) = CrystalData::CrystalDecrementVal;
         t_stack++;
       }
     }
@@ -572,12 +582,12 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
     {
       signed short t_val = val + n_val;
 
-      if((t_val ^ n_val) & 0x4000)
+      if((t_val ^ n_val) & CrystalData::CrystalSignMask)
       {
         signed short p_val = 0;
-        if(t_val & 0x4000)
-          p_val = 0x0001;
-        else p_val = 0xffff;
+        if(t_val & CrystalData::CrystalSignMask)
+          p_val = CrystalData::CrystalIncrementVal;
+        else p_val = CrystalData::CrystalDecrementVal;
 
         for(size_t i = 0;i < cn[0].out_size;i++)
         {
@@ -597,13 +607,15 @@ inline bool PropNet::Update2(const StateType& state, PayLoadType2& payload) cons
 
 inline void PropNet::GetRandomLegalMove(const PayLoadType& payload, MoveType& m) const
 {
+  using namespace crystallization;
+
   for(size_t i = 0;i < role_size;i++)
   {
     size_t rnd = (rand() % payload.legal_size[i]) + 1;
     size_t index = 0;
     while(true)
     {
-      if(payload.data[legal_memory_ids[i][index]] & 0x8000)
+      if(payload.data[legal_memory_ids[i][index]] & CrystalData::CrystalSignMask)
         rnd--;
       if(!rnd)
       {

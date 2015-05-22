@@ -32,22 +32,43 @@ struct NextNode : public Node
 
   bool InitializeValue(const PropNet&, AState& s, MoveSet* m_set, size_t* goals);
 
-  bool CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized);
+  bool CrystalInitialize(const PropNet& pn,
+                         const std::map<const Node*, size_t>& id_map,
+                         signed short* data,
+                         AState& s,
+                         MoveSet* m_set,
+                         size_t* goals,
+                         std::set<const Node*>& initialized);
 
-  void Update(bool value, AState& base, AState& top, AMove& m, MoveSet* m_set, size_t* goals);
+  void Update(bool value,
+              AState& base,
+              AState& top,
+              AMove& m,
+              MoveSet* m_set,
+              size_t* goals);
 
-  void CrystalUpdate(signed short val, AState& top, signed short& n_val, size_t* m_set_size, size_t* goals, bool& terminal) const
+  void CrystalUpdate(signed short val,
+                     AState& top,
+                     signed short& n_val,
+                     size_t* m_set_size,
+                     size_t* goals,
+                     bool& terminal) const
   {
-    if(val == 0x0001)
+    if(val == CrystalData::CrystalIncrementVal)
     {
       top.Set(id, true);
     }
     else top.Set(id, false);
   }
 
-  void CrystalUpdate(signed short val, AState& top, signed short& n_val, MoveSet* m_set_size, size_t* goals, bool& terminal) const
+  void CrystalUpdate(signed short val,
+                     AState& top,
+                     signed short& n_val,
+                     MoveSet* m_set_size,
+                     size_t* goals,
+                     bool& terminal) const
   {
-    if(val == 0x0001)
+    if(val == CrystalData::CrystalIncrementVal)
     {
       top.Set(id, true);
     }

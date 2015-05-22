@@ -165,7 +165,7 @@ ForwardDeadReckoningPropnetStateMachine::ForwardDeadReckoningPropnetStateMachine
   simulate2_it = new MoveSet::const_iterator[role_size];
   for(size_t i = 0;i < 100;i++)
     simulate2_state_arr[i] = StateType();
-  exit(0);
+  initial_pn.OptimizeWithRoleMask(alt_role_masks[0]);
 }
 
 ForwardDeadReckoningPropnetStateMachine::~ForwardDeadReckoningPropnetStateMachine()
@@ -327,11 +327,11 @@ void ForwardDeadReckoningPropnetStateMachine::MetaGame_multi_player(size_t simul
 
       temp.Equate(initial_pn_payload->top);
 
-      cout << m << endl;
-      cout << temp << endl;
-
-      size_t t;
-      cin >> t;
+//      cout << m << endl;
+//      cout << temp << endl;
+//
+//      size_t t;
+//      cin >> t;
     }
 
     if(isZeroSumGame)
@@ -370,6 +370,7 @@ void ForwardDeadReckoningPropnetStateMachine::CheckZeroSumGame()
 
 void ForwardDeadReckoningPropnetStateMachine::FinalizeInitialPropNet()
 {
+  initial_pn.OptimizeWithNodeMerge();
   initial_pn.Finalize();
   initial_pn_payload = initial_pn.GetPayLoadInstance();
   initial_pn_payload2 = initial_pn.GetPayLoadInstance2();

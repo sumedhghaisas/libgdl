@@ -12,6 +12,7 @@ using namespace std;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
 using namespace libgdl::propnet::entry_types;
+using namespace libgdl::propnet::crystallization;
 
 tuple<bool, size_t> ViewNode::CodeGen(EntryManager& em, size_t v_stamp)
 {
@@ -80,7 +81,7 @@ bool ViewNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, 
     bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
 
     if(temp)
-      data[id_map.find(this)->second] += 0x0001;
+      data[id_map.find(this)->second] += CrystalData::CrystalIncrementVal;
 
     holding_value = holding_value || temp;
   }

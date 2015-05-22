@@ -1,6 +1,7 @@
 #include "propnet.hpp"
 
 #include "entry_manager.hpp"
+#include "crystal_data.hpp"
 
 #include <sstream>
 #include <fstream>
@@ -22,6 +23,7 @@ using namespace libgdl::gdlreasoner;
 using namespace libgdl::gdlparser;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
+using namespace libgdl::propnet::crystallization;
 
 size_t PropNet::debug_time = 0;
 
@@ -1044,229 +1046,229 @@ string PropNet::CreateIsTerminalMachineCode()
 
 map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& top, MoveSet* m_set, size_t* goals)
 {
-  map<const Node*, size_t> id_map;
-  map<size_t, CrystalData> data_map;
-  map<size_t, size_t> init_map;
+//  map<const Node*, size_t> id_map;
+//  map<size_t, CrystalData> data_map;
+//  map<size_t, size_t> init_map;
+//
+//  size_t current_index = 0;
+//  size_t current_m_index = 0;
+//
+//  for(auto it : input_nodes)
+//  {
+//    for(auto it2 : it)
+//    {
+//      if(del.find(it2.second) == del.end())
+//        it2.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
+//    }
+//  }
+//
+//  for(auto it : base_nodes)
+//  {
+//    if(del.find(it.second) == del.end())
+//      it.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
+//  }
+//
+//  for(auto it : legal_nodes)
+//  {
+//    for(auto it2 : it)
+//    {
+//      if(del.find(it2.second) == del.end())
+//        it2.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
+//    }
+//  }
+//
+//  for(auto it : goal_nodes)
+//  {
+//    for(auto it2 : it)
+//    {
+//      if(del.find(it2.second) == del.end())
+//        it2.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
+//    }
+//  }
+//
+//  for(auto it : next_nodes)
+//  {
+//    if(del.find(it.second) == del.end())
+//      it.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
+//  }
+//
+//  if(terminal != NULL)
+//    terminal->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
+//
+//  list<unsigned short> out_list;
+//  data_init = new signed short[init_map.size()];
+//
+//  map<unsigned short, unsigned short> temp_to_o;
+//
+//  for(size_t i = 0;i < data_map.size();i++)
+//  {
+//    CrystalData& cd = data_map.find(i)->second;
+//
+//    CrystalNode t_cn;
+//    auto m_it = init_map.find(i);
+//    if(m_it != init_map.end())
+//      t_cn.data_id = m_it->second;
+//
+//    if(cd.type == 0)
+//    {
+//      data_init[t_cn.data_id] = 0x4000;
+//      t_cn.type = false;
+//    }
+//    else if(cd.type == 1)
+//    {
+//      data_init[t_cn.data_id] = 0xbfff;
+//      t_cn.type = false;
+//    }
+//    else if(cd.type == 2)
+//    {
+//      data_init[t_cn.data_id] = 0x8000;
+//      t_cn.type = false;
+//    }
+//    else if(cd.type == 3)
+//    {
+//      t_cn.type = true;
+//      t_cn.out_size = 4;
+//
+//      temp_to_o[i] = out_list.size();
+//      unsigned short* temp = (unsigned short*)&t_cn;
+//      out_list.push_back(temp[0]);
+//      out_list.push_back(temp[1]);
+//
+//      //cout << cry[i].offset << endl;
+//      //cout << out_list.size() << " " << std::hex << (size_t)cd.node << std::dec << endl;
+//      size_t t = (size_t)cd.node;
+//      temp = (unsigned short*)&t;
+//      out_list.push_back(temp[0]);
+//      out_list.push_back(temp[1]);
+//      out_list.push_back(temp[2]);
+//      out_list.push_back(temp[3]);
+//      continue;
+//    }
+//
+//    temp_to_o[i] = out_list.size();
+//    t_cn.out_size = cd.out_degree.size();
+//
+//    unsigned short* temp = (unsigned short*)&t_cn;
+//    out_list.push_back(temp[0]);
+//    out_list.push_back(temp[1]);
+//
+//    //cout << cry[i].offset << endl;
+//
+//    for(auto it : cd.out_degree)
+//    {
+//      if(it > 65536)
+//      {
+//        cout << "Out of bound while crystallizing." << endl;
+//        exit(1);
+//      }
+//      out_list.push_back((unsigned short)it);
+//    }
+//  }
+//
+//  arr_propnet = new unsigned short[out_list.size()];
+//
+//  size_t c_index = 0;
+//  auto it = out_list.begin();
+//  while(true)
+//  {
+//    arr_propnet[c_index] = *it;
+//    CrystalNode* t_cn = (CrystalNode*)(arr_propnet + c_index);
+//
+//    c_index++;
+//    it++;
+//
+//    arr_propnet[c_index] = *it;
+//    c_index++;
+//    it++;
+//
+//    if(!t_cn[0].type)
+//    {
+//      for(size_t i = 0 ;i < t_cn[0].out_size;i++)
+//      {
+//        arr_propnet[c_index] = temp_to_o.find(*it)->second;
+//        c_index++;
+//        it++;
+//      }
+//    }
+//    else
+//    {
+//      for(size_t i = 0 ;i < t_cn[0].out_size;i++)
+//      {
+//        arr_propnet[c_index] = *it;
+//        c_index++;
+//        it++;
+//      }
+//    }
+//
+//    if(it == out_list.end())
+//      break;
+//  }
+//
+//  set<const Node*> initialized;
+//
+//  map<const Node*, size_t> memory_map;
+//  for(auto it : id_map)
+//  {
+//    auto it2 = init_map.find(it.second);
+//    if(it2 != init_map.end())
+//      memory_map[it.first] = it2->second;
+//  }
+//
+//  for(auto it : legal_nodes)
+//    for(auto it2 : it)
+//      if(del.find(it2.second) == del.end())
+//        it2.second->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
+//
+//  //MoveList<AMove> ml = MoveList<AMove>(m_set, roles_ids.size());
+//
+//  //PrintMoveList(cout, ml);
+//
+//  for(auto it : next_nodes)
+//    if(del.find(it.second) == del.end())
+//      it.second->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
+//
+//  for(auto it : goal_nodes)
+//    for(auto it2 : it)
+//      if(del.find(it2.second) == del.end())
+//        it2.second->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
+//
+//  if(terminal != NULL)
+//    terminal->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
+//
+//  //PrintState(cout, top);
+//
+//  data_init_size = init_map.size();
+//
+//  terminal_crystal_id = init_map.find(id_map.find(GetTerminalNode())->second)->second;
+//
+//  base_crystal_ids = new unsigned short[BaseSize()];
+//  for(size_t i = 0;i < BaseSize();i++)
+//    base_crystal_ids[i] = 0;
+//  for(auto it : base_nodes)
+//  {
+//    base_crystal_ids[it.first] = temp_to_o.find(id_map.find(it.second)->second)->second;
+//  }
+//
+//  input_crystal_ids = new unsigned short*[roles_ids.size()];
+//
+//  size_t index = 0;
+//  for(auto it : input_nodes)
+//  {
+//    input_crystal_ids[index] = new unsigned short[it.size()];
+//    for(size_t i = 0;i < it.size();i++)
+//    {
+//      input_crystal_ids[index][i] = temp_to_o.find(id_map.find(input_nodes[index].find(i)->second)->second)->second;
+//    }
+//    index++;
+//  }
+//
+//  base_mask = AState();
+//
+//  for(auto it : base_nodes)
+//    if(del.find(it.second) == del.end())
+//      base_mask.Set(it.first, true);
 
-  size_t current_index = 0;
-  size_t current_m_index = 0;
-
-  for(auto it : input_nodes)
-  {
-    for(auto it2 : it)
-    {
-      if(del.find(it2.second) == del.end())
-        it2.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
-    }
-  }
-
-  for(auto it : base_nodes)
-  {
-    if(del.find(it.second) == del.end())
-      it.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
-  }
-
-  for(auto it : legal_nodes)
-  {
-    for(auto it2 : it)
-    {
-      if(del.find(it2.second) == del.end())
-        it2.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
-    }
-  }
-
-  for(auto it : goal_nodes)
-  {
-    for(auto it2 : it)
-    {
-      if(del.find(it2.second) == del.end())
-        it2.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
-    }
-  }
-
-  for(auto it : next_nodes)
-  {
-    if(del.find(it.second) == del.end())
-      it.second->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
-  }
-
-  if(terminal != NULL)
-    terminal->Crystallize(id_map, data_map, init_map, current_index, current_m_index);
-
-  list<unsigned short> out_list;
-  data_init = new signed short[init_map.size()];
-
-  map<unsigned short, unsigned short> temp_to_o;
-
-  for(size_t i = 0;i < data_map.size();i++)
-  {
-    CrystalData& cd = data_map.find(i)->second;
-
-    CrystalNode t_cn;
-    auto m_it = init_map.find(i);
-    if(m_it != init_map.end())
-      t_cn.data_id = m_it->second;
-
-    if(cd.type == 0)
-    {
-      data_init[t_cn.data_id] = 0x4000;
-      t_cn.type = false;
-    }
-    else if(cd.type == 1)
-    {
-      data_init[t_cn.data_id] = 0xbfff;
-      t_cn.type = false;
-    }
-    else if(cd.type == 2)
-    {
-      data_init[t_cn.data_id] = 0x8000;
-      t_cn.type = false;
-    }
-    else if(cd.type == 3)
-    {
-      t_cn.type = true;
-      t_cn.out_size = 4;
-
-      temp_to_o[i] = out_list.size();
-      unsigned short* temp = (unsigned short*)&t_cn;
-      out_list.push_back(temp[0]);
-      out_list.push_back(temp[1]);
-
-      //cout << cry[i].offset << endl;
-      //cout << out_list.size() << " " << std::hex << (size_t)cd.node << std::dec << endl;
-      size_t t = (size_t)cd.node;
-      temp = (unsigned short*)&t;
-      out_list.push_back(temp[0]);
-      out_list.push_back(temp[1]);
-      out_list.push_back(temp[2]);
-      out_list.push_back(temp[3]);
-      continue;
-    }
-
-    temp_to_o[i] = out_list.size();
-    t_cn.out_size = cd.out_degree.size();
-
-    unsigned short* temp = (unsigned short*)&t_cn;
-    out_list.push_back(temp[0]);
-    out_list.push_back(temp[1]);
-
-    //cout << cry[i].offset << endl;
-
-    for(auto it : cd.out_degree)
-    {
-      if(it > 65536)
-      {
-        cout << "Out of bound while crystallizing." << endl;
-        exit(1);
-      }
-      out_list.push_back((unsigned short)it);
-    }
-  }
-
-  arr_propnet = new unsigned short[out_list.size()];
-
-  size_t c_index = 0;
-  auto it = out_list.begin();
-  while(true)
-  {
-    arr_propnet[c_index] = *it;
-    CrystalNode* t_cn = (CrystalNode*)(arr_propnet + c_index);
-
-    c_index++;
-    it++;
-
-    arr_propnet[c_index] = *it;
-    c_index++;
-    it++;
-
-    if(!t_cn[0].type)
-    {
-      for(size_t i = 0 ;i < t_cn[0].out_size;i++)
-      {
-        arr_propnet[c_index] = temp_to_o.find(*it)->second;
-        c_index++;
-        it++;
-      }
-    }
-    else
-    {
-      for(size_t i = 0 ;i < t_cn[0].out_size;i++)
-      {
-        arr_propnet[c_index] = *it;
-        c_index++;
-        it++;
-      }
-    }
-
-    if(it == out_list.end())
-      break;
-  }
-
-  set<const Node*> initialized;
-
-  map<const Node*, size_t> memory_map;
-  for(auto it : id_map)
-  {
-    auto it2 = init_map.find(it.second);
-    if(it2 != init_map.end())
-      memory_map[it.first] = it2->second;
-  }
-
-  for(auto it : legal_nodes)
-    for(auto it2 : it)
-      if(del.find(it2.second) == del.end())
-        it2.second->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
-
-  //MoveList<AMove> ml = MoveList<AMove>(m_set, roles_ids.size());
-
-  //PrintMoveList(cout, ml);
-
-  for(auto it : next_nodes)
-    if(del.find(it.second) == del.end())
-      it.second->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
-
-  for(auto it : goal_nodes)
-    for(auto it2 : it)
-      if(del.find(it2.second) == del.end())
-        it2.second->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
-
-  if(terminal != NULL)
-    terminal->CrystalInitialize(*this, memory_map, data_init, top, m_set, goals, initialized);
-
-  //PrintState(cout, top);
-
-  data_init_size = init_map.size();
-
-  terminal_crystal_id = init_map.find(id_map.find(GetTerminalNode())->second)->second;
-
-  base_crystal_ids = new unsigned short[BaseSize()];
-  for(size_t i = 0;i < BaseSize();i++)
-    base_crystal_ids[i] = 0;
-  for(auto it : base_nodes)
-  {
-    base_crystal_ids[it.first] = temp_to_o.find(id_map.find(it.second)->second)->second;
-  }
-
-  input_crystal_ids = new unsigned short*[roles_ids.size()];
-
-  size_t index = 0;
-  for(auto it : input_nodes)
-  {
-    input_crystal_ids[index] = new unsigned short[it.size()];
-    for(size_t i = 0;i < it.size();i++)
-    {
-      input_crystal_ids[index][i] = temp_to_o.find(id_map.find(input_nodes[index].find(i)->second)->second)->second;
-    }
-    index++;
-  }
-
-  base_mask = AState();
-
-  for(auto it : base_nodes)
-    if(del.find(it.second) == del.end())
-      base_mask.Set(it.first, true);
-
-  return memory_map;
+  //return memory_map;
 }
 
 void PropNet::Finalize()
@@ -1340,23 +1342,24 @@ void PropNet::Finalize()
       exit(1);
     }
 
-    if(cd.type == 0)
+    if(cd.type == CrystalData::Type::AND)
     {
-      default_payload.data[t_cn.data_id] = 0x8000;
+      default_payload.data[t_cn.data_id] = CrystalData::GetTypeInit(CrystalData::Type::AND);
       t_cn.type = false;
     }
-    else if(cd.type == 1)
+    else if(cd.type == CrystalData::Type::OR)
     {
-      default_payload.data[t_cn.data_id] = 0x7fff;
+      default_payload.data[t_cn.data_id] = CrystalData::GetTypeInit(CrystalData::Type::OR);
       t_cn.type = false;
     }
-    else if(cd.type == 2)
+    else if(cd.type == CrystalData::Type::NOT)
     {
-      default_payload.data[t_cn.data_id] = 0x0000;
+      default_payload.data[t_cn.data_id] = CrystalData::GetTypeInit(CrystalData::Type::NOT);
       t_cn.type = false;
     }
-    else if(cd.type == 3)
+    else if(cd.type == CrystalData::Type::OR_UPDATE)
     {
+      default_payload.data[t_cn.data_id] = CrystalData::GetTypeInit(CrystalData::Type::OR_UPDATE);
       t_cn.type = true;
       t_cn.out_size = 4;
 
@@ -1700,4 +1703,62 @@ PropNet* PropNet::OptimizeWithRoleMask(const StateType& mask)
       }
     }
   }
+}
+
+void PropNet::OptimizeWithNodeMerge()
+{
+  size_t node_count = 0;
+
+  for(auto it : legal_nodes)
+  {
+    for(auto it2 : it)
+    {
+      if(MergeNodeWithChild(it2.second))
+        node_count++;
+    }
+  }
+
+  for(auto it : next_nodes)
+  {
+    if(MergeNodeWithChild(it.second))
+      node_count++;
+  }
+
+  for(auto it : goal_nodes)
+    for(auto it2 : it)
+      if(del.find(it2.second) == del.end())
+        if(MergeNodeWithChild(it2.second))
+          node_count++;
+
+  MergeNodeWithChild(terminal);
+
+  cout << node_count << endl;
+}
+
+bool PropNet::MergeNodeWithChild(Node* n)
+{
+  if(n->in_degree.size() == 1)
+  {
+    Node* c = *n->in_degree.begin();
+
+    if(c->IsOr() && c->out_degree.size() == 1)
+    {
+      n->in_degree.clear();
+      for(auto temp : c->in_degree)
+      {
+        temp->RemoveOutDegree(c);
+        temp->AddOut(n);
+        n->AddIn(temp);
+      }
+      c->in_degree.clear();
+      c->out_degree.clear();
+      del.insert(c);
+      delete c;
+      return true;
+    }
+
+    return false;
+  }
+
+  return false;
 }

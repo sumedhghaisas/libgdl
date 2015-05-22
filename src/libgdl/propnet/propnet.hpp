@@ -253,12 +253,16 @@ class PropNet
     return roles_ids.find(role)->second;
   }
 
+  void OptimizeWithNodeMerge();
+
   PropNet* OptimizeWithRoleMask(const StateType& mask);
 
   static size_t debug_time;
 
  private:
   void InitializePrintFunctions() const;
+
+  bool MergeNodeWithChild(Node* n);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Store propnet as node graph
