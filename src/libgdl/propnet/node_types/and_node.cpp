@@ -93,7 +93,7 @@ bool AndNode::CrystalInitialize(const PropNet& pn,
     bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
     if(!temp)
     {
-      data[id_map.find(this)->second] += CrystalData::CrystalDecrementVal;
+      data[id_map.find(this)->second] += CrystalConfig::CrystalDecrementVal;
     }
     holding_value = holding_value & temp;
   }

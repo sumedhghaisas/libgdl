@@ -32,8 +32,12 @@ struct Node
 {
   typedef boost::unordered_set<unsigned short> MoveSet;
   typedef crystallization::CrystalData CrystalData;
+  typedef crystallization::CrystalConfig CrystalConfig;
 
   enum class Type{BASE, INPUT, VIEW, OR, NEXT, LEGAL, TERMINAL, GOAL, AND, NOT};
+
+  enum class SimType { OR, AND };
+
   Node(const std::string& name,
        const Type& type)
     : name(name), type(type), isVisited(false), visit_stamp(0), run_stamp(0),
@@ -156,6 +160,7 @@ struct Node
   std::list<Node*> out_degree;
 
   Type type;
+  SimType sim_type = SimType::OR;
 
   bool isVisited;
   std::tuple<bool, size_t> entry_ret;

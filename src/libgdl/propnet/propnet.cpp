@@ -1047,7 +1047,7 @@ string PropNet::CreateIsTerminalMachineCode()
 map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& top, MoveSet* m_set, size_t* goals)
 {
 //  map<const Node*, size_t> id_map;
-//  map<size_t, CrystalData> data_map;
+//  map<size_t, CrystalConfig> data_map;
 //  map<size_t, size_t> init_map;
 //
 //  size_t current_index = 0;
@@ -1102,7 +1102,7 @@ map<const Node*, size_t> PropNet::Crystallize(signed short*& data_init, AState& 
 //
 //  for(size_t i = 0;i < data_map.size();i++)
 //  {
-//    CrystalData& cd = data_map.find(i)->second;
+//    CrystalConfig& cd = data_map.find(i)->second;
 //
 //    CrystalNode t_cn;
 //    auto m_it = init_map.find(i);
@@ -1342,24 +1342,24 @@ void PropNet::Finalize()
       exit(1);
     }
 
-    if(cd.type == CrystalData::Type::AND)
+    if(cd.type == CrystalConfig::Type::AND)
     {
-      default_payload.data[t_cn.data_id] = CrystalData::GetTypeInit(CrystalData::Type::AND);
+      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(CrystalConfig::Type::AND);
       t_cn.type = false;
     }
-    else if(cd.type == CrystalData::Type::OR)
+    else if(cd.type == CrystalConfig::Type::OR)
     {
-      default_payload.data[t_cn.data_id] = CrystalData::GetTypeInit(CrystalData::Type::OR);
+      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(CrystalConfig::Type::OR);
       t_cn.type = false;
     }
-    else if(cd.type == CrystalData::Type::NOT)
+    else if(cd.type == CrystalConfig::Type::NOT)
     {
-      default_payload.data[t_cn.data_id] = CrystalData::GetTypeInit(CrystalData::Type::NOT);
+      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(CrystalConfig::Type::NOT);
       t_cn.type = false;
     }
-    else if(cd.type == CrystalData::Type::OR_UPDATE)
+    else if(cd.type == CrystalConfig::Type::OR_UPDATE)
     {
-      default_payload.data[t_cn.data_id] = CrystalData::GetTypeInit(CrystalData::Type::OR_UPDATE);
+      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(CrystalConfig::Type::OR_UPDATE);
       t_cn.type = true;
       t_cn.out_size = 4;
 

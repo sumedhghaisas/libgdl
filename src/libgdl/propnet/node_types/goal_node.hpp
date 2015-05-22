@@ -55,7 +55,7 @@ struct GoalNode : public Node
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalData::CrystalIncrementVal)
+    if(val == CrystalConfig::CrystalIncrementVal)
     {
       goals[r_id] = id;
     }

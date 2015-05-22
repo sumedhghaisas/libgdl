@@ -54,7 +54,7 @@ struct NextNode : public Node
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalData::CrystalIncrementVal)
+    if(val == CrystalConfig::CrystalIncrementVal)
     {
       top.Set(id, true);
     }
@@ -68,7 +68,7 @@ struct NextNode : public Node
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalData::CrystalIncrementVal)
+    if(val == CrystalConfig::CrystalIncrementVal)
     {
       top.Set(id, true);
     }

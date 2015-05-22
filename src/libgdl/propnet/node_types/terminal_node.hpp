@@ -45,7 +45,7 @@ struct TerminalNode : public Node
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalData::CrystalIncrementVal)
+    if(val == CrystalConfig::CrystalIncrementVal)
       terminal = true;
     else terminal = false;
   }
@@ -57,7 +57,7 @@ struct TerminalNode : public Node
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalData::CrystalIncrementVal)
+    if(val == CrystalConfig::CrystalIncrementVal)
       terminal = true;
     else terminal = false;
   }

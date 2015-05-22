@@ -55,7 +55,7 @@ struct LegalNode : public Node
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalData::CrystalIncrementVal)
+    if(val == CrystalConfig::CrystalIncrementVal)
     {
       legal_size[r_id]++;
     }
@@ -72,7 +72,7 @@ struct LegalNode : public Node
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalData::CrystalIncrementVal)
+    if(val == CrystalConfig::CrystalIncrementVal)
     {
       m_set[r_id].insert(id);
     }
