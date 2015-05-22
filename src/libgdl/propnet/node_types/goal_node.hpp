@@ -52,7 +52,8 @@ struct GoalNode : public Node
                      AState& top,
                      signed short& mem,
                      size_t* legal_size,
-                     size_t* goals) const
+                     size_t* goals,
+                     bool& terminal) const
   {
     if(val == CrystalData::CrystalIncrementVal)
     {

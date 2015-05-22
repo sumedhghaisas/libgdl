@@ -6,6 +6,7 @@
 #include "../entry_manager.hpp"
 #include "../entry_types/save_entry.hpp"
 #include "../entry_types/or_entry.hpp"
+#include "../entry_types/not_entry.hpp"
 
 #include "../propnet.hpp"
 
@@ -25,27 +26,42 @@ tuple<bool, size_t> NextNode::CodeGen(EntryManager& em, size_t v_stamp)
 
   if(!isVisited)
   {
-    size_t or_entry_id = em.GetNewID();
-
-    list<tuple<bool, size_t>> in_ids;
-
-    for(auto n : in_degree)
+    if(in_degree.size() > 1)
     {
-      auto t_entry = n->CodeGen(em, v_stamp);
-      em.AddStamp(get<1>(t_entry), or_entry_id);
-      in_ids.push_back(t_entry);
+      size_t out = em.GetNewID();
+
+      list<tuple<bool, size_t>> in_ids;
+
+      for(auto n : in_degree)
+      {
+        auto t_entry = n->CodeGen(em, v_stamp);
+        em.AddStamp(get<1>(t_entry), (size_t)-1);
+        in_ids.push_back(t_entry);
+      }
+
+      em.AddEntry(new OrEntry(out, in_ids));
+
+      entry_ret = tuple<bool, size_t>(true, out);
     }
-    em.AddEntry(new OrEntry(or_entry_id, in_ids));
+    else if(in_degree.size() == 1)
+    {
+      entry_ret = (*in_degree.begin())->CodeGen(em, v_stamp);
+      if(!get<0>(entry_ret))
+      {
+        size_t out = em.GetNewID();
+        em.AddStamp(get<1>(entry_ret), out);
 
-    size_t out = em.GetNewID();
-    em.AddStamp(or_entry_id, out);
+        em.AddEntry(new NotEntry(out, entry_ret));
 
-    in_ids.clear();
-    in_ids.emplace_back(true, or_entry_id);
-
-    em.AddEntry(new SaveEntry(out, id, in_ids));
-
-    entry_ret = tuple<bool, size_t>(true, out);
+        entry_ret = tuple<bool, size_t>(true, out);
+      }
+      em.AddStamp(get<1>(entry_ret), (size_t)-1);
+    }
+    else
+    {
+      std::cout << LOGID << "No inputs given to " << name << std::endl;
+      exit(1);
+    }
     isVisited = true;
   }
 

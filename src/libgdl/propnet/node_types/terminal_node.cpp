@@ -24,18 +24,42 @@ tuple<bool, size_t> TerminalNode::CodeGen(EntryManager& em, size_t v_stamp)
 
   if(!isVisited)
   {
-    entry_ret = (*in_degree.begin())->CodeGen(em, v_stamp);
-    if(!get<0>(entry_ret))
+    if(in_degree.size() > 1)
     {
       size_t out = em.GetNewID();
-      em.AddStamp(get<1>(entry_ret), out);
 
-      em.AddEntry(new NotEntry(out, entry_ret));
+      list<tuple<bool, size_t>> in_ids;
+
+      for(auto n : in_degree)
+      {
+        auto t_entry = n->CodeGen(em, v_stamp);
+        em.AddStamp(get<1>(t_entry), (size_t)-1);
+        in_ids.push_back(t_entry);
+      }
+
+      em.AddEntry(new OrEntry(out, in_ids));
 
       entry_ret = tuple<bool, size_t>(true, out);
     }
-    em.AddStamp(get<1>(entry_ret), (size_t)-1);
+    else if(in_degree.size() == 1)
+    {
+      entry_ret = (*in_degree.begin())->CodeGen(em, v_stamp);
+      if(!get<0>(entry_ret))
+      {
+        size_t out = em.GetNewID();
+        em.AddStamp(get<1>(entry_ret), out);
 
+        em.AddEntry(new NotEntry(out, entry_ret));
+
+        entry_ret = tuple<bool, size_t>(true, out);
+      }
+      em.AddStamp(get<1>(entry_ret), (size_t)-1);
+    }
+    else
+    {
+      std::cout << LOGID << "No inputs given to " << name << std::endl;
+      exit(1);
+    }
     isVisited = true;
   }
 
