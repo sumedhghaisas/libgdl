@@ -1338,28 +1338,22 @@ void PropNet::Finalize()
       t_cn.data_id = m_it->second;
     else
     {
-      cout << "lol" << endl;
+      cout << LOGID << "lol" << endl;
       exit(1);
     }
 
-    if(cd.type == CrystalConfig::Type::AND)
+    if(cd.type == CrystalConfig::Type::AND ||
+       cd.type == CrystalConfig::Type::OR ||
+       cd.type == CrystalConfig::Type::NOT ||
+       cd.type == CrystalConfig::Type::NOR ||
+       cd.type == CrystalConfig::Type::NAND)
     {
-      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(CrystalConfig::Type::AND);
+      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(cd.type);
       t_cn.type = false;
     }
-    else if(cd.type == CrystalConfig::Type::OR)
+    else if(cd.type == CrystalConfig::Type::OR_UPDATE || cd.type == CrystalConfig::Type::AND_UPDATE)
     {
-      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(CrystalConfig::Type::OR);
-      t_cn.type = false;
-    }
-    else if(cd.type == CrystalConfig::Type::NOT)
-    {
-      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(CrystalConfig::Type::NOT);
-      t_cn.type = false;
-    }
-    else if(cd.type == CrystalConfig::Type::OR_UPDATE)
-    {
-      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(CrystalConfig::Type::OR_UPDATE);
+      default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(cd.type);
       t_cn.type = true;
       t_cn.out_size = 4;
 
@@ -1517,7 +1511,7 @@ void PropNet::Finalize()
     for(size_t j = 0;j < LegalNodes()[i].size();j++)
     {
       legal_memory_ids[i][j] = memory_map.find(LegalNodes()[i].find(j)->second)->second;
-      if(default_payload.data[legal_memory_ids[i][j]] & 0x8000)
+      if(default_payload.data[legal_memory_ids[i][j]] & CrystalConfig::CrystalSignMask)
         default_payload.legal_size[i]++;
     }
   }
@@ -1649,17 +1643,25 @@ size_t PropNet::GetNumComponents() const
   for(auto it : view_nodes)
     if(del.find(it.second) == del.end())
     {
-      cout << it.second->UName() << endl;
       out++;
     }
-
-  cout << out << endl;
 
   for(auto it : next_nodes)
     if(del.find(it.second) == del.end())
       out++;
 
   out++;
+
+  return out;
+}
+
+size_t PropNet::GetNumNotComponenets() const
+{
+  size_t out = 0;
+
+  for(auto it : not_nodes)
+    if(del.find(it) == del.end())
+      out++;
 
   return out;
 }
@@ -1707,58 +1709,55 @@ PropNet* PropNet::OptimizeWithRoleMask(const StateType& mask)
 
 void PropNet::OptimizeWithNodeMerge()
 {
-  size_t node_count = 0;
+  cout << GetNumComponents() << endl;
 
   for(auto it : legal_nodes)
   {
     for(auto it2 : it)
     {
-      if(MergeNodeWithChild(it2.second))
-        node_count++;
+      it2.second->MergeWithChild(*this);
     }
   }
 
   for(auto it : next_nodes)
   {
-    if(MergeNodeWithChild(it.second))
-      node_count++;
+    it.second->MergeWithChild(*this);
   }
 
   for(auto it : goal_nodes)
     for(auto it2 : it)
       if(del.find(it2.second) == del.end())
-        if(MergeNodeWithChild(it2.second))
-          node_count++;
+        it2.second->MergeWithChild(*this);
 
-  MergeNodeWithChild(terminal);
+  terminal->MergeWithChild(*this);
 
-  cout << node_count << endl;
-}
+  stack<Node*> n_stack;
 
-bool PropNet::MergeNodeWithChild(Node* n)
-{
-  if(n->in_degree.size() == 1)
+  for(auto it : legal_nodes)
   {
-    Node* c = *n->in_degree.begin();
-
-    if(c->IsOr() && c->out_degree.size() == 1)
+    for(auto it2 : it)
     {
-      n->in_degree.clear();
-      for(auto temp : c->in_degree)
-      {
-        temp->RemoveOutDegree(c);
-        temp->AddOut(n);
-        n->AddIn(temp);
-      }
-      c->in_degree.clear();
-      c->out_degree.clear();
-      del.insert(c);
-      delete c;
-      return true;
+      n_stack.push(it2.second);
     }
-
-    return false;
   }
 
-  return false;
+  for(auto it : next_nodes)
+  {
+    n_stack.push(it.second);
+  }
+
+  while(!n_stack.empty())
+  {
+    Node* n = n_stack.top();
+    n_stack.pop();
+
+    Node* temp = n->MergeWithChild(*this);
+    if(temp != NULL)
+      n = temp;
+
+    for(auto it : n->in_degree)
+      n_stack.push(it);
+  }
+
+  cout << GetNumComponents() << endl;
 }

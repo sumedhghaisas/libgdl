@@ -1,7 +1,7 @@
 #ifndef LIBGDL_PROPNET_TERMINAL_NODE_HPP_INCLUDED
 #define LIBGDL_PROPNET_TERMINAL_NODE_HPP_INCLUDED
 
-#include "node.hpp"
+#include "sim_node.hpp"
 
 namespace libgdl
 {
@@ -13,10 +13,10 @@ class EntryManager;
 namespace node_types
 {
 
-struct TerminalNode : public Node
+struct TerminalNode : public SimNode
 {
   TerminalNode(const std::string& name)
-    : Node(name, Node::Type::TERMINAL)
+    : SimNode(name, Node::Type::TERMINAL)
   {}
 
   std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t visit_stamp);

@@ -197,6 +197,7 @@ class PropNet
   size_t GetNumComponents() const;
   size_t GetNumAndComponents() const;
   size_t GetNumOrComponents() const;
+  size_t GetNumNotComponenets() const;
 
   size_t GetCrystalDataSize() const
   {
@@ -260,9 +261,11 @@ class PropNet
   static size_t debug_time;
 
  private:
-  void InitializePrintFunctions() const;
+  friend Node;
+  friend node_types::SimNode;
+  friend node_types::NotNode;
 
-  bool MergeNodeWithChild(Node* n);
+  void InitializePrintFunctions() const;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Store propnet as node graph

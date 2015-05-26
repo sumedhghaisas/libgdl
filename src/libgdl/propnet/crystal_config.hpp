@@ -10,7 +10,7 @@ namespace crystallization
 
 struct CrystalConfig
 {
-  enum class Type { AND, OR, NOT, OR_UPDATE, AND_UPDATE};
+  enum class Type { AND, OR, NOT, NOR, NAND, OR_UPDATE, AND_UPDATE};
 
   static signed short GetTypeInit(const Type& type)
   {
@@ -20,8 +20,14 @@ struct CrystalConfig
       return 0x7fff;
     else if(type == Type::NOT)
       return 0x0000;
+    else if(type == Type::NOR)
+      return 0xffff;
+    else if(type == Type::NAND)
+      return 0x0000;
     else if(type == Type::OR_UPDATE)
       return 0x7fff;
+    else if(type == Type::AND_UPDATE)
+      return 0x8000;
 
     return 0x0000;
   }

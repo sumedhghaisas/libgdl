@@ -69,6 +69,9 @@ bool OrNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, si
     holding_value = holding_value || temp;
   }
 
+  if(isNOR)
+    holding_value = !holding_value;
+
   initialized.insert(this);
 
   return holding_value;

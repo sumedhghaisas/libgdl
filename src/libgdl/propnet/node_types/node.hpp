@@ -61,6 +61,8 @@ struct Node
 
   virtual void RegisterToPropnet(PropNet& pn, Node* to_reg) const = 0;
 
+  virtual CrystalConfig::Type GetCrystalType() const = 0;
+
   virtual void CrystalUpdate(signed short val,
                              AState& top,
                              signed short& mem,
@@ -95,8 +97,11 @@ struct Node
   void DFSMark(size_t cm);
 
   void RemoveOutDegree(Node* out);
+  void RemoveInDegree(Node* out);
 
   void DeleteIfNotMarked(Node* parent, std::set<Node*>& del, size_t cm);
+
+  virtual Node* MergeWithChild(PropNet& pn) = 0;
 
   Node* Clone(Node* parent,
               PropNet& pn,
@@ -124,6 +129,20 @@ struct Node
     if(type == Type::OR)
       return true;
     else return false;
+  }
+
+  bool IsAnd() const
+  {
+    if(type == Type::AND)
+      return true;
+    return false;
+  }
+
+  bool IsNot() const
+  {
+    if(type == Type::NOT)
+      return true;
+    return false;
   }
 
   virtual std::string Name() const

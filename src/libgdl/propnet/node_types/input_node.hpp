@@ -3,7 +3,7 @@
 
 #include <libgdl/core/util/to_string.hpp>
 
-#include "node.hpp"
+#include "sim_node.hpp"
 
 namespace libgdl
 {
@@ -15,10 +15,10 @@ class EntryManager;
 namespace node_types
 {
 
-struct InputNode : public Node
+struct InputNode : public SimNode
 {
   InputNode(const std::string& name, size_t r_id, size_t in_id)
-    : Node(name, Node::Type::INPUT), r_id(r_id), in_id(in_id)
+    : SimNode(name, Node::Type::INPUT), r_id(r_id), in_id(in_id)
   {}
 
   std::string Name() const

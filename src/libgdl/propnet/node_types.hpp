@@ -12,5 +12,6 @@
 #include "node_types/goal_node.hpp"
 #include "node_types/and_node.hpp"
 #include "node_types/not_node.hpp"
+#include "node_types/sim_node.hpp"
 
 #endif // LIBGDL_PROPNET_NODE_TYPES_HPP_INCLUDED

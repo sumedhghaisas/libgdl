@@ -23,13 +23,14 @@ size_t Node::Crystallize(std::map<const Node*, size_t>& id_map,
 
   cry.node = this;
 
-  if(type == Type::AND)
-    cry.type = CrystalConfig::Type::AND;
-  else if(type == Type::OR || type == Type::VIEW || type == Type::BASE || type == Type::INPUT)
-    cry.type = CrystalConfig::Type::OR;
-  else if(type == Type::NOT)
-    cry.type = CrystalConfig::Type::NOT;
-  else cry.type = CrystalConfig::Type::OR_UPDATE;
+  cry.type = GetCrystalType();
+//  if(type == Type::AND)
+//    cry.type = CrystalConfig::Type::AND;
+//  else if(type == Type::OR || type == Type::VIEW || type == Type::BASE || type == Type::INPUT)
+//    cry.type = CrystalConfig::Type::OR;
+//  else if(type == Type::NOT)
+//    cry.type = CrystalConfig::Type::NOT;
+//  else cry.type = CrystalConfig::Type::OR_UPDATE;
 
   cry.id = current_index;
   init_map[current_index] = current_m_index++;
@@ -91,6 +92,16 @@ void Node::RemoveOutDegree(Node* out)
     if(*it == out)
     {
       out_degree.erase(it);
+      return;
+    }
+}
+
+void Node::RemoveInDegree(Node* out)
+{
+  for(auto it = in_degree.begin();it != in_degree.end();it++)
+    if(*it == out)
+    {
+      in_degree.erase(it);
       return;
     }
 }

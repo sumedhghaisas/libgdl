@@ -55,3 +55,50 @@ void NotNode::RegisterToPropnet(PropNet& pn, Node* to_reg) const
 {
   pn.AddNotNode(to_reg);
 }
+
+Node* NotNode::MergeWithChild(PropNet& pn)
+{
+  if(in_degree.size() != 1)
+    return NULL;
+  Node* c = *in_degree.begin();
+  if(c->IsOr() && c->out_degree.size() == 1)
+  {
+    OrNode* or_n = static_cast<OrNode*>(c);
+    or_n->isNOR = true;
+
+    c->out_degree.clear();
+    for(auto temp : out_degree)
+    {
+      temp->RemoveInDegree(this);
+      temp->AddIn(c);
+      c->AddOut(temp);
+    }
+
+    in_degree.clear();
+    out_degree.clear();
+    pn.del.insert(this);
+    delete this;
+    return c;
+  }
+  else if(c->IsAnd() && c->out_degree.size() == 1)
+  {
+//    AndNode* and_n = static_cast<AndNode*>(c);
+//    and_n->isNand = true;
+//
+//    c->out_degree.clear();
+//    for(auto temp : out_degree)
+//    {
+//      temp->RemoveInDegree(this);
+//      temp->AddIn(c);
+//      c->AddOut(temp);
+//    }
+//
+//    in_degree.clear();
+//    out_degree.clear();
+//    pn.del.insert(this);
+//    delete this;
+    return c;
+  }
+
+  return NULL;
+}

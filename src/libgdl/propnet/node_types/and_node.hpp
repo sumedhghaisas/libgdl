@@ -36,6 +36,20 @@ struct AndNode : public Node
 
   std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t v_stamp);
 
+  Node* MergeWithChild(PropNet& pn)
+  {
+    if(in_degree.size() == 1)
+      std::cout << "Yeah!" << std::endl;
+    return NULL;
+  }
+
+  CrystalConfig::Type GetCrystalType() const
+  {
+    if(isNand)
+      return CrystalConfig::Type::NAND;
+    return CrystalConfig::Type::AND;
+  }
+
   Node* GetCopy_only_info() const
   {
     return new AndNode(name, id);
@@ -45,6 +59,8 @@ struct AndNode : public Node
 
   size_t id;
   size_t num_false;
+
+  bool isNand = false;
 };
 
 }

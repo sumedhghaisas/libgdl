@@ -36,6 +36,20 @@ struct OrNode : public Node
                          size_t* goals,
                          std::set<const Node*>& initialized);
 
+  Node* MergeWithChild(PropNet& pn)
+  {
+    if(in_degree.size() == 1);
+      //std::cout << "Yeah!" << std::endl;
+    return NULL;
+  }
+
+  CrystalConfig::Type GetCrystalType() const
+  {
+    if(isNOR)
+      return CrystalConfig::Type::NOR;
+    return CrystalConfig::Type::OR;
+  }
+
   Node* GetCopy_only_info() const
   {
     return new OrNode(name, id);
@@ -45,7 +59,7 @@ struct OrNode : public Node
 
   size_t id;
 
-  size_t num_true;
+  bool isNOR = false;
 };
 
 }

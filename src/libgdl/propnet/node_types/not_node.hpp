@@ -35,6 +35,14 @@ struct NotNode : public Node
                          MoveSet* m_set,
                          size_t* goals,
                          std::set<const Node*>& initialized);
+
+  CrystalConfig::Type GetCrystalType() const
+  {
+    return CrystalConfig::Type::NOT;
+  }
+
+  Node* MergeWithChild(PropNet& pn);
+
   Node* GetCopy_only_info() const
   {
     return new NotNode(name, id);

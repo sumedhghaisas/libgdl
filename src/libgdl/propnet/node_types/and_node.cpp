@@ -78,6 +78,8 @@ bool AndNode::CrystalInitialize(const PropNet& pn,
     CrystalConfig::AndPolicyCrystalInitialize(temp, data[id_map.find(this)->second]);
     holding_value = holding_value & temp;
   }
+  if(isNand)
+    holding_value = !holding_value;
 
   initialized.insert(this);
 

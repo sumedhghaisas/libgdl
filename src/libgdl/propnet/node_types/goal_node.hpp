@@ -3,7 +3,7 @@
 
 #include <libgdl/core/util/to_string.hpp>
 
-#include "node.hpp"
+#include "sim_node.hpp"
 
 namespace libgdl
 {
@@ -12,10 +12,10 @@ namespace propnet
 namespace node_types
 {
 
-struct GoalNode : public Node
+struct GoalNode : public SimNode
 {
   GoalNode(const std::string& name, size_t r_id, size_t id)
-    : Node(name, Node::Type::GOAL), r_id(r_id), id(id)
+    : SimNode(name, Node::Type::GOAL), r_id(r_id), id(id)
   {}
 
   std::string Name() const
