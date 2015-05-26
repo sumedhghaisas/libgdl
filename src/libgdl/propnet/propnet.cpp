@@ -1532,6 +1532,13 @@ void PropNet::Finalize()
     }
   }
 
+  ofstream test("test.txt");
+  for(auto it : id_map)
+  {
+    test << it.first->UName() << " " << temp_to_o.find(it.second)->second << endl;
+  }
+  test.close();
+
   default_payload.terminal = false;
   default_payload2.terminal = false;
 
@@ -1690,21 +1697,21 @@ size_t PropNet::GetNumAndComponents() const
 
 PropNet* PropNet::OptimizeWithRoleMask(const StateType& mask)
 {
-  for(size_t i = 0;i < StateType::RawType::arr_size;i++)
-  {
-    if(mask.get()->s[i])
-    {
-      for(size_t j = 0;j < 8;j++)
-      {
-        char t_mask = 1 << j;
-        if(mask.get()->s[i] & t_mask)
-        {
-          Node* n = base_nodes.find(8*i + j)->second;
-
-        }
-      }
-    }
-  }
+//  for(size_t i = 0;i < StateType::RawType::arr_size;i++)
+//  {
+//    if(mask.get()->s[i])
+//    {
+//      for(size_t j = 0;j < 8;j++)
+//      {
+//        char t_mask = 1 << j;
+//        if(mask.get()->s[i] & t_mask)
+//        {
+//          Node* n = base_nodes.find(8*i + j)->second;
+//
+//        }
+//      }
+//    }
+//  }
 }
 
 void PropNet::OptimizeWithNodeMerge()

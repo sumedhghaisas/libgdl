@@ -42,7 +42,7 @@ class PropNet
 
   typedef node_types::Node Node;
 
-  const static size_t PayloadStackSize = 70;
+  const static size_t PayloadStackSize = 1000;
 
  public:
   typedef AState StateType;
