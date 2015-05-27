@@ -17,8 +17,8 @@ namespace node_types
 
 struct InputNode : public SimNode
 {
-  InputNode(const std::string& name, size_t r_id, size_t in_id)
-    : SimNode(name, Node::Type::INPUT), r_id(r_id), in_id(in_id)
+  InputNode(const std::string& name, size_t r_id, size_t in_id, const SimType& sim_type = SimType::OR)
+    : SimNode(name, Node::Type::INPUT, sim_type), r_id(r_id), in_id(in_id)
   {}
 
   std::string Name() const
@@ -44,7 +44,7 @@ struct InputNode : public SimNode
 
   Node* GetCopy_only_info() const
   {
-    return new InputNode(name, r_id, in_id);
+    return new InputNode(name, r_id, in_id, sim_type);
   }
 
   void RegisterToPropnet(PropNet& pn, Node* to_reg) const;

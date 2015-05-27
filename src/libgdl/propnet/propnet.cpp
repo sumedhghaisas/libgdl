@@ -132,19 +132,22 @@ PropNet::PropNet(const PropNet& pn)
 
   for(auto it : pn.view_nodes)
   {
-    it.second->CreateCopy(*this, NULL, copy_map);
+    if(pn.del.find(it.second) == pn.del.end())
+      it.second->CreateCopy(*this, NULL, copy_map);
   }
 
   for(auto it : pn.next_nodes)
   {
-    it.second->CreateCopy(*this, NULL, copy_map);
+    if(pn.del.find(it.second) == pn.del.end())
+      it.second->CreateCopy(*this, NULL, copy_map);
   }
 
   for(auto it : pn.input_nodes)
   {
     for(auto it2 : it)
     {
-      it2.second->CreateCopy(*this, NULL, copy_map);
+      if(pn.del.find(it2.second) == pn.del.end())
+        it2.second->CreateCopy(*this, NULL, copy_map);
     }
   }
 
@@ -152,7 +155,8 @@ PropNet::PropNet(const PropNet& pn)
   {
     for(auto it2 : it)
     {
-      it2.second->CreateCopy(*this, NULL, copy_map);
+      if(pn.del.find(it2.second) == pn.del.end())
+        it2.second->CreateCopy(*this, NULL, copy_map);
     }
   }
 
@@ -167,12 +171,14 @@ PropNet::PropNet(const PropNet& pn)
 
   if(pn.terminal != NULL)
   {
-    pn.terminal->CreateCopy(*this, NULL, copy_map);
+    if(pn.del.find(terminal) == pn.del.end())
+      pn.terminal->CreateCopy(*this, NULL, copy_map);
   }
 
   for(auto it : pn.base_nodes)
   {
-    it.second->CreateCopy(*this, NULL, copy_map);
+    if(pn.del.find(it.second) == pn.del.end())
+      it.second->CreateCopy(*this, NULL, copy_map);
   }
 
   init_props = pn.init_props;
@@ -180,6 +186,16 @@ PropNet::PropNet(const PropNet& pn)
   base_size = pn.base_size;
   role_size = pn.role_size;
   base_mask = pn.base_mask;
+
+  c_r_id = pn.c_r_id;
+  c_and_id = pn.c_and_id;
+  c_not_id = pn.c_not_id;
+  c_not_id = pn.c_not_id;
+  c_or_id = pn.c_or_id;
+  c_view_id = pn.c_view_id;
+  c_base_id = pn.c_base_id;
+  c_input_id = pn.c_input_id;
+  sym = pn.sym;
 }
 
 PropNet::~PropNet()
@@ -284,6 +300,82 @@ void PropNet::Initialize(const std::string& filename)
 void PropNet::Initialize(KIF& kif)
 {
 
+}
+
+void PropNet::Initialize(const PropNet& pn)
+{
+  map<const Node*, Node*> copy_map;
+
+  InitializeToRoles(pn.RoleSize());
+
+  roles_ids = pn.roles_ids;
+
+  for(auto it : pn.view_nodes)
+  {
+    if(pn.del.find(it.second) == pn.del.end())
+      it.second->CreateCopy(*this, NULL, copy_map);
+  }
+
+  for(auto it : pn.next_nodes)
+  {
+    if(pn.del.find(it.second) == pn.del.end())
+      it.second->CreateCopy(*this, NULL, copy_map);
+  }
+
+  for(auto it : pn.input_nodes)
+  {
+    for(auto it2 : it)
+    {
+      if(pn.del.find(it2.second) == pn.del.end())
+        it2.second->CreateCopy(*this, NULL, copy_map);
+    }
+  }
+
+  for(auto it : pn.legal_nodes)
+  {
+    for(auto it2 : it)
+    {
+      if(pn.del.find(it2.second) == pn.del.end())
+        it2.second->CreateCopy(*this, NULL, copy_map);
+    }
+  }
+
+  for(auto it : pn.goal_nodes)
+  {
+    for(auto it2 : it)
+    {
+      if(pn.del.find(it2.second) == pn.del.end())
+        it2.second->CreateCopy(*this, NULL, copy_map);
+    }
+  }
+
+  if(pn.terminal != NULL)
+  {
+    if(pn.del.find(terminal) == pn.del.end())
+      pn.terminal->CreateCopy(*this, NULL, copy_map);
+  }
+
+  for(auto it : pn.base_nodes)
+  {
+    if(pn.del.find(it.second) == pn.del.end())
+      it.second->CreateCopy(*this, NULL, copy_map);
+  }
+
+  init_props = pn.init_props;
+
+  base_size = pn.base_size;
+  role_size = pn.role_size;
+  base_mask = pn.base_mask;
+
+  c_r_id = pn.c_r_id;
+  c_and_id = pn.c_and_id;
+  c_not_id = pn.c_not_id;
+  c_not_id = pn.c_not_id;
+  c_or_id = pn.c_or_id;
+  c_view_id = pn.c_view_id;
+  c_base_id = pn.c_base_id;
+  c_input_id = pn.c_input_id;
+  sym = pn.sym;
 }
 
 void PropNet::InitState(StateType& init)

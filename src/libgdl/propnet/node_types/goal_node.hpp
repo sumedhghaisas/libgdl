@@ -14,8 +14,8 @@ namespace node_types
 
 struct GoalNode : public SimNode
 {
-  GoalNode(const std::string& name, size_t r_id, size_t id)
-    : SimNode(name, Node::Type::GOAL), r_id(r_id), id(id)
+  GoalNode(const std::string& name, size_t r_id, size_t id, const SimType& sim_type = SimType::OR)
+    : SimNode(name, Node::Type::GOAL, sim_type), r_id(r_id), id(id)
   {}
 
   std::string Name() const
@@ -54,7 +54,7 @@ struct GoalNode : public SimNode
 
   Node* GetCopy_only_info() const
   {
-    return new GoalNode(name, r_id, id);
+    return new GoalNode(name, r_id, id, sim_type);
   }
 
   void RegisterToPropnet(PropNet& pn, Node* to_reg) const;

@@ -14,8 +14,8 @@ namespace node_types
 
 struct NextNode : public SimNode
 {
-  NextNode(const std::string& name, size_t id)
-    : SimNode(name, Node::Type::NEXT), id(id)
+  NextNode(const std::string& name, size_t id, const SimType& sim_type = SimType::OR)
+    : SimNode(name, Node::Type::NEXT, sim_type), id(id)
   {}
 
   std::string Name() const
@@ -68,7 +68,7 @@ struct NextNode : public SimNode
 
   Node* GetCopy_only_info() const
   {
-    return new NextNode(name, id);
+    return new NextNode(name, id, sim_type);
   }
 
   void RegisterToPropnet(PropNet& pn, Node* to_reg) const;

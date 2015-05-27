@@ -17,8 +17,8 @@ namespace node_types
 
 struct OrNode : public Node
 {
-  OrNode(const std::string& name, size_t id)
-    : Node(name, Node::Type::OR), id(id)
+  OrNode(const std::string& name, size_t id, bool isNOR = false)
+    : Node(name, Node::Type::OR), id(id), isNOR(isNOR)
   {}
 
   std::string UName() const
@@ -52,7 +52,7 @@ struct OrNode : public Node
 
   Node* GetCopy_only_info() const
   {
-    return new OrNode(name, id);
+    return new OrNode(name, id, isNOR);
   }
 
   void RegisterToPropnet(PropNet& pn, Node* to_reg) const;

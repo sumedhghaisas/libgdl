@@ -236,11 +236,11 @@ const size_t* ForwardDeadReckoningPropnetStateMachine::Simulate6(const StateType
     }
   }
 
-  while(!initial_pn.Update(temp, *role_propnet_payloads[role_id]))
+  while(!role_propnets[role_id].Update(temp, *role_propnet_payloads[role_id]))
   {
-    initial_pn.GetRandomLegalMove(*role_propnet_payloads[role_id], m);
+    role_propnets[role_id].GetRandomLegalMove(*role_propnet_payloads[role_id], m);
 
-    initial_pn.Update(m, *role_propnet_payloads[role_id]);
+    role_propnets[role_id].Update(m, *role_propnet_payloads[role_id]);
 
     temp.Equate(role_propnet_payloads[role_id]->GetState());
 
@@ -256,10 +256,17 @@ void ForwardDeadReckoningPropnetStateMachine::SeparateRolePropNets()
 
   is_propnet_role_separated = true;
 
+  role_propnets = new ReasonerType[role_size];
+  for(size_t i = 0;i < role_size;i++)
+  {
+    role_propnets[i].Initialize(initial_pn);
+    role_propnets[i].Finalize();
+  }
+
   role_propnet_payloads = new typename ReasonerType::PayLoadType*[role_size];
   for(size_t i = 0;i < role_size;i++)
   {
-    role_propnet_payloads[i] = initial_pn.GetPayLoadInstance();
+    role_propnet_payloads[i] = role_propnets[i].GetPayLoadInstance();
   }
 }
 

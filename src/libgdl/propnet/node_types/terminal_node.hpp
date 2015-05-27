@@ -15,8 +15,8 @@ namespace node_types
 
 struct TerminalNode : public SimNode
 {
-  TerminalNode(const std::string& name)
-    : SimNode(name, Node::Type::TERMINAL)
+  TerminalNode(const std::string& name, const SimType& sim_type = SimType::OR)
+    : SimNode(name, Node::Type::TERMINAL, sim_type)
   {}
 
   std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t visit_stamp);
@@ -55,7 +55,7 @@ struct TerminalNode : public SimNode
 
   Node* GetCopy_only_info() const
   {
-    return new TerminalNode(name);
+    return new TerminalNode(name, sim_type);
   }
 
   void RegisterToPropnet(PropNet& pn, Node* to_reg) const;

@@ -17,8 +17,9 @@ struct SimNode : public Node
   enum class SimType { OR, AND };
 
   SimNode(const std::string& name,
-          const Type& type)
-    : Node(name, type) {}
+          const Type& type,
+          const SimType& sim_type = SimType::OR)
+    : Node(name, type), sim_type(sim_type) {}
 
   CrystalConfig::Type GetCrystalType() const
   {

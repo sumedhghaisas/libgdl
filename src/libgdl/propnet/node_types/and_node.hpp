@@ -17,8 +17,8 @@ namespace node_types
 
 struct AndNode : public Node
 {
-  AndNode(const std::string& name, size_t id)
-    : Node(name, Node::Type::AND), id(id)
+  AndNode(const std::string& name, size_t id, bool isNand = false)
+    : Node(name, Node::Type::AND), id(id), isNand(isNand)
   {}
 
   std::string UName() const
@@ -52,7 +52,7 @@ struct AndNode : public Node
 
   Node* GetCopy_only_info() const
   {
-    return new AndNode(name, id);
+    return new AndNode(name, id, isNand);
   }
 
   void RegisterToPropnet(PropNet& pn, Node* to_reg) const;

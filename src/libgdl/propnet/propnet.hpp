@@ -101,6 +101,7 @@ class PropNet
 
   void Initialize(const std::string& filename);
   void Initialize(gdlparser::KIF& kif);
+  void Initialize(const PropNet& pn);
 
   bool InitializeWithDOT(const gdlparser::KIF& kif,
                          const std::string& dot_filename);

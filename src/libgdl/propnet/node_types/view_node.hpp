@@ -17,8 +17,8 @@ namespace node_types
 
 struct ViewNode : public SimNode
 {
-  ViewNode(const std::string& name, size_t id)
-    : SimNode(name, Node::Type::VIEW), id(id)
+  ViewNode(const std::string& name, size_t id, const SimType& sim_type = SimType::OR)
+    : SimNode(name, Node::Type::VIEW, sim_type), id(id)
   {}
 
   std::string UName() const
@@ -39,7 +39,7 @@ struct ViewNode : public SimNode
 
   Node* GetCopy_only_info() const
   {
-    return new ViewNode(name, id);
+    return new ViewNode(name, id, sim_type);
   }
 
   void RegisterToPropnet(PropNet& pn, Node* to_reg) const;
