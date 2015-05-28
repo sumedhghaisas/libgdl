@@ -114,9 +114,6 @@ class PropNet
 
   void SplitTerminalNet(PropNet& pn);
 
-  void Crystallize(std::map<const Node*, crystallization::CrystalData>& data_map,
-                   std::list<const Node*>& crystal_node_order);
-
   void Finalize();
 
   std::string CreateGetGoalMachineCode();
@@ -268,6 +265,13 @@ class PropNet
   friend Node;
   friend node_types::SimNode;
   friend node_types::NotNode;
+
+  void Crystallize(std::map<const Node*, crystallization::CrystalData>& data_map,
+                   std::list<const Node*>& crystal_node_order);
+
+  void FillCrystal(std::map<const Node*, crystallization::CrystalData>& crystal_data_map,
+                   std::list<const Node*>& crystal_node_order,
+                   std::map<unsigned short, unsigned short>& id_to_mem);
 
   void InitializePrintFunctions() const;
 

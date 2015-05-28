@@ -1204,24 +1204,15 @@ void PropNet::Crystallize(map<const Node*, CrystalData>& data_map,
     terminal->Crystallize(data_map, crystal_node_order, current_index);
 }
 
-void PropNet::Finalize()
+void PropNet::FillCrystal(map<const Node*, CrystalData>& crystal_data_map,
+                          list<const Node*>& crystal_node_order,
+                          map<unsigned short, unsigned short>& id_to_mem)
 {
-  map<const Node*, CrystalData> crystal_data_map;
-  list<const Node*> crystal_node_order;
-
-  Crystallize(crystal_data_map, crystal_node_order);
-
   list<unsigned short> crystal_as_list;
-
-  crystal_data_init_size = crystal_data_map.size();
-
-  default_payload.Initialize(crystal_data_init_size, role_size, PayloadStackSize);
-
-  map<unsigned short, unsigned short> id_to_mem;
 
   for(auto n_it : crystal_node_order)
   {
-    CrystalData& cd = crystal_data_map.find(n_it)->second;
+    const CrystalData& cd = crystal_data_map.find(n_it)->second;
 
     CrystalNode t_cn;
     t_cn.data_id = cd.id;
@@ -1266,7 +1257,7 @@ void PropNet::Finalize()
     {
       if(it > 65536)
       {
-        cout << "Out of bound while crystallizing." << endl;
+        log.Fatal << LOGID << "Out of bound while crystallizing." << endl;
         exit(1);
       }
       crystal_as_list.push_back((unsigned short)it);
@@ -1311,6 +1302,22 @@ void PropNet::Finalize()
     if(it == crystal_as_list.end())
       break;
   }
+}
+
+void PropNet::Finalize()
+{
+  map<const Node*, CrystalData> crystal_data_map;
+  list<const Node*> crystal_node_order;
+
+  Crystallize(crystal_data_map, crystal_node_order);
+
+  crystal_data_init_size = crystal_data_map.size();
+
+  default_payload.Initialize(crystal_data_init_size, role_size, PayloadStackSize);
+
+  map<unsigned short, unsigned short> id_to_mem;
+
+  FillCrystal(crystal_data_map, crystal_node_order, id_to_mem);
 
   set<const Node*> initialized;
 
@@ -1347,12 +1354,11 @@ void PropNet::Finalize()
   if(terminal != NULL)
     terminal->CrystalInitialize(*this, memory_map, default_payload.data, default_payload.top, default_payload2.m_set, default_payload.goals, initialized);
 
-  default_payload2.top = default_payload.top.Clone();
-  for(size_t i = 0;i < crystal_data_init_size;i++)
-    default_payload2.data[i] = default_payload.data[i];
+
 
   if(terminal != NULL)
     terminal_crystal_id = crystal_data_map.find(GetTerminalNode())->second.id;
+
 
   base_crystal_ids = new unsigned short[BaseSize()];
   for(size_t i = 0;i < BaseSize();i++)
@@ -1391,9 +1397,6 @@ void PropNet::Finalize()
     }
   }
 
-  default_payload2.t_stack = new int[PayloadStackSize];
-  default_payload2.base_move = MoveType();
-
   base_mask = AState();
 
   for(auto it : BaseNodes())
@@ -1403,15 +1406,6 @@ void PropNet::Finalize()
       base_mask.Set(it.first, true);
     }
   }
-
-  ofstream test("test.txt");
-  for(auto it : crystal_data_map)
-  {
-    test << it.first->UName() << " " << id_to_mem.find(it.second.id)->second << endl;
-  }
-  test.close();
-
-  default_payload2.terminal = false;
 
   default_payload.Crystallize(crystal_data_init_size, PayloadStackSize);
 }
