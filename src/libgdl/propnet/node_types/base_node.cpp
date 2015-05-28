@@ -30,7 +30,7 @@ tuple<bool, size_t> BaseNode::CodeGen(EntryManager& em, size_t v_stamp)
 }
 
 bool BaseNode::CrystalInitialize(const PropNet& pn,
-                                 const std::map<const Node*, size_t>& id_map,
+                                 const std::map<const Node*, CrystalData>& crystal_data_map,
                                  PropNetPayLoad& payload,
                                  std::set<const Node*>& initialized)
 {
@@ -43,7 +43,7 @@ bool BaseNode::CrystalInitialize(const PropNet& pn,
     holding_value = true;
   else holding_value = false;
 
-  SimPolicyInitializeUpdate(holding_value, payload.data[id_map.find(this)->second]);
+  SimPolicyInitializeUpdate(holding_value, payload.data[crystal_data_map.find(this)->second.id]);
 
   initialized.insert(this);
 

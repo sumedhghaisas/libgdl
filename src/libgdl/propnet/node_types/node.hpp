@@ -59,7 +59,7 @@ struct Node
                                            size_t visit_stamp) = 0;
 
   virtual bool CrystalInitialize(const PropNet& pn,
-                                 const std::map<const Node*, size_t>& crystal_data_map,
+                                 const std::map<const Node*, CrystalData>& crystal_data_map,
                                  PropNetPayLoad& payload,
                                  std::set<const Node*>& initialized) = 0;
 

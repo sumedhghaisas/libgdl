@@ -1208,40 +1208,24 @@ void PropNet::Finalize()
 
   set<const Node*> initialized;
 
-  map<const Node*, size_t> memory_map;
-  for(auto it : crystal_data_map)
-  {
-    memory_map[it.first] = it.second.id;
-  }
-
-  default_payload2.m_set = new MoveSet[role_size];
-
   InitState(default_payload.base);
-
-  default_payload2.top = StateType();
-  default_payload2.goals = new size_t[role_size];
-  default_payload2.base = StateType();
-  InitState(default_payload2.base);
-  default_payload2.data = new signed short[crystal_data_init_size];
 
   for(auto it : legal_nodes)
     for(auto it2 : it)
       if(del.find(it2.second) == del.end())
-        it2.second->CrystalInitialize(*this, memory_map, default_payload, initialized);
+        it2.second->CrystalInitialize(*this, crystal_data_map, default_payload, initialized);
 
   for(auto it : next_nodes)
     if(del.find(it.second) == del.end())
-      it.second->CrystalInitialize(*this, memory_map, default_payload, initialized);
+      it.second->CrystalInitialize(*this, crystal_data_map, default_payload, initialized);
 
   for(auto it : goal_nodes)
     for(auto it2 : it)
       if(del.find(it2.second) == del.end())
-        it2.second->CrystalInitialize(*this, memory_map, default_payload, initialized);
+        it2.second->CrystalInitialize(*this, crystal_data_map, default_payload, initialized);
 
   if(terminal != NULL)
-    terminal->CrystalInitialize(*this, memory_map, default_payload, initialized);
-
-
+    terminal->CrystalInitialize(*this, crystal_data_map, default_payload, initialized);
 
   if(terminal != NULL)
     terminal_crystal_id = crystal_data_map.find(GetTerminalNode())->second.id;
@@ -1278,7 +1262,7 @@ void PropNet::Finalize()
     legal_memory_ids[i] = new unsigned short[LegalNodes()[i].size()];
     for(size_t j = 0;j < LegalNodes()[i].size();j++)
     {
-      legal_memory_ids[i][j] = memory_map.find(LegalNodes()[i].find(j)->second)->second;
+      legal_memory_ids[i][j] = crystal_data_map.find(LegalNodes()[i].find(j)->second)->second.id;
       //if(default_payload.data[legal_memory_ids[i][j]] & CrystalConfig::CrystalSignMask)
         //default_payload.legal_size[i]++;
     }
@@ -1324,21 +1308,21 @@ PropNet::PayLoadType* PropNet::GetPayLoadInstance() const
 PropNet::PayLoadType2* PropNet::GetPayLoadInstance2() const
 {
   PayLoadType2* out = new PayLoadType2();
-  out->top = default_payload2.top.Clone();
-  out->base = default_payload2.base.Clone();
-  out->base_move = default_payload2.base_move.Clone();
-  out->m_set = new MoveSet[role_size];
-  out->goals = new size_t[role_size];
-  for(size_t i = 0;i < role_size;i++)
-  {
-    out->m_set[i] = default_payload2.m_set[i];
-    out->goals[i] = default_payload2.goals[i];
-  }
-  out->t_stack = new int[PayloadStackSize];
-  out->data = new signed short[crystal_data_init_size];
-  for(size_t i = 0;i < crystal_data_init_size;i++)
-    out->data[i] = default_payload2.data[i];
-  out->terminal = default_payload2.terminal;
+//  out->top = default_payload2.top.Clone();
+//  out->base = default_payload2.base.Clone();
+//  out->base_move = default_payload2.base_move.Clone();
+//  out->m_set = new MoveSet[role_size];
+//  out->goals = new size_t[role_size];
+//  for(size_t i = 0;i < role_size;i++)
+//  {
+//    out->m_set[i] = default_payload2.m_set[i];
+//    out->goals[i] = default_payload2.goals[i];
+//  }
+//  out->t_stack = new int[PayloadStackSize];
+//  out->data = new signed short[crystal_data_init_size];
+//  for(size_t i = 0;i < crystal_data_init_size;i++)
+//    out->data[i] = default_payload2.data[i];
+//  out->terminal = default_payload2.terminal;
 
   return out;
 }

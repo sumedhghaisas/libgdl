@@ -35,16 +35,16 @@ tuple<bool, size_t> NotNode::CodeGen(EntryManager& em, size_t v_stamp)
 }
 
 bool NotNode::CrystalInitialize(const PropNet& pn,
-                                const std::map<const Node*, size_t>& id_map,
+                                const std::map<const Node*, CrystalData>& crystal_data_map,
                                 PropNetPayLoad& payload,
                                 std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
 
-  holding_value = !(*in_degree.begin())->CrystalInitialize(pn, id_map, payload, initialized);
+  holding_value = !(*in_degree.begin())->CrystalInitialize(pn, crystal_data_map, payload, initialized);
 
-  CrystalConfig::NotPolicyCrystalInitialize(holding_value, payload.data[id_map.find(this)->second]);
+  CrystalConfig::NotPolicyCrystalInitialize(holding_value, payload.data[crystal_data_map.find(this)->second.id]);
 
   initialized.insert(this);
 

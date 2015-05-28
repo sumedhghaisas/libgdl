@@ -28,7 +28,7 @@ struct BaseNode : public SimNode
   std::tuple<bool, size_t> CodeGen(compilation::EntryManager& em, size_t v_stamp);
 
   bool CrystalInitialize(const PropNet& pn,
-                         const std::map<const Node*, size_t>& id_map,
+                         const std::map<const Node*, CrystalData>& crystal_data_map,
                          PropNetPayLoad& payload,
                          std::set<const Node*>& initialized);
 

@@ -65,7 +65,7 @@ tuple<bool, size_t> LegalNode::CodeGen(EntryManager& em, size_t v_stamp)
 }
 
 bool LegalNode::CrystalInitialize(const PropNet& pn,
-                                  const std::map<const Node*, size_t>& id_map,
+                                  const std::map<const Node*, CrystalData>& crystal_data_map,
                                   PropNetPayLoad& payload,
                                   std::set<const Node*>& initialized)
 {
@@ -74,11 +74,11 @@ bool LegalNode::CrystalInitialize(const PropNet& pn,
 
   for(auto it : in_degree)
   {
-    bool temp = it->CrystalInitialize(pn, id_map, payload, initialized);
-    SimPolicyInitializeUpdate(temp, payload.data[id_map.find(this)->second]);
+    bool temp = it->CrystalInitialize(pn, crystal_data_map, payload, initialized);
+    SimPolicyInitializeUpdate(temp, payload.data[crystal_data_map.find(this)->second.id]);
   }
 
-  holding_value = CrystalConfig::GetCrystalBoolValue(payload.data[id_map.find(this)->second]);
+  holding_value = CrystalConfig::GetCrystalBoolValue(payload.data[crystal_data_map.find(this)->second.id]);
 
   if(in_degree.size() == 0)
     holding_value = true;
