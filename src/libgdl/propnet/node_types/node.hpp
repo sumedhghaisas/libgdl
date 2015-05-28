@@ -11,6 +11,7 @@
 #include <libgdl/core/data_types/a_state.hpp>
 #include <libgdl/core/data_types/a_move.hpp>
 
+#include <libgdl/propnet/propnet_payload.hpp>
 #include <libgdl/propnet/crystallization/crystal_data.hpp>
 #include <libgdl/propnet/compilation/entry_manager.hpp>
 #include <libgdl/propnet/compilation/entry_types.hpp>
@@ -59,10 +60,7 @@ struct Node
 
   virtual bool CrystalInitialize(const PropNet& pn,
                                  const std::map<const Node*, size_t>& crystal_data_map,
-                                 signed short* data,
-                                 AState& s,
-                                 MoveSet* m_set,
-                                 size_t* goals,
+                                 PropNetPayLoad& payload,
                                  std::set<const Node*>& initialized) = 0;
 
   virtual Node* GetCopy_only_info() const = 0;

@@ -29,10 +29,7 @@ struct BaseNode : public SimNode
 
   bool CrystalInitialize(const PropNet& pn,
                          const std::map<const Node*, size_t>& id_map,
-                         signed short* data,
-                         AState& s,
-                         MoveSet* m_set,
-                         size_t* goals,
+                         PropNetPayLoad& payload,
                          std::set<const Node*>& initialized);
 
   void CreateCopy(PropNet& pn, Node* parent, std::map<Node*, Node*>& node_map);

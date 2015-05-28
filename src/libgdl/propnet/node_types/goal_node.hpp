@@ -33,10 +33,7 @@ struct GoalNode : public SimNode
 
   bool CrystalInitialize(const PropNet& pn,
                          const std::map<const Node*, size_t>& id_map,
-                         signed short* data,
-                         AState& s,
-                         MoveSet* m_set,
-                         size_t* goals,
+                         PropNetPayLoad& payload,
                          std::set<const Node*>& initialized);
 
   void CrystalUpdate(signed short val,

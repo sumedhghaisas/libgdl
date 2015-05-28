@@ -60,10 +60,7 @@ tuple<bool, size_t> AndNode::CodeGen(EntryManager& em, size_t v_stamp)
 
 bool AndNode::CrystalInitialize(const PropNet& pn,
                                 const std::map<const Node*, size_t>& id_map,
-                                signed short* data,
-                                AState& s,
-                                MoveSet* m_set,
-                                size_t* goals,
+                                PropNetPayLoad& payload,
                                 std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
@@ -71,11 +68,11 @@ bool AndNode::CrystalInitialize(const PropNet& pn,
 
   for(auto it : in_degree)
   {
-    bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
-    CrystalConfig::AndPolicyCrystalInitialize(temp, data[id_map.find(this)->second]);
+    bool temp = it->CrystalInitialize(pn, id_map, payload, initialized);
+    CrystalConfig::AndPolicyCrystalInitialize(temp, payload.data[id_map.find(this)->second]);
   }
 
-  holding_value = CrystalConfig::GetCrystalBoolValue(data[id_map.find(this)->second]);
+  holding_value = CrystalConfig::GetCrystalBoolValue(payload.data[id_map.find(this)->second]);
 
   initialized.insert(this);
 

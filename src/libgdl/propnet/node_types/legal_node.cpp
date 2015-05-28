@@ -64,25 +64,28 @@ tuple<bool, size_t> LegalNode::CodeGen(EntryManager& em, size_t v_stamp)
   return entry_ret;
 }
 
-bool LegalNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, size_t>& id_map, signed short* data, AState& s, MoveSet* m_set, size_t* goals, std::set<const Node*>& initialized)
+bool LegalNode::CrystalInitialize(const PropNet& pn,
+                                  const std::map<const Node*, size_t>& id_map,
+                                  PropNetPayLoad& payload,
+                                  std::set<const Node*>& initialized)
 {
   if(initialized.find(this) != initialized.end())
     return holding_value;
 
   for(auto it : in_degree)
   {
-    bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
-    SimPolicyInitializeUpdate(temp, data[id_map.find(this)->second]);
+    bool temp = it->CrystalInitialize(pn, id_map, payload, initialized);
+    SimPolicyInitializeUpdate(temp, payload.data[id_map.find(this)->second]);
   }
 
-  holding_value = CrystalConfig::GetCrystalBoolValue(data[id_map.find(this)->second]);
+  holding_value = CrystalConfig::GetCrystalBoolValue(payload.data[id_map.find(this)->second]);
 
   if(in_degree.size() == 0)
     holding_value = true;
 
   if(holding_value)
   {
-    m_set[r_id].insert(id);
+    payload.legal_size[r_id]++;
   }
 
   initialized.insert(this);
