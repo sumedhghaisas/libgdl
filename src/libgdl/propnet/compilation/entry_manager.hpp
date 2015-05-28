@@ -7,13 +7,15 @@
 
 #include "memory_manager.hpp"
 
-#include "entry_types/entry.hpp"
+#include "entry_types.hpp"
 
 #include "handlers/code_handler.hpp"
 
 namespace libgdl
 {
 namespace propnet
+{
+namespace compilation
 {
 
 namespace entry_types
@@ -66,7 +68,7 @@ class EntryManager
     mm = MemoryManager();
   }
 
-  std::list<size_t> CodeGen(CodeHandler& ch,
+  std::list<size_t> CodeGen(handlers::CodeHandler& ch,
                             std::list<size_t> to_get_l);
 
   size_t GetRequiredMemory()
@@ -90,6 +92,6 @@ class EntryManager
 
 }
 }
-
+}
 
 #endif // LIBGDL_PROPNET_ENTRY_MANAGER_HPP_INCLUDED

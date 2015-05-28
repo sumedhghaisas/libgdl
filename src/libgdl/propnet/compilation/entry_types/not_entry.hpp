@@ -10,6 +10,8 @@ namespace libgdl
 {
 namespace propnet
 {
+namespace compilation
+{
 namespace entry_types
 {
 
@@ -18,7 +20,7 @@ struct NotEntry : public Entry
   NotEntry(size_t id, std::tuple<bool, size_t> in)
     : Entry(id), in(in) {}
 
-  void CodeGen(MemoryManager& mm, CodeHandler& ch)
+  void CodeGen(MemoryManager& mm, handlers::CodeHandler& ch)
   {
     size_t ml = mm.RequestLocation(id);
 
@@ -34,6 +36,7 @@ struct NotEntry : public Entry
   std::tuple<bool, size_t> in;
 };
 
+}
 }
 }
 }

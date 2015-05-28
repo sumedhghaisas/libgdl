@@ -1,14 +1,12 @@
 #include "base_node.hpp"
 
-#include "../entry_manager.hpp"
-#include "../entry_types/load_entry.hpp"
-
-#include "../propnet.hpp"
+#include <libgdl/propnet/propnet.hpp>
 
 using namespace std;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
-using namespace libgdl::propnet::entry_types;
+using namespace libgdl::propnet::compilation;
+using namespace libgdl::propnet::compilation::entry_types;
 using namespace libgdl::propnet::crystallization;
 
 tuple<bool, size_t> BaseNode::CodeGen(EntryManager& em, size_t v_stamp)

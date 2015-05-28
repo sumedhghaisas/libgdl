@@ -1,8 +1,5 @@
 #include "propnet.hpp"
 
-#include "entry_manager.hpp"
-#include "crystal_data.hpp"
-
 #include <sstream>
 #include <fstream>
 #include <tuple>
@@ -11,10 +8,13 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/unordered_map.hpp>
 
-#include "handlers/code_handler.hpp"
-#include "handlers/file_handler.hpp"
-
 #include <libgdl/core/data_types/move_list.hpp>
+
+#include "compilation/entry_manager.hpp"
+#include "compilation/handlers/code_handler.hpp"
+#include "compilation/handlers/file_handler.hpp"
+
+#include "crystallization/crystal_data.hpp"
 
 using namespace std;
 using namespace libgdl;
@@ -24,6 +24,8 @@ using namespace libgdl::gdlparser;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
 using namespace libgdl::propnet::crystallization;
+using namespace libgdl::propnet::compilation;
+using namespace libgdl::propnet::compilation::handlers;
 
 size_t PropNet::debug_time = 0;
 

@@ -3,16 +3,13 @@
 #include <list>
 #include <iostream>
 
-#include "../entry_manager.hpp"
-#include "../entry_types/or_entry.hpp"
-#include "../entry_types/not_entry.hpp"
-
-#include "../propnet.hpp"
+#include <libgdl/propnet/propnet.hpp>
 
 using namespace std;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
-using namespace libgdl::propnet::entry_types;
+using namespace libgdl::propnet::compilation::entry_types;
+using namespace libgdl::propnet::compilation;
 
 tuple<bool, size_t> TerminalNode::CodeGen(EntryManager& em, size_t v_stamp)
 {

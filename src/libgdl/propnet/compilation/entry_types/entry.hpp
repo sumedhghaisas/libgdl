@@ -4,13 +4,14 @@
 #include <tuple>
 #include <sstream>
 
-#include "../memory_manager.hpp"
-
-#include "../handlers/code_handler.hpp"
+#include <libgdl/propnet/compilation/memory_manager.hpp>
+#include <libgdl/propnet/compilation/handlers/code_handler.hpp>
 
 namespace libgdl
 {
 namespace propnet
+{
+namespace compilation
 {
 namespace entry_types
 {
@@ -22,7 +23,7 @@ struct Entry
 
   virtual ~Entry() {}
 
-  virtual void CodeGen(MemoryManager& mm, CodeHandler& ch) = 0;
+  virtual void CodeGen(MemoryManager& mm, handlers::CodeHandler& ch) = 0;
 
   void PrintAccess(std::tuple<bool, size_t> entry_ret,
                    MemoryManager& mm,
@@ -39,6 +40,7 @@ struct Entry
   size_t id;
 };
 
+}
 }
 }
 }

@@ -7,6 +7,7 @@
 using namespace std;
 using namespace libgdl::propnet;
 using namespace libgdl::thread_pool;
+using namespace libgdl::propnet::compilation::handlers;
 
 bool FileHandler::GenerateSharedObject(const std::string& shared_object)
 {

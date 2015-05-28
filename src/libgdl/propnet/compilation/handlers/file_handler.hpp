@@ -13,6 +13,10 @@ namespace libgdl
 {
 namespace propnet
 {
+namespace compilation
+{
+namespace handlers
+{
 
 struct FileHandler
 {
@@ -50,6 +54,7 @@ struct FileHandler
 
 }
 }
-
+}
+}
 
 #endif // LIBGDL_PROPNET_FILE_HANDLER_HPP_INCLUDED

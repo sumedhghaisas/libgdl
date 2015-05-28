@@ -7,6 +7,8 @@ namespace libgdl
 {
 namespace propnet
 {
+namespace compilation
+{
 namespace entry_types
 {
 
@@ -15,7 +17,7 @@ struct LoadEntry : public Entry
   LoadEntry(size_t id, size_t base_id)
     : Entry(id), base_id(base_id) {}
 
-  void CodeGen(MemoryManager& mm, CodeHandler& ch)
+  void CodeGen(MemoryManager& mm, handlers::CodeHandler& ch)
   {
     size_t mem_id = mm.RequestLocation(id);
 
@@ -30,6 +32,7 @@ struct LoadEntry : public Entry
   size_t base_id;
 };
 
+}
 }
 }
 }

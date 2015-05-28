@@ -14,12 +14,6 @@
 #include <libgdl/gdlparser/kif.hpp>
 
 #include "node_types.hpp"
-#include "istate.hpp"
-#include "imove.hpp"
-
-#include <libgdl/core.hpp>
-
-#include <boost/unordered_set.hpp>
 
 namespace libgdl
 {

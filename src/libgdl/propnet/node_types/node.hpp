@@ -11,7 +11,9 @@
 #include <libgdl/core/data_types/a_state.hpp>
 #include <libgdl/core/data_types/a_move.hpp>
 
-#include "../crystal_data.hpp"
+#include <libgdl/propnet/crystallization/crystal_data.hpp>
+#include <libgdl/propnet/compilation/entry_manager.hpp>
+#include <libgdl/propnet/compilation/entry_types.hpp>
 
 #include <boost/unordered_set.hpp>
 
@@ -23,7 +25,13 @@ namespace propnet
 {
 
 class PropNet;
+
+namespace compilation
+{
+
 class EntryManager;
+
+}
 
 namespace node_types
 {
@@ -46,11 +54,11 @@ struct Node
 
   virtual ~Node() {}
 
-  virtual std::tuple<bool, size_t> CodeGen(EntryManager& em,
+  virtual std::tuple<bool, size_t> CodeGen(compilation::EntryManager& em,
                                            size_t visit_stamp) = 0;
 
   virtual bool CrystalInitialize(const PropNet& pn,
-                                 const std::map<const Node*, size_t>& id_map,
+                                 const std::map<const Node*, size_t>& crystal_data_map,
                                  signed short* data,
                                  AState& s,
                                  MoveSet* m_set,

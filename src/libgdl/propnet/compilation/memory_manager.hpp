@@ -8,6 +8,8 @@ namespace libgdl
 {
 namespace propnet
 {
+namespace compilation
+{
 
 class MemoryManager
 {
@@ -56,6 +58,6 @@ class MemoryManager
 
 }
 }
-
+}
 
 #endif // LIBGDL_PROPNET_MEMORY_MANAGER_HPP_INCLUDED

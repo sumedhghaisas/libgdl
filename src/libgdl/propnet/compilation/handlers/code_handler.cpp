@@ -2,6 +2,7 @@
 
 using namespace std;
 using namespace libgdl::propnet;
+using namespace libgdl::propnet::compilation::handlers;
 
 void CodeHandler::GenerateCode(FileHandler& fh)
 {

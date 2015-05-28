@@ -10,6 +10,8 @@ namespace libgdl
 {
 namespace propnet
 {
+namespace compilation
+{
 namespace entry_types
 {
 
@@ -18,7 +20,7 @@ struct OrEntry : public Entry
   OrEntry(size_t id, const std::list<std::tuple<bool, size_t>>& in_ids)
     : Entry(id), in_ids(in_ids) {}
 
-  void CodeGen(MemoryManager& mm, CodeHandler& ch)
+  void CodeGen(MemoryManager& mm, handlers::CodeHandler& ch)
   {
     size_t ml = mm.RequestLocation(id);
 
@@ -62,6 +64,6 @@ struct OrEntry : public Entry
 }
 }
 }
-
+}
 
 #endif // LIBGDL_PROPNET_OR_ENTRY_HPP_INCLUDED

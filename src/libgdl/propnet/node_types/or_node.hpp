@@ -10,8 +10,6 @@ namespace libgdl
 namespace propnet
 {
 
-class EntryManager;
-
 namespace node_types
 {
 
@@ -26,7 +24,7 @@ struct OrNode : public Node
     return "OR_" + ToString(id);
   }
 
-  std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t visit_stamp);
+  std::tuple<bool, size_t> CodeGen(compilation::EntryManager& em, size_t visit_stamp);
 
   bool CrystalInitialize(const PropNet& pn,
                          const std::map<const Node*, size_t>& id_map,

@@ -12,6 +12,10 @@ namespace libgdl
 {
 namespace propnet
 {
+namespace compilation
+{
+namespace handlers
+{
 
 struct CodeHandler
 {
@@ -84,6 +88,7 @@ struct CodeHandler
 
 }
 }
-
+}
+}
 
 #endif // LIBGDL_PROPNET_CODE_HANDLER_HPP_INCLUDED

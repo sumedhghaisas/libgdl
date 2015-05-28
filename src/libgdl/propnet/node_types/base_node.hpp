@@ -10,8 +10,6 @@ namespace libgdl
 namespace propnet
 {
 
-class EntryManager;
-
 namespace node_types
 {
 
@@ -27,7 +25,7 @@ struct BaseNode : public SimNode
     return out;
   }
 
-  std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t v_stamp);
+  std::tuple<bool, size_t> CodeGen(compilation::EntryManager& em, size_t v_stamp);
 
   bool CrystalInitialize(const PropNet& pn,
                          const std::map<const Node*, size_t>& id_map,

@@ -10,8 +10,6 @@ namespace libgdl
 namespace propnet
 {
 
-class EntryManager;
-
 namespace node_types
 {
 
@@ -34,7 +32,7 @@ struct AndNode : public Node
                          size_t* goals,
                          std::set<const Node*>& initialized);
 
-  std::tuple<bool, size_t> CodeGen(EntryManager& em, size_t v_stamp);
+  std::tuple<bool, size_t> CodeGen(compilation::EntryManager& em, size_t v_stamp);
 
   Node* MergeWithChild(PropNet& pn)
   {

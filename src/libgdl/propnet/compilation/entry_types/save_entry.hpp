@@ -7,6 +7,8 @@ namespace libgdl
 {
 namespace propnet
 {
+namespace compilation
+{
 namespace entry_types
 {
 
@@ -15,7 +17,7 @@ struct SaveEntry : public Entry
   SaveEntry(size_t id, size_t base_id, const std::list<std::tuple<bool, size_t>>& in_ids)
     : Entry(id), base_id(base_id), in_ids(in_ids) {}
 
-  void CodeGen(MemoryManager& mm, CodeHandler& ch)
+  void CodeGen(MemoryManager& mm, handlers::CodeHandler& ch)
   {
     std::stringstream ss, ss2;
 
@@ -47,6 +49,6 @@ struct SaveEntry : public Entry
 }
 }
 }
-
+}
 
 #endif // LIBGDL_PROPNET_SAVE_ENTRY_HPP_INCLUDED
