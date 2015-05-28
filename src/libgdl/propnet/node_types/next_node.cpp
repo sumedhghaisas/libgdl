@@ -73,14 +73,13 @@ bool NextNode::CrystalInitialize(const PropNet& pn, const std::map<const Node*, 
   if(initialized.find(this) != initialized.end())
     return holding_value;
 
-  holding_value = false;
-
   for(auto it : in_degree)
   {
     bool temp = it->CrystalInitialize(pn, id_map, data, s, m_set, goals, initialized);
     SimPolicyInitializeUpdate(temp, data[id_map.find(this)->second]);
-    holding_value = holding_value || temp;
   }
+
+  holding_value = CrystalConfig::GetCrystalBoolValue(data[id_map.find(this)->second]);
 
   if(in_degree.size() == 0)
     holding_value = true;
