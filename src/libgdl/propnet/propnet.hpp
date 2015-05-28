@@ -112,7 +112,9 @@ class PropNet
 
   void SplitTerminalNet(PropNet& pn);
 
-  std::map<const Node*, size_t> Crystallize(signed short*& data_init, StateType& top, MoveSet* m_set, size_t* goals);
+  void Crystallize(std::map<const Node*, size_t>& id_map,
+                   std::map<size_t, crystallization::CrystalData>& data_map,
+                   std::map<size_t, size_t>& init_map);
 
   void Finalize();
 
