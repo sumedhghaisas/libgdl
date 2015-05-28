@@ -85,11 +85,9 @@ struct Node
     exit(1);
   }
 
-  size_t Crystallize(std::map<const Node*, size_t>& id_map,
-                     std::map<size_t, CrystalData>& data_map,
-                     std::map<size_t, size_t>& init_map,
-                     size_t& current_index,
-                     size_t& current_m_index) const;
+  size_t Crystallize(std::map<const Node*, CrystalData>& data_map,
+                     std::list<const Node*>& crystal_node_order,
+                     size_t& current_index) const;
 
   Node* CreateCopy(PropNet& pn, Node* parent,
                    std::map<const Node*, Node*>& node_map) const;

@@ -4,45 +4,35 @@ using namespace libgdl;
 using namespace libgdl::propnet;
 using namespace libgdl::propnet::node_types;
 
-size_t Node::Crystallize(std::map<const Node*, size_t>& id_map,
-                         std::map<size_t, CrystalData>& data_map,
-                         std::map<size_t, size_t>& init_map,
-                         size_t& current_index,
-                         size_t& current_m_index) const
+size_t Node::Crystallize(std::map<const Node*, CrystalData>& data_map,
+                         std::list<const Node*>& crystal_node_order,
+                         size_t& current_index) const
 {
   if(out_degree.size() > 256)
   {
-    std::cout << "Out of bounds while crystallizing." << std::endl;
+    std::cout << LOGID << "Out of bounds while crystallizing." << std::endl;
   }
 
-  auto it = id_map.find(this);
-  if(it != id_map.end())
-    return it->second;
+  auto it = data_map.find(this);
+  if(it != data_map.end())
+    return it->second.id;
 
   CrystalData cry;
 
   cry.node = this;
 
   cry.type = GetCrystalType();
-//  if(type == Type::AND)
-//    cry.type = CrystalConfig::Type::AND;
-//  else if(type == Type::OR || type == Type::VIEW || type == Type::BASE || type == Type::INPUT)
-//    cry.type = CrystalConfig::Type::OR;
-//  else if(type == Type::NOT)
-//    cry.type = CrystalConfig::Type::NOT;
-//  else cry.type = CrystalConfig::Type::OR_UPDATE;
 
   cry.id = current_index;
-  init_map[current_index] = current_m_index++;
+
+  crystal_node_order.push_back(this);
 
   current_index++;
 
-  id_map[this] = cry.id;
-
   for(auto it : out_degree)
-    cry.out_degree.push_back(it->Crystallize(id_map, data_map, init_map, current_index, current_m_index));
+    cry.out_degree.push_back(it->Crystallize(data_map, crystal_node_order, current_index));
 
-  data_map[cry.id] = cry;
+  data_map[this] = cry;
 
   return cry.id;
 }

@@ -245,6 +245,9 @@ const size_t* ForwardDeadReckoningPropnetStateMachine::Simulate6(const StateType
     temp.Equate(role_propnet_payloads[role_id]->GetState());
 
     role_id = ++role_id % role_size;
+
+    cout << m << endl;
+    cout << temp << endl;
   }
 
   return GetGoals(temp);
