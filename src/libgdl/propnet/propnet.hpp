@@ -53,6 +53,8 @@ class PropNet
   {
     ~PropNetPayLoad();
 
+    void Initialize(size_t crystal_data_size, size_t role_size, size_t stack_size);
+
     StateType top;
     StateType base;
     MoveType base_move;
@@ -203,7 +205,7 @@ class PropNet
 
   size_t GetCrystalDataSize() const
   {
-    return data_init_size;
+    return crystal_data_init_size;
   }
 
   inline size_t GetCrystalTerminalID() const
@@ -324,7 +326,7 @@ class PropNet
   unsigned short** input_crystal_ids = NULL;
   unsigned short** legal_memory_ids = NULL;
 
-  size_t data_init_size = 0;
+  size_t crystal_data_init_size = 0;
 
   size_t terminal_crystal_id = 0;
 

@@ -246,8 +246,8 @@ const size_t* ForwardDeadReckoningPropnetStateMachine::Simulate6(const StateType
 
     role_id = ++role_id % role_size;
 
-    cout << m << endl;
-    cout << temp << endl;
+    //cout << m << endl;
+    //cout << temp << endl;
   }
 
   return GetGoals(temp);
