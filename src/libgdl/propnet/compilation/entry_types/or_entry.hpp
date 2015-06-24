@@ -54,6 +54,7 @@ struct OrEntry : public Entry
     *ss << ";";
 
     ch.AddEntry(ss->str());
+    delete ss;
   }
 
   std::list<std::tuple<bool, size_t>> in_ids;

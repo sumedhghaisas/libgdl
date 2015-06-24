@@ -124,73 +124,67 @@ ForwardDeadReckoningPropnetStateMachine::ForwardDeadReckoningPropnetStateMachine
       SeparateGoalNet(true);
   }
 
-  without_terminal_pn = new ReasonerType(initial_pn);
-
-  ReasonerType terminal_pn;
-  without_terminal_pn->SplitTerminalNet(terminal_pn);
-
-  without_terminal_pn->Finalize();
-  without_terminal_payload = without_terminal_pn->GetPayLoadInstance2();
-
-  std::string is_terminal_so = terminal_pn.CreateIsTerminalMachineCode();
-
-  void* handle = dlopen(is_terminal_so.c_str(), RTLD_NOW);
-  if (!handle)
-  {
-    log.Warn << LOGID << "The error is " << dlerror() << std::endl;
-    return;
-  }
-
-  typedef bool (*IsTerminal_m_t)(const StateType&, bool*);
-
-  IsTerminal_compiled = (IsTerminal_m_t)dlsym(handle, "IsTerminal");
-  if(!IsTerminal_compiled)
-  {
-    log.Warn << LOGID << "The error is " << dlerror() << std::endl;
-    return;
-  }
-
-  typedef size_t (*IsTerminal_m_memory_t)();
-
-  IsTerminal_m_memory_t IsTerminal_memory = (IsTerminal_m_memory_t)dlsym(handle, "IsTerminalMemoryRequirement");
-  if(!IsTerminal_memory)
-  {
-    log.Warn << LOGID << "The error is " << dlerror() << std::endl;
-    return;
-  }
-
-  size_t mem = IsTerminal_memory();
-
-  IsTerminal_buff = new bool[mem];
+//  without_terminal_pn = new ReasonerType(initial_pn);
+//
+//  ReasonerType terminal_pn;
+//  without_terminal_pn->SplitTerminalNet(terminal_pn);
+//
+//  without_terminal_pn->Finalize();
+//  without_terminal_payload = without_terminal_pn->GetPayLoadInstance2();
+//
+//  std::string is_terminal_so = terminal_pn.CreateIsTerminalMachineCode();
+//
+//  void* handle = dlopen(is_terminal_so.c_str(), RTLD_NOW);
+//  if (!handle)
+//  {
+//    log.Warn << LOGID << "The error is " << dlerror() << std::endl;
+//    return;
+//  }
+//
+//  typedef bool (*IsTerminal_m_t)(const StateType&, bool*);
+//
+//  IsTerminal_compiled = (IsTerminal_m_t)dlsym(handle, "IsTerminal");
+//  if(!IsTerminal_compiled)
+//  {
+//    log.Warn << LOGID << "The error is " << dlerror() << std::endl;
+//    return;
+//  }
+//
+//  typedef size_t (*IsTerminal_m_memory_t)();
+//
+//  IsTerminal_m_memory_t IsTerminal_memory = (IsTerminal_m_memory_t)dlsym(handle, "IsTerminalMemoryRequirement");
+//  if(!IsTerminal_memory)
+//  {
+//    log.Warn << LOGID << "The error is " << dlerror() << std::endl;
+//    return;
+//  }
+//
+//  size_t mem = IsTerminal_memory();
+//
+//  IsTerminal_buff = new bool[mem];
   simulate2_it = new MoveSet::const_iterator[role_size];
   for(size_t i = 0;i < 100;i++)
     simulate2_state_arr[i] = StateType();
-  initial_pn.OptimizeWithRoleMask(alt_role_masks[0]);
+  //initial_pn.OptimizeWithRoleMask(alt_role_masks[0]);
 }
 
 ForwardDeadReckoningPropnetStateMachine::~ForwardDeadReckoningPropnetStateMachine()
 {
-//  delete without_terminal_pn;
-//  delete without_terminal_payload;
-//
-//  delete goal_pn_payload;
-//  delete[] GetGoals_buff;
-//
-//  delete[] IsTerminal_buff;
-//
-//  delete[] alt_role_masks;
-//  delete initial_pn_payload;
-//
-//  if(is_propnet_role_separated)
-//    for(size_t i = 0;i < role_size;i++)
-//      delete role_propnet_payloads[i];
-//
-//  delete[] role_propnet_payloads;
-//  delete[] simulate2_state_arr;
-//  delete[] simulate2_it;
-//
-  //init = AState("");
-  //temp = AState("");
+  delete initial_pn_payload;
+
+  delete goal_pn_payload;
+  delete[] GetGoals_buff;
+
+  delete[] simulate2_state_arr;
+  delete[] simulate2_it;
+
+  delete[] role_propnets;
+  if(role_propnet_payloads != NULL)
+    for(size_t i = 0;i < role_size;i++)
+      delete role_propnet_payloads[i];
+  delete[] role_propnet_payloads;
+
+  delete[] alt_role_masks;
 }
 
 ForwardDeadReckoningPropnetStateMachine::MoveType ForwardDeadReckoningPropnetStateMachine::GetRandomLegalMove(const StateType& s)
@@ -381,7 +375,7 @@ void ForwardDeadReckoningPropnetStateMachine::CheckZeroSumGame()
 void ForwardDeadReckoningPropnetStateMachine::FinalizeInitialPropNet()
 {
   log.Info << "Initial propnet consists of " << initial_pn.GetNumComponents() << " componenets." << endl;
-  initial_pn.OptimizeWithNodeMerge();
+  //initial_pn.OptimizeWithNodeMerge();
   log.Info << "Initial propnet is optimized to " << initial_pn.GetNumComponents() << " components with node merging." << endl;
   initial_pn.Finalize();
   initial_pn_payload = initial_pn.GetPayLoadInstance();

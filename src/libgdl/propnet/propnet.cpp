@@ -1306,7 +1306,7 @@ PropNet::PayLoadType* PropNet::GetPayLoadInstance() const
 
 PropNet::PayLoadType2* PropNet::GetPayLoadInstance2() const
 {
-  PayLoadType2* out = new PayLoadType2();
+  //PayLoadType2* out = new PayLoadType2();
 //  out->top = default_payload2.top.Clone();
 //  out->base = default_payload2.base.Clone();
 //  out->base_move = default_payload2.base_move.Clone();
@@ -1323,7 +1323,7 @@ PropNet::PayLoadType2* PropNet::GetPayLoadInstance2() const
 //    out->data[i] = default_payload2.data[i];
 //  out->terminal = default_payload2.terminal;
 
-  return out;
+  return NULL;
 }
 
 void PropNet::InitializePrintFunctions() const

@@ -106,7 +106,9 @@ struct AMove : public std::shared_ptr<core::RawAMove>
 {
   typedef core::RawAMove RawType;
 
-  AMove(core::RawAMove* rm = NULL) : std::shared_ptr<core::RawAMove>(new core::RawAMove()) {}
+  AMove(core::RawAMove* rm) : std::shared_ptr<core::RawAMove>(rm) {}
+
+  AMove() : std::shared_ptr<core::RawAMove>(new core::RawAMove()) {}
 
   AMove(const std::list<size_t>& l)
     : std::shared_ptr<core::RawAMove>(new core::RawAMove(l)) {}

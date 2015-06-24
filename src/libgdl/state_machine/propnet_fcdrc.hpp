@@ -41,6 +41,8 @@ class ForwardDeadReckoningPropnetStateMachine
  public:
   explicit ForwardDeadReckoningPropnetStateMachine(int argc, char* argv[]);
 
+  bool Initialize(const std::string& filename);
+
   template<typename ConfigType>
   void Init(const gdlparser::KIF& kif, const ConfigType& config, size_t timeout);
 
@@ -100,6 +102,13 @@ class ForwardDeadReckoningPropnetStateMachine
 
   void MetaGame_multi_player(size_t simulation_time);
 
+  //! Function with initial propnet
+  bool IsTerminal_initial_dfp(const StateType& s);
+  MoveList<MoveType> GetLegalMoves_l_initial_dfp(const StateType& s);
+  StateType GetNextState_initial_dfp(const StateType& s, const MoveType& m);
+  const size_t* GetGoal_initial_dfp(const StateType& s);
+  bool CompiledIsTerminal(const StateType& state) const;
+
   void SeparateRolePropNets();
 
   size_t base_size;
@@ -115,13 +124,6 @@ class ForwardDeadReckoningPropnetStateMachine
 
   ReasonerType* without_terminal_pn = NULL;
   ReasonerType::PayLoadType2* without_terminal_payload = NULL;
-
-  //! Function with initial propnet
-  bool IsTerminal_initial_dfp(const StateType& s);
-  MoveList<MoveType> GetLegalMoves_l_initial_dfp(const StateType& s);
-  StateType GetNextState_initial_dfp(const StateType& s, const MoveType& m);
-  const size_t* GetGoal_initial_dfp(const StateType& s);
-  bool CompiledIsTerminal(const StateType& state) const;
 
   //! Goal propnet
   ReasonerType goal_pn;
