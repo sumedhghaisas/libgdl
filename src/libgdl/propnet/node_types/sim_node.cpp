@@ -47,7 +47,7 @@ Node* SimNode::MergeWithChild(PropNet& pn)
     }
     else if(c->IsNot() && c->out_degree.size() == 1)
     {
-      cout << "YOLO YOLO YOLO!" << endl;
+      cout << LOGID << "YOLO YOLO YOLO! " << UName() << endl;
       return NULL;
     }
   }

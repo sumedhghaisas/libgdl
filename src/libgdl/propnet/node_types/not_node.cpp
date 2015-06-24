@@ -64,7 +64,7 @@ Node* NotNode::MergeWithChild(PropNet& pn)
   if(c->IsOr() && c->out_degree.size() == 1)
   {
     OrNode* or_n = static_cast<OrNode*>(c);
-    or_n->isNOR = true;
+    or_n->isNOR = !or_n->isNOR;
 
     c->out_degree.clear();
     for(auto temp : out_degree)
@@ -82,21 +82,21 @@ Node* NotNode::MergeWithChild(PropNet& pn)
   }
   else if(c->IsAnd() && c->out_degree.size() == 1)
   {
-//    AndNode* and_n = static_cast<AndNode*>(c);
-//    and_n->isNand = true;
-//
-//    c->out_degree.clear();
-//    for(auto temp : out_degree)
-//    {
-//      temp->RemoveInDegree(this);
-//      temp->AddIn(c);
-//      c->AddOut(temp);
-//    }
-//
-//    in_degree.clear();
-//    out_degree.clear();
-//    pn.del.insert(this);
-//    delete this;
+    AndNode* and_n = static_cast<AndNode*>(c);
+    and_n->isNand = !and_n->isNand;
+
+    c->out_degree.clear();
+    for(auto temp : out_degree)
+    {
+      temp->RemoveInDegree(this);
+      temp->AddIn(c);
+      c->AddOut(temp);
+    }
+
+    in_degree.clear();
+    out_degree.clear();
+    pn.del.insert(this);
+    delete this;
     return c;
   }
 

@@ -171,7 +171,6 @@ struct Node
   std::list<Node*> out_degree;
 
   Type type;
-  SimType sim_type = SimType::OR;
 
   bool isVisited;
   std::tuple<bool, size_t> entry_ret;
