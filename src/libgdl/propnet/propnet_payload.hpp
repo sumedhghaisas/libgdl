@@ -28,6 +28,7 @@ struct PropNetPayLoad
   bool terminal;
 
   char* crystal_buffer = NULL;
+  size_t crystal_buffer_size = 0;
   bool isCrystallized = false;
 
   inline const StateType& GetState() const

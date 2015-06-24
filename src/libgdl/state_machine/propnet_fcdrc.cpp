@@ -380,7 +380,9 @@ void ForwardDeadReckoningPropnetStateMachine::CheckZeroSumGame()
 
 void ForwardDeadReckoningPropnetStateMachine::FinalizeInitialPropNet()
 {
+  log.Info << "Initial propnet consists of " << initial_pn.GetNumComponents() << " componenets." << endl;
   initial_pn.OptimizeWithNodeMerge();
+  log.Info << "Initial propnet is optimized to " << initial_pn.GetNumComponents() << " components with node merging." << endl;
   initial_pn.Finalize();
   initial_pn_payload = initial_pn.GetPayLoadInstance();
   initial_pn_payload2 = initial_pn.GetPayLoadInstance2();

@@ -37,11 +37,7 @@ bool BaseNode::CrystalInitialize(const PropNet& pn,
   if(initialized.find(this) != initialized.end())
     return holding_value;
 
-  holding_value = true;
-
-  if(pn.IsInitProp(id))
-    holding_value = true;
-  else holding_value = false;
+  holding_value = false;
 
   SimPolicyInitializeUpdate(holding_value, payload.data[crystal_data_map.find(this)->second.id]);
 

@@ -33,8 +33,8 @@ struct OrNode : public Node
 
   Node* MergeWithChild(PropNet& pn)
   {
-    if(in_degree.size() == 1);
-      //std::cout << "Yeah!" << std::endl;
+    if(in_degree.size() == 1)
+      std::cout << "Yeah!!!!!!!!!! " << UName() << std::endl;
     return NULL;
   }
 

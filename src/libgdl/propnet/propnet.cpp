@@ -860,6 +860,7 @@ void ProcessEdges(const list<pair<string, string>>& edges,
       to = n_nodes.find(it2->second)->second;
     }
     from->out_degree.push_back(to);
+
     to->in_degree.push_back(from);
   }
 }
@@ -1208,8 +1209,6 @@ void PropNet::Finalize()
 
   set<const Node*> initialized;
 
-  InitState(default_payload.base);
-
   for(auto it : legal_nodes)
     for(auto it2 : it)
       if(del.find(it2.second) == del.end())
@@ -1452,8 +1451,6 @@ PropNet* PropNet::OptimizeWithRoleMask(const StateType& mask)
 
 void PropNet::OptimizeWithNodeMerge()
 {
-  cout << GetNumComponents() << endl;
-
   for(auto it : legal_nodes)
   {
     for(auto it2 : it)
@@ -1501,6 +1498,4 @@ void PropNet::OptimizeWithNodeMerge()
     for(auto it : n->in_degree)
       n_stack.push(it);
   }
-
-  cout << GetNumComponents() << endl;
 }
