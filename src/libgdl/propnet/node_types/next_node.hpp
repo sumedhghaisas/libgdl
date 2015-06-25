@@ -42,7 +42,7 @@ struct NextNode : public SimNode
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalConfig::CrystalIncrementVal)
+    if(CrystalConfig::GetCrystalBoolValue(n_val))
     {
       top.Set(id, true);
     }
@@ -56,7 +56,7 @@ struct NextNode : public SimNode
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalConfig::CrystalIncrementVal)
+    if(CrystalConfig::GetCrystalBoolValue(n_val))
     {
       top.Set(id, true);
     }

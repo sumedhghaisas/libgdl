@@ -80,8 +80,9 @@ bool NextNode::CrystalInitialize(const PropNet& pn,
 
   holding_value = CrystalConfig::GetCrystalBoolValue(payload.data[crystal_data_map.find(this)->second.id]);
 
-  if(in_degree.size() == 0)
-    holding_value = true;
+//  if(Name() == "NEXT_( cell d4 red )")
+//    cout << "testing!" << endl;
+//  cout << Name() << " " << std::hex << payload.data[crystal_data_map.find(this)->second.id] << dec << std::endl;
 
   if(holding_value)
   {

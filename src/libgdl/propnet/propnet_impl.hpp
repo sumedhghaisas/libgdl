@@ -57,7 +57,7 @@ inline void PropNet::Update(const MoveType& move, PayLoadType& payload) const
       if(cn[0].type)
       {
         propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
-        n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
+        n->CrystalUpdate(val, top, t_val, m_set_size, goals, payload.terminal);
       }
       else
       {
@@ -393,7 +393,7 @@ inline bool PropNet::Update(const StateType& state, PayLoadType& payload) const
       if(cn[0].type)
       {
         propnet::node_types::Node* n = (propnet::node_types::Node*)*(size_t*)cn[0].out_edges;
-        n->CrystalUpdate(val, top, n_val, m_set_size, goals, payload.terminal);
+        n->CrystalUpdate(val, top, t_val, m_set_size, goals, payload.terminal);
       }
       else
       {

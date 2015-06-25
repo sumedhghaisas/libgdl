@@ -1114,7 +1114,11 @@ void PropNet::FillCrystal(map<const Node*, CrystalData>& crystal_data_map,
       default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(cd.type);
       t_cn.type = false;
     }
-    else if(cd.type == CrystalConfig::Type::OR_UPDATE || cd.type == CrystalConfig::Type::AND_UPDATE)
+    else if(cd.type == CrystalConfig::Type::OR_UPDATE ||
+            cd.type == CrystalConfig::Type::AND_UPDATE ||
+            cd.type == CrystalConfig::Type::NOT_UPDATE ||
+            cd.type == CrystalConfig::Type::NAND_UPDATE ||
+            cd.type == CrystalConfig::Type::NOR_UPDATE)
     {
       default_payload.data[t_cn.data_id] = CrystalConfig::GetTypeInit(cd.type);
       t_cn.type = true;

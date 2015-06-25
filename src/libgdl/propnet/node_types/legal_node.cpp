@@ -80,13 +80,12 @@ bool LegalNode::CrystalInitialize(const PropNet& pn,
 
   holding_value = CrystalConfig::GetCrystalBoolValue(payload.data[crystal_data_map.find(this)->second.id]);
 
-  if(in_degree.size() == 0)
-    holding_value = true;
-
   if(holding_value)
   {
     payload.legal_size[r_id]++;
   }
+
+  //cout << UName() << " " << std::hex << payload.data[crystal_data_map.find(this)->second.id] << std::dec << " " << payload.legal_size[r_id] << std::endl;
 
   initialized.insert(this);
 

@@ -43,14 +43,9 @@ struct LegalNode : public SimNode
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalConfig::CrystalIncrementVal)
-    {
+    if(CrystalConfig::GetCrystalBoolValue(mem))
       legal_size[r_id]++;
-    }
-    else
-    {
-      legal_size[r_id]--;
-    }
+    else legal_size[r_id]--;
   }
 
   void CrystalUpdate(signed short val,
@@ -60,7 +55,7 @@ struct LegalNode : public SimNode
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalConfig::CrystalIncrementVal)
+    if(CrystalConfig::GetCrystalBoolValue(mem))
     {
       m_set[r_id].insert(id);
     }

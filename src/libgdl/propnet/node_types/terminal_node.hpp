@@ -31,7 +31,7 @@ struct TerminalNode : public SimNode
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalConfig::CrystalIncrementVal)
+    if(CrystalConfig::GetCrystalBoolValue(mem))
       terminal = true;
     else terminal = false;
   }
@@ -43,7 +43,7 @@ struct TerminalNode : public SimNode
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalConfig::CrystalIncrementVal)
+    if(CrystalConfig::GetCrystalBoolValue(mem))
       terminal = true;
     else terminal = false;
   }

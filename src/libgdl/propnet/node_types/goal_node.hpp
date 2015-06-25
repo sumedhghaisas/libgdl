@@ -43,7 +43,7 @@ struct GoalNode : public SimNode
                      size_t* goals,
                      bool& terminal) const
   {
-    if(val == CrystalConfig::CrystalIncrementVal)
+    if(CrystalConfig::GetCrystalBoolValue(mem))
     {
       goals[r_id] = id;
     }

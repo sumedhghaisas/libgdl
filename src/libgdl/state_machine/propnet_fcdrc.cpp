@@ -325,14 +325,15 @@ void ForwardDeadReckoningPropnetStateMachine::MetaGame_multi_player(size_t simul
           alt_role_masks[current_control_r_id] = temp & std::move(alt_role_masks[current_control_r_id]);
       }
 
+
       initial_pn.GetRandomLegalMove(*initial_pn_payload, m);
 
       initial_pn.Update(m, *initial_pn_payload);
 
       temp.Equate(initial_pn_payload->top);
 
-//      cout << m << endl;
-//      cout << temp << endl;
+      //cout << m << endl;
+      //cout << temp << endl;
 //
 //      size_t t;
 //      cin >> t;
